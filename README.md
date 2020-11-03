@@ -1,7 +1,7 @@
 # TyphiNET web dashboard
   
-  ![Code Count](https://img.shields.io/github/languages/count/lcerdeira/google_react_demo) 
-  ![Main Code Base](https://img.shields.io/github/languages/top/lcerdeira/google_react_demo) 
+  ![Code Count](https://img.shields.io/github/languages/count/zadyson/TyphiNET) 
+  ![Main Code Base](https://img.shields.io/github/languages/top/zadyson/TyphiNET) 
   ![License](https://img.shields.io/badge/license-MIT-blue) 
   ![Version](https://img.shields.io/badge/version-1.0-red) 
   ![Last Commit](https://img.shields.io/github/last-commit/zadyson/TyphiNET) 
