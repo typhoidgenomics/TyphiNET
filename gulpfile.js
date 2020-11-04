@@ -11,7 +11,7 @@ const sourcemaps = require('gulp-sourcemaps');
 const del = require('del');
 
 function generateCSS(cb) {
-    src("./sass/*.scss")
+    src("./sass/material-dashboard.scss")
         .pipe(sourcemaps.init())
         .pipe(sass().on('error', sass.logError))
         .pipe(autoprefixer())
@@ -68,7 +68,7 @@ function browserSync(cb) {
     });
 
     watch('views/**.ejs', generateHTML);
-    watch('sass/**.scss', generateCSS);
+    watch('sass/**/**', generateCSS);
     watch("./public/**.html").on('change', sync.reload);
 }
 
@@ -82,14 +82,14 @@ task('clean:public', function(resolve) {
 task('styles', () => {
     return src('sass/*.scss')
         .pipe(sass().on('error', sass.logError))
-        .pipe(dest('./css/'));
+        .pipe(dest('./public'));
 });
 
-task('clean', () => {
-    return del([
-        'css/main.css',
-    ]);
-});
+// task('clean', () => {
+//     return del([
+//         'css/main.css',
+//     ]);
+// });
 
 exports.css = generateCSS;
 exports.html = generateHTML;
