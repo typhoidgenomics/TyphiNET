@@ -11570,6 +11570,18 @@ html[dir="rtl"] .form-check .form-check-sign .check:before {
       background-color: transparent;
       color: #55acee; }
 
+.justify-image {
+  text-align: justify; }
+
+.justify-image img {
+  display: inline-block; }
+
+.justify-image:after {
+  content: "";
+  display: inline-block;
+  width: 100%;
+  height: 0; }
+
 .card {
   border: 0;
   margin-bottom: 30px;

@@ -1,13 +1,11 @@
 {
-    "name": "creativetimofficial/material-dashboard",
-    "description": "Material Dashboard - Free Bootstrap Material Design Admin",
+    "name": "TyphiNET dashboard",
+    "description": "TyphiNET web dashboard",
     "type": "project",
     "license": "MIT",
-    "authors": [
-        {
-            "name": "Creative Tim",
-            "email": "hello@creative-tim.com"
-        }
-    ],
+    "authors": [{
+        "name": "Louise Cerdeira",
+        "email": "lcerdeira@gmail.com"
+    }],
     "require": {}
 }

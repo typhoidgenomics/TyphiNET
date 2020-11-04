@@ -49,6 +49,7 @@ function watchFiles(cb) {
     watch(['**/*.js', '!node_modules/**'], parallel(runLinter));
 }
 
+// TODO: add test using jest to avoid any bug, classic check
 // function runTests(cb) {
 //     return src(['**/*.test.js'])
 //         .pipe(mocha())
@@ -82,8 +83,9 @@ task('clean:public', function(resolve) {
 task('styles', () => {
     return src('sass/*.scss')
         .pipe(sass().on('error', sass.logError))
-        .pipe(dest('./public'));
+        .pipe(dest('./public/css'));
 });
+// TODO: add afunction to clean previous css
 
 // task('clean', () => {
 //     return del([
