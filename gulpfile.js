@@ -21,6 +21,23 @@ function generateCSS(cb) {
     cb();
 }
 
+var build = require('gulp-build');
+
+var options = {
+    partials: [{
+        name: 'footer',
+        tpl: '<p>Copyright 2013</p>'
+    }],
+    layout: '<html><body>{{> body}}</body></html>'
+};
+
+task('build', function() {
+    src("static/*.html")
+        .pipe(build({ title: 'Some page' }, options))
+        .pipe(dest("static"))
+});
+
+
 function generateHTML(cb) {
     src("./views/*.ejs")
         .pipe(ejs({
@@ -80,7 +97,7 @@ task('clean:public', function(resolve) {
 
 
 
-task('styles', () => {
+task('css', () => {
     return src('sass/*.scss')
         .pipe(sass().on('error', sass.logError))
         .pipe(dest('./public/css'));
