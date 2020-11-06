@@ -65,13 +65,14 @@
 
   ## Manual
 
+  Add on Wiki:
   Architecture
-  Estrutura do folder
-  como usar o gulp 
-
-  wiki 
+  MVC
+  react components and gulp
+  HTML5, CSS, Node.js, express, Canvas, Material-UI
+  template.
+  How2 install and uses
 
   ## Questions
 
-  The project - Please contact me via email Dr. Zoe Dyson
-  The dashboard - Please contact via gitHub or email Dr. Zoe Dyson or Dr. Louise Cerdeira
+  Please contact via gitHub or in [TyphiNET](http://localhost:8080)  project website.
