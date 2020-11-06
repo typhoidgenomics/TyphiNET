@@ -26,7 +26,7 @@ var build = require('gulp-build');
 var options = {
     partials: [{
         name: 'footer',
-        tpl: '<p>Copyright 2013</p>'
+        tpl: '<p>Copyright 2020</p>'
     }],
     layout: '<html><body>{{> body}}</body></html>'
 };
@@ -63,7 +63,7 @@ function runLinter(cb) {
 function watchFiles(cb) {
     watch('views/**.ejs', generateHTML);
     watch('sass/**.scss', generateCSS);
-    watch(['**/*.js', '!node_modules/**'], parallel(runLinter));
+    watch(['assets/js/**/*.js', '!node_modules/**'], parallel(runLinter));
 }
 
 // TODO: add test using jest to avoid any bug, classic check
@@ -94,8 +94,6 @@ task('clean:public', function(resolve) {
     sync('public');
     resolve();
 });
-
-
 
 task('css', () => {
     return src('sass/*.scss')
