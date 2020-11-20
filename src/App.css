@@ -97,3 +97,10 @@ html, body, .App {
   min-height: 100%;
   margin-left: 20%;
 }
+
+.logoImageMenu {
+  width: 80%;
+  align-self: center;
+  margin-top: 0.5rem;
+  margin-bottom: -1rem;
+}

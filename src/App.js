@@ -8,6 +8,7 @@ import ProjectPage from './pages/project'
 import ContactPage from './pages/contact'
 import mscaImg from './assets/img/msca.png';
 import wellcomeImg from './assets/img/wellcome.jpg';
+import typhinetLogoImg from './assets/img/logo-typhinet.png';
 
 function App() {
   const [currentPage, setCurrentPage] = React.useState('dashboard');
@@ -26,7 +27,7 @@ function App() {
   return (
     <div className="App">
       <div className="menu-bar">
-        <p className="title">TYPHINET</p>
+        <img className="logoImageMenu" src={typhinetLogoImg} />
         <div className="divider" />
         <div className={`item ${currentPage === 'dashboard' ? 'active' : ''}`} onClick={() => setCurrentPage('dashboard')}>
           <FontAwesomeIcon icon={faColumns} />
@@ -40,11 +41,7 @@ function App() {
           <FontAwesomeIcon icon={faColumns} />
           <span>Contact</span>
         </div>
-         <div className={`item ${currentPage === 'contact' ? 'Publications' : ''}`} onClick={() => window.open('https://scholar.google.com.au/citations?user=klhFnE0AAAAJ&hl=en', '_blank')}>
-          <FontAwesomeIcon icon={faGithub} />
-          <span>Publications</span>
-        </div>
-        <div className={`item ${currentPage === 'contact' ? 'github' : ''}`} onClick={() => window.open('https://github.com/zadyson/TyphiNET', '_blank')}>
+        <div className={`item ${currentPage === 'contact' ? 'github' : ''}`}>
           <FontAwesomeIcon icon={faGithub} />
           <span>GitHub</span>
         </div>

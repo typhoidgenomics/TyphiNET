@@ -1,14 +1,7 @@
 import './index.css';
 import React, { useEffect, useState } from "react";
-import { csv } from "d3-fetch";
 import { scaleLinear } from "d3-scale";
-import {
-  ComposableMap,
-  Geographies,
-  Geography,
-  Sphere,
-  Graticule
-} from "react-simple-maps";
+import { ComposableMap, Geographies, Geography, Sphere, Graticule, ZoomableGroup } from "react-simple-maps";
 import { makeStyles } from '@material-ui/core/styles';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -17,14 +10,10 @@ import Select from '@material-ui/core/Select';
 import Slider from '@material-ui/core/Slider';
 import Typography from '@material-ui/core/Typography';
 import ReactTooltip from "react-tooltip";
-import {
-  BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
-} from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Brush } from 'recharts';
 import axios from 'axios';
-
-const colorScale = scaleLinear()
-  .domain([0, 200])
-  .range(["#ffedea", "#ff5233"]);
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPlus, faMinus, faGlobeAmericas, faUndo } from '@fortawesome/free-solid-svg-icons'
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -38,75 +27,40 @@ const useStyles = makeStyles((theme) => ({
 
 const DashboardPage = () => {
   const classes = useStyles();
-  const [worldMapData, setWorldMapData] = useState([]);
+  const [worldMapSamplesData, setWorldMapSamplesData] = useState([]);
+  const [worldMapComplementaryData, setWorldMapComplementaryData] = useState({});
+  const [mapPosition, setMapPosition] = useState({ coordinates: [0, 0], zoom: 1 });
   const [actualCountry, setActualCountry] = useState(null);
-  const [tooltipContent, setTooltipContent] = useState("");
-  const [filter1, setFilter1] = React.useState('blaCTX-M');
-  const [filter2, setFilter2] = React.useState('COUNTRY_ONLY');
-  const [timelineRange, setTimelineRange] = React.useState([1905, 2017]);
+  const [tooltipContent, setTooltipContent] = useState(null);
+  const [viewFilter, setViewFilter] = React.useState(1);
+  const [timePeriodRange, setTimePeriodRange] = React.useState([1905, 2017]);
 
   const [firstChartData, setFirstChartData] = useState([])
   const [secondChartData, setSecondChartData] = useState([])
-  const [genotypes, setGenotypes] = useState([])
-  const [blaCTXs, setBlaCTXs] = useState([])
-
-  const colorScaleFirstChart = scaleLinear()
-    .domain([0, 38])
-    .range(["#c9eef5", "#2ca25f"]);
-
-  const colorScaleSecondChart = scaleLinear()
-    .domain([0, 1])
-    .range(["#fee8c8", "#e34a33"]);
 
   useEffect(() => {
-    csv(`/vulnerability.csv`).then((data) => {
-      setWorldMapData(data);
-    });
-  }, []);
+    axios.get(`https://secure-headland-13061.herokuapp.com/api/v2/filters/all/${timePeriodRange[0]}/${timePeriodRange[1]}`)
+      .then((res) => {
+        setWorldMapComplementaryData(res.data)
+      })
+  }, [])
 
   useEffect(() => {
-    // if (filter2 !== 'COUNTRY_ONLY') {
-    //   setActualCountry(null)
-    // }
-
-    if (actualCountry !== null) {
-      console.log(filter1, filter2, timelineRange, actualCountry)
-
-      axios.get(`https://secure-headland-13061.herokuapp.com/api/v1/filters/${filter1}/${filter2}/${actualCountry}/${timelineRange[0]}/${timelineRange[1]}`)
+    const timeOutId = setTimeout(() => {
+      axios.get(`https://secure-headland-13061.herokuapp.com/api/v2/filters/${viewFilter}/${actualCountry === null ? "all" : actualCountry}/${timePeriodRange[0]}/${timePeriodRange[1]}`)
         .then((res) => {
           parseData(res.data)
         })
-      return;
-    }
-
-    if (actualCountry === null) {
-      console.log(filter1, filter2, timelineRange, actualCountry)
-
-      axios.get(`https://secure-headland-13061.herokuapp.com/api/v1/filters/${filter1}/${filter2}/${timelineRange[0]}/${timelineRange[1]}`)
-        .then((res) => {
-          parseData(res.data)
-        })
-      return;
-    }
-  }, [filter1, filter2, timelineRange, actualCountry])
+    }, 500);
+    return () => clearTimeout(timeOutId);
+  }, [viewFilter, timePeriodRange, actualCountry])
 
   const parseData = (data) => {
     var finalFirstChartData = []; /* GENOTYPE */
-    var finalGenotypes = []; /* GENOTYPE */
-    var finalSecondChartData = []; /* blaCTX */
-    var finalBlaCTX = []; /* GENOTYPE */
-    var finalCountries = []; /* GENOTYPE */
-
-    console.log(data)
-
-    // COUNTRY_ONLY: "China"
-    // GENOTYPE: "3.1"
-    // NAME: "10593_2_18_ChinE02-5919_2002"
-    // YEAR: "2002"
-    // blaCTX-M-15_23: "0"
+    var finalSecondChartData = [];
+    var finalCountries = [];
 
     data.forEach((entry) => {
-
       if (!finalCountries.some(e => e.name === entry['COUNTRY_ONLY'])) {
         finalCountries.push({
           name: entry['COUNTRY_ONLY'],
@@ -126,34 +80,30 @@ const DashboardPage = () => {
           name: entry.YEAR,
           [entry.GENOTYPE]: 1
         })
-        finalGenotypes.push(entry.GENOTYPE)
       } else {
         var year = finalFirstChartData.find(e => e.name === entry.YEAR);
         var yearIndex = finalFirstChartData.findIndex(e => e.name === entry.YEAR);
 
         if (year[entry.GENOTYPE] === undefined) {
           year[entry.GENOTYPE] = 1
-          finalGenotypes.push(entry.GENOTYPE)
         } else {
           year[entry.GENOTYPE] = year[entry.GENOTYPE] + 1
         }
         finalFirstChartData[yearIndex] = year;
       }
 
-      if (filter1 === 'blaCTX-M') {
+      if (viewFilter === 1) { /* blaCTX */
         if (!finalSecondChartData.some(e => e.name === entry.YEAR)) {
           finalSecondChartData.push({
             name: entry.YEAR,
             [entry['blaCTX-M-15_23']]: 1
           })
-          finalBlaCTX.push(entry['blaCTX-M-15_23'])
         } else {
           var year = finalSecondChartData.find(e => e.name === entry.YEAR);
           var yearIndex = finalSecondChartData.findIndex(e => e.name === entry.YEAR);
 
-          if (year[entry.GENOTYPE] === undefined) {
+          if (year[entry['blaCTX-M-15_23']] === undefined) {
             year[entry['blaCTX-M-15_23']] = 1
-            finalBlaCTX.push(entry['blaCTX-M-15_23'])
           } else {
             year[entry['blaCTX-M-15_23']] = year[entry['blaCTX-M-15_23']] + 1
           }
@@ -161,46 +111,88 @@ const DashboardPage = () => {
         }
       }
 
-      if (filter1 === 'arm_category') {
+      if (viewFilter === 2) { /* AMR */
         if (!finalSecondChartData.some(e => e.name === entry.YEAR)) {
           finalSecondChartData.push({
             name: entry.YEAR,
-            [entry['arm_category']]: 1
+            [entry['amr_category']]: 1
           })
-          finalblaCTX.push(entry['arm_category'])
         } else {
           var year = finalSecondChartData.find(e => e.name === entry.YEAR);
           var yearIndex = finalSecondChartData.findIndex(e => e.name === entry.YEAR);
 
-          if (year[entry.GENOTYPE] === undefined) {
-            year[entry['arm_category']] = 1
-            finalblaCTX.push(entry['arm_category'])
+          if (year[entry['amr_category']] === undefined) {
+            year[entry['amr_category']] = 1
           } else {
-            year[entry['arm_category']] = year[entry['arm_category']] + 1
+            year[entry['amr_category']] = year[entry['amr_category']] + 1
           }
           finalSecondChartData[yearIndex] = year;
         }
       }
     })
 
-    // finalFirstChartData.sort(function (a, b) {
-    //   return a.YEAR.localeCompare(b.YEAR);
-    // });
-
-    // finalSecondChartData.sort(function (a, b) {
-    //   return a.YEAR.localeCompare(b.YEAR);
-    // });
-
-    console.log(finalFirstChartData)
     console.log(finalSecondChartData)
 
     setFirstChartData(finalFirstChartData)
     setSecondChartData(finalSecondChartData)
-    setWorldMapData(finalCountries)
 
-    setGenotypes([...finalGenotypes])
-    setBlaCTXs([...finalBlaCTX])
+    setWorldMapSamplesData(finalCountries)
+  }
 
+  const mapColorScale = scaleLinear()
+    .domain([0, 200])
+    .range(["#ffedea", "#ff5233"]);
+
+  const renderRightChart = () => {
+    switch (viewFilter) {
+      case 1: /* blaCTX */
+        return (
+          <ResponsiveContainer>
+            <BarChart
+              width={500}
+              height={300}
+              data={secondChartData}
+              margin={{
+                top: 20, right: 30, left: 20, bottom: 5,
+              }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              {/* <Legend /> */}
+              <Bar dataKey={'1'} stackId="a" fill={"#e34a33"} />
+            </BarChart>
+          </ResponsiveContainer>
+        );
+      case 2: /* AMR */
+        return (
+          <ResponsiveContainer>
+            <BarChart
+              width={500}
+              height={300}
+              data={secondChartData}
+              margin={{
+                top: 20, right: 30, left: 20, bottom: 5,
+              }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              {/* <Legend /> */}
+              <Bar dataKey={'No AMR detected'} stackId="a" fill={"#000000"} />
+              <Bar dataKey={'MDR_DCS'} stackId="a" fill={"#6a5acd"} />
+              <Bar dataKey={'MDR'} stackId="a" fill={"#ff0000"} />
+              <Bar dataKey={'DCS'} stackId="a" fill={"#00bfff"} />
+              <Bar dataKey={'AzithR_MDR'} stackId="a" fill={"#98fb98"} />
+              <Bar dataKey={'AzithR_DCS'} stackId="a" fill={"#6b8e23"} />
+              <Bar dataKey={'AzithR_DCS_MDR'} stackId="a" fill={"#2e8b57"} />
+              <Bar dataKey={'XDR'} stackId="a" fill={"#e34a33"} />
+            </BarChart>
+          </ResponsiveContainer>
+        )
+    }
   }
 
   return (
@@ -212,7 +204,7 @@ const DashboardPage = () => {
         </div>
         <div style={{ width: 16 }} />
         <div className="card">
-          <span>Total Genotypes (Sort Unique)</span>
+          <span>Total Genotypes</span>
           <span className="value">72</span>
         </div>
       </div>
@@ -238,178 +230,278 @@ const DashboardPage = () => {
                   <XAxis dataKey="name" />
                   <YAxis />
                   <Tooltip />
-                  {/* <Legend /> */}
-                  <Bar dataKey={'0.0.2'} fill={colorScaleFirstChart(0)} />
-                  <Bar dataKey={'0.0.3'} fill={colorScaleFirstChart(1)} />
-                  <Bar dataKey={'2'} fill={colorScaleFirstChart(2)} />
-                  <Bar dataKey={'2.0.1'} fill={colorScaleFirstChart(3)} />
-                  <Bar dataKey={'2.1'} fill={colorScaleFirstChart(4)} />
-                  <Bar dataKey={'2.1.5'} fill={colorScaleFirstChart(4)} />
-                  <Bar dataKey={'2.1.6'} fill={colorScaleFirstChart(5)} />
-                  <Bar dataKey={'2.1.7'} fill={colorScaleFirstChart(6)} />
-                  <Bar dataKey={'2.1.8'} fill={colorScaleFirstChart(7)} />
-                  <Bar dataKey={'2.1.9'} fill={colorScaleFirstChart(8)} />
-                  <Bar dataKey={'2.2'} fill={colorScaleFirstChart(9)} />
-                  <Bar dataKey={'2.2.1'} fill={colorScaleFirstChart(10)} />
-                  <Bar dataKey={'2.2.2'} fill={colorScaleFirstChart(11)} />
-                  <Bar dataKey={'2.2.3'} fill={colorScaleFirstChart(12)} />
-                  <Bar dataKey={'2.2.4'} fill={colorScaleFirstChart(13)} />
-                  <Bar dataKey={'2.4'} fill={colorScaleFirstChart(14)} />
-                  <Bar dataKey={'2.4'} fill={colorScaleFirstChart(15)} />
-                  <Bar dataKey={'2.4.1'} fill={colorScaleFirstChart(16)} />
-                  <Bar dataKey={'2.4.1'} fill={colorScaleFirstChart(17)} />
-                  <Bar dataKey={'2.5.1'} fill={colorScaleFirstChart(18)} />
-                  <Bar dataKey={'3'} fill={colorScaleFirstChart(19)} />
-                  <Bar dataKey={'3.1'} fill={colorScaleFirstChart(20)} />
-                  <Bar dataKey={'3.1.1'} fill={colorScaleFirstChart(21)} />
-                  <Bar dataKey={'3.1.2'} fill={colorScaleFirstChart(22)} />
-                  <Bar dataKey={'3.2.1'} fill={colorScaleFirstChart(23)} />
-                  <Bar dataKey={'3.3'} fill={colorScaleFirstChart(24)} />
-                  <Bar dataKey={'3.3.1'} fill={colorScaleFirstChart(24)} />
-                  <Bar dataKey={'3.3.2'} fill={colorScaleFirstChart(25)} />
-                  <Bar dataKey={'3.3.2.Bd1'} fill={colorScaleFirstChart(26)} />
-                  <Bar dataKey={'3.3.2.Bd1'} fill={colorScaleFirstChart(27)} />
-                  <Bar dataKey={'3.4'} fill={colorScaleFirstChart(28)} />
-                  <Bar dataKey={'3.4'} fill={colorScaleFirstChart(29)} />
-                  <Bar dataKey={'3.5.2'} fill={colorScaleFirstChart(30)} />
-                  <Bar dataKey={'3.5.3'} fill={colorScaleFirstChart(31)} />
-                  <Bar dataKey={'3.5.3'} fill={colorScaleFirstChart(32)} />
-                  <Bar dataKey={'3.5.4'} fill={colorScaleFirstChart(33)} />
-                  <Bar dataKey={'4.1'} fill={colorScaleFirstChart(34)} />
-                  <Bar dataKey={'4.3.1'} fill={colorScaleFirstChart(35)} />
-                  <Bar dataKey={'4.3.1.1'} fill={colorScaleFirstChart(36)} />
-                  <Bar dataKey={'4.3.1.2'} fill={colorScaleFirstChart(37)} />
-                  <Bar dataKey={'4.3.1.3'} fill={colorScaleFirstChart(38)} />
-
-                  {/* {genotypes.map((genotype, index) => {
-                    <Bar dataKey={genotype.toString()} fill={colorScaleFirstChart(index)} />
-                  })} */}
+                  {/* <Brush /> */}
+                  {/* <Legend layout="vetical" verticalAlign="middle" align="right"/> */}
+                  <Bar dataKey={'0.0.1'} stackId="a" fill={"#000000"} />
+                  <Bar dataKey={'0.0.2'} stackId="a" fill={"#000000"} />
+                  <Bar dataKey={'0.0.3'} stackId="a" fill={"#000000"} />
+                  <Bar dataKey={'0.1.0'} stackId="a" fill={"#808080"} />
+                  <Bar dataKey={'0.1'} stackId="a" fill={"#808080"} />
+                  <Bar dataKey={'0.1.1'} stackId="a" fill={"#808080"} />
+                  <Bar dataKey={'1.1.2'} stackId="a" fill={"#ffff00"} />
+                  <Bar dataKey={'1.2.1'} stackId="a" fill={"#ffd700"} />
+                  <Bar dataKey={'1.2.1'} stackId="a" fill={"#ffd700"} />
+                  <Bar dataKey={'2.0.0'} stackId="a" fill={"#32cd32"} />
+                  <Bar dataKey={'2'} stackId="a" fill={"#32cd32"} />
+                  <Bar dataKey={'2.0.1'} stackId="a" fill={"#32cd32"} />
+                  <Bar dataKey={'2.0.2'} stackId="a" fill={"#32cd32"} />
+                  <Bar dataKey={'2.1.0'} stackId="a" fill={"#adff2f"} />
+                  <Bar dataKey={'2.1'} stackId="a" fill={"#adff2f"} />
+                  <Bar dataKey={'2.1.1'} stackId="a" fill={"#adff2f"} />
+                  <Bar dataKey={'2.1.2'} stackId="a" fill={"#adff2f"} />
+                  <Bar dataKey={'2.1.3'} stackId="a" fill={"#adff2f"} />
+                  <Bar dataKey={'2.1.5'} stackId="a" fill={"#adff2f"} />
+                  <Bar dataKey={'2.1.6'} stackId="a" fill={"#adff2f"} />
+                  <Bar dataKey={'2.1.7'} stackId="a" fill={"#adff2f"} />
+                  <Bar dataKey={'2.1.8'} stackId="a" fill={"#adff2f"} />
+                  <Bar dataKey={'2.1.9'} stackId="a" fill={"#adff2f"} />
+                  <Bar dataKey={'2.2.0'} stackId="a" fill={"#98fb98"} />
+                  <Bar dataKey={'2.2.1'} stackId="a" fill={"#98fb98"} />
+                  <Bar dataKey={'2.2.2'} stackId="a" fill={"#98fb98"} />
+                  <Bar dataKey={'2.2.3'} stackId="a" fill={"#98fb98"} />
+                  <Bar dataKey={'2.2.4'} stackId="a" fill={"#98fb98"} />
+                  <Bar dataKey={'2.3.1'} stackId="a" fill={"#6b8e23"} />
+                  <Bar dataKey={'2.3.2'} stackId="a" fill={"#6b8e23"} />
+                  <Bar dataKey={'2.3.3'} stackId="a" fill={"#6b8e23"} />
+                  <Bar dataKey={'2.3.4'} stackId="a" fill={"#6b8e23"} />
+                  <Bar dataKey={'2.3.5'} stackId="a" fill={"#6b8e23"} />
+                  <Bar dataKey={'2.4.0'} stackId="a" fill={"#2e8b57"} />
+                  <Bar dataKey={'2.4'} stackId="a" fill={"#2e8b57"} />
+                  <Bar dataKey={'2.4.1'} stackId="a" fill={"#2e8b57"} />
+                  <Bar dataKey={'2.5.0'} stackId="a" fill={"#006400"} />
+                  <Bar dataKey={'2.5'} stackId="a" fill={"#006400"} />
+                  <Bar dataKey={'2.5.1'} stackId="a" fill={"#006400"} />
+                  <Bar dataKey={'2.5.2'} stackId="a" fill={"#006400"} />
+                  <Bar dataKey={'3.0.0'} stackId="a" fill={"#0000cd"} />
+                  <Bar dataKey={'3'} stackId="a" fill={"#0000cd"} />
+                  <Bar dataKey={'3.0.1'} stackId="a" fill={"#0000cd"} />
+                  <Bar dataKey={'3.0.2'} stackId="a" fill={"#0000cd"} />
+                  <Bar dataKey={'3.1.0'} stackId="a" fill={"#4682b4"} />
+                  <Bar dataKey={'3.1'} stackId="a" fill={"#4682b4"} />
+                  <Bar dataKey={'3.1.1'} stackId="a" fill={"#4682b4"} />
+                  <Bar dataKey={'3.1.2'} stackId="a" fill={"#4682b4"} />
+                  <Bar dataKey={'3.2.1'} stackId="a" fill={"#00bfff"} />
+                  <Bar dataKey={'3.2'} stackId="a" fill={"#00bfff"} />
+                  <Bar dataKey={'3.2.2'} stackId="a" fill={"#00bfff"} />
+                  <Bar dataKey={'3.3.0'} stackId="a" fill={"#1e90ff"} />
+                  <Bar dataKey={'3.3'} stackId="a" fill={"#1e90ff"} />
+                  <Bar dataKey={'3.3.1'} stackId="a" fill={"#1e90ff"} />
+                  <Bar dataKey={'3.3.2'} stackId="a" fill={"#1e90ff"} />
+                  <Bar dataKey={'3.3.2.Bd1'} stackId="a" fill={"#1e90ff"} />
+                  <Bar dataKey={'3.3.2.Bd2'} stackId="a" fill={"#1e90ff"} />
+                  <Bar dataKey={'3.4.0'} stackId="a" fill={"#6a5acd"} />
+                  <Bar dataKey={'3.5.0'} stackId="a" fill={"#4b0082"} />
+                  <Bar dataKey={'3.5.1'} stackId="a" fill={"#4b0082"} />
+                  <Bar dataKey={'3.5.2'} stackId="a" fill={"#4b0082"} />
+                  <Bar dataKey={'3.5.3'} stackId="a" fill={"#4b0082"} />
+                  <Bar dataKey={'3.5.4'} stackId="a" fill={"#4b0082"} />
+                  <Bar dataKey={'4'} stackId="a" fill={"#8b0000"} />
+                  <Bar dataKey={'4.1.0'} stackId="a" fill={"#8b0000"} />
+                  <Bar dataKey={'4.1'} stackId="a" fill={"#8b0000"} />
+                  <Bar dataKey={'4.1.1'} stackId="a" fill={"#8b0000"} />
+                  <Bar dataKey={'4.2.0'} stackId="a" fill={"#ff6347"} />
+                  <Bar dataKey={'4.2.1'} stackId="a" fill={"#ff6347"} />
+                  <Bar dataKey={'4.2.2'} stackId="a" fill={"#ff6347"} />
+                  <Bar dataKey={'4.2.3'} stackId="a" fill={"#ff6347"} />
+                  <Bar dataKey={'4.3.0'} stackId="a" fill={"#ff0000"} />
+                  <Bar dataKey={'4.3.1'} stackId="a" fill={"#ff0000"} />
+                  <Bar dataKey={'4.3.1.1'} stackId="a" fill={"#f1b6da"} />
+                  <Bar dataKey={'4.3.1.1.P1'} stackId="a" fill={"#000000"} />
+                  <Bar dataKey={'4.3.1.2'} stackId="a" fill={"#c51b7d"} />
+                  <Bar dataKey={'4.3.1.3'} stackId="a" fill={"#fb8072"} />
+                  <Bar dataKey={'4.3'} stackId="a" fill={"#ff0000"} />
+                  <Bar dataKey={'3.3'} stackId="a" fill={"#1e90ff"} />
+                  <Bar dataKey={'2.2'} stackId="a" fill={"#98fb98"} />
+                  <Bar dataKey={'2.3'} stackId="a" fill={"#6b8e23"} />
+                  <Bar dataKey={'2'} stackId="a" fill={"#32cd32"} />
+                  <Bar dataKey={'3.2'} stackId="a" fill={"#00bfff"} />
+                  <Bar dataKey={'4.1'} stackId="a" fill={"#8b0000"} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
             <div style={{ width: 16 }} />
             <div style={{ width: '50%', height: 300 }}>
-              <ResponsiveContainer>
-                <BarChart
-                  width={500}
-                  height={300}
-                  data={secondChartData}
-                  margin={{
-                    top: 20, right: 30, left: 20, bottom: 5,
-                  }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  // <Bar dataKey={'0'} stackId="a" fill={colorScaleSecondChart(0)} />
-                  // <Bar dataKey={'1'} stackId="a" fill={colorScaleSecondChart(1)} />
-                  {/* {blaCTXs.map((blaCTX, index) => {
-                    <Bar dataKey={blaCTX} stackId="a" fill={colorScaleSecondChart(index)} />
-                  })} */}
-                </BarChart>
-              </ResponsiveContainer>
+              {renderRightChart()}
             </div>
           </div>
         </div>
       </div>
-      <div className="map-wrapper">
-        <ComposableMap
-          data-tip=""
-          projectionConfig={{
-            rotate: [-10, 0, 0],
-            scale: 210,
-          }}
-          style={{ height: 400 }}
-        >
-          <Sphere stroke="#E4E5E6" strokeWidth={0.5} />
-          <Graticule stroke="#E4E5E6" strokeWidth={0.5} />
-          {worldMapData.length > 0 && (
-            <Geographies
-              geography={"https://raw.githubusercontent.com/zcreativelabs/react-simple-maps/master/topojson-maps/world-110m.json"}>
-              {({ geographies }) =>
-                geographies.map((geo) => {
-                  const d = worldMapData.find((s) => s.name === geo.properties.NAME); /* .NAME || .NAME_LONG */
-                  return (
-                    <Geography
-                      key={geo.rsmKey}
-                      geography={geo}
-                      cursor="pointer"
-                      fill={d ? colorScale(d["count"]) : "#F5F4F6"}
-                      onClick={() => {
-                        setActualCountry(geo.properties.NAME)
-                      }}
-                      onMouseEnter={() => {
-                        const { NAME, POP_EST } = geo.properties;
-                        if (d !== undefined) {
-                          setTooltipContent(`${NAME} - ${d.count} Samples`);
-                        } else {
-                          setTooltipContent(`${NAME}`);
-                        }
-                      }}
-                      onMouseLeave={() => {
-                        setTooltipContent("");
-                      }}
-                      style={{
-                        default: {
-                          outline: "none",
-                        },
-                        hover: {
-                          fill: "#CFD8DC",
-                          stroke: "#607D8B",
-                          strokeWidth: 1,
-                          outline: "none",
-                        },
-                        pressed: {
-                          fill: "#FF5722",
-                          stroke: "#607D8B",
-                          strokeWidth: 1,
-                          outline: "none",
-                        }
-                      }}
-                    />
-                  );
-                })
-              }
-            </Geographies>
+      <div className="map-filters-wrapper">
+        <div className="map-wrapper">
+          <ComposableMap
+            data-tip=""
+            projectionConfig={{
+              rotate: [-10, 0, 0],
+              scale: 210,
+            }}
+            style={{ height: "100%", width: "100%" }}
+          >
+            <ZoomableGroup
+              zoom={mapPosition.zoom}
+              center={mapPosition.coordinates}
+              onMoveEnd={(position) => {
+                setMapPosition(position);
+              }}
+            >
+              <Sphere stroke="#E4E5E6" strokeWidth={0.5} />
+              <Graticule stroke="#E4E5E6" strokeWidth={0.5} />
+              <Geographies
+                geography={"https://raw.githubusercontent.com/zcreativelabs/react-simple-maps/master/topojson-maps/world-110m.json"}>
+                {({ geographies }) =>
+                  geographies.map((geo) => {
+                    const sample = worldMapSamplesData.find(s => s.name === geo.properties.NAME)
+                    const d = worldMapComplementaryData[geo.properties.NAME]; /* .NAME || .NAME_LONG */
+                    return (
+                      <Geography
+                        key={geo.rsmKey}
+                        geography={geo}
+                        cursor="pointer"
+                        fill={sample ? mapColorScale(sample["count"]) : "#F5F4F6"}
+                        onClick={() => {
+                          if (d !== undefined && sample !== undefined)
+                            setActualCountry(geo.properties.NAME)
+                        }}
+                        onMouseEnter={() => {
+                          const { NAME } = geo.properties;
+                          if (sample !== undefined && d !== undefined) {
+                            setTooltipContent({
+                              name: NAME,
+                              additionalInfo: {
+                                samples: sample.count,
+                                genotypes: d.GENOTYPES.TOTAL,
+                                H58: d.H58.toFixed(2),
+                                MDR: d.MDR.toFixed(2)
+                              }
+                            });
+                          } else {
+                            setTooltipContent({
+                              name: NAME
+                            })
+                          }
+                        }}
+                        onMouseLeave={() => {
+                          setTooltipContent(null);
+                        }}
+                        style={{
+                          default: {
+                            outline: "none",
+                          },
+                          hover: {
+                            fill: "#CFD8DC",
+                            stroke: "#607D8B",
+                            strokeWidth: 1,
+                            outline: "none",
+                          },
+                          pressed: {
+                            fill: "#FF5722",
+                            stroke: "#607D8B",
+                            strokeWidth: 1,
+                            outline: "none",
+                          }
+                        }}
+                      />
+                    );
+                  })
+                }
+              </Geographies>
+            </ZoomableGroup>
+          </ComposableMap>
+          {actualCountry !== null && (
+            <div className="map-upper-buttons">
+              <div
+                className="button"
+                onClick={() => {
+                  setActualCountry(null)
+                }}
+              >
+                <FontAwesomeIcon icon={faUndo} />
+              </div>
+            </div>
           )}
-        </ComposableMap>
-        <ReactTooltip>{tooltipContent}</ReactTooltip>
+          <div className="map-buttons">
+            {mapPosition.zoom !== 1 && (
+              <div
+                className="button"
+                onClick={() => setMapPosition({ coordinates: [0, 0], zoom: 1 })}
+              >
+                <FontAwesomeIcon icon={faGlobeAmericas} />
+              </div>
+            )}
+            <div
+              className="button"
+              onClick={() => {
+                if (mapPosition.zoom >= 4) return;
+                setMapPosition(pos => ({ ...pos, zoom: pos.zoom * 2 }));
+              }}
+            >
+              <FontAwesomeIcon icon={faPlus} />
+            </div>
+            <div
+              className="button"
+              onClick={() => {
+                if (mapPosition.zoom <= 1) return;
+                if (mapPosition.zoom / 2 === 1) {
+                  setMapPosition({ coordinates: [0, 0], zoom: 1 });
+                } else {
+                  setMapPosition(pos => ({ ...pos, zoom: pos.zoom / 2 }));
+                }
+              }}
+            >
+              <FontAwesomeIcon icon={faMinus} />
+            </div>
+          </div>
+        </div>
+        <ReactTooltip>
+          {tooltipContent && (
+            <div className="tooltip-map">
+              <span className="country">{tooltipContent.name}</span>
+              {tooltipContent.additionalInfo && (
+                <div className="additional-info">
+                  <span>Samples: {tooltipContent.additionalInfo.samples}</span>
+                  <span>Genotypes: {tooltipContent.additionalInfo.genotypes}</span>
+                  <span>H58: {tooltipContent.additionalInfo.H58}%</span>
+                  <span>MDR: {tooltipContent.additionalInfo.MDR}%</span>
+                </div>
+              )}
+            </div>
+          )}
+        </ReactTooltip>
         <div className="filters">
           <FormControl fullWidth className={classes.formControl}>
-            <InputLabel style={{ fontWeight: 500, fontFamily: "Montserrat" }}>Filter</InputLabel>
+            <InputLabel style={{ fontWeight: 500, fontFamily: "Montserrat" }}>View</InputLabel>
             <Select
-              value={filter1}
+              value={viewFilter}
               fullWidth
-              onChange={evt => setFilter1(evt.target.value)}
+              onChange={evt => setViewFilter(evt.target.value)}
               style={{ fontWeight: 600, fontFamily: "Montserrat" }}
             >
-              <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat" }} value={'blaCTX-M'}>
+              <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat" }} value={1}>
                 Genotype and blaCTX-M
-            </MenuItem>
-              <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat" }} value={'arm_category'}>
+              </MenuItem>
+              <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat" }} value={2}>
                 Genotype and AMR Profiles
-            </MenuItem>
-            /MenuItem>
-              <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat" }} value={'GENOTYPE_SIMPLE'}>
-                H58 vs. Non-H58
-            </MenuItem>
+              </MenuItem>
+              <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat" }} value={3}>
+                Genotype and AMR Profiles and H58 / Non-H58
+              </MenuItem>
+              <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat" }} value={4}>
+                Genotype and Inc Types
+              </MenuItem>
             </Select>
           </FormControl>
-          <div style={{ width: 16 }} />
-
         </div>
         <div style={{ marginLeft: 16, marginRight: 16, marginBottom: 8, marginTop: 8 }}>
           <Typography gutterBottom style={{ fontWeight: 500, fontFamily: "Montserrat", color: "rgb(117,117,117)", fontSize: 13 }}>
             Time Period
           </Typography>
           <Slider
-            value={timelineRange}
-            max={2017}
+            value={timePeriodRange}
+            step={10}
             min={1905}
+            max={2017}
+            marks
             onChange={(evt, value) => {
-              setTimelineRange(value)
+              setTimePeriodRange(value)
             }}
             valueLabelDisplay="auto"
           />
@@ -417,8 +509,8 @@ const DashboardPage = () => {
       </div>
       <div style={{ flex: 1 }} />
       <div className="footer">
-        <span>Data obtained from: Pathogen Watch project on 05/11/2020.</span>
-        <a href="https://holtlab.net/"><span>Holt Lab</span></a>
+        <span>Data obtained from: <a>pathogen watch project</a> on 05/11/2020.</span>
+        <span>Holt Lab</span>
       </div>
     </div>
   );
