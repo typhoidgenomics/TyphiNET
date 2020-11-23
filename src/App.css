@@ -13,7 +13,7 @@ html, body, .App {
   -webkit-box-shadow: 3px 0px 10px 0px rgba(0,0,0,0.25);
   -moz-box-shadow: 3px 0px 10px 0px rgba(0,0,0,0.25);
   box-shadow: 3px 0px 10px 0px rgba(0,0,0,0.25);
-  z-index: 5;
+  z-index: 10;
   position: fixed;
   display: flex;
   flex-direction: column;
@@ -83,6 +83,7 @@ html, body, .App {
 
 .menu-bar .footer img {
   width: 40%;
+  height: intrinsic;
 }
 
 .menu-bar .footer .msca {
@@ -103,4 +104,48 @@ html, body, .App {
   align-self: center;
   margin-top: 0.5rem;
   margin-bottom: -1rem;
+}
+
+.logoImageMenu-mobile {
+  height: 60px;
+  align-self: center;
+  margin-bottom: -6px;
+}
+
+.menu-bar-mobile {
+  display: none;
+  position: sticky;
+  top: 0;
+  background-color: white;
+  -webkit-box-shadow: 3px 0px 10px 0px rgba(0,0,0,0.25);
+  -moz-box-shadow: 3px 0px 10px 0px rgba(0,0,0,0.25);
+  box-shadow: 3px 0px 10px 0px rgba(0,0,0,0.25);
+  z-index: 10;
+  padding: 8px 4px;
+  font-size: 22px;
+  color: gray
+}
+
+.menu-bar-mobile svg {
+  position: absolute;
+  left: 16px;
+  top: 24px
+}
+
+@media (max-width: 767px) {
+  .menu-bar-mobile {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .menu-bar {
+    display: none;
+  }
+
+  .content {
+    width: -webkit-fill-available;
+    margin-left: 0;
+    flex-direction: column;
+  }
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faColumns } from '@fortawesome/free-solid-svg-icons'
+import { faBars, faColumns } from '@fortawesome/free-solid-svg-icons'
 import { faGithub, faTwitter } from "@fortawesome/free-brands-svg-icons"
 import './App.css';
 import DashboardPage from './pages/dashboard'
@@ -9,9 +9,15 @@ import ContactPage from './pages/contact'
 import mscaImg from './assets/img/msca.png';
 import wellcomeImg from './assets/img/wellcome.jpg';
 import typhinetLogoImg from './assets/img/logo-typhinet.png';
+import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
 
 function App() {
   const [currentPage, setCurrentPage] = React.useState('dashboard');
+  const [mobileMenuOpened, setMobileMenuOpened] = React.useState(false);
 
   const renderCurrentPage = () => {
     switch (currentPage) {
@@ -23,6 +29,13 @@ function App() {
         return <ContactPage />
     }
   }
+
+  const toggleDrawer = (open) => (event) => {
+    if (event && event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+      return;
+    }
+    setMobileMenuOpened(open)
+  };
 
   return (
     <div className="App">
@@ -56,7 +69,86 @@ function App() {
         </div>
       </div>
       <div className="content">
-        {renderCurrentPage()}
+        {window.innerWidth > 767 ? (
+          renderCurrentPage()
+        ) : (
+            <>
+              <div className="menu-bar-mobile">
+                <FontAwesomeIcon icon={faBars} onClick={() => setMobileMenuOpened(true)} />
+                <img className="logoImageMenu-mobile" src={typhinetLogoImg} />
+                <SwipeableDrawer
+                  anchor={'left'}
+                  open={mobileMenuOpened}
+                  onClose={toggleDrawer(false)}
+                  onOpen={toggleDrawer(true)}
+                >
+                  <List>
+                    <ListItem button key={'dashboard'} onClick={() => {
+                      setCurrentPage('dashboard')
+                      setMobileMenuOpened(false)
+                    }}>
+                      <ListItemIcon style={{ minWidth: 0, marginRight: 8 }}>
+                        <FontAwesomeIcon icon={faColumns} />
+                      </ListItemIcon>
+                      <ListItemText>
+                        <span style={{ fontFamily: "Montserrat", fontWeight: currentPage === 'dashboard' ? 600 : 400 }}>Dashboard</span>
+                      </ListItemText>
+                    </ListItem>
+
+                    <ListItem button key={'project'} onClick={() => {
+                      setCurrentPage('project')
+                      setMobileMenuOpened(false)
+                    }}>
+                      <ListItemIcon style={{ minWidth: 0, marginRight: 8 }}>
+                        <FontAwesomeIcon icon={faColumns} />
+                      </ListItemIcon>
+                      <ListItemText>
+                        <span style={{ fontFamily: "Montserrat", fontWeight: currentPage === 'project' ? 600 : 400 }}>Project</span>
+                      </ListItemText>
+                    </ListItem>
+
+                    <ListItem button key={'contact'} onClick={() => {
+                      setCurrentPage('contact')
+                      setMobileMenuOpened(false)
+                    }}>
+                      <ListItemIcon style={{ minWidth: 0, marginRight: 8 }}>
+                        <FontAwesomeIcon icon={faColumns} />
+                      </ListItemIcon>
+                      <ListItemText>
+                        <span style={{ fontFamily: "Montserrat", fontWeight: currentPage === 'contact' ? 600 : 400 }}>Contact</span>
+                      </ListItemText>
+                    </ListItem>
+
+                    <ListItem button key={'gitHub'} onClick={() => {
+                      setMobileMenuOpened(false)
+                    }}>
+                      <ListItemIcon style={{ minWidth: 0, marginRight: 8 }}>
+                        <FontAwesomeIcon icon={faGithub} />
+                      </ListItemIcon>
+                      <ListItemText>
+                        <span style={{ fontFamily: "Montserrat", fontWeight: 400 }}>GitHub</span>
+                      </ListItemText>
+                    </ListItem>
+
+                    <ListItem button key={'twitter'} onClick={() => {
+                      setMobileMenuOpened(false)
+                      window.open('https://twitter.com/typhinet', '_blank')
+                    }}>
+                      <ListItemIcon style={{ minWidth: 0, marginRight: 8 }}>
+                        <FontAwesomeIcon icon={faTwitter} />
+                      </ListItemIcon>
+                      <ListItemText>
+                        <span style={{ fontFamily: "Montserrat", fontWeight: 400 }}>Twitter</span>
+                      </ListItemText>
+                    </ListItem>
+                  </List>
+                </SwipeableDrawer>
+              </div>
+              <div style={{ width: "100%" }}>
+                {renderCurrentPage()}
+              </div>
+            </>
+          )}
       </div>
     </div>
   );

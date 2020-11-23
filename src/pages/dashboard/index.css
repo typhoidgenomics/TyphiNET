@@ -44,6 +44,7 @@
   margin-bottom: 16px;
   display: flex;
   flex-direction: row;
+  z-index: 5;
 }
 
 .map-filters-wrapper {
@@ -149,4 +150,43 @@ span [class^="PrivateValueLabel-label"] {
 .tooltip-map .additional-info{
   display: flex;
   flex-direction: column;
+}
+
+.y-axis-label-vertical {
+  transform: rotate(180deg);
+  margin-bottom: 18px;
+  writing-mode: vertical-rl;
+}
+
+.y-axis-label-horizontal {
+  margin-left: 62px;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.y-axis-label-horizontal-second-chart {
+  margin-left: 82px;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.chart-title {
+  align-self: center;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+@media (max-width: 767px) {
+  .dashboard {
+    width: unset;
+  }
+
+  .footer {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .footer span:nth-child(2) {
+    margin-top: 10px;
+  }
 }

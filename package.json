@@ -1,5 +1,4 @@
 {
-  "homepage": "http://zadyson.github.io/TyphiNET",
   "name": "typhinet",
   "version": "0.1.0",
   "private": true,
@@ -13,7 +12,6 @@
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
     "axios": "^0.21.0",
-    "d3-fetch": "^2.0.0",
     "d3-scale": "^3.2.3",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
@@ -24,8 +22,6 @@
     "web-vitals": "^0.2.4"
   },
   "scripts": {
-    "predeploy": "yarn run build",
-    "deploy": "gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

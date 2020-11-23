@@ -12,3 +12,9 @@
   width: 40%;
   align-self: center;
 }
+
+@media (max-width: 767px) {
+  .project {
+    width: unset;
+  }
+}

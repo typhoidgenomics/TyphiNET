@@ -13,3 +13,10 @@
   flex-direction: row;
   margin-bottom: 16px;
 }
+
+@media (max-width: 767px) {
+  .contact {
+    width: unset;
+    min-height: 100vh;
+  }
+}
