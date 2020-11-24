@@ -1,6 +1,6 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBars, faColumns, faEnvelope } from '@fortawesome/free-solid-svg-icons'
+import { faBars, faColumns, faEnvelope, faQuestion } from '@fortawesome/free-solid-svg-icons'
 import { faGithub, faTwitter } from "@fortawesome/free-brands-svg-icons"
 import './App.css';
 import DashboardPage from './pages/dashboard'
@@ -47,7 +47,7 @@ function App() {
           <span>Dashboard</span>
         </div>
         <div className={`item ${currentPage === 'project' ? 'active' : ''}`} onClick={() => setCurrentPage('project')}>
-          <FontAwesomeIcon icon={faColumns} />
+          <FontAwesomeIcon icon={faQuestion} />
           <span>Project</span>
         </div>
         <div className={`item ${currentPage === 'contact' ? 'active' : ''}`} onClick={() => setCurrentPage('contact')}>
