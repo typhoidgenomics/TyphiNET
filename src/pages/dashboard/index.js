@@ -1000,7 +1000,7 @@ const DashboardPage = () => {
       </div>
       <div style={{ flex: 1 }} />
       <div className="footer">
-        <span>Data obtained from <a href="https://pathogen.watch" target="_blank">Pathogenwatch</a> on 05/11/2020.</span>
+        <span>Data last updated from <a href="https://pathogen.watch" target="_blank">Pathogenwatch</a> on 05/11/2020.</span>
         <span><a href="https://holtlab.net" target="_blank">Holt Lab</a></span>
       </div>
     </div>
