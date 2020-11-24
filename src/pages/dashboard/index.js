@@ -773,7 +773,7 @@ const DashboardPage = () => {
         <div style={{ width: 16 }} />
         <div className="card">
           <span>Total Genotypes</span>
-          <span className="value">72</span>
+          <span className="value">71</span>
         </div>
       </div>
       <div className="chart-wrapper">
