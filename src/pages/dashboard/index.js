@@ -253,9 +253,9 @@ const DashboardPage = () => {
                   return null;
                 }}
               />
-              <Bar dataKey={'0.0.1'} stackId="a" fill={"#000000"} />
-              <Bar dataKey={'0.0.2'} stackId="a" fill={"#000000"} />
-              <Bar dataKey={'0.0.3'} stackId="a" fill={"#000000"} />
+              <Bar dataKey={'0.0.1'} stackId="a" fill={"#808080"} />
+              <Bar dataKey={'0.0.2'} stackId="a" fill={"#808080"} />
+              <Bar dataKey={'0.0.3'} stackId="a" fill={"#808080"} />
               <Bar dataKey={'0.1.0'} stackId="a" fill={"#808080"} />
               <Bar dataKey={'0.1'} stackId="a" fill={"#808080"} />
               <Bar dataKey={'0.1.1'} stackId="a" fill={"#808080"} />
@@ -386,9 +386,9 @@ const DashboardPage = () => {
                   return null;
                 }}
               />
-              <Bar dataKey={'0.0.1'} stackId="a" fill={"#000000"} />
-              <Bar dataKey={'0.0.2'} stackId="a" fill={"#000000"} />
-              <Bar dataKey={'0.0.3'} stackId="a" fill={"#000000"} />
+              <Bar dataKey={'0.0.1'} stackId="a" fill={"#808080"} />
+              <Bar dataKey={'0.0.2'} stackId="a" fill={"#808080"} />
+              <Bar dataKey={'0.0.3'} stackId="a" fill={"#808080"} />
               <Bar dataKey={'0.1.0'} stackId="a" fill={"#808080"} />
               <Bar dataKey={'0.1'} stackId="a" fill={"#808080"} />
               <Bar dataKey={'0.1.1'} stackId="a" fill={"#808080"} />
