@@ -967,7 +967,7 @@ const DashboardPage = () => {
               style={{ fontWeight: 600, fontFamily: "Montserrat" }}
             >
               <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat" }} value={1}>
-                blaCTX-M
+                ESBL
               </MenuItem>
               <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat" }} value={2}>
                 AMR Profiles
