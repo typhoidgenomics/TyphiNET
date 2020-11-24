@@ -48,7 +48,7 @@ function App() {
         </div>
         <div className={`item ${currentPage === 'project' ? 'active' : ''}`} onClick={() => setCurrentPage('project')}>
           <FontAwesomeIcon icon={faQuestion} />
-          <span>Project</span>
+          <span>About</span>
         </div>
         <div className={`item ${currentPage === 'contact' ? 'active' : ''}`} onClick={() => setCurrentPage('contact')}>
           <FontAwesomeIcon icon={faEnvelope} />
