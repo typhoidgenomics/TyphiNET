@@ -121,6 +121,7 @@ function App() {
 
                     <ListItem button key={'gitHub'} onClick={() => {
                       setMobileMenuOpened(false)
+                      window.open('https://github.com/zadyson/TyphiNET', '_blank')
                     }}>
                       <ListItemIcon style={{ minWidth: 0, marginRight: 8 }}>
                         <FontAwesomeIcon icon={faGithub} />
