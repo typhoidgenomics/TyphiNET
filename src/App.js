@@ -54,7 +54,7 @@ function App() {
           <FontAwesomeIcon icon={faEnvelope} />
           <span>Contact</span>
         </div>
-        <div className={`item ${currentPage === 'contact' ? 'github' : ''}`}>
+        <div className={`item ${currentPage === 'contact' ? 'github' : ''}`} onClick={() => window.open('https://github.com/zadyson/TyphiNET', '_blank')}>
           <FontAwesomeIcon icon={faGithub} />
           <span>GitHub</span>
         </div>
