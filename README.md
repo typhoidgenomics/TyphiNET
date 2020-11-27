@@ -1,6 +1,5 @@
 ![TyphiNET_Logo](https://github.com/zadyson/TyphiNET/blob/master/src/assets/img/logo-typhinet.png) 
-
-# TyphiNET web dashboard
+  # TyphiNET web dashboard
   
   ![Code Count](https://img.shields.io/github/languages/count/zadyson/TyphiNET) 
   ![Main Code Base](https://img.shields.io/github/languages/top/zadyson/TyphiNET) 
@@ -16,4 +15,4 @@
 
   ## Description
 
-  This web dashboard allows the user visualize Salmonella Typhi genotypes and AMR data sourced from Pathogen Watch.
+  TyphiNET is a dashboard for visualising global Salmonella Typhi genotype and antimicrobial resistance data.  Our interface allows you to search for specific data on indivual countries, and over specific time periods.  Data are regularly updated (last updated November 5th 2020) from [Pathogewatch]("https://pathogen.watch/").
