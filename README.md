@@ -1,4 +1,4 @@
-  ![TyphiNET_Logo](https://github.com/zadyson/TyphiNET/blob/master/src/assets/img/logo-typhinet.png) 
+  ![TyphiNET_Logo](assets/img/logo-typhinet.png) 
   # TyphiNET web dashboard
   ![Code Count](https://img.shields.io/github/languages/count/zadyson/TyphiNET) 
   ![Main Code Base](https://img.shields.io/github/languages/top/zadyson/TyphiNET) 
