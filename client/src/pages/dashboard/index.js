@@ -887,11 +887,7 @@ const DashboardPage = () => {
                                 samples: sample.count,
                                 genotypes: d.GENOTYPES.TOTAL,
                                 H58: d.H58.toFixed(2),
-                                MDR: d.MDR.toFixed(2),
-                                DCS: d.DCS.toFixed(2),
-                                MDR_DCS: d.MDR_DCS.toFixed(2),
-                                AzithR_MDR: d.AzithR_MDR.toFixed(2),
-                                AzithR_DCS: d.AzithR_DCS.toFixed(2)
+                                MDR: d.MDR.toFixed(2)
                               }
                             });
                           } else {
@@ -982,10 +978,6 @@ const DashboardPage = () => {
                   <span>Genotypes: {tooltipContent.additionalInfo.genotypes}</span>
                   <span>H58: {tooltipContent.additionalInfo.H58}%</span>
                   <span>MDR: {tooltipContent.additionalInfo.MDR}%</span>
-                  <span>DCS: {tooltipContent.additionalInfo.MDR_DCS}%</span>
-                  <span>MDR_DCS: {tooltipContent.additionalInfo.MDR}%</span>
-                  <span>AzithR_MDR: {tooltipContent.additionalInfo.AzithR_MDR}%</span>
-                  <span>AzithR_DCS: {tooltipContent.additionalInfo.AzithR_DCS}%</span>
                 </div>
               )}
             </div>
