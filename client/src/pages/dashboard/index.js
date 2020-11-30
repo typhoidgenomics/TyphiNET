@@ -296,6 +296,7 @@ const DashboardPage = () => {
                   return null;
                 }}
               />
+              <Bar dataKey={'0.0'} stackId="a" fill={"#BDBDBD"} />
               <Bar dataKey={'0.0.1'} stackId="a" fill={"#000000"} />
               <Bar dataKey={'0.0.2'} stackId="a" fill={"#000000"} />
               <Bar dataKey={'0.0.3'} stackId="a" fill={"#000000"} />
@@ -424,6 +425,7 @@ const DashboardPage = () => {
                   return null;
                 }}
               />
+              <Bar dataKey={'0.0'} stackId="a" fill={"#BDBDBD"} />
               <Bar dataKey={'0.0.1'} stackId="a" fill={"#000000"} />
               <Bar dataKey={'0.0.2'} stackId="a" fill={"#000000"} />
               <Bar dataKey={'0.0.3'} stackId="a" fill={"#000000"} />
@@ -672,6 +674,8 @@ const DashboardPage = () => {
               <Bar dataKey={'AzithR_DCS'} stackId="a" fill={"#7a0177"} />
               <Bar dataKey={'AzithR_DCS_MDR'} stackId="a" fill={"#54278f"} />
               <Bar dataKey={'XDR'} stackId="a" fill={"black"} />
+              <Bar dataKey={'AMR'} stackId="a" fill={"#ffeda0"} />
+              <Bar dataKey={'AMR_DCS'} stackId="a" fill={"#fd8d3c"} />
             </BarChart>
           </ResponsiveContainer>
         )
@@ -883,7 +887,11 @@ const DashboardPage = () => {
                                 samples: sample.count,
                                 genotypes: d.GENOTYPES.TOTAL,
                                 H58: d.H58.toFixed(2),
-                                MDR: d.MDR.toFixed(2)
+                                MDR: d.MDR.toFixed(2),
+                                DCS: d.DCS.toFixed(2),
+                                MDR_DCS: d.MDR_DCS.toFixed(2),
+                                AzithR_MDR: d.AzithR_MDR.toFixed(2),
+                                AzithR_DCS: d.AzithR_DCS.toFixed(2)
                               }
                             });
                           } else {
@@ -974,6 +982,10 @@ const DashboardPage = () => {
                   <span>Genotypes: {tooltipContent.additionalInfo.genotypes}</span>
                   <span>H58: {tooltipContent.additionalInfo.H58}%</span>
                   <span>MDR: {tooltipContent.additionalInfo.MDR}%</span>
+                  <span>DCS: {tooltipContent.additionalInfo.MDR_DCS}%</span>
+                  <span>MDR_DCS: {tooltipContent.additionalInfo.MDR}%</span>
+                  <span>AzithR_MDR: {tooltipContent.additionalInfo.AzithR_MDR}%</span>
+                  <span>AzithR_DCS: {tooltipContent.additionalInfo.AzithR_DCS}%</span>
                 </div>
               )}
             </div>
