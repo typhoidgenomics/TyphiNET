@@ -34,7 +34,7 @@ const DashboardPage = () => {
   const [mapPosition, setMapPosition] = useState({ coordinates: [0, 0], zoom: 1 });
   const [actualCountry, setActualCountry] = useState(null);
   const [tooltipContent, setTooltipContent] = useState(null);
-  const [viewFilter, setViewFilter] = React.useState(1);
+  const [viewFilter, setViewFilter] = React.useState(2);
   const [timePeriodRange, setTimePeriodRange] = React.useState([1905, 2020]);
 
   const [firstChartData, setFirstChartData] = useState([])
