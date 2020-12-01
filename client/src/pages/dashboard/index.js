@@ -2,7 +2,7 @@ import './index.css';
 import React, { useEffect, useState } from "react";
 import { scaleLinear } from "d3-scale";
 import { ComposableMap, Geographies, Geography, Sphere, Graticule, ZoomableGroup } from "react-simple-maps";
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
@@ -65,35 +65,26 @@ const DashboardPage = () => {
     const timeOutId = setTimeout(() => {
       axios.get(`${API_ENDPOINT}filters/${viewFilter}/${actualCountry === null ? "all" : actualCountry}/${timePeriodRange[0]}/${timePeriodRange[1]}`)
         .then((res) => {
-          parseData(res.data)
+          parseDataForChart(res.data)
+
+          if (actualCountry === null)
+            parseDataForCountryMap(res.data)
+          else
+            axios.get(`${API_ENDPOINT}filters/${viewFilter}/all/${timePeriodRange[0]}/${timePeriodRange[1]}`)
+              .then((res) => {
+                parseDataForCountryMap(res.data)
+              })
         })
     }, 500);
     return () => clearTimeout(timeOutId);
   }, [viewFilter, timePeriodRange, actualCountry])
 
-  const parseData = (data) => {
+  const parseDataForChart = (data) => {
     var finalFirstChartData = [];
     var finalSecondChartData = [];
-    var finalCountries = [];
 
     data.forEach((entry) => {
-      if (!finalCountries.some(e => e.name === entry['COUNTRY_ONLY'])) {
-        finalCountries.push({
-          name: entry['COUNTRY_ONLY'],
-          displayName: entry['COUNTRY_ONLY'],
-          count: 1
-        })
-      } else {
-        var country = finalCountries.find(e => e.name === entry['COUNTRY_ONLY']);
-        var countryIndex = finalCountries.findIndex(e => e.name === entry['COUNTRY_ONLY']);
-
-        country.count = country.count + 1
-
-        finalCountries[countryIndex] = country;
-      }
-
       /* FIRST CHART GENERATION */
-
       if (viewFilter !== 3) {
         if (!finalFirstChartData.some(e => e.name === entry.YEAR)) {
           finalFirstChartData.push({
@@ -132,7 +123,6 @@ const DashboardPage = () => {
       }
 
       /* SECOND CHART GENERATION */
-
       if (viewFilter === 1) { /* blaCTX */
         if (!finalSecondChartData.some(e => e.name === entry.YEAR)) {
           finalSecondChartData.push({
@@ -216,9 +206,29 @@ const DashboardPage = () => {
 
     if (!arraysEqual(secondChartData, finalSecondChartData))
       setSecondChartData(finalSecondChartData)
+  }
+
+  const parseDataForCountryMap = (data) => {
+    var finalCountries = [];
+
+    data.forEach((entry) => {
+      if (!finalCountries.some(e => e.name === entry['COUNTRY_ONLY'])) {
+        finalCountries.push({
+          name: entry['COUNTRY_ONLY'],
+          displayName: entry['COUNTRY_ONLY'],
+          count: 1
+        })
+      } else {
+        var country = finalCountries.find(e => e.name === entry['COUNTRY_ONLY']);
+        var countryIndex = finalCountries.findIndex(e => e.name === entry['COUNTRY_ONLY']);
+
+        country.count = country.count + 1
+
+        finalCountries[countryIndex] = country;
+      }
+    })
 
     if (!arraysEqual(finalCountries, worldMapSamplesData)) {
-
       var congoCountryIndex = finalCountries.findIndex(e => e.name === 'Democratic Republic of Congo');
       if (congoCountryIndex !== -1)
         finalCountries[congoCountryIndex].displayName = 'Dem. Rep. Congo'
@@ -802,6 +812,13 @@ const DashboardPage = () => {
     }
   }
 
+  const CustomSlider = withStyles({
+    valueLabel: {
+      fontFamily: "Montserrat",
+      fontWeight: 500
+    }
+  })(Slider);
+
   return (
     <div className="dashboard">
       <div className="info-wrapper">
@@ -926,12 +943,17 @@ const DashboardPage = () => {
           {actualCountry !== null && (
             <div className="map-upper-buttons">
               <div
-                className="button"
+                className="flex-button"
+                style={{ display: "flex", flexDirection: "row" }}
                 onClick={() => {
                   setActualCountry(null)
                 }}
               >
-                <FontAwesomeIcon icon={faUndo} />
+                <FontAwesomeIcon icon={faUndo} style={{ marginRight: 8 }} />
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  <span style={{ fontSize: 14, marginBottom: -2 }}>Show data for</span>
+                  <span style={{ fontWeight: 600 }}>All countries</span>
+                </div>
               </div>
             </div>
           )}
@@ -1024,7 +1046,7 @@ const DashboardPage = () => {
           <Typography gutterBottom style={{ fontWeight: 500, fontFamily: "Montserrat", color: "rgb(117,117,117)", fontSize: 13 }}>
             Time Period
           </Typography>
-          <Slider
+          <CustomSlider
             value={timePeriodRange}
             step={10}
             min={1905}
