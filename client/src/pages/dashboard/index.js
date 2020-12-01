@@ -34,8 +34,8 @@ const DashboardPage = () => {
   const [mapPosition, setMapPosition] = useState({ coordinates: [0, 0], zoom: 1 });
   const [actualCountry, setActualCountry] = useState(null);
   const [tooltipContent, setTooltipContent] = useState(null);
-  const [viewFilter, setViewFilter] = React.useState(2);
-  const [timePeriodRange, setTimePeriodRange] = React.useState([1905, 2020]);
+  const [viewFilter, setViewFilter] = React.useState(1);
+  const [timePeriodRange, setTimePeriodRange] = React.useState([1905, 2019]);
 
   const [firstChartData, setFirstChartData] = useState([])
   const [secondChartData, setSecondChartData] = useState([])
@@ -1050,7 +1050,7 @@ const DashboardPage = () => {
             value={timePeriodRange}
             step={10}
             min={1905}
-            max={2020}
+            max={2019}
             marks
             onChange={(evt, value) => {
               setTimePeriodRange(value)
