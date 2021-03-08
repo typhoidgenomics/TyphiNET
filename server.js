@@ -1,17 +1,31 @@
-const express = require("express");
-const path = require('path');
-const cookieParser = require('cookie-parser');
+import connectDB from './config/db.js'
+import generateFile from './routes/api/generate_file.js'
+import api from './routes/api/api.js'
+import mongo_controller from './controllers/controller_typhinetDB.js'
+import express from 'express'
+import dotenv from 'dotenv'
+import emailRouter from './routes/api/email.js'
+import path, { dirname } from 'path'
+import cookieParser from 'cookie-parser';
+import { fileURLToPath } from 'url'
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+//dotenv config
+dotenv.config()
+
+//connect database
+connectDB()
+
 const app = express();
+
 const PORT = process.env.PORT || 8080;
-const api = require('./routes/api/api');
-const emailRouter = require('./routes/api/email');
-const generateFile = require('./routes/api/generate_file');
 
 app.use(function (req, res, next) {
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Token, Authorization");
-  next();
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Token, Authorization");
+    next();
 });
 
 // Define middleware here
@@ -19,35 +33,17 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 
-// Serve up static assets (usually on heroku)
-// if (process.env.NODE_ENV === "production") {
-//   app.use(express.static("client/build"));
-// }
-
-// function reactAppMiddleware(req, res, next) {
-//   if (req.xhr || req.headers.accept.indexOf('json') > -1) {
-//     // if it is an ajax/xhr request, you can even right your custom logic, maybe look for some header
-//     next();
-//   } else {
-//     // Return react app
-//     res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
-//   }
-// }
-
-// app.use(reactAppMiddleware)
-
+//Define routes API here
 app.use('/api/filters', api);
 app.use('/api/email', emailRouter);
 app.use('/api/file', generateFile);
-
+app.use('/api/mongo', mongo_controller);
 app.use(express.static(path.join(__dirname, './client', 'build')));
 
 // If no API routes are hit, send the React app
 app.use("/", function (req, res) {
-  res.sendFile(path.join(__dirname, "./client/build/index.html"));
+    res.sendFile(path.join(__dirname, "./client/build/index.html"));
 });
 
-// Start the API server
-app.listen(PORT, function () {
-  console.log(`🌎  ==> API Server now listening on PORT ${PORT}!`);
-});
+// Start the API server, listen method to run project on http://localhost:8080
+app.listen(PORT, console.log(`App is running in ${process.env.NODE_ENV} mode on port ${PORT}`))

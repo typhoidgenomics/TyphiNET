@@ -5,8 +5,28 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import Button from '@material-ui/core/Button';
 import axios from 'axios';
 import { API_ENDPOINT } from '../../constants';
+import { makeStyles, fade } from '@material-ui/core/styles';
+
+const useStyles = makeStyles((theme) => ({
+  textField: {
+    '& label.Mui-focused': {
+      color: "rgb(31, 187, 211)",
+    },
+    '& :not(.Mui-error).MuiInput-underline:after': {
+      borderBottomColor: "rgb(31, 187, 211)",
+    }
+  },
+  button: {
+    backgroundColor: "rgb(31, 187, 211)",
+    '&:hover': {
+      backgroundColor: fade("rgb(31, 187, 211)", .6)
+    }
+  }
+}));
 
 const ContactPage = () => {
+  const classes = useStyles();
+
   const [form, setForm] = React.useState({
     company: '',
     email: '',
@@ -27,6 +47,8 @@ const ContactPage = () => {
     country: '',
   })
   const [loading, setLoading] = React.useState(false)
+
+  const isDesktop = window.innerWidth > 767
 
   const submit = () => {
     let error = false;
@@ -89,6 +111,7 @@ const ContactPage = () => {
     <div className="contact">
       <div className="row">
         <TextField
+          className={classes.textField}
           value={form.company}
           onChange={(evt) => {
             setForm({ ...form, company: evt.target.value })
@@ -103,8 +126,11 @@ const ContactPage = () => {
             style: { fontFamily: "Montserrat", fontWeight: 400 }
           }}
         />
-        <div style={{ width: 16 }} />
+        {isDesktop && (
+          <div style={{ width: 16 }} />
+        )}
         <TextField
+          className={classes.textField}
           value={form.email}
           onChange={(evt) => {
             setForm({ ...form, email: evt.target.value })
@@ -122,6 +148,7 @@ const ContactPage = () => {
       </div>
       <div className="row">
         <TextField
+          className={classes.textField}
           value={form.firstName}
           onChange={(evt) => {
             setForm({ ...form, firstName: evt.target.value })
@@ -136,8 +163,11 @@ const ContactPage = () => {
             style: { fontFamily: "Montserrat", fontWeight: 400 }
           }}
         />
-        <div style={{ width: 16 }} />
+        {isDesktop && (
+          <div style={{ width: 16 }} />
+        )}
         <TextField
+          className={classes.textField}
           value={form.lastName}
           onChange={(evt) => {
             setForm({ ...form, lastName: evt.target.value })
@@ -153,18 +183,21 @@ const ContactPage = () => {
           }}
         />
       </div>
-      <TextField
-        value={form.address}
-        onChange={(evt) => {
-          setForm({ ...form, address: evt.target.value })
-        }}
-        fullWidth
-        style={{ marginBottom: 16 }}
-        label={<span style={{ fontFamily: "Montserrat", fontWeight: 400 }}>Address</span>}
-        InputProps={{ style: { fontFamily: "Montserrat", fontWeight: 600 } }}
-      />
       <div className="row">
         <TextField
+          className={classes.textField}
+          value={form.address}
+          onChange={(evt) => {
+            setForm({ ...form, address: evt.target.value })
+          }}
+          fullWidth
+          label={<span style={{ fontFamily: "Montserrat", fontWeight: 400 }}>Address</span>}
+          InputProps={{ style: { fontFamily: "Montserrat", fontWeight: 600 } }}
+        />
+      </div>
+      <div className="row">
+        <TextField
+          className={classes.textField}
           value={form.city}
           onChange={(evt) => {
             setForm({ ...form, city: evt.target.value })
@@ -179,8 +212,11 @@ const ContactPage = () => {
             style: { fontFamily: "Montserrat", fontWeight: 400 }
           }}
         />
-        <div style={{ width: 18 }} />
+        {isDesktop && (
+          <div style={{ width: 16 }} />
+        )}
         <TextField
+          className={classes.textField}
           value={form.country}
           onChange={(evt) => {
             setForm({ ...form, country: evt.target.value })
@@ -195,8 +231,11 @@ const ContactPage = () => {
             style: { fontFamily: "Montserrat", fontWeight: 400 }
           }}
         />
-        <div style={{ width: 18 }} />
+        {isDesktop && (
+          <div style={{ width: 16 }} />
+        )}
         <TextField
+          className={classes.textField}
           value={form.postalCode}
           onChange={(evt) => {
             setForm({ ...form, postalCode: evt.target.value })
@@ -206,19 +245,21 @@ const ContactPage = () => {
           InputProps={{ style: { fontFamily: "Montserrat", fontWeight: 600 } }}
         />
       </div>
-      <TextField
-        value={form.additionalInformation}
-        onChange={(evt) => {
-          setForm({ ...form, additionalInformation: evt.target.value })
-        }}
-        fullWidth
-        multiline
-        style={{ marginBottom: 16 }}
-        label={<span style={{ fontFamily: "Montserrat", fontWeight: 400 }}>Additional information</span>}
-        InputProps={{ style: { fontFamily: "Montserrat", fontWeight: 600 } }}
-      />
+      <div className="row">
+        <TextField
+          className={classes.textField}
+          value={form.additionalInformation}
+          onChange={(evt) => {
+            setForm({ ...form, additionalInformation: evt.target.value })
+          }}
+          fullWidth
+          multiline
+          label={<span style={{ fontFamily: "Montserrat", fontWeight: 400 }}>Additional information</span>}
+          InputProps={{ style: { fontFamily: "Montserrat", fontWeight: 600 } }}
+        />
+      </div>
       {!loading ? (
-        <Button variant="contained" color="primary" style={{ fontFamily: "Montserrat" }} onClick={submit}>
+        <Button variant="contained" color="primary" className={classes.button} style={{ fontFamily: "Montserrat", marginTop: 16 }} onClick={submit}>
           Submit
         </Button>
       ) : (

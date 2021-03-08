@@ -1,25 +1,26 @@
-var express = require('express');
-var router = express.Router();
-const nodemailer = require("nodemailer");
+import express from 'express';
+import nodemailer from "nodemailer";
+
+const router = express.Router();
 /* GET home page. */
+//Rota que recebe um post que será o corpo de um e-mail a ser enviado.
 router.post('/', async function (req, res, next) {
 
-  email = req.body;
-
-
+  let email = req.body;
+  
   let transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 587,
     secure: false, // true for 465, false for other ports
     auth: {
-      user: "typhinet@gmail.com", // generated ethereal user
-      pass: "provet@20", // generated ethereal password
+      user: process.env.EMAIL_USER, // generated ethereal user
+      pass: process.env.EMAIL_PASSWD, // generated ethereal password
     },
   });
 
 
   let info = await transporter.sendMail({
-    from: `"${email.firstName} ${email.lastName}" <typhinet@gmail.com>`, // sender address
+    from: `"${email.firstName} ${email.lastName}" <typhinet@gmail.com>`, // sender address 
     to: "lcerdeira@gmail.com", // list of receivers
     subject: `Company ${email.company} intertest`, // Subject line
     text: "", // plain text body
@@ -44,4 +45,4 @@ router.post('/', async function (req, res, next) {
   res.send('send sucessed!');
 });
 
-module.exports = router;
+export default router
