@@ -1,7 +1,6 @@
 import CombinedModel from '../models/combined.js';
 import asyncHandler from 'express-async-handler';
 import * as Tools from '../services/services.js';
-import mongoose from 'mongoose'
 import express from 'express';
 import csv from 'csv-parser';
 import fs from 'fs';
@@ -68,29 +67,4 @@ router.get('/upload', (req, res) => {
             res.json({ "Status": "Sent!" })
         })
 });
-
-
-/*
-
-//Inicia a função para que comece a observar o banco para qualquer mudança
-mongoose.connection.watch([{"$match": { 
-    "operationType": 'replace'                           
-}
-}])
-.on('change', change => {
-    //Ao detectar que algo mudou, uso o find no schema CombineModel para receber todos os dados que estão no mongo
-    //E ao receber, faço uma filtragem para retirar as chaves _id e __v para então salvar os dados no arquivo clean_db.csv
-    CombinedModel.find().then(async (comb) => {
-        let send_comb = []
-        for (let data of comb) {
-            let aux_data = JSON.parse(JSON.stringify(data));
-            delete aux_data["_id"]
-            delete aux_data["__v"]
-            send_comb.push(aux_data)
-        }
-        await Tools.CreateFile(send_comb, "clean_db.csv")
-        console.log("clean_db atualizado!")
-    });
-});
-*/
 export default router;

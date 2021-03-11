@@ -99,6 +99,16 @@
   margin-bottom: 16px;
 }
 
+.map-chart-button {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  margin-right: 16px;
+  margin-bottom: 16px;
+}
+
 .map-upper-right-buttons {
   display: flex;
   flex-direction: column;
@@ -328,6 +338,7 @@
   justify-content: center;
   color: white;
   font-size: 14px;
+  height: 40px;
 }
 
 .download-sheet-button:hover {

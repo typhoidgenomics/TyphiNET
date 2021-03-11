@@ -15,7 +15,7 @@ import Zoom from '@material-ui/core/Zoom';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import ReactTooltip from "react-tooltip";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ErrorBar, Brush, LineChart, Line, Legend } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Brush, LineChart, Line, Legend } from 'recharts';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faMinus, faCrosshairs, faCamera, faTable, faTimes } from '@fortawesome/free-solid-svg-icons'
@@ -30,16 +30,9 @@ import { faGithub, faTwitter } from "@fortawesome/free-brands-svg-icons"
 import Rodal from 'rodal';
 import 'rodal/lib/rodal.css';
 import ContactPage from '../contact';
+import domtoimage from 'dom-to-image';
 
 const useStyles = makeStyles((theme) => ({
-  formControl: {
-    marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(1),
-    minWidth: 120,
-  },
-  selectEmpty: {
-    marginTop: theme.spacing(2),
-  },
   formControlSelect: {
     marginTop: theme.spacing(1),
     marginBottom: theme.spacing(1),
@@ -50,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
     '& :not(.Mui-error).MuiInput-underline:after': {
       borderBottomColor: "rgb(31, 187, 211)",
     },
-  },
+  }
 }));
 
 const CustomSlider = withStyles({
@@ -108,11 +101,18 @@ const DashboardPage = () => {
   const [worldMapXDRData, setWorldMapXDRData] = useState([]);
   const [worldMapDCSData, setWorldMapDCSData] = useState([]);
   const [worldMapAZITHData, setWorldMapAZITHData] = useState([]);
+  const [worldMapCIPIData, setWorldMapCIPIData] = useState([]);
+  const [worldMapCIPRData, setWorldMapCIPRData] = useState([]);
   const [worldMapDrugsData, setWorldMapDrugsData] = useState([]);
   const [worldMapAmrProfilesData, setWorldMapAmrProfilesData] = useState([]);
   const [worldMapPlasmidIncompatibilityTypeData, setWorldMapPlasmidIncompatibilityTypeData] = useState([]);
 
   const [captureControlMapInProgress, setCaptureControlMapInProgress] = useState(false)
+  const [captureControlChartRFWGInProgress, setCaptureControlChartRFWGInProgress] = useState(false)
+  const [captureControlChartDRTInProgress, setCaptureControlChartDRTInProgress] = useState(false)
+  const [captureControlChartGDInProgress, setCaptureControlChartGDInProgress] = useState(false)
+  const [captureControlChartRFWAGInProgress, setCaptureControlChartRFWAGInProgress] = useState(false)
+
   const [tooltipContent, setTooltipContent] = useState(null);
 
   const [timePeriodRange, setTimePeriodRange] = React.useState([1905, 2019]);
@@ -141,8 +141,24 @@ const DashboardPage = () => {
 
   const isDesktop = window.innerWidth > 767
 
-  const genotypes = ['0', '0.0.1', '0.0.2', '0.0.3', '4.3.1.1.P1', '0.1.0', '0.1', '0.1.1', '0.1.2', '0.1.3', '1.1', '1.1.1', '1.1.2', '1.1.3', '1.1.4', '1.2', '1.2.1', '2', '2.0.0', '2.0.1', '2.0.2', '2.1.0', '2.1', '2.1.1', '2.1.2', '2.1.3', '2.1.4', '2.1.5', '2.1.6', '2.1.7', '2.1.8', '2.1.9', '2.2', '2.2.0', '2.2.1', '2.2.2', '2.2.3', '2.2.4', '2.3', '2.3.1', '2.3.2', '2.3.3', '2.3.4', '2.3.5', '2.4.0', '2.4', '2.4.1', '2.5.0', '2.5', '2.5.1', '2.5.2', '3.0.0', '3', '3.0.1', '3.0.2', '3.1.0', '3.1', '3.1.1', '3.1.2', '3.2.1', '3.2', '3.2.2', '3.3.0', '3.3', '3.3.1', '3.3.2', '3.3.2.Bd1', '3.3.2.Bd2', '3.4', '3.5', '3.5.1', '3.5.2', '3.5.3', '3.5.4', '4', '4.1.0', '4.1', '4.1.1', '4.2', '4.2.1', '4.2.2', '4.2.3', '4.3', '4.3.0', '4.3.1', '4.3.1.1', '4.3.1.2', '4.3.1.3'].sort((a, b) => a.localeCompare(b));
-
+  const genotypes = [
+    '0.0.1', '0.0.2', '0.0.3', '0.1',
+    '0.1.1', '0.1.2', '0.1.3', '1.1.1',
+    '1.1.2', '1.1.3', '1.2', '1.2.1',
+    '2', '2.0.1', '2.0.2', '2.1',
+    '2.1.1', '2.1.3', '2.1.5', '2.1.6',
+    '2.1.7', '2.1.8', '2.1.9', '2.2',
+    '2.2.1', '2.2.2', '2.2.3', '2.2.4',
+    '2.3.1', '2.3.2', '2.3.3', '2.3.4',
+    '2.3.5', '2.4', '2.4.1', '2.5',
+    '2.5.1', '3', '3.0.1', '3.0.2',
+    '3.1', '3.1.1', '3.1.2', '3.2',
+    '3.2.1', '3.2.2', '3.3', '3.3.1',
+    '3.3.2', '3.3.2.Bd1', '3.3.2.Bd2', '3.4',
+    '3.5', '3.5.1', '3.5.2', '3.5.3',
+    '3.5.4', '4.1', '4.2', '4.2.1',
+    '4.2.2', '4.2.3', '4.3.1', '4.3.1.1',
+    '4.3.1.1.P1', '4.3.1.2', '4.3.1.3'].sort((a, b) => a.localeCompare(b));
   useEffect(() => {
     axios.get(`${API_ENDPOINT}filters/getYearLimits`)
       .then((res) => {
@@ -194,10 +210,10 @@ const DashboardPage = () => {
         parseDataForCountryMap(response.data)
       }
 
-      let drugTrendsChartResponse = await axios.get(`${API_ENDPOINT}filters/drugTrendsChart/${actualCountry === "All" ? "all" : actualCountry}/${actualTimePeriodRange[0]}/${actualTimePeriodRange[1]}`)
+      let drugTrendsChartResponse = await axios.get(`${API_ENDPOINT}filters/drugTrendsChart/${actualCountry === "All" ? "all" : actualCountry}/${actualTimePeriodRange[0]}/${actualTimePeriodRange[1]}/${dataset}`)
       parseDataForDrugTrendsChart(drugTrendsChartResponse.data)
 
-      let classChartResponse = await axios.get(`${API_ENDPOINT}filters/amrClassChart/${actualCountry === "All" ? "all" : actualCountry}/${actualTimePeriodRange[0]}/${actualTimePeriodRange[1]}/${amrClassFilter}`)
+      let classChartResponse = await axios.get(`${API_ENDPOINT}filters/amrClassChart/${actualCountry === "All" ? "all" : actualCountry}/${actualTimePeriodRange[0]}/${actualTimePeriodRange[1]}/${amrClassFilter}/${dataset}`)
       parseDataForAmrClassChart(classChartResponse.data)
 
     }, 500);
@@ -305,7 +321,7 @@ const DashboardPage = () => {
   const parseDataForCountryMap = (data) => {
     let finalCountries = [];
 
-    let samplesData = [], genotypesData = [], h58Data = [], mdrData = [], xdrData = [], drugsData = [], amrData = [], incTypesData = [], dcsData = [], azithData = [];
+    let samplesData = [], genotypesData = [], h58Data = [], mdrData = [], xdrData = [], drugsData = [], amrData = [], incTypesData = [], dcsData = [], azithData = [], cipIData = [], cipRData = [];
 
     const countData = (array, elementToCount, parentName, childName) => {
       let temp = []
@@ -335,7 +351,6 @@ const DashboardPage = () => {
             parent.count = parent.count + 1
             country[parentName][index] = parent
           }
-
           country.total = country.total + 1
 
           temp[countryIndex] = country;
@@ -521,6 +536,50 @@ const DashboardPage = () => {
     if (!arraysEqual(azithData, worldMapAZITHData))
       setWorldMapAZITHData(azithData)
 
+    cipIData = countData(data, "CipI", "CipIs", "type")
+    cipIData.forEach(country => {
+      country.CipIs.forEach((cipIs, index) => {
+        if (cipIs.type === "CipI") {
+          let percentage = ((cipIs.count / country.total) * 100)
+          if (Math.round(percentage) !== percentage)
+            percentage = percentage.toFixed(2)
+          percentage = parseFloat(percentage);
+          country.percentage = percentage;
+          country.count = cipIs.count;
+        }
+        if (country.percentage === undefined) {
+          country.percentage = parseFloat(0)
+        }
+        if (country.count === undefined) {
+          country.count = 0
+        }
+      })
+    })
+    if (!arraysEqual(cipIData, worldMapCIPIData))
+      setWorldMapCIPIData(cipIData)
+
+    cipRData = countData(data, "CipR", "CipRs", "type")
+    cipRData.forEach(country => {
+      country.CipRs.forEach((cipRs, index) => {
+        if (cipRs.type === "CipR") {
+          let percentage = ((cipRs.count / country.total) * 100)
+          if (Math.round(percentage) !== percentage)
+            percentage = percentage.toFixed(2)
+          percentage = parseFloat(percentage);
+          country.percentage = percentage;
+          country.count = cipRs.count;
+        }
+        if (country.percentage === undefined) {
+          country.percentage = parseFloat(0)
+        }
+        if (country.count === undefined) {
+          country.count = 0
+        }
+      })
+    })
+    if (!arraysEqual(cipRData, worldMapCIPRData))
+      setWorldMapCIPRData(cipRData)
+
     let dataForCountingDrugs = []
     data.forEach(entry => {
       entry.DRUGS.forEach(drug => {
@@ -548,7 +607,8 @@ const DashboardPage = () => {
 
   const parseDataForAmrClassChart = (data) => {
     let finalChartData = []
-
+    let maxSum = 0
+    let totalSum = {}
     data.forEach((entry) => {
       if (!finalChartData.some(e => e.genotype === entry.GENOTYPE)) {
         finalChartData.push({
@@ -566,10 +626,17 @@ const DashboardPage = () => {
         }
         finalChartData[genotypeIndex] = genotype;
       }
+      if (entry.GENOTYPE !== "") {
+        if (!(entry.GENE in totalSum)) {
+          totalSum[entry.GENE] = 1
+        } else {
+          totalSum[entry.GENE] = totalSum[entry.GENE] + 1
+        }
+      }
     })
+    delete totalSum[""]
 
     finalChartData.sort((a, b) => a.genotype.localeCompare(b.genotype));
-
     finalChartData.forEach((data) => {
       let sum = 0;
       Object.entries(data).forEach((entry) => {
@@ -586,20 +653,55 @@ const DashboardPage = () => {
           data[`error-${entry[0]}`] = [lowerValue, errorMargin]
 
           sum += entry[1];
+          if (entry[1] > maxSum) {
+            maxSum = entry[1]
+          }
         }
       })
       data.total = sum;
     })
-
-    finalChartData = finalChartData.filter(g => g.genotype !== undefined)
-
-    if (!arraysEqual(amrClassChartData, finalChartData))
-      setAmrClassChartData(finalChartData)
+    finalChartData = finalChartData.filter(g => g.genotype !== undefined && g.genotype !== "0")
+    let top10 = []
+    finalChartData.forEach(element => {
+      if (top10.length < 10) {
+        top10.push(element)
+      } else {
+        top10.sort(function (a, b) {
+          if (a.total === b.total && a.genotype > b.genotype)
+            return -1
+          return a.total > b.total ? -1 : 1
+        })
+        if (element.total === top10[9].total) {
+          if (element.genotype > top10[9].genotype) {
+            top10[9] = element
+          }
+        }
+        if (element.total > top10[9].total) {
+          top10[9] = element
+        }
+      }
+    })
+    top10.sort(function (a, b) {
+      if (a.total === b.total && a.genotype > b.genotype)
+        return -1
+      return a.total > b.total ? -1 : 1
+    })
+    top10.push({ maxSum: Math.ceil(maxSum / 50) * 50, totalSum: totalSum })
+    if (amrClassFilter !== "Co-trimoxazole") {
+      if (!arraysEqual(amrClassChartData, top10))
+        setAmrClassChartData(top10)
+    } else {
+      if (!arraysEqual(amrClassChartData, top10))
+        setAmrClassChartData(top10)
+    }
   }
 
   const parseDataForDrugTrendsChart = (data) => {
     let finalDrugTrendsChartData = []
     let finalDrugsAndGenotypesChartData = []
+    let totalSum = {}
+    let allDrugs = data[data.length - 1]
+    data = data.slice(0, data.length - 1)
 
     data.forEach((entry) => {
       if (!finalDrugTrendsChartData.some(e => e.name === entry.YEAR)) {
@@ -635,8 +737,13 @@ const DashboardPage = () => {
         }
         finalDrugsAndGenotypesChartData[genotypeIndex] = genotype;
       }
-    })
 
+      if (!(entry.DRUG in totalSum)) {
+        totalSum[entry.DRUG] = 1
+      } else {
+        totalSum[entry.DRUG] = totalSum[entry.DRUG] + 1
+      }
+    })
     finalDrugTrendsChartData.forEach((data) => {
       let sum = 0;
       Object.entries(data).forEach((entry) => {
@@ -656,13 +763,18 @@ const DashboardPage = () => {
     })
 
     finalDrugTrendsChartData.sort((a, b) => a.name.localeCompare(b.name))
+    finalDrugTrendsChartData.push({ totalSum: allDrugs })
+
     finalDrugsAndGenotypesChartData.sort((a, b) => b.total - a.total)
+    finalDrugsAndGenotypesChartData = finalDrugsAndGenotypesChartData.slice(0, finalDrugsAndGenotypesChartData.length >= 5 ? 5 : finalDrugsAndGenotypesChartData.length)
+    finalDrugsAndGenotypesChartData.push({ totalSum: totalSum })
 
     if (!arraysEqual(finalDrugTrendsChartData, drugTrendsChartData))
       setDrugTrendsChartData(finalDrugTrendsChartData)
 
-    if (!arraysEqual(finalDrugsAndGenotypesChartData, drugsAndGenotypesChartData))
-      setDrugsAndGenotypesChartData(finalDrugsAndGenotypesChartData.slice(0, finalDrugsAndGenotypesChartData.length >= 5 ? 5 : finalDrugsAndGenotypesChartData.length))
+    if (!arraysEqual(finalDrugsAndGenotypesChartData, drugsAndGenotypesChartData)) {
+      setDrugsAndGenotypesChartData(finalDrugsAndGenotypesChartData)
+    }
   }
 
   function arraysEqual(a1, a2) {
@@ -677,7 +789,7 @@ const DashboardPage = () => {
     .domain([1, 50, 100])
     .range(["#ffebee", "#f44336", "#b71c1c"]);
 
-  const tooltip = (positionY, width1, width2, sort, wrapperS, stroke) => {
+  const tooltip = (positionY, width1, width2, sort, wrapperS, stroke, chart = -1) => {
     return (
       <Tooltip
         position={{ y: positionY }}
@@ -696,10 +808,15 @@ const DashboardPage = () => {
                   <div style={{ display: "flex", flexWrap: sort ? "" : "wrap", justifyContent: sort ? "" : "space-between", width: sort ? "" : width1, flexDirection: sort ? "column" : "" }}>
                     {payload.reverse().map((item, index) => {
                       let percentage = ((item.value / item.payload.total) * 100)
+                      if (chart === 0) {
+                        percentage = ((item.value / drugsAndGenotypesChartData[drugsAndGenotypesChartData.length - 1].totalSum[item.name]) * 100)
+                      } else if (chart === 1) {
+                        percentage = ((item.value / drugTrendsChartData[drugTrendsChartData.length - 1].totalSum[item.payload.name]) * 100)
+                      }
                       if (Math.round(percentage) !== percentage)
                         percentage = percentage.toFixed(2)
                       return (
-                        <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "center", width: width2, marginBottom: 8 }}>
+                        <div key={index + item} style={{ display: "flex", flexDirection: "row", alignItems: "center", width: width2, marginBottom: 8 }}>
                           <div style={{ backgroundColor: stroke ? item.stroke : item.fill, height: 18, width: 18, border: "solid rgb(0,0,0,0.75) 0.5px", flex: "none" }} />
                           <div style={{ display: "flex", flexDirection: "column", marginLeft: 8 }}>
                             <span style={{ fontFamily: "Montserrat", color: "rgba(0,0,0,0.75)", fontWeight: 500, fontSize: 14 }}>{item.name}</span>
@@ -741,7 +858,7 @@ const DashboardPage = () => {
             }}
           >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
+            <XAxis dataKey="name" interval="preserveStartEnd" />
             <YAxis domain={[0, maxH]} />
             {tooltip(300, 325, "33.33%", false, { zIndex: 100 }, false)}
             {genotypes.map((item) => <Bar dataKey={item} stackId="a" fill={getColorForGenotype(item)} />)}
@@ -771,340 +888,127 @@ const DashboardPage = () => {
     }
   }
 
+  const armClassFilterComponent = (info) => {
+    let maxSum = 0
+    if (amrClassChartData[amrClassChartData.length - 1] !== undefined) {
+      maxSum = amrClassChartData[amrClassChartData.length - 1].maxSum
+    }
+
+    const data = amrClassChartData.slice(0, amrClassChartData.length - 1)
+
+    return (
+      <ResponsiveContainer width="90%">
+        <BarChart
+          width={500}
+          height={800}
+          data={data}
+          margin={{
+            top: 20, left: info.left, bottom: 5, right: 0
+          }}
+          layout="vertical"
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis domain={[0, maxSum]} type={"number"} />
+          <YAxis dataKey="genotype" type={"category"} interval={0} tick={{ fontSize: info.fontsize }} />
+          <Brush dataKey="genotype" height={20} stroke={"rgb(31, 187, 211)"} />
+          {amrClassChartTooltip()}
+          {info.bars.map((item) => {
+            return (
+              <Bar dataKey={item[0]} fill={item[1]} barSize={20} />
+            )
+          })}
+        </BarChart>
+      </ResponsiveContainer>
+    )
+  }
+
   const plotAmrClassChart = () => {
     switch (amrClassFilter) {
       case 'Azithromycin':
-        return (
-          <ResponsiveContainer width="90%">
-            <BarChart
-              width={500}
-              height={300}
-              data={amrClassChartData}
-              margin={{
-                top: 20, left: -5, bottom: 5, right: 0
-              }}
-              layout="vertical"
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis domain={[0, 'dataMax + 100']} type={"number"} />
-              <YAxis dataKey="genotype" type={"category"} interval={0} tick={{ fontSize: 14 }} />
-              <Brush dataKey="genotype" height={20} stroke={"rgb(31, 187, 211)"} />
-              {amrClassChartTooltip()}
-              <Bar dataKey={'acrB_R717Q'} fill={"#addd8e"}>
-                <ErrorBar dataKey={"error-acrB_R717Q"} strokeWidth={1} stroke={"rgba(0,0,0,0.5)"} />
-              </Bar>
-              <Bar dataKey={'ereA'} fill={"#9e9ac8"}>
-                <ErrorBar dataKey={"error-ereA"} strokeWidth={1} stroke={"rgba(0,0,0,0.5)"} />
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        )
+        return (armClassFilterComponent({
+          left: -5, fontsize: 14, strokeWidth: 1, width: null, bars: [
+            ['acrB_R717Q', "#addd8e", "error-acrB_R717Q"],
+            ['ereA', "#9e9ac8", "error-ereA"]]
+        }))
       case 'Fluoroquinolones (DCS)':
-        return (
-          <ResponsiveContainer width="90%">
-            <BarChart
-              width={500}
-              height={300}
-              data={amrClassChartData}
-              margin={{
-                top: 20, left: 10, bottom: 5, right: 0
-              }}
-              layout="vertical"
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis domain={[0, 'dataMax + 100']} type={"number"} />
-              <YAxis dataKey="genotype" type={"category"} interval={0} tick={{ fontSize: 14 }} />
-              <Brush dataKey="genotype" height={20} stroke={"rgb(31, 187, 211)"} />
-              {amrClassChartTooltip()}
-              <Bar dataKey={'3_QRDR'} fill={"rgb(198,127,251)"}>
-                <ErrorBar dataKey={"error-3_QRDR"} strokeWidth={0.5} stroke={"rgba(0,0,0,0.5)"} width={3} />
-              </Bar>
-              <Bar dataKey={'2_QRDR'} fill={"rgb(70,191,195)"}>
-                <ErrorBar dataKey={"error-2_QRDR"} strokeWidth={0.5} stroke={"rgba(0,0,0,0.5)"} width={3} />
-              </Bar>
-              <Bar dataKey={'1_QRDR + qnrS'} fill={"rgb(125,172,32)"} >
-                <ErrorBar dataKey={"error-1_QRDR + qnrS"} strokeWidth={0.5} stroke={"rgba(0,0,0,0.5)"} width={3} />
-              </Bar>
-              <Bar dataKey={'1_QRDR'} fill={"rgb(244,119,112)"} >
-                <ErrorBar dataKey={"error-1_QRDR"} strokeWidth={0.5} stroke={"rgba(0,0,0,0.5)"} width={3} />
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        )
+        return (armClassFilterComponent({
+          left: 10, fontsize: 14, strokeWidth: 0.5, width: 3, bars: [
+            ['3_QRDR', "rgb(198,127,251)", "error-3_QRDR"],
+            ['2_QRDR', "rgb(70,191,195)", "error-2_QRDR"],
+            ['1_QRDR + qnrS', "rgb(125,172,32)", "error-1_QRDR + qnrS"],
+            ['1_QRDR', "rgb(244,119,112)", "error-1_QRDR"]]
+        }))
       case 'Chloramphenicol':
-        return (
-          <ResponsiveContainer width="90%">
-            <BarChart
-              width={500}
-              height={300}
-              data={amrClassChartData}
-              margin={{
-                top: 20, left: 3, bottom: 5, right: 0
-              }}
-              layout="vertical"
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis domain={[0, 'dataMax + 100']} type={"number"} />
-              <YAxis dataKey="genotype" type={"category"} interval={0} tick={{ fontSize: 14 }} />
-              <Brush dataKey="genotype" height={20} stroke={"rgb(31, 187, 211)"} />
-              {amrClassChartTooltip()}
-              <Bar dataKey={'cmlA'} fill={"#addd8e"}>
-                <ErrorBar dataKey={"error-cmlA"} strokeWidth={1} stroke={"rgba(0,0,0,0.5)"} />
-              </Bar>
-              <Bar dataKey={'catA1'} fill={"#9e9ac8"}>
-                <ErrorBar dataKey={"error-catA1"} strokeWidth={1} stroke={"rgba(0,0,0,0.5)"} />
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        )
+        return (armClassFilterComponent({
+          left: 3, fontsize: 14, strokeWidth: 1, width: null, bars: [
+            ['cmlA', "#addd8e", "error-cmlA"],
+            ['catA1', "#9e9ac8", "error-catA1"]]
+        }))
       case 'Ampicillin':
-        return (
-          <ResponsiveContainer width="90%">
-            <BarChart
-              width={500}
-              height={300}
-              data={amrClassChartData}
-              margin={{
-                top: 20, left: 3, bottom: 5, right: 0
-              }}
-              layout="vertical"
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis domain={[0, 'dataMax + 100']} type={"number"} />
-              <YAxis dataKey="genotype" type={"category"} interval={0} tick={{ fontSize: 14 }} />
-              <Brush dataKey="genotype" height={20} stroke={"rgb(31, 187, 211)"} />
-              {amrClassChartTooltip()}
-              <Bar dataKey={'blaTEM-1D'} fill={"#addd8e"}>
-                <ErrorBar dataKey={"error-blaTEM-1D"} strokeWidth={1} stroke={"rgba(0,0,0,0.5)"} />
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        )
+        return (armClassFilterComponent({
+          left: 3, fontsize: 14, strokeWidth: 1, width: null, bars: [
+            ['blaTEM-1D', "#addd8e", "error-blaTEM-1D"]]
+        }))
       case 'Sulphonamides':
-        return (
-          <ResponsiveContainer width="90%">
-            <BarChart
-              width={500}
-              height={300}
-              data={amrClassChartData}
-              margin={{
-                top: 20, left: 3, bottom: 5, right: 0
-              }}
-              layout="vertical"
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis domain={[0, 'dataMax + 100']} type={"number"} />
-              <YAxis dataKey="genotype" type={"category"} interval={0} tick={{ fontSize: 14 }} />
-              <Brush dataKey="genotype" height={20} stroke={"rgb(31, 187, 211)"} />
-              {amrClassChartTooltip()}
-              <Bar dataKey={'sul2'} fill={"#ffeda0"}>
-                <ErrorBar dataKey={"error-sul2"} strokeWidth={1} stroke={"rgba(0,0,0,0.5)"} />
-              </Bar>
-              <Bar dataKey={'sul1'} fill={"#fd8d3c"}>
-                <ErrorBar dataKey={"error-sul1"} strokeWidth={1} stroke={"rgba(0,0,0,0.5)"} />
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        )
+        return (armClassFilterComponent({
+          left: 3, fontsize: 14, strokeWidth: 1, width: null, bars: [
+            ['sul2', "#ffeda0", "error-sul2"],
+            ['sul1', "#fd8d3c", "error-sul1"]]
+        }))
       case 'Trimethoprim':
-        return (
-          <ResponsiveContainer width="90%">
-            <BarChart
-              width={500}
-              height={300}
-              data={amrClassChartData}
-              margin={{
-                top: 20, left: 3, bottom: 5, right: 0
-              }}
-              layout="vertical"
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis domain={[0, 'dataMax + 100']} type={"number"} />
-              <YAxis dataKey="genotype" type={"category"} interval={0} tick={{ fontSize: 14 }} />
-              <Brush dataKey="genotype" height={20} stroke={"rgb(31, 187, 211)"} />
-              {amrClassChartTooltip()}
-              <Bar dataKey={'dfrA7'} fill={"#addd8e"} >
-                <ErrorBar dataKey={"error-dfrA7"} strokeWidth={0.5} stroke={"rgba(0,0,0,0.5)"} width={3} />
-              </Bar>
-              <Bar dataKey={'dfrA5'} fill={"#9e9ac8"} >
-                <ErrorBar dataKey={"error-dfrA5"} strokeWidth={0.5} stroke={"rgba(0,0,0,0.5)"} width={3} />
-              </Bar>
-              <Bar dataKey={'dfrA18'} fill={"#6baed6"} >
-                <ErrorBar dataKey={"error-dfrA18"} strokeWidth={0.5} stroke={"rgba(0,0,0,0.5)"} width={3} />
-              </Bar>
-              <Bar dataKey={'dfrA17'} fill={"#7a0177"} >
-                <ErrorBar dataKey={"error-dfrA17"} strokeWidth={0.5} stroke={"rgba(0,0,0,0.5)"} width={3} />
-              </Bar>
-              <Bar dataKey={'dfrA15'} fill={"#54278f"} >
-                <ErrorBar dataKey={"error-dfrA15"} strokeWidth={0.5} stroke={"rgba(0,0,0,0.5)"} width={3} />
-              </Bar>
-              <Bar dataKey={'dfrA14'} fill={"#a50f15"} >
-                <ErrorBar dataKey={"error-dfrA14"} strokeWidth={0.5} stroke={"rgba(0,0,0,0.5)"} width={3} />
-              </Bar>
-              <Bar dataKey={'dfrA1'} fill={"red"} >
-                <ErrorBar dataKey={"error-dfrA1"} strokeWidth={0.5} stroke={"rgba(0,0,0,0.5)"} width={3} />
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        )
+        return (armClassFilterComponent({
+          left: 3, fontsize: 14, strokeWidth: 0.5, width: 3, bars: [
+            ['dfrA7', "#addd8e", "error-dfrA7"],
+            ['dfrA5', "#9e9ac8", "error-dfrA5"],
+            ['dfrA18', "#6baed6", "error-dfrA18"],
+            ['dfrA17', "#7a0177", "error-dfrA17"],
+            ['dfrA15', "#54278f", "error-dfrA15"],
+            ['dfrA14', "#a50f15", "error-dfrA14"],
+            ['dfrA1', "red", "error-dfrA1"]]
+        }))
       case 'Co-trimoxazole':
-        return (
-          <ResponsiveContainer width="90%">
-            <BarChart
-              width={500}
-              height={300}
-              data={amrClassChartData}
-              margin={{
-                top: 20, left: 3, bottom: 5, right: 0
-              }}
-              layout="vertical"
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis domain={[0, 'dataMax + 100']} type={"number"} />
-              <YAxis dataKey="genotype" type={"category"} interval={0} tick={{ fontSize: 14 }} />
-              <Brush dataKey="genotype" height={20} stroke={"rgb(31, 187, 211)"} />
-              {amrClassChartTooltip()}
-              <Bar dataKey={'sul2'} fill={"#ffeda0"}>
-                <ErrorBar dataKey={"error-sul2"} strokeWidth={0.5} stroke={"rgba(0,0,0,0.5)"} width={3} />
-              </Bar>
-              <Bar dataKey={'sul1'} fill={"#fd8d3c"}>
-                <ErrorBar dataKey={"error-sul1"} strokeWidth={0.5} stroke={"rgba(0,0,0,0.5)"} width={3} />
-              </Bar>
-              <Bar dataKey={'dfrA7'} fill={"#addd8e"} >
-                <ErrorBar dataKey={"error-dfrA7"} strokeWidth={0.5} stroke={"rgba(0,0,0,0.5)"} width={3} />
-              </Bar>
-              <Bar dataKey={'dfrA5'} fill={"#9e9ac8"} >
-                <ErrorBar dataKey={"error-dfrA5"} strokeWidth={0.5} stroke={"rgba(0,0,0,0.5)"} width={3} />
-              </Bar>
-              <Bar dataKey={'dfrA18'} fill={"#6baed6"} >
-                <ErrorBar dataKey={"error-dfrA18"} strokeWidth={0.5} stroke={"rgba(0,0,0,0.5)"} width={3} />
-              </Bar>
-              <Bar dataKey={'dfrA17'} fill={"#7a0177"} >
-                <ErrorBar dataKey={"error-dfrA17"} strokeWidth={0.5} stroke={"rgba(0,0,0,0.5)"} width={3} />
-              </Bar>
-              <Bar dataKey={'dfrA15'} fill={"#54278f"} >
-                <ErrorBar dataKey={"error-dfrA15"} strokeWidth={0.5} stroke={"rgba(0,0,0,0.5)"} width={3} />
-              </Bar>
-              <Bar dataKey={'dfrA14'} fill={"#a50f15"} >
-                <ErrorBar dataKey={"error-dfrA14"} strokeWidth={0.5} stroke={"rgba(0,0,0,0.5)"} width={3} />
-              </Bar>
-              <Bar dataKey={'dfrA1'} fill={"red"} >
-                <ErrorBar dataKey={"error-dfrA1"} strokeWidth={0.5} stroke={"rgba(0,0,0,0.5)"} width={3} />
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        )
+        let cotrim = ["dfrA1", "dfrA5", "dfrA7", "dfrA14", "dfrA15", "dfrA17", "dfrA18"];
+        let colors1 = ["#ffeda0", "#fd8d3c", "#addd8e", "#9e9ac8", "#6baed6", "#7a0177", "#54278f"]
+        let colors2 = ["#a50f15", "#6a5acd", "#f1b6da", "#fb8072", "#4682b4", "#2e8b57", "#98fb98"]
+        let bars = []
+
+        for (const index in cotrim) {
+          bars.push([cotrim[index] + "-sul1", colors1[index], "error-" + cotrim[index] + "-sul1"])
+          bars.push([cotrim[index] + "-sul2", colors2[index], "error-" + cotrim[index] + "-sul2"])
+        }
+
+        return (armClassFilterComponent({
+          left: 3, fontsize: 14, strokeWidth: 0.5, width: 3, bars: bars
+        }))
       case 'Tetracyclines':
-        return (
-          <ResponsiveContainer width="90%">
-            <BarChart
-              width={500}
-              height={300}
-              data={amrClassChartData}
-              margin={{
-                top: 20, left: 3, bottom: 5, right: 0
-              }}
-              layout="vertical"
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis domain={[0, 'dataMax + 100']} type={"number"} />
-              <YAxis dataKey="genotype" type={"category"} interval={0} tick={{ fontSize: 14 }} />
-              <Brush dataKey="genotype" height={20} stroke={"rgb(31, 187, 211)"} />
-              {amrClassChartTooltip()}
-              <Bar dataKey={'tetA(D)'} fill={"#addd8e"}>
-                <ErrorBar dataKey={"error-tetA(D)"} strokeWidth={1} stroke={"rgba(0,0,0,0.5)"} />
-              </Bar>
-              <Bar dataKey={'tetA(C)'} fill={"#9e9ac8"} >
-                <ErrorBar dataKey={"error-tetA(C)"} strokeWidth={1} stroke={"rgba(0,0,0,0.5)"} />
-              </Bar>
-              <Bar dataKey={'tetA(B)'} fill={"#6baed6"} >
-                <ErrorBar dataKey={"error-tetA(B)"} strokeWidth={1} stroke={"rgba(0,0,0,0.5)"} />
-              </Bar>
-              <Bar dataKey={'tetA(A)'} fill={"#a50f15"} >
-                <ErrorBar dataKey={"error-tetA(A)"} strokeWidth={1} stroke={"rgba(0,0,0,0.5)"} />
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        )
+        return (armClassFilterComponent({
+          left: 3, fontsize: 14, strokeWidth: 1, width: null, bars: [
+            ['tetA(D)', "#addd8e", "error-tetA(D)"],
+            ['tetA(C)', "#9e9ac8", "error-tetA(C)"],
+            ['tetA(B)', "#6baed6", "error-tetA(B)"],
+            ['tetA(A)', "#a50f15", "error-tetA(A)"]]
+        }))
       case 'AMR Profiles':
-        return (
-          <ResponsiveContainer width="90%">
-            <BarChart
-              width={500}
-              height={300}
-              data={amrClassChartData}
-              margin={{
-                top: 20, left: isDesktop ? 12 : -30, bottom: 5, right: 0
-              }}
-              layout="vertical"
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis domain={[0, 'dataMax + 100']} type={"number"} />
-              <YAxis dataKey="genotype" type={"category"} interval={0} tick={{ fontSize: isDesktop ? 14 : 5 }} />
-              <Brush dataKey="genotype" height={20} stroke={"rgb(31, 187, 211)"} />
-              {amrClassChartTooltip()}
-              <Bar dataKey={'No AMR detected'} fill={getColorForAMR('No AMR detected')}>
-                <ErrorBar dataKey={"error-No AMR detected"} strokeWidth={0.5} stroke={"rgba(0,0,0,0.5)"} width={3} />
-              </Bar>
-              <Bar dataKey={'MDR_DCS'} fill={getColorForAMR('MDR_DCS')} >
-                <ErrorBar dataKey={"error-MDR_DCS"} strokeWidth={0.5} stroke={"rgba(0,0,0,0.5)"} width={3} />
-              </Bar>
-              <Bar dataKey={'MDR'} fill={getColorForAMR('MDR')}>
-                <ErrorBar dataKey={"error-MDR"} strokeWidth={0.5} stroke={"rgba(0,0,0,0.5)"} width={3} />
-              </Bar>
-              <Bar dataKey={'DCS'} fill={getColorForAMR('DCS')}>
-                <ErrorBar dataKey={"error-DCS"} strokeWidth={0.5} stroke={"rgba(0,0,0,0.5)"} width={3} />
-              </Bar>
-              <Bar dataKey={'AzithR_MDR'} fill={getColorForAMR('AzithR_MDR')}>
-                <ErrorBar dataKey={"error-AzithR_MDR"} strokeWidth={0.5} stroke={"rgba(0,0,0,0.5)"} width={3} />
-              </Bar>
-              <Bar dataKey={'AzithR_DCS'} fill={getColorForAMR('AzithR_DCS')}>
-                <ErrorBar dataKey={"error-AzithR_DCS"} strokeWidth={0.5} stroke={"rgba(0,0,0,0.5)"} width={3} />
-              </Bar>
-              <Bar dataKey={'AzithR_DCS_MDR'} fill={getColorForAMR('AzithR_DCS_MDR')}>
-                <ErrorBar dataKey={"error-AzithR_DCS_MDR"} strokeWidth={0.5} stroke={"rgba(0,0,0,0.5)"} width={3} />
-              </Bar>
-              <Bar dataKey={'XDR'} fill={getColorForAMR('XDR')}>
-                <ErrorBar dataKey={"error-XDR"} strokeWidth={0.5} stroke={"rgba(0,0,0,0.5)"} width={3} />
-              </Bar>
-              <Bar dataKey={'AMR'} fill={getColorForAMR('AMR')}>
-                <ErrorBar dataKey={"error-AMR"} strokeWidth={0.5} stroke={"rgba(0,0,0,0.5)"} width={3} />
-              </Bar>
-              <Bar dataKey={'AMR_DCS'} fill={getColorForAMR('AMR_DCS')}>
-                <ErrorBar dataKey={"error-AMR_DCS"} strokeWidth={0.5} stroke={"rgba(0,0,0,0.5)"} width={3} />
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        )
+        return (armClassFilterComponent({
+          left: isDesktop ? 12 : -30, fontsize: isDesktop ? 14 : 5, strokeWidth: 0.5, width: 3, bars: [
+            ['No AMR detected', getColorForAMR('No AMR detected'), "error-No AMR detected"],
+            ['MDR_DCS', getColorForAMR('MDR_DCS'), "error-MDR_DCS"],
+            ['MDR', getColorForAMR('MDR'), "error-MDR"],
+            ['DCS', getColorForAMR('DCS'), "error-DCS"],
+            ['AzithR_MDR', getColorForAMR('AzithR_MDR'), "error-AzithR_MDR"],
+            ['AzithR_DCS', getColorForAMR('AzithR_DCS'), "error-AzithR_DCS"],
+            ['AzithR_DCS_MDR', getColorForAMR('AzithR_DCS_MDR'), "error-AzithR_DCS_MDR"],
+            ['XDR', getColorForAMR('XDR'), "error-XDR"],
+            ['AMR', getColorForAMR('AMR'), "error-AMR"],
+            ['AMR_DCS', getColorForAMR('AMR_DCS'), "error-AMR_DCS"]]
+        }))
       case 'ESBL':
-        return (
-          <ResponsiveContainer width="90%">
-            <BarChart
-              width={500}
-              height={300}
-              data={amrClassChartData}
-              margin={{
-                top: 20, left: 3, bottom: 5, right: 0
-              }}
-              layout="vertical"
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis domain={[0, 'dataMax + 100']} type={"number"} />
-              <YAxis dataKey="genotype" type={"category"} interval={0} tick={{ fontSize: 14 }} />
-              <Brush dataKey="genotype" height={20} stroke={"rgb(31, 187, 211)"} />
-              {amrClassChartTooltip()}
-              <Bar dataKey={'blaSHV-12'} fill={"#addd8e"}>
-                <ErrorBar dataKey={"error-blaSHV-12"} strokeWidth={1} stroke={"rgba(0,0,0,0.5)"} />
-              </Bar>
-              <Bar dataKey={'blaOXA-7'} fill={"#9e9ac8"}>
-                <ErrorBar dataKey={"error-blaOXA-7"} strokeWidth={1} stroke={"rgba(0,0,0,0.5)"} />
-              </Bar>
-              <Bar dataKey={'blaCTX-M-15_23'} fill={"#6baed6"}>
-                <ErrorBar dataKey={"error-blaCTX-M-15_23"} strokeWidth={1} stroke={"rgba(0,0,0,0.5)"} />
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        )
+        return (armClassFilterComponent({
+          left: 3, fontsize: 14, strokeWidth: 1, width: null, bars: [
+            ['blaSHV-12', "#addd8e", "error-blaSHV-12"],
+            ['blaOXA-7', "#9e9ac8", "error-blaOXA-7"],
+            ['blaCTX-M-15_23', "#6baed6", "error-blaCTX-M-15_23"]]
+        }))
       default:
         return null;
     }
@@ -1125,13 +1029,13 @@ const DashboardPage = () => {
                   <div style={{ height: 14 }} />
                   <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", width: 325 }}>
                     {payload.reverse().map((item, index) => {
-                      let percentage = ((item.value / item.payload.total) * 100)
+                      let percentage = ((item.value / amrClassChartData[amrClassChartData.length - 1].totalSum[item.name]) * 100)
                       if (Math.round(percentage) !== percentage)
                         percentage = percentage.toFixed(2)
                       return (
                         <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "center", width: "33.33%", marginBottom: 8 }}>
                           <div style={{ backgroundColor: item.fill, height: 18, width: 18, border: "solid rgb(0,0,0,0.75) 0.5px", flex: "none" }} />
-                          <div style={{ display: "flex", flexDirection: "column", marginLeft: 8 }}>
+                          <div style={{ display: "flex", flexDirection: "column", marginLeft: 8, wordWrap: "break-word", overflowX: "hidden" }}>
                             <span style={{ fontFamily: "Montserrat", color: "rgba(0,0,0,0.75)", fontWeight: 500, fontSize: 14 }}>{item.name}</span>
                             <span style={{ fontFamily: "Montserrat", color: "rgba(0,0,0,0.75)", fontSize: 12 }}>N = {item.value}</span>
                             <span style={{ fontFamily: "Montserrat", color: "rgba(0,0,0,0.75)", fontSize: 10 }}>{percentage}%</span>
@@ -1157,13 +1061,13 @@ const DashboardPage = () => {
         <LineChart
           width={500}
           height={300}
-          data={drugTrendsChartData}
+          data={drugTrendsChartData.slice(0, drugTrendsChartData.length - 1)}
           margin={{
             top: 20, left: -20, bottom: 5, right: 0
           }}
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
+          <XAxis dataKey="name" interval="preserveStartEnd" />
           <YAxis />
           <Legend
             content={(props) => {
@@ -1184,16 +1088,8 @@ const DashboardPage = () => {
             }}
           />
 
-          {tooltip(300, null, "100%", true, { zIndex: 100 }, true)}
-          <Line dataKey="Ampicillin" stroke={getColorForDrug("Ampicillin")} connectNulls type="monotone" />
-          <Line dataKey="Azithromycin" stroke={getColorForDrug("Azithromycin")} connectNulls type="monotone" />
-          <Line dataKey="Chloramphenicol" stroke={getColorForDrug("Chloramphenicol")} connectNulls type="monotone" />
-          <Line dataKey="Co-trimoxazole" stroke={getColorForDrug("Co-trimoxazole")} connectNulls type="monotone" />
-          <Line dataKey="ESBL" stroke={getColorForDrug("ESBL")} connectNulls type="monotone" />
-          <Line dataKey="Fluoroquinolones (DCS)" stroke={getColorForDrug("Fluoroquinolones (DCS)")} connectNulls type="monotone" />
-          <Line dataKey="Sulphonamides" stroke={getColorForDrug("Sulphonamides")} connectNulls type="monotone" />
-          <Line dataKey="Tetracyclines" stroke={getColorForDrug("Tetracyclines")} connectNulls type="monotone" />
-          <Line dataKey="Trimethoprim" stroke={getColorForDrug("Trimethoprim")} connectNulls type="monotone" />
+          {tooltip(300, null, "100%", true, { zIndex: 100 }, true, 1)}
+          {amrClassesForFilter.slice(1).map((item) => (<Line dataKey={item} stroke={getColorForDrug(item)} connectNulls type="monotone" />))}
         </LineChart>
       </ResponsiveContainer>
     )
@@ -1205,7 +1101,7 @@ const DashboardPage = () => {
         <BarChart
           width={500}
           height={300}
-          data={drugsAndGenotypesChartData}
+          data={drugsAndGenotypesChartData.slice(0, drugsAndGenotypesChartData.length - 1)}
           margin={{
             top: 20, left: -5, bottom: 5, right: 0
           }}
@@ -1232,16 +1128,8 @@ const DashboardPage = () => {
               );
             }}
           />
-          {tooltip(150, 325, "50%", false, { zIndex: 100, top: 100 }, false)}
-          <Bar dataKey="Ampicillin" fill={getColorForDrug("Ampicillin")} />
-          <Bar dataKey="Azithromycin" fill={getColorForDrug("Azithromycin")} />
-          <Bar dataKey="Chloramphenicol" fill={getColorForDrug("Chloramphenicol")} />
-          <Bar dataKey="Co-trimoxazole" fill={getColorForDrug("Co-trimoxazole")} />
-          <Bar dataKey="ESBL" fill={getColorForDrug("ESBL")} />
-          <Bar dataKey="Fluoroquinolones (DCS)" fill={getColorForDrug("Fluoroquinolones (DCS)")} />
-          <Bar dataKey="Sulphonamides" fill={getColorForDrug("Sulphonamides")} />
-          <Bar dataKey="Tetracyclines" fill={getColorForDrug("Tetracyclines")} />
-          <Bar dataKey="Trimethoprim" fill={getColorForDrug("Trimethoprim")} />
+          {tooltip(150, 325, "50%", false, { zIndex: 100, top: 100 }, false, 0)}
+          {amrClassesForFilter.slice(1).map((item) => (<Bar dataKey={item} fill={getColorForDrug(item)} />))}
         </BarChart>
       </ResponsiveContainer>
     )
@@ -1261,74 +1149,92 @@ const DashboardPage = () => {
     });
   }
 
-  const captureMap = () => {
-    setCaptureControlMapInProgress(true)
+  const stopLoading = (index) => {
+    switch (index) {
+      case 0: setCaptureControlMapInProgress(false)
+        break;
+      case 1: setCaptureControlChartRFWGInProgress(false)
+        break;
+      case 2: setCaptureControlChartDRTInProgress(false)
+        break;
+      case 3: setCaptureControlChartGDInProgress(false)
+        break;
+      case 4: setCaptureControlChartRFWAGInProgress(false)
+        break;
+      default:
+        break;
+    }
+  }
 
-    svgAsPngUri(document.getElementById('control-map'), { scale: 4, backgroundColor: "white", width: 1200, left: -200 })
-      .then(async (uri) => {
-        // const canvasBottomPadding = 220
+  const capturePicture = (id, index) => {
+    switch (index) {
+      case 0:
+        setCaptureControlMapInProgress(true)
+        setControlMapPosition({ coordinates: [0, 0], zoom: 1 })
+        break;
+      case 1: setCaptureControlChartRFWGInProgress(true)
+        break;
+      case 2: setCaptureControlChartDRTInProgress(true)
+        break;
+      case 3: setCaptureControlChartGDInProgress(true)
+        break;
+      case 4: setCaptureControlChartRFWAGInProgress(true)
+        break;
+      default:
+        break;
+    }
 
-        let canvas = document.createElement("canvas")
-        let ctx = canvas.getContext('2d');
+    if (index !== 0) {
+      const names = ["Resistance Frequencies Within Genotypes (Chart) - TiphyNET.png", "Drug Resistance Trends (Chart) - TiphyNET.png", "Genotype Distribution (Chart) - TiphyNET.png", "Resistance frequencies within all genotypes (Chart) - TiphyNET.png"]
+      domtoimage.toPng(document.getElementById(id), { quality: 0.95, bgcolor: "white" })
+        .then(function (dataUrl) {
+          var link = document.createElement('a');
+          link.download = names[index - 1];
+          link.href = dataUrl;
+          stopLoading(index)
+          link.click();
+        });
+    } else {
+      svgAsPngUri(document.getElementById(id), { scale: 4, backgroundColor: "white", width: 1200, left: -200 })
+        .then(async (uri) => {
 
-        let mapImg = document.createElement("img");
-        let mapImgPromise = imgOnLoadPromise(mapImg);
-        mapImg.src = uri;
-        await mapImgPromise;
+          let canvas = document.createElement("canvas")
+          let ctx = canvas.getContext('2d');
 
-        // canvas.width = mapImg.width;
-        // canvas.height = mapImg.height;
-        canvas.width = 3600;
-        canvas.height = 1800;
-        // canvas.height = mapImg.height + canvasBottomPadding;
+          let mapImg = document.createElement("img");
+          let mapImgPromise = imgOnLoadPromise(mapImg);
+          mapImg.src = uri;
+          await mapImgPromise;
 
-        ctx.fillStyle = "white";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+          canvas.width = 3600;
+          canvas.height = 1800;
 
-        ctx.drawImage(mapImg, 0, 0, canvas.width, canvas.height);
+          ctx.fillStyle = "white";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        let typhinetLogo = document.createElement("img");
-        let typhinetLogoPromise = imgOnLoadPromise(typhinetLogo);
-        typhinetLogo.src = typhinetLogoImg;
-        await typhinetLogoPromise;
+          ctx.drawImage(mapImg, 0, 0, canvas.width, canvas.height);
 
-        const typhinetLogoWidth = typhinetLogo.width * 0.5
-        const typhinetLogoHeight = typhinetLogo.height * 0.5
+          let typhinetLogo = document.createElement("img");
+          let typhinetLogoPromise = imgOnLoadPromise(typhinetLogo);
+          typhinetLogo.src = typhinetLogoImg;
+          await typhinetLogoPromise;
 
-        ctx.drawImage(typhinetLogo, 26, canvas.height - typhinetLogoHeight - 16, typhinetLogoWidth, typhinetLogoHeight);
-        // ctx.drawImage(typhinetLogo, (canvas.width / 2) - (typhinetLogo.width / 2), canvas.height - canvasBottomPadding - 78);
+          const typhinetLogoWidth = typhinetLogo.width * 0.5
+          const typhinetLogoHeight = typhinetLogo.height * 0.5
 
-        const base64 = canvas.toDataURL();
-        download(base64, 'Genome Samples (World Map) - TyphiNET.png');
+          ctx.drawImage(typhinetLogo, 26, canvas.height - typhinetLogoHeight - 16, typhinetLogoWidth, typhinetLogoHeight);
 
-        setCaptureControlMapInProgress(false)
-      });
-
-    //* Funcionando! (PNG)
-    // saveSvgAsPng(document.getElementById('control-map'), "Genome Samples (World Map) - TyphiNET.png", {scale: 1.5, backgroundColor: "white", width: 1200, left: -200 });
-
-    //* Funcionando! (SVG)
-    // NPM: html-to-image
-    // toSvg(document.getElementById('control-map'),
-    //   {
-    //     backgroundColor: "white",
-    //     style: {
-    //       width: 800,
-    //       height: 400
-    //     },
-    //     width: 800,
-    //     height: 400
-    //   }
-    // )
-    //   .then(function (dataUrl) {
-    //     download(dataUrl, 'Genome Samples (World Map) - TyphiNET.svg');
-    //   });
+          const base64 = canvas.toDataURL();
+          stopLoading(index)
+          download(base64, 'Genome Samples (World Map) - TyphiNET.png');
+        });
+    }
   }
 
   const dowloadBaseSpreadsheet = () => {
     axios.get(`${API_ENDPOINT}file/download`)
       .then((res) => {
-        download(res.data, 'TyphiNET Database.tsv');
+        download(res.data, 'TyphiNET Database.csv');
       })
   }
 
@@ -1467,6 +1373,40 @@ const DashboardPage = () => {
             })}
           </>
         )
+      case 'CipI':
+        return (
+          <>
+            <div className="samples-info">
+              <div className="color" style={{ backgroundColor: "#F5F4F6" }} />
+              <span>0%</span>
+            </div>
+            {percentageSteps.map((n) => {
+              return (
+                <div key={n} className="samples-info">
+                  <div className="color" style={{ backgroundColor: mapRedColorScale(n) }} />
+                  <span>{n}%</span>
+                </div>
+              )
+            })}
+          </>
+        )
+      case 'CipR':
+        return (
+          <>
+            <div className="samples-info">
+              <div className="color" style={{ backgroundColor: "#F5F4F6" }} />
+              <span>0%</span>
+            </div>
+            {percentageSteps.map((n) => {
+              return (
+                <div key={n} className="samples-info">
+                  <div className="color" style={{ backgroundColor: mapRedColorScale(n) }} />
+                  <span>{n}%</span>
+                </div>
+              )
+            })}
+          </>
+        )
       case 'Resistance to Drug':
         let drugs = ["Ampicillin", "Azithromycin", "Chloramphenicol", "Co-trimoxazole", "ESBL", "Fluoroquinolones (DCS)", "Sulphonamides", "Tetracyclines", "Trimethoprim"]
         return (
@@ -1538,6 +1478,12 @@ const DashboardPage = () => {
             <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'Azith'}>
               AzithR
           </MenuItem>
+            <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'CipI'}>
+              CipI
+          </MenuItem>
+            <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'CipR'}>
+              CipR
+          </MenuItem>
             {/* <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'Resistance to Drug'}>
               Resistance to Drug
           </MenuItem> */}
@@ -1574,11 +1520,11 @@ const DashboardPage = () => {
         <div className="card">
           <span>Total Genotypes</span>
           {totalGenotypes.length === actualGenotypes.length ? (
-            <span className="value">{totalGenotypes.length}</span>
+            <span className="value">{totalGenotypes.length === 67 ? 72 : totalGenotypes.length}</span>
           ) : (
             <span className="value">
               {actualGenotypes.length}
-              <span className="value-total">/{totalGenotypes.length}</span>
+              <span className="value-total">/{totalGenotypes.length === 67 ? 72 : totalGenotypes.length}</span>
             </span>
           )}
         </div>
@@ -1669,6 +1615,16 @@ const DashboardPage = () => {
                           if (country !== undefined && country.percentage)
                             fill = mapRedColorScale(country.percentage);
                           break;
+                        case 'CipI':
+                          country = worldMapCIPIData.find(s => s.displayName === geo.properties.NAME)
+                          if (country !== undefined && country.percentage)
+                            fill = mapRedColorScale(country.percentage);
+                          break;
+                        case 'CipR':
+                          country = worldMapCIPRData.find(s => s.displayName === geo.properties.NAME)
+                          if (country !== undefined && country.percentage)
+                            fill = mapRedColorScale(country.percentage);
+                          break;
                         case 'Resistance to Drug':
                           country = worldMapDrugsData.find(s => s.displayName === geo.properties.NAME)
                           if (country !== undefined && country.drugs.length > 0)
@@ -1706,6 +1662,8 @@ const DashboardPage = () => {
                                       H58: Math.round(d.H58) !== d.H58 ? d.H58.toFixed(2) : d.H58,
                                       MDR: Math.round(d.MDR) !== d.MDR ? d.MDR.toFixed(2) : d.MDR,
                                       DCS: Math.round(d.DCS) !== d.DCS ? d.DCS.toFixed(2) : d.DCS,
+                                      CipI: Math.round(d.CipI) !== d.CipI ? d.CipI.toFixed(2) : d.CipI,
+                                      CipR: Math.round(d.CipR) !== d.CipR ? d.CipR.toFixed(2) : d.CipR,
                                       AzithR: Math.round(d.AzithR) !== d.AzithR ? d.AzithR.toFixed(2) : d.AzithR
                                     }
                                   });
@@ -1813,6 +1771,36 @@ const DashboardPage = () => {
                                   })
                                 }
                                 break;
+                              case 'CipI':
+                                if (country !== undefined && country.CipIs.length > 0) {
+                                  setTooltipContent({
+                                    name: NAME,
+                                    cipIInfo: {
+                                      count: country.count,
+                                      percentage: country.percentage,
+                                    }
+                                  });
+                                } else {
+                                  setTooltipContent({
+                                    name: NAME
+                                  })
+                                }
+                                break;
+                              case 'CipR':
+                                if (country !== undefined && country.CipRs.length > 0) {
+                                  setTooltipContent({
+                                    name: NAME,
+                                    cipRInfo: {
+                                      count: country.count,
+                                      percentage: country.percentage,
+                                    }
+                                  });
+                                } else {
+                                  setTooltipContent({
+                                    name: NAME
+                                  })
+                                }
+                                break;
                               case 'Resistance to Drug':
                                 if (country !== undefined && country.drugs.length > 0) {
                                   setTooltipContent({
@@ -1867,6 +1855,7 @@ const DashboardPage = () => {
                   }
                 </Geographies>
               </ZoomableGroup>
+
             </ComposableMap>
             {(samplesQty > 0 && isDesktop) && (
               <div className="map-upper-right-buttons">
@@ -1965,7 +1954,7 @@ const DashboardPage = () => {
                   className={`button ${captureControlMapInProgress && "disabled"}`}
                   onClick={() => {
                     if (!captureControlMapInProgress)
-                      captureMap()
+                      capturePicture('control-map', 0)
                   }}
                 >
                   <FontAwesomeIcon icon={faCamera} />
@@ -1996,6 +1985,8 @@ const DashboardPage = () => {
                     <span>MDR: {tooltipContent.additionalInfo.MDR}%</span>
                     <span>DCS: {tooltipContent.additionalInfo.DCS}%</span>
                     <span>AzithR: {tooltipContent.additionalInfo.AzithR}%</span>
+                    <span>CipI: {tooltipContent.additionalInfo.CipI}%</span>
+                    <span>CipR: {tooltipContent.additionalInfo.CipR}%</span>
                   </div>
                 )}
                 {tooltipContent.genotypeInfo && (
@@ -2044,6 +2035,16 @@ const DashboardPage = () => {
                     <span>AzithR: {tooltipContent.azInfo.count} ({tooltipContent.azInfo.percentage}%)</span>
                   </div>
                 )}
+                {tooltipContent.cipIInfo && (
+                  <div className="additional-info">
+                    <span>CipI: {tooltipContent.cipIInfo.count} ({tooltipContent.cipIInfo.percentage}%)</span>
+                  </div>
+                )}
+                {tooltipContent.cipRInfo && (
+                  <div className="additional-info">
+                    <span>CipR: {tooltipContent.cipRInfo.count} ({tooltipContent.cipRInfo.percentage}%)</span>
+                  </div>
+                )}
                 {tooltipContent.drugsInfo && (
                   <div className="additional-info" style={{ marginTop: 4 }}>
                     {tooltipContent.drugsInfo.map((drug, index) => {
@@ -2089,7 +2090,7 @@ const DashboardPage = () => {
                     })}
                   </div>
                 )}
-                {(!tooltipContent.incTypesInfo && !tooltipContent.amrProfilesInfo && !tooltipContent.drugsInfo && !tooltipContent.xdrInfo && !tooltipContent.mdrInfo && !tooltipContent.dcsInfo && !tooltipContent.azInfo && !tooltipContent.simpleGenotypeInfo && !tooltipContent.genotypeInfo && !tooltipContent.additionalInfo) && (
+                {(!tooltipContent.incTypesInfo && !tooltipContent.amrProfilesInfo && !tooltipContent.drugsInfo && !tooltipContent.xdrInfo && !tooltipContent.mdrInfo && !tooltipContent.dcsInfo && !tooltipContent.azInfo && !tooltipContent.cipIInfo && !tooltipContent.cipRInfo && !tooltipContent.simpleGenotypeInfo && !tooltipContent.genotypeInfo && !tooltipContent.additionalInfo) && (
                   <div className="additional-info">
                     <span>No reported data</span>
                   </div>
@@ -2100,14 +2101,14 @@ const DashboardPage = () => {
         </div>
       </div>
       <div className="chart-wrapper" style={{ flexDirection: 'column' }}>
-        <h2 style={{ textAlign: "center" }}>Now showing: {dataset === "full" ? "ALL" : dataset === "global" ? "LOCAL" : "TRAVEL"} data from {actualCountry} from {actualTimePeriodRange.toString().substring(0, 4)} to {actualTimePeriodRange.toString().substring(5)}</h2>
-        <FormControl fullWidth className={classes.formControlSelect} style={{ marginBottom: 16, alignItems: "center" }}>
-          {/* <InputLabel style={{ fontWeight: 500, fontFamily: "Montserrat", whiteSpace: "nowrap", width: 200 }}>Select country (or click map)</InputLabel> */}
+        <h2 style={{ textAlign: "center" }}>Now showing: {dataset === "full" ? "All" : dataset === "global" ? "Local" : "Travel"} dataset from {actualCountry === "All" ? "all countries" : actualCountry} from {actualTimePeriodRange.toString().substring(0, 4)} to {actualTimePeriodRange.toString().substring(5)}</h2>
+        <FormControl fullWidth className={classes.formControlSelect} style={{ marginBottom: 16, alignItems: "center", textAlign: "center" }}>
+          <label style={{ fontWeight: 500, fontFamily: "Montserrat", whiteSpace: "nowrap", fontSize: 18 }}>Select country (or click map)</label>
           <Select
             value={actualCountry}
             onChange={evt => setActualCountry(evt.target.value)}
             fullWidth
-            style={{ fontWeight: 600, fontFamily: "Montserrat", width: 200 }}
+            style={{ fontWeight: 600, fontFamily: "Montserrat", width: 200, textAlign: "left" }}
           >
             {countriesForFilter.map((country, index) => {
               return (
@@ -2121,24 +2122,90 @@ const DashboardPage = () => {
         <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
           <div style={{ display: "flex", flexDirection: isDesktop ? "row" : "column", marginTop: 16 }}>
             <div style={{ display: "flex", flexDirection: "column", flex: 0.6 }}>
-              <div style={{ width: "100%", display: "flex", flexDirection: "column" }}>
-                <span className="chart-title" style={{ marginRight: -22 }}>Resistance Frequencies Within Genotypes</span>
+              <div id="RFWG" style={{ minWidth: 200, width: "100%", display: "flex", flexDirection: "column" }}>
+                <div style={{ width: "100%", flexDirection: "row", whiteSpace: "nowrap", textAlign: "center", display: "flex", justifyContent: "center" }}>
+                  <span style={{ paddingRight: 32, marginRight: -22 }} className="chart-title">Resistance Frequencies Within Genotypes</span>
+                  <div style={{ display: "inline-block", position: "relative" }}>
+                    <TooltipMaterialUI title={<span style={{ fontFamily: "Montserrat" }}>Download Chart as PNG</span>} placement="right">
+                      <div
+                        style={{ marginTop: "0", height: "33px", width: "33px" }}
+                        className={`button ${captureControlChartRFWGInProgress && "disabled"}`}
+                        onClick={() => {
+                          if (!captureControlChartRFWGInProgress)
+                            capturePicture('RFWG', 1)
+                        }}
+                      >
+                        <FontAwesomeIcon icon={faCamera} size="sm" />
+                      </div>
+                    </TooltipMaterialUI>
+                    {captureControlChartRFWGInProgress && (
+                      <CustomCircularProgress
+                        size={44}
+                        thickness={4}
+                        style={{ position: "absolute", top: -5, left: -6 }} />
+                    )}
+                  </div>
+                </div>
                 <span className="chart-title" style={{ marginRight: -22, marginBottom: -8, fontSize: 10, fontWeight: 400 }}>Top Five Genotypes</span>
-                <div style={{ height: isDesktop ? 350 : 400, minHeight: isDesktop ? 350 : 400, display: "flex", flexDirection: "row", alignItems: "center" }}>
+                <div style={{ height: 350, display: "flex", flexDirection: "row", alignItems: "center" }}>
                   <span className="y-axis-label-vertical" style={{ marginRight: 8, marginBottom: isDesktop ? 84 : 154 }}>Number of occurrences</span>
                   {plotDrugsAndGenotypesChart()}
                 </div>
               </div>
-              <div style={{ width: "100%", display: "flex", flexDirection: "column", marginTop: 22 }}>
-                <span className="chart-title" style={{ marginRight: -22, marginBottom: -8 }}>Drug Resistance Trends</span>
-                <div style={{ height: isDesktop ? 350 : 400, minHeight: isDesktop ? 350 : 400, display: "flex", flexDirection: "row", alignItems: "center" }}>
-                  <span className="y-axis-label-vertical" style={{ marginRight: 8, marginBottom: isDesktop ? 84 : 124 }}>Number of occurrences</span>
+              <div id="DRT" style={{ width: "100%", display: "flex", flexDirection: "column", paddingTop: 22 }}>
+                <div style={{ width: "100%", flexDirection: "row", whiteSpace: "nowrap", textAlign: "center", display: "flex", justifyContent: "center" }}>
+                  <span className="chart-title" style={{ marginRight: -22, paddingRight: 32 }}>Drug Resistance Trends</span>
+                  <div style={{ display: "inline-block", position: "relative" }}>
+                    <TooltipMaterialUI title={<span style={{ fontFamily: "Montserrat" }}>Download Chart as PNG</span>} placement="right">
+                      <div
+                        style={{ marginTop: "0", height: "33px", width: "33px" }}
+                        className={`button ${captureControlChartDRTInProgress && "disabled"}`}
+                        onClick={() => {
+                          if (!captureControlChartDRTInProgress)
+                            capturePicture('DRT', 2)
+                        }}
+                      >
+                        <FontAwesomeIcon icon={faCamera} size="sm" />
+                      </div>
+                    </TooltipMaterialUI>
+                    {captureControlChartDRTInProgress && (
+                      <CustomCircularProgress
+                        size={44}
+                        thickness={4}
+                        style={{ position: "absolute", top: -5, left: -6 }} />
+                    )}
+                  </div>
+                </div>
+                <div style={{ height: 350, display: "flex", flexDirection: "row", alignItems: "center" }}>
+                  <span className="y-axis-label-vertical" style={{ marginRight: 8, paddingBottom: isDesktop ? 84 : 124 }}>Number of occurrences</span>
                   {plotDrugTrendsChart()}
                 </div>
               </div>
-              <div style={{ width: "100%", display: "flex", flexDirection: "column", marginTop: 22 }}>
-                <span className="chart-title" style={{ marginRight: -22, marginBottom: 0 }}>Genotype Distribution</span>
-                <div style={{ width: isDesktop ? "60%" : "90%", alignSelf: "center", marginRight: isDesktop && populationStructureFilter !== 1 ? "-10%" : 0, marginBottom: populationStructureFilter === 1 ? -8 : 16 }}>
+              <div id="GD" style={{ width: "100%", display: "flex", flexDirection: "column", paddingTop: 22 }}>
+                <div style={{ width: "100%", flexDirection: "row", whiteSpace: "nowrap", textAlign: "center", display: "flex", justifyContent: "center" }}>
+                  <span className="chart-title" style={{ marginRight: -22, paddingRight: 32 }}>Genotype Distribution</span>
+                  <div style={{ display: "inline-block", position: "relative" }}>
+                    <TooltipMaterialUI title={<span style={{ fontFamily: "Montserrat" }}>Download Chart as PNG</span>} placement="right">
+                      <div
+                        style={{ marginTop: "0", height: "33px", width: "33px" }}
+                        className={`button ${captureControlChartGDInProgress && "disabled"}`}
+                        onClick={() => {
+                          if (!captureControlChartGDInProgress)
+                            capturePicture('GD', 3)
+                        }}
+                      >
+                        <FontAwesomeIcon icon={faCamera} size="sm" />
+                      </div>
+                    </TooltipMaterialUI>
+                    {captureControlChartGDInProgress && (
+                      <CustomCircularProgress
+                        size={44}
+                        thickness={4}
+                        style={{ position: "absolute", top: -5, left: -6 }} />
+                    )}
+                  </div>
+                </div>
+                <div style={{ width: isDesktop ? "60%" : "90%", alignSelf: "center", paddingRight: isDesktop && populationStructureFilter !== 1 ? "-10%" : 0, paddingBottom: populationStructureFilter === 1 ? -8 : 16 }}>
                   <FormControl fullWidth className={classes.formControlSelect} style={{ marginBottom: 16 }}>
                     <InputLabel style={{ fontWeight: 500, fontFamily: "Montserrat" }}>Population Structure</InputLabel>
                     <Select
@@ -2162,8 +2229,31 @@ const DashboardPage = () => {
                 </div>
               </div>
             </div>
-            <div style={{ display: "flex", flexDirection: "column", flex: 0.4 }}>
-              <span className="chart-title" style={{ marginRight: -22, marginBottom: 12 }}>Resistance frequencies within all genotypes</span>
+            <div id="RFWAG" style={{ display: "flex", flexDirection: "column", flex: 0.4 }}>
+              <div style={{ width: "100%", flexDirection: "row", whiteSpace: "nowrap", textAlign: "center", display: "flex", justifyContent: "center" }}>
+                <span className="chart-title" style={{ marginRight: -22, paddingRight: 32 }}>Resistance frequencies within all genotypes</span>
+                <div style={{ display: "inline-block", position: "relative" }}>
+                  <TooltipMaterialUI title={<span style={{ fontFamily: "Montserrat" }}>Download Chart as PNG</span>} placement="right">
+                    <div
+                      style={{ marginTop: "0", height: "33px", width: "33px" }}
+                      className={`button ${captureControlChartRFWAGInProgress && "disabled"}`}
+                      onClick={() => {
+                        if (!captureControlChartRFWAGInProgress)
+                          capturePicture('RFWAG', 4)
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faCamera} size="sm" />
+                    </div>
+                  </TooltipMaterialUI>
+                  {captureControlChartRFWAGInProgress && (
+                    <CustomCircularProgress
+                      size={44}
+                      thickness={4}
+                      style={{ position: "absolute", top: -5, left: -6 }} />
+                  )}
+                </div>
+              </div>
+              <span className="chart-title" style={{ fontSize: 10, fontWeight: 400, paddingBottom: 10 }}>Top Ten Genotypes</span>
               <div style={{ width: isDesktop ? "60%" : "90%", alignSelf: "center", marginBottom: -4, marginRight: isDesktop ? "-10%" : 0 }}>
                 <FormControl fullWidth className={classes.formControlSelect} style={{ marginTop: 0 }}>
                   <InputLabel style={{ fontWeight: 500, fontFamily: "Montserrat" }}>Select Drug Class</InputLabel>
@@ -2183,7 +2273,7 @@ const DashboardPage = () => {
                   </Select>
                 </FormControl>
               </div>
-              <div style={{ height: isDesktop ? "100%" : 800, display: "flex", flexDirection: "row", alignItems: "center" }}>
+              <div style={{ height: '100%', display: "flex", flexDirection: "row", alignItems: "center" }}>
                 <span className="y-axis-label-vertical" style={{ marginRight: 8 }}>Number of occurrences</span>
                 {plotAmrClassChart()}
               </div>

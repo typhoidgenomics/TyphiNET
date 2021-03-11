@@ -4,7 +4,7 @@ import csv from 'csv-parser';
 import fs from 'fs';
 import * as Tools from '../../services/services.js';
 
-router.get('/drugTrendsChart/:country/:minYear/:maxYear/', function (req, res, next) {
+router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel', function (req, res, next) {
     let params = req.params;
     let resultsJson = [];
     let read_file = Tools.path_clean_db || Tools.path_clean;
@@ -14,12 +14,43 @@ router.get('/drugTrendsChart/:country/:minYear/:maxYear/', function (req, res, n
         .on('data', (data_full) => resultsJson.push(data_full))
         .on('end', () => {
             let rawTrendArray = [];
+            let travel = params.travel
+            let data_travel = false
+            let allDrugs = {}
             for (let data of resultsJson) {
-                if (params.minYear <= data["DATE"] && data["DATE"] <= params.maxYear) {
+
+                if (travel == "full") {
+                    data_travel = true
+                } else {
+                    if (travel == "global") {
+                        if (data["TRAVEL"] == "unknown" || data["TRAVEL"] == "local") {
+                            data_travel = true
+                        } else {
+                            data_travel = false
+                        }
+                    }
+                    if (travel == "local") {
+                        if (data["TRAVEL"] == "travel") {
+                            data_travel = true
+                        } else {
+                            data_travel = false
+                        }
+                    }
+                }
+
+
+                if (data["DATE"] >= params.minYear && data["DATE"] <= params.maxYear && data_travel) {
                     let drugs = []
 
-                    if (data["azith_pred_pheno"] == "AzithR")
+                    if (!(data["DATE"] in allDrugs)) {
+                        allDrugs[data["DATE"]] = 1
+                    } else {
+                        allDrugs[data["DATE"]] += 1
+                    }
+
+                    if (data["azith_pred_pheno"] == "AzithR") {
                         drugs.push("Azithromycin")
+                    }
 
                     if (data["dcs_category"] == "DCS")
                         drugs.push("Fluoroquinolones (DCS)")
@@ -57,7 +88,6 @@ router.get('/drugTrendsChart/:country/:minYear/:maxYear/', function (req, res, n
                     }
                 }
             }
-
             let response = []
             rawTrendArray.forEach(entry => {
                 entry.DRUGS.forEach(drug => {
@@ -68,6 +98,7 @@ router.get('/drugTrendsChart/:country/:minYear/:maxYear/', function (req, res, n
                     })
                 })
             })
+            response.push(allDrugs)
             res.json(response);
         })
 })
@@ -76,10 +107,11 @@ router.get('/drugTrendsChart/:country/:minYear/:maxYear/', function (req, res, n
 //Primeiro parâmetro trata-se do país
 //Segundo e terceiro parâmetro são datas limites, sendo o segundo o ano mínimo e o terceiro o ano máximo
 //por último, o amr_class que deseja verificar
-router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class', function (req, res, next) {
+router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', function (req, res, next) {
     let params = req.params
     let results_json = [];
     let results = [];
+    let cotrim = ["dfrA1", "dfrA5", "dfrA7", "dfrA14", "dfrA15", "dfrA17", "dfrA18"];
     //Essa variável verifica se o arquivo clean_db.csv está criado, se tiver o path dele será passado para a 
     //variável read_file, e então os dados que serão enviados ao front serão desse arquivo.
     //Se não, o path será do clean.csv
@@ -92,187 +124,193 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class', function (r
             //Objeto que conterá os dados a serem enviados pro front
             let data_to_send = {}
             const TOTAL_VALUES = results_json.length
+            let travel = params.travel
+            let data_travel = false
             //utilizo um for para percorrer todos os dados e verificar se as condições que foram requisitadas são atendidas
             //O primeiro if eu verifico se o parâmetro passado para country é all, se for, ele irá fazer a verificação em todos os países
             //Se não, ele irá apenas filtrar pelo país escolhido
             for (let data of results_json) {
+                if (travel == "full") {
+                    data_travel = true
+                } else {
+                    if (travel == "global") {
+                        if (data["TRAVEL"] == "unknown" || data["TRAVEL"] == "local") {
+                            data_travel = true
+                        } else {
+                            data_travel = false
+                        }
+                    }
+                    if (travel == "local") {
+                        if (data["TRAVEL"] == "travel") {
+                            data_travel = true
+                        } else {
+                            data_travel = false
+                        }
+                    }
+                }
+
                 let country = params.country == "all" ? data["COUNTRY_ONLY"] : params.country
-                if ((data["COUNTRY_ONLY"] == country) && (params.min_year <= data["DATE"] && data["DATE"] <= params.max_year))
+                if ((data["COUNTRY_ONLY"] == country) && (params.min_year <= data["DATE"] && data["DATE"] <= params.max_year) && data_travel) {
                     data_to_send = {
                         "GENOTYPE": data["GENOTYPE"]
                     }
 
-                if (params.amr_class == "AMR Profiles") {
-                    data_to_send["GENE"] = data["amr_category"]
-                    results.push(data_to_send)
-                }
-
-                if (params.amr_class == "Azithromycin" && data["azith_pred_pheno"] == "AzithR") {
-                    if (data["ereA"] == "1")
-                        data_to_send["GENE"] = "ereA"
-                    else
-                        data_to_send["GENE"] = "acrB_R717Q"
-
-                    results.push(data_to_send)
-                }
-
-                if (params.amr_class == "Fluoroquinolones (DCS)" && data["dcs_category"] == "DCS") {
-                    data_to_send["GENE"] = data["dcs_mechanisms"]
-                    results.push(data_to_send)
-                }
-
-                if (params.amr_class == "ESBL" && data["ESBL_category"] == "ESBL") {
-                    // data_to_send["ESBL"] = data["ESBL_category"]
-                    //data_to_send["ESBL TOTAL"] = data_to_send["ESBL TOTAL"]==undefined ? 1:data_to_send["ESBL TOTAL"]++
-                    //data_to_send["ESBL %"] = data_to_send["ESBL TOTAL"]==undefined ? 0:data_to_send["ESBL TOTAL"] / TOTAL_VALUES * 100
-                    let genes = []
-
-                    if (data["blaCTX-M-15_23"] == "1")
-                        genes.push("blaCTX-M-15_23")
-
-                    if (data["blaOXA-7"] == "1")
-                        genes.push("blaOXA-7")
-
-                    if (data["blaSHV-12"] == "1")
-                        genes.push("blaSHV-12")
-
-                    for (let gene of genes) {
-                        results.push({
-                            ...data_to_send,
-                            GENE: gene
-                        })
+                    if (params.amr_class == "AMR Profiles") {
+                        data_to_send["GENE"] = data["amr_category"]
+                        results.push(data_to_send)
                     }
-                }
 
-                if (params.amr_class == "Chloramphenicol" && data["chloramphenicol_category"] == "ChlR") {
-                    let genes = []
+                    if (params.amr_class == "Azithromycin" && data["azith_pred_pheno"] == "AzithR") {
+                        if (data["ereA"] == "1")
+                            data_to_send["GENE"] = "ereA"
+                        else
+                            data_to_send["GENE"] = "acrB_R717Q"
 
-                    if (data["catA1"] == "1")
-                        genes.push("catA1")
-
-                    if (data["cmlA"] == "1")
-                        genes.push("cmlA")
-
-                    for (let gene of genes) {
-                        results.push({
-                            ...data_to_send,
-                            GENE: gene
-                        })
+                        results.push(data_to_send)
                     }
-                }
 
-                if (params.amr_class == "Ampicillin" && data["blaTEM-1D"] == "1") {
-                    data_to_send["GENE"] = "blaTEM-1D"
-                    results.push(data_to_send)
-                }
-
-                if (params.amr_class == "Co-trimoxazole" && data["co_trim"] == "1") {
-                    let genes = []
-
-                    if (data["sul1"] == "1")
-                        genes.push("sul1")
-
-                    if (data["sul2"] == "1")
-                        genes.push("sul2")
-
-                    if (data["dfrA1"] == "1")
-                        genes.push("dfrA1")
-
-                    if (data["dfrA14"] == "1")
-                        genes.push("dfrA14")
-
-                    if (data["dfrA15"] == "1")
-                        genes.push("dfrA15")
-
-                    if (data["dfrA17"] == "1")
-                        genes.push("dfrA17")
-
-                    if (data["dfrA18"] == "1")
-                        genes.push("dfrA18")
-
-                    if (data["dfrA5"] == "1")
-                        genes.push("dfrA5")
-
-                    if (data["dfrA7"] == "1")
-                        genes.push("dfrA7")
-
-                    for (let gene of genes) {
-                        results.push({
-                            ...data_to_send,
-                            GENE: gene
-                        })
+                    if (params.amr_class == "Fluoroquinolones (DCS)" && data["dcs_category"] == "DCS") {
+                        data_to_send["GENE"] = data["dcs_mechanisms"]
+                        results.push(data_to_send)
                     }
-                }
 
-                if (params.amr_class == "Sulphonamides" && data["sul_any"] == "1") {
-                    let genes = []
+                    if (params.amr_class == "ESBL" && data["ESBL_category"] == "ESBL") {
+                        // data_to_send["ESBL"] = data["ESBL_category"]
+                        //data_to_send["ESBL TOTAL"] = data_to_send["ESBL TOTAL"]==undefined ? 1:data_to_send["ESBL TOTAL"]++
+                        //data_to_send["ESBL %"] = data_to_send["ESBL TOTAL"]==undefined ? 0:data_to_send["ESBL TOTAL"] / TOTAL_VALUES * 100
+                        let genes = []
 
-                    if (data["sul1"] == "1")
-                        genes.push("sul1")
+                        if (data["blaCTX-M-15_23"] == "1")
+                            genes.push("blaCTX-M-15_23")
 
-                    if (data["sul2"] == "1")
-                        genes.push("sul2")
+                        if (data["blaOXA-7"] == "1")
+                            genes.push("blaOXA-7")
 
-                    for (let gene of genes) {
-                        results.push({
-                            ...data_to_send,
-                            GENE: gene
-                        })
+                        if (data["blaSHV-12"] == "1")
+                            genes.push("blaSHV-12")
+
+                        for (let gene of genes) {
+                            results.push({
+                                ...data_to_send,
+                                GENE: gene
+                            })
+                        }
                     }
-                }
 
-                if (params.amr_class == "Trimethoprim" && data["dfra_any"] == "1") {
-                    let genes = []
+                    if (params.amr_class == "Chloramphenicol" && data["chloramphenicol_category"] == "ChlR") {
+                        let genes = []
 
-                    if (data["dfrA1"] == "1")
-                        genes.push("dfrA1")
+                        if (data["catA1"] == "1")
+                            genes.push("catA1")
 
-                    if (data["dfrA14"] == "1")
-                        genes.push("dfrA14")
+                        if (data["cmlA"] == "1")
+                            genes.push("cmlA")
 
-                    if (data["dfrA15"] == "1")
-                        genes.push("dfrA15")
-
-                    if (data["dfrA17"] == "1")
-                        genes.push("dfrA17")
-
-                    if (data["dfrA18"] == "1")
-                        genes.push("dfrA18")
-
-                    if (data["dfrA5"] == "1")
-                        genes.push("dfrA5")
-
-                    if (data["dfrA7"] == "1")
-                        genes.push("dfrA7")
-
-                    for (let gene of genes) {
-                        results.push({
-                            ...data_to_send,
-                            GENE: gene
-                        })
+                        for (let gene of genes) {
+                            results.push({
+                                ...data_to_send,
+                                GENE: gene
+                            })
+                        }
                     }
-                }
 
-                if (params.amr_class == "Tetracyclines" && data["tetracycline_category"] == "TetR") {
-                    let genes = []
+                    if (params.amr_class == "Ampicillin" && data["blaTEM-1D"] == "1") {
+                        data_to_send["GENE"] = "blaTEM-1D"
+                        results.push(data_to_send)
+                    }
 
-                    if (data["tetA(A)"] == "1")
-                        genes.push("tetA(A)")
+                    if (params.amr_class == "Co-trimoxazole" && data["co_trim"] == "1") {
+                        let genes = []
 
-                    if (data["tetA(B)"] == "1")
-                        genes.push("tetA(B)")
+                        for (const index in cotrim) {
+                            if (data[cotrim[index]] == "1") {
+                                if (data["sul1"] == "1") {
+                                    genes.push(cotrim[index] + "-sul1")
+                                }
+                                if (data["sul2"] == "1") {
+                                    genes.push(cotrim[index] + "-sul2")
+                                }
+                            }
+                        }
 
-                    if (data["tetA(C)"] == "1")
-                        genes.push("tetA(C)")
+                        for (let gene of genes) {
+                            results.push({
+                                ...data_to_send,
+                                GENE: gene
+                            })
+                        }
+                    }
 
-                    if (data["tetA(D)"] == "1")
-                        genes.push("tetA(D)")
+                    if (params.amr_class == "Sulphonamides" && data["sul_any"] == "1") {
+                        let genes = []
 
-                    for (let gene of genes) {
-                        results.push({
-                            ...data_to_send,
-                            GENE: gene
-                        })
+                        if (data["sul1"] == "1")
+                            genes.push("sul1")
+
+                        if (data["sul2"] == "1")
+                            genes.push("sul2")
+
+                        for (let gene of genes) {
+                            results.push({
+                                ...data_to_send,
+                                GENE: gene
+                            })
+                        }
+                    }
+
+                    if (params.amr_class == "Trimethoprim" && data["dfra_any"] == "1") {
+                        let genes = []
+
+                        if (data["dfrA1"] == "1")
+                            genes.push("dfrA1")
+
+                        if (data["dfrA14"] == "1")
+                            genes.push("dfrA14")
+
+                        if (data["dfrA15"] == "1")
+                            genes.push("dfrA15")
+
+                        if (data["dfrA17"] == "1")
+                            genes.push("dfrA17")
+
+                        if (data["dfrA18"] == "1")
+                            genes.push("dfrA18")
+
+                        if (data["dfrA5"] == "1")
+                            genes.push("dfrA5")
+
+                        if (data["dfrA7"] == "1")
+                            genes.push("dfrA7")
+
+                        for (let gene of genes) {
+                            results.push({
+                                ...data_to_send,
+                                GENE: gene
+                            })
+                        }
+                    }
+
+                    if (params.amr_class == "Tetracyclines" && data["tetracycline_category"] == "TetR") {
+                        let genes = []
+
+                        if (data["tetA(A)"] == "1")
+                            genes.push("tetA(A)")
+
+                        if (data["tetA(B)"] == "1")
+                            genes.push("tetA(B)")
+
+                        if (data["tetA(C)"] == "1")
+                            genes.push("tetA(C)")
+
+                        if (data["tetA(D)"] == "1")
+                            genes.push("tetA(D)")
+
+                        for (let gene of genes) {
+                            results.push({
+                                ...data_to_send,
+                                GENE: gene
+                            })
+                        }
                     }
                 }
 
@@ -321,7 +359,6 @@ router.get('/:filter1/:country/:min_year/:max_year/:travel', function (req, res,
         .on('end', () => {
             let travel = params.travel
             let data_travel = false
-
             for (let data of results_json) {
                 if (travel == "full") {
                     data_travel = true
@@ -355,6 +392,8 @@ router.get('/:filter1/:country/:min_year/:max_year/:travel', function (req, res,
                 filter_value["IncTypes"] = data["Inc Types"]
                 filter_value["DCS"] = data["dcs_category"]
                 filter_value["Azith"] = data["azith_pred_pheno"]
+                filter_value["CipR"] = data["cip_pred_pheno"]
+                filter_value["CipI"] = data["cip_pred_pheno"]
 
                 /* DRUGS */
                 let drugs = []
@@ -389,7 +428,7 @@ router.get('/:filter1/:country/:min_year/:max_year/:travel', function (req, res,
                 filter_value["DRUGS"] = drugs
                 /* DRUG */
 
-                if ((data["COUNTRY_ONLY"] == params.country) && (params.min_year <= data["DATE"] && data["DATE"] <= params.max_year) && data_travel == true) {
+                if ((data["COUNTRY_ONLY"] == params.country) && (data["DATE"] >= params.min_year && data["DATE"] <= params.max_year) && data_travel) {
                     if (params.filter1 == "1") {
                         filter_value["blaCTX-M-15_23"] = data["blaCTX-M-15_23"]
                         results.push(filter_value)
@@ -449,7 +488,7 @@ router.get('/:country/:min_year/:max_year/:travel', function (req, res, next) {
     let read_file = Tools.path_clean_db || Tools.path_clean
     fs.createReadStream(read_file)
         .pipe(csv())
-        .on('data', (data) => results.push(data))
+        .on('data', (data_) => results.push(data_))
         .on('end', () => {
             let travel = params.travel
             let data_travel = false
@@ -495,10 +534,10 @@ router.get('/:country/:min_year/:max_year/:travel', function (req, res, next) {
                         if (data["GENOTYPE_SIMPLE"] == "H58") {
                             country_unique_genotype[params.country]["H58"]++
                         }
-                        if (data["amr_category"] == "MDR") {
+                        if (data["MDR"] == "MDR") {
                             country_unique_genotype[params.country]["MDR"]++
                         }
-                        if (data["amr_category"] == "DCS") {
+                        if (data["dcs_category"] == "DCS") {
                             country_unique_genotype[params.country]["DCS"]++
                         }
                         if (data["azith_pred_pheno"] == "AzithR") {
@@ -516,36 +555,47 @@ router.get('/:country/:min_year/:max_year/:travel', function (req, res, next) {
                             "MDR": 0,
                             "DCS": 0,
                             "AzithR": 0,
+                            "CipI": 0,
+                            "CipR": 0,
                             "TOTAL_OCCURRENCE": 0
                         }
                     }
-                    if ((params.min_year <= data["DATE"] && data["DATE"] <= params.max_year) && data_travel) {
+
+                    if ((data["DATE"] >= params.min_year && data["DATE"] <= params.max_year) && data_travel) {
+                        country_unique_genotype[data["COUNTRY_ONLY"]]["TOTAL_OCCURRENCE"]++
                         if (country_unique_genotype[data["COUNTRY_ONLY"]]["GENOTYPES"]["GENOTYPES_LIST"].indexOf(data["GENOTYPE"]) == -1) {
                             country_unique_genotype[data["COUNTRY_ONLY"]]["GENOTYPES"]["GENOTYPES_LIST"].push(data["GENOTYPE"])
                             country_unique_genotype[data["COUNTRY_ONLY"]]["GENOTYPES"]["TOTAL"]++
                         }
-                        country_unique_genotype[data["COUNTRY_ONLY"]]["TOTAL_OCCURRENCE"]++
                         if (data["GENOTYPE_SIMPLE"] == "H58") {
                             country_unique_genotype[data["COUNTRY_ONLY"]]["H58"]++
                         }
-                        if (data["amr_category"] == "MDR") {
+                        if (data["MDR"] == "MDR") {
                             country_unique_genotype[data["COUNTRY_ONLY"]]["MDR"]++
                         }
-                        if (data["amr_category"] == "DCS") {
+                        if (data["dcs_category"] == "DCS") {
                             country_unique_genotype[data["COUNTRY_ONLY"]]["DCS"]++
                         }
                         if (data["azith_pred_pheno"] == "AzithR") {
                             country_unique_genotype[data["COUNTRY_ONLY"]]["AzithR"]++
                         }
+                        if (data["cip_pred_pheno"] == "CipI") {
+                            country_unique_genotype[data["COUNTRY_ONLY"]]["CipI"]++
+                        }
+                        if (data["cip_pred_pheno"] == "CipR") {
+                            country_unique_genotype[data["COUNTRY_ONLY"]]["CipR"]++
+                        }
                     }
-                }
 
+                }
             }
             for (let data in country_unique_genotype) {
                 country_unique_genotype[data]["H58"] = (country_unique_genotype[data]["H58"] / country_unique_genotype[data]["TOTAL_OCCURRENCE"]) * 100
                 country_unique_genotype[data]["MDR"] = (country_unique_genotype[data]["MDR"] / country_unique_genotype[data]["TOTAL_OCCURRENCE"]) * 100
                 country_unique_genotype[data]["DCS"] = (country_unique_genotype[data]["DCS"] / country_unique_genotype[data]["TOTAL_OCCURRENCE"]) * 100
                 country_unique_genotype[data]["AzithR"] = (country_unique_genotype[data]["AzithR"] / country_unique_genotype[data]["TOTAL_OCCURRENCE"]) * 100
+                country_unique_genotype[data]["CipI"] = (country_unique_genotype[data]["CipI"] / country_unique_genotype[data]["TOTAL_OCCURRENCE"]) * 100
+                country_unique_genotype[data]["CipR"] = (country_unique_genotype[data]["CipR"] / country_unique_genotype[data]["TOTAL_OCCURRENCE"]) * 100
                 delete country_unique_genotype[data].TOTAL_OCCURRENCE
             }
             if (params.country != "all") {
@@ -570,7 +620,6 @@ router.get('/:country/:min_year/:max_year/:travel', function (req, res, next) {
                         return 0;
                     })
             }
-
             return res.json(country_unique_genotype);
         });
 });

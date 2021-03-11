@@ -57,14 +57,21 @@ MONGO_URI= (see item 7 from manual)
 ```sh
 yarn start:prod
 ```
-#### 9. Under constrution 
 
-# creating clean.csv
+## Site
 
-Clean.csv should be created only if it does not exist in path assets / webscrap / clean.
-# Clean.csv structure 
+[HTTP](http://typhinet.erc.monash.edu/)
+[HTTPS](https://typhinet.erc.monash.edu/)
 
-For clean.csv to be created, 7 files must be in path assets / webscrap / raw_data. Being them:
+---
+
+# QUANDO DEVO CRIAR O CLEAN.CSV?
+
+O clean.csv deve ser criado somente caso ele não exista no path assets/webscrap/clean.
+
+# REQUISITOS PARA CRIAR O CLEAN.CSV
+
+Para que o clean.csv seja criado, é necessário que 7 arquivos estejam no path assets/webscrap/raw_data. Sendo eles:
 
 - pw_amr-genes.csv
 - pw_amr-profile.csv
@@ -74,30 +81,42 @@ For clean.csv to be created, 7 files must be in path assets / webscrap / raw_dat
 - pw_stats.csv
 - pw_typing.csv
 
-# File clean.CSV
+# COMO CRIAR O CLEAN.CSV
 
-Route to local run (create file):
+Para criar o clean.csv basta utilizar a rota:
+
+Rodando localmente:
 http://localhost:8080/api/file/create
 
-heroku deploy:
+Rodando no heroku:
 https://typhinet.herokuapp.com/api/file/create
 
-It should be noted that if the file is already created (clean.csv), it will be <b> EXCLUDED </b> and a new one will be generated. Therefore, it is not recommended that changes be made to this clean.csv file, any data update must be done in MongoDB and then the step.
+Deve-se atentar que caso o arquivo já esteja criado, ele irá ser <b>EXCLUÍDO</b> e um novo será gerado. Portanto, não é recomendável que sejam feitas alterações nesse arquivo clean.csv, qualquer atualização dos dados deve ser feita no MongoDB e então deverá ser utilizado o passo: [COMO CRIAR O CLEAN_DB.CSV](#COMO-CRIAR-O-CLEAN_DB.CSV)
 
-# Send the clean.csv to MONGODB
+# ENVIANDO O CLEAN.CSV PARA O MONGODB
 
-After creating clean.csv, to send the data to mongoDB just use the route:
+Após ter criado o clean.csv, para enviar os dados para o mongoDB basta utilizar a rota:
 
-# Create Clean_db.CSV
+Rodando localmente:
+http://localhost:8080/api/mongo/upload
 
-To download the data that is in the mongo just use the route:
+Rodando no heroku:
+https://typhinet.herokuapp.com/api/mongo/upload
 
+Quando o arquivo tiver sido enviado a mensagem: 
 
-Running on heroku:
+    Combined enviado para MongoDB com sucesso!
+
+Aparecerá no terminal.
+
+# COMO CRIAR O CLEAN_DB.CSV
+
+Para baixar os dados que estão no mongo basta utilizar a rota:
+
+Rodando localmente:
+http://localhost:8080/api/mongo/download
+
+Rodando no heroku:
 https://typhinet.herokuapp.com/api/mongo/download
 
-It is recommended to use this route only if any changes have been made to any data.
-
-## Site
-
-[Here](http://typhinet.erc.monash.edu/)
+É recomendado utilizar essa rota apenas caso tenha sido feito alguma alteração em algum dado.

@@ -9,7 +9,6 @@ import * as Tools from '../../services/services.js';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const router = express.Router()
 
-
 //Rota da qual criará o clean.csv
 router.get('/create', function (req, res) {
 
@@ -51,16 +50,6 @@ router.get('/create', function (req, res) {
                 //é retirado os espaços da esquerda e da direita. Para não criar ambiguidade de dados
                 let data_name = data["NAME"].toString()
                 data_name = data_name.trim()
-                /* 
-                obj_parser irá salvar um arquivo no seguinte formato:
-                obj_parser{
-                    NAME: (valor único),
-                    dado1: (valor),
-                    dado2: (valor),
-                    ...
-                    dadoN: (valor)
-                }
-                */
                 //Por ser um objeto que sempre conterá o NAME como o mesmo valor para todos os arquivos
                 //É ele quem será procurado pelo filtro abaixo, em todos os dados armazenados em obj_parser é procurado pelo
                 //objeto que possui o NAME do dado atual, para então serem feitas as filtragens nele.
@@ -83,9 +72,9 @@ router.get('/create', function (req, res) {
                 //Todos os if's abaixo estão verificando qual arquivo está sendo lido atualmente.
                 //É utilizado o indexOf em column_names para verificar o nome de 1 coluna que indentifique qual arquivo 
                 //Está sendo lido
-
+                let item = 0
                 //Arquivo aberto: pw_metadata
-                if (column_names.indexOf("COUNTRY") != -1) {
+                if (file === "pw_metadata.csv") {
                     //Essa primeira filtragem é referente ao campo DATE
                     //Para acessar os valores das colunas do csv atualmente aberto basta chamar data e então
                     //passar em forma de chave o nome da coluna desejada, abaixo por exemplo, para acessar a coluna DATE
@@ -127,27 +116,22 @@ router.get('/create', function (req, res) {
                         //TRAVEL_LOCATION deve ser o que deve ficar em COUNTRY_ONLY e o valor de COUNTRY_ONLY
                         //Deve ir para COUNTRY_PW
                         //E é isso que é feito aqui embaixo, o valor referente ao TRAVEL_LOCATION é posto em COUNTRY_ONLY
-                        obj_parser["COUNTRY_ONLY"] = TRAVEL[2]
+                        obj_parser["COUNTRY_ONLY"] = TRAVEL[0]
+                        obj_parser["REGION_IN_COUNTRY"] = "-"
+                        obj_parser["TRAVEL"] = TRAVEL[1]
+                        obj_parser["COUNTRY_ORIGIN"] = TRAVEL[0]
+                        obj_parser["TRAVEL_LOCATION"] = TRAVEL[2]
                         //Aqui ele verifica se o valor de COUNTRY é: None ou Unknown ou "", caso seja algum deles o valor de
                         //COUNTRY_PW se torna: "-"
-                        obj_parser["COUNTRY_PW"] = (COUNTRY == "None" || COUNTRY == "Unknown" || COUNTRY == "") ? "-" : TRAVEL[0].trim()
-                        obj_parser["REGION_IN_COUNTRY"] = "-"
+                        // obj_parser["COUNTRY_PW"] = (COUNTRY == "None" || COUNTRY == "Unknown" || COUNTRY == "") ? "-" : TRAVEL[0].trim()
                         //Caso o valor de Travel seja mais que apenas Travel ele entra aqui.
                         //Caso se trate de No Travel Reported o valor é alterado para local
                         //Caso seja qualquer outro valor, é alterado para unknown
                         if (TRAVEL[1] == "No Travel Information" || TRAVEL[1] == "No Travel Reported") {
                             obj_parser["TRAVEL"] = TRAVEL[1] == "No Travel Information" ? "unknown" : "local"
-                        } else {
-                            obj_parser["TRAVEL"] = TRAVEL[1]
                         }
-                        obj_parser["TRAVEL_LOCATION"] = TRAVEL[2]
                         //Aqui embaixo ele verifica se o valor de TRAVEL é unknown ou local, para alterar o valor do
                         //COUNTRY_ONLY para o valor contido em COUNTRY_PW e inserir o valor "-" nas colunas COUNTRY_PW e TRAVEL_LOCATION
-                        if (obj_parser["TRAVEL"] == "unknown" || obj_parser["TRAVEL"] == "local") {
-                            obj_parser["COUNTRY_ONLY"] = obj_parser["COUNTRY_PW"]
-                            obj_parser["COUNTRY_PW"] = "-"
-                            obj_parser["TRAVEL_LOCATION"] = "-"
-                        }
                         //Caso não possua travel ele vem para o else
                     } else {
                         //delete_countrys são os países que não de vem entrar na filtragem
@@ -193,8 +177,8 @@ router.get('/create', function (req, res) {
                         }
                         obj_parser["REGION_IN_COUNTRY"] = "-"
                         obj_parser["TRAVEL"] = "unknown"
+                        obj_parser["COUNTRY_ORIGIN"] = obj_parser["COUNTRY_ONLY"]
                         obj_parser["TRAVEL_LOCATION"] = "-"
-                        obj_parser["COUNTRY_PW"] = "-"
                     }
                     //Esse if verifica se o valor do país possui ':' se possuir, é porque ele possui o valor de REGION_IN_COUNTRY
                     //pois o valor é provavelmente desse tipo aqui PAÍS:REGIAO
@@ -204,15 +188,12 @@ router.get('/create', function (req, res) {
                         //Faz o split, retornando o valor do país para a variável COUNTRY e retornando o valor de REGION para REGION_IN_COUNTRY
                         [COUNTRY, REGION_IN_COUNTRY] = COUNTRY.split(":")
                         //Verifica se o valor do país é None, Unknown ou "", caso seja algum desses ele altera o valor do país para "-"
-                        obj_parser["COUNTRY_ONLY"] = (COUNTRY == "None" || COUNTRY == "Unknown" || COUNTRY == "") ? "-" : COUNTRY
+                        obj_parser["COUNTRY_ONLY"] = COUNTRY
+                        obj_parser["COUNTRY_ORIGIN"] = COUNTRY
                         //Retira os espaçoes da esquerda e direita do REGION_IN_COUNTRY
                         REGION_IN_COUNTRY = REGION_IN_COUNTRY.trim()
                         //Verifica se o valor de REGION_IN_COUNTRY é None/ Unknown ou "", caso seja algum deles o valor é alterado para "-"
-                        obj_parser["REGION_IN_COUNTRY"] = (REGION_IN_COUNTRY == "None" || REGION_IN_COUNTRY == "Unknown" || REGION_IN_COUNTRY == "") ? "-" : REGION_IN_COUNTRY
-                        //Verifica se o valor de TRAVEL no obj_parser é undefined, se for, é alterado o valor dele para "unknown"
-                        obj_parser["TRAVEL"] = obj_parser["TRAVEL"] == undefined ? "unknown" : obj_parser["TRAVEL"]
-                        //Insere o valor de COUNTRY_PW para "-"
-                        obj_parser["COUNTRY_PW"] = "-"
+                        obj_parser["REGION_IN_COUNTRY"] = (REGION_IN_COUNTRY == "None") ? "-" : REGION_IN_COUNTRY
                         //Verifica se há alguma informação de travel no REGION_IN_COUNTRY
                         if (REGION_IN_COUNTRY.indexOf("travel") != -1 || REGION_IN_COUNTRY.indexOf("Travel") != -1) {
                             //Faz o split do REGION_IN_COUNTRY 
@@ -221,42 +202,37 @@ router.get('/create', function (req, res) {
                             REGION_IN_COUNTRY = TRAVEL[0]
                             //Valores de travels que não são válidos
                             const remove_travels = ["No info", "", "Unknown"]
+                            const remove_travels2 = ["No travel abroad", "No Travel Information", "No Travel Reported"]
                             //Verifica se o valor de Travel possui algum desses valores
-                            if (remove_travels.indexOf(TRAVEL[2]) != -1 || TRAVEL[1] == "No travel abroad" || TRAVEL[1] == "No Travel Information" || TRAVEL[1] == "No Travel Reported") {
+                            if (remove_travels.indexOf(TRAVEL[2]) != -1 || remove_travels2.indexOf(TRAVEL[1]) != -1) {
                                 TRAVEL_LOCATION = "-"
                                 //Caso o valor de Travel seja o No Travel Reported, o valor de Travel será Local
                                 if (TRAVEL[1] == "No Travel Reported") {
                                     TRAVEL = "local"
-                                //Se não, ele será unknown
+                                    //Se não, ele será unknown
                                 } else {
                                     TRAVEL = "unknown"
                                 }
-                              //Caso ele não seja nenhuma das informações acima, é inserido o valor de TRAVEL_LOCATION
-                              //E também é verificado se o valor de travel é "-" e se for, troca o valor por unknown
+                                //Caso ele não seja nenhuma das informações acima, é inserido o valor de TRAVEL_LOCATION
+                                //E também é verificado se o valor de travel é "-" e se for, troca o valor por unknown
                             } else {
                                 TRAVEL_LOCATION = TRAVEL[2]
                                 TRAVEL = TRAVEL[1] == "-" ? "unknown" : TRAVEL[1]
-                            }
-                            //Verifica se o valor de REGION_IN_COUNTRY possui /, se possuir, é feito um split nesse valor e é escolhido o valor do [0]
-                            if (REGION_IN_COUNTRY.indexOf("/") != -1) {
-                                REGION_IN_COUNTRY = REGION_IN_COUNTRY.split("/")[0]
                             }
                             //Abaixo ele verifica se o valor de REGION_IN_COUNTRY é None ou Unknown ou "" se for algum desses o valor será alterado para "-"
                             obj_parser["REGION_IN_COUNTRY"] = (REGION_IN_COUNTRY == "None" || REGION_IN_COUNTRY == "Unknown" || REGION_IN_COUNTRY == "") ? "-" : REGION_IN_COUNTRY
                             obj_parser["TRAVEL"] = TRAVEL
                             obj_parser["TRAVEL_LOCATION"] = TRAVEL_LOCATION
-                            if (TRAVEL == "unknown") {
-                                obj_parser["COUNTRY_PW"] = "-"
-                                obj_parser["COUNTRY_ONLY"] = COUNTRY
-                            } else {
-                                obj_parser["COUNTRY_PW"] = obj_parser["COUNTRY_ONLY"]
-                                obj_parser["COUNTRY_ONLY"] = TRAVEL_LOCATION
-                            }
-
                         }
                     }
+
                     //Esse for é apenas para completar as restantes das colunas da planilha
                     for (let column of headers_metadata) {
+                        if (column === "STRAIN" || column === "SANGER LANE" || column === "ACCESSION") {
+                            if (data[column] === "NA") {
+                                data[column] = ""
+                            }
+                        }
                         obj_parser[column] = data[column]
                     }
                     //Insere o valor original de COUNTRY antes das filtragens na coluna LOCATION
@@ -294,7 +270,7 @@ router.get('/create', function (req, res) {
                     if (h58_genotypes.indexOf(data['GENOTYPHI GENOTYPE']) != -1) {
                         obj_parser["h58_genotypes"] = data['GENOTYPHI GENOTYPE']
                         obj_parser["GENOTYPE_SIMPLE"] = "H58"
-                    //Se não ele é classificado como Non-H58
+                        //Se não ele é classificado como Non-H58
                     } else {
                         obj_parser["h58_genotypes"] = "-"
                         obj_parser["GENOTYPE_SIMPLE"] = "Non-H58"
@@ -302,7 +278,7 @@ router.get('/create', function (req, res) {
                     //Se o gene atual tiver com o nome na lista curate_223 então o GENOTYPE dele será de 2.2.3
                     if (curate_223.indexOf(data['NAME']) != -1) {
                         obj_parser["GENOTYPE"] = "2.2.3"
-                    //Se não ele receberá o valor que está em GENOTYPHI GENOTYPE
+                        //Se não ele receberá o valor que está em GENOTYPHI GENOTYPE
                     } else {
                         obj_parser["GENOTYPE"] = data['GENOTYPHI GENOTYPE']
                     }
@@ -353,7 +329,7 @@ router.get('/create', function (req, res) {
                     // XDR vai ser XDR
                     if (obj_parser["MDR"] == "MDR" && data['blaCTX-M-15_23'] == "1" && data['qnrS'] == "1") {
                         obj_parser["XDR"] = "XDR"
-                    //Se não vai ser "-"
+                        //Se não vai ser "-"
                     } else {
                         obj_parser["XDR"] = "-"
                     }
@@ -387,7 +363,7 @@ router.get('/create', function (req, res) {
                     //Se for, ele insere o valor do qnrS e qnrB na coluna cip_pheno_qrdr_gene
                     if (obj_parser["cip_pheno_qrdr_gene"] == undefined) {
                         obj_parser["cip_pheno_qrdr_gene"] = data["qnrS"].toString() + data["qnrB"].toString()
-                    //Se não for, concatena o valor que já tem em cip_pheno_qrdr_gene com o valor de qnrS
+                        //Se não for, concatena o valor que já tem em cip_pheno_qrdr_gene com o valor de qnrS
                     } else {
                         obj_parser["cip_pheno_qrdr_gene"] = obj_parser["cip_pheno_qrdr_gene"] + data["qnrS"].toString() + data["qnrB"].toString()
                     }
@@ -398,7 +374,7 @@ router.get('/create', function (req, res) {
                         } else {
                             obj_parser["dcs_mechanisms"] = `_QRDR`
                         }
-                    //Se não for undefined, ele vai concatenar o valor que já tem em dcs_mechanisms com o _QRDR + qnrS
+                        //Se não for undefined, ele vai concatenar o valor que já tem em dcs_mechanisms com o _QRDR + qnrS
                     } else {
                         if (data["qnrS"] == "1") {
                             obj_parser["dcs_mechanisms"] = obj_parser["dcs_mechanisms"] + `_QRDR + qnrS`
@@ -425,7 +401,7 @@ router.get('/create', function (req, res) {
                     //Verifica se o dcs_mechanisms é undefined, se for, ele recebe o valor de num_qrdr
                     if (obj_parser["dcs_mechanisms"] == undefined) {
                         obj_parser["dcs_mechanisms"] = obj_parser["num_qrdr"]
-                    //Se não, ele concatena o valor já que tenha em dcs_mechanisms com num_qrdr
+                        //Se não, ele concatena o valor já que tenha em dcs_mechanisms com num_qrdr
                     } else {
                         obj_parser["dcs_mechanisms"] = obj_parser["num_qrdr"] + obj_parser["dcs_mechanisms"]
                     }
@@ -472,7 +448,7 @@ router.get('/create', function (req, res) {
                         if (cid_pred_pheno == "CipI01") {
                             obj_parser["cip_pred_pheno"] = "CipR"
                         }
-                    //Se for undefined, ele só irá inserir o valor de cip_pred_pheno em cip_pheno_qrdr_gene
+                        //Se for undefined, ele só irá inserir o valor de cip_pred_pheno em cip_pheno_qrdr_gene
                     } else {
                         obj_parser["cip_pheno_qrdr_gene"] = obj_parser["cip_pred_pheno"].toString()
                     }
@@ -513,10 +489,10 @@ router.get('/create', function (req, res) {
                     if (XDR == "XDR") {
 
                         obj_parser["amr_category"] = "XDR"
-                    //Caso não seja XDR, irá verificar se o MDR é igual a MDR, se o DCS é igual a DCS
-                    //se cip_pred_pheno é CipI, se cip_pheno_qrdr_gene é CipI00
-                    //e se azith_pred_pheno é AzithR, se sim, o valor de amr_category será AzithR_DCS_MDR
-                    //O mesmo será feito para todos os else if abaixo
+                        //Caso não seja XDR, irá verificar se o MDR é igual a MDR, se o DCS é igual a DCS
+                        //se cip_pred_pheno é CipI, se cip_pheno_qrdr_gene é CipI00
+                        //e se azith_pred_pheno é AzithR, se sim, o valor de amr_category será AzithR_DCS_MDR
+                        //O mesmo será feito para todos os else if abaixo
                     } else if (MDR == "MDR" && dcs_category == "DCS" &&
                         cip_pred_pheno == "CipI" &&
                         cip_pheno_qrdr_gene == "CipI00" &&
@@ -587,8 +563,8 @@ router.get('/create', function (req, res) {
                 //data_to_write
                 if (new_obj > 0) {
                     data_to_write.push(obj_parser)
-                //Caso ele não seja novo, ele apenas substitui o obj_parser que já estava na lista pelo novo
-                //com as novas informações
+                    //Caso ele não seja novo, ele apenas substitui o obj_parser que já estava na lista pelo novo
+                    //com as novas informações
                 } else {
                     data_to_write[index] = obj_parser
                 }
@@ -597,11 +573,26 @@ router.get('/create', function (req, res) {
             })
 
             .on('end', async () => {
+                data_to_write.forEach(element => {
+                    for (const key in element) {
+                        if (element[key] === "") {
+                            element[key] = "-"
+                        }
+                    }
+                });
+
+                let temp = []
+                for (let d = 0; d < data_to_write.length; d++) {
+                    if (data_to_write[d]["COUNTRY_ONLY"] !== "-" && data_to_write[d]["DATE"] !== "-") {
+                        temp.push(data_to_write[d])
+                    }
+                }
+
                 //Chama essa função para criar um arquivo csv dentro da pasta clean
                 //o primeiro parâmetro é um vetor de objetos que deverão ser escritos no csv
                 //o segundo é o nome ocm a extensão
-                await Tools.CreateFile(data_to_write, "clean.csv")
-                
+                await Tools.CreateFile(temp, "clean.csv")
+
             })
     }
     return res.json({ "Finished": "All done!" });
