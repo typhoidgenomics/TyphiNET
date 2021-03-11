@@ -1,58 +1,61 @@
-![TyphiNET_Logo](assets/img/logo-typhinet.png) 
+![TyphiNET_Logo](assets/img/logo-typhinet.png)
+
 # TyphiNET web dashboard
-![Code Count](https://img.shields.io/github/languages/count/zadyson/TyphiNET) 
-![Main Code Base](https://img.shields.io/github/languages/top/zadyson/TyphiNET) 
-![License](https://img.shields.io/badge/) 
-![Version](https://img.shields.io/badge/version-1.0-red) 
-![Last Commit](https://img.shields.io/github/last-commit/zadyson/TyphiNET) 
-![Open Issues](https://img.shields.io/github/issues-raw/zadyson/TyphiNET) 
+
+![Code Count](https://img.shields.io/github/languages/count/zadyson/TyphiNET)
+![Main Code Base](https://img.shields.io/github/languages/top/zadyson/TyphiNET)
+![Version](https://img.shields.io/badge/version-1.0-red)
+![Last Commit](https://img.shields.io/github/last-commit/zadyson/TyphiNET)
+![Open Issues](https://img.shields.io/github/issues-raw/zadyson/TyphiNET)
 ![Repo Size](https://img.shields.io/github/repo-size/zadyson/TyphiNET)
 
 ## Table of Contents
 
 * [Description](#Description)
-* [Installation](#Installation
+* [Installation](#Installation)
 
 ## Description
 
-TyphiNET is a dashboard for visualising global *Salmonella* Typhi genotype and antimicrobial resistance data.  Our interface allows you to search for specific data on individual countries, and over specific time periods.  Data are regularly updated (last updated November 5th 2020) from [Pathogenwatch](https://pathogen.watch/).
+TyphiNET is a dashboard for visualising global *Salmonella* Typhi genotype and antimicrobial resistance data.  Our interface allows you to search for specific data on individual countries, and over specific time periods.  Data are regularly updated (last updated/curation on March 11th 2021) from [Pathogenwatch](https://pathogen.watch/).
 
 ## Installation
 
-#### 1. Install <a href="https://git-scm.com/">GIT</a>, <a href="https://www.npmjs.com/get-npm">NPM</a> and <a href="https://www.mongodb.com/try/download/community?tck=docs_server">MongoDB</a>:
+#### 1. Install <a href="https://git-scm.com/">GIT</a>, <a href="https://www.npmjs.com/get-npm">NPM</a> and <a href="https://www.mongodb.com/try/download/community?tck=docs_server">MongoDB</a>
+
 ```Note: While installing MongoDB, check the option to also install MongoDB Compass. If there's no option you can download it here:``` <a href="https://www.mongodb.com/try/download/compass">MongoDB Compass</a>
 
-#### 2. Install YARN with the command:
+#### 2. Install YARN with the command
 
 ```sh
 npm install -g yarn
 ```
 
-#### 3. On the command line, run the commands:
+#### 3. On the command line, run the commands
 
 ```sh
 git clone https://github.com/zadyson/TyphiNET.git
 ```
 
-#### 4. Inside the project folder run this command to install the server dependecies:
+#### 4. Inside the project folder run this command to install the server dependecies
 
 ```sh
 npm install
 ```
 
-#### 5. Inside the folder ```/client``` run the previous command to install the client dependecies.
+#### 5. Inside the folder ```/client``` run the previous command to install the client dependecies
 
-#### 6. Inside the project folder create a file named ```.env```, inside it copy the following code:
+#### 6. Inside the project folder create a file named ```.env```, inside it copy the following code
 
 ```sh
 EMAIL_USER= (insert here the email to which you want to receive the Contact Us messages)
 EMAIL_PASSWD= (password from previous email)
 MONGO_URI= (see item 7 from manual)
+MONGO_URI_ATLAS=(see item 7 from manual to access mongoDB Atlas cloud)
 ```
 
-#### 7. When opening MongoDB Compass, you will see a white box with a connection string. Copy this string and paste it on the variable ```MONGO_URI```. After click the ```Connect``` button.
+#### 7. When opening MongoDB Compass, you will see a white box with a connection string. Copy this string and paste it on the variable ```MONGO_URI```. After click the ```Connect``` button
 
-#### 8. Finally, inside the project folder run the command and wait for the program to open on your browser:
+#### 8. Finally, inside the project folder run the command and wait for the program to open on your browser
 
 ```sh
 yarn start:prod
@@ -62,57 +65,49 @@ yarn start:prod
 
 [HTTP](http://typhinet.erc.monash.edu/)
 [HTTPS](https://typhinet.erc.monash.edu/)
+[dev](https://typhinet.herokuapp.com//)
 
----
+TODO  - need to format to route API style and add more informations
 
-# QUANDO DEVO CRIAR O CLEAN.CSV?
+# Create the clean.csv
 
-O clean.csv deve ser criado somente caso ele não exista no path assets/webscrap/clean.
+clean.csv need be create only if the file doesn't exist in the directory assets/webscrap/clean.
 
-# REQUISITOS PARA CRIAR O CLEAN.CSV
+# Requeriments to create the clean.csv
 
-Para que o clean.csv seja criado, é necessário que 7 arquivos estejam no path assets/webscrap/raw_data. Sendo eles:
+clean.csv, requires 7 files inside the directory assets/webscrap/raw_data:
 
-- pw_amr-genes.csv
-- pw_amr-profile.csv
-- pw_amr-snps.csv
-- pw_metadata.csv
-- pw_species-prediction.csv
-- pw_stats.csv
-- pw_typing.csv
+* pw_amr-genes.csv
+* pw_amr-profile.csv
+* pw_amr-snps.csv
+* pw_metadata.csv
+* pw_species-prediction.csv
+* pw_stats.csv
+* pw_typing.csv
 
-# COMO CRIAR O CLEAN.CSV
+# Create the file clean.csv 
 
-Para criar o clean.csv basta utilizar a rota:
+Note: Never edit the clean.csv file; If you need curate the data, make the changes  in the mongoDB and synch the data.
 
-Rodando localmente:
-http://localhost:8080/api/file/create
+local route
 
-Rodando no heroku:
-https://typhinet.herokuapp.com/api/file/create
+<http://localhost:8080/api/file/create>
 
-Deve-se atentar que caso o arquivo já esteja criado, ele irá ser <b>EXCLUÍDO</b> e um novo será gerado. Portanto, não é recomendável que sejam feitas alterações nesse arquivo clean.csv, qualquer atualização dos dados deve ser feita no MongoDB e então deverá ser utilizado o passo: [COMO CRIAR O CLEAN_DB.CSV](#COMO-CRIAR-O-CLEAN_DB.CSV)
+heroku route
+<https://typhinet.herokuapp.com/api/file/create>
 
-# ENVIANDO O CLEAN.CSV PARA O MONGODB
+# Upload clean.csv to mongoDB
 
-Após ter criado o clean.csv, para enviar os dados para o mongoDB basta utilizar a rota:
+local route
+<http://localhost:8080/api/mongo/upload>
 
-Rodando localmente:
-http://localhost:8080/api/mongo/upload
+heroku route
+<https://typhinet.herokuapp.com/api/mongo/upload>
 
-Rodando no heroku:
-https://typhinet.herokuapp.com/api/mongo/upload
+# Create the file clean_db.csv from mongoDB
 
-Quando o arquivo tiver sido enviado a mensagem: 
+local route
+<http://localhost:8080/api/mongo/download>
 
-    Combined enviado para MongoDB com sucesso!
-
-Aparecerá no terminal.
-
-# COMO CRIAR O CLEAN_DB.CSV
-
-Para baixar os dados que estão no mongo basta utilizar a rota:
-
-Rodando localmente:
-http://localhost:8080/api/mongo/download
-
+heroku route
+<https://typhinet.herokuapp.com/api/mongo/download>
