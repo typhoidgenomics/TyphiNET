@@ -61,7 +61,7 @@ MONGO_URI_ATLAS=(see item 7 from manual to access mongoDB Atlas cloud)
 yarn start:prod
 ```
 
-## Site
+#### Site
 
 [HTTP](http://typhinet.erc.monash.edu/)
 [HTTPS](https://typhinet.erc.monash.edu/)
@@ -69,11 +69,11 @@ yarn start:prod
 
 TODO  - need to format to route API style and add more informations
 
-# Create the clean.csv
+#### Create the clean.csv
 
 clean.csv need be create only if the file doesn't exist in the directory assets/webscrap/clean.
 
-# Requeriments to create the clean.csv
+#### Requeriments to create the clean.csv
 
 clean.csv, requires 7 files inside the directory assets/webscrap/raw_data:
 
@@ -85,7 +85,7 @@ clean.csv, requires 7 files inside the directory assets/webscrap/raw_data:
 * pw_stats.csv
 * pw_typing.csv
 
-# Create the file clean.csv 
+#### Create the file clean.csv 
 
 Note: Never edit the clean.csv file; If you need curate the data, make the changes  in the mongoDB and synch the data.
 
@@ -96,7 +96,7 @@ local route
 heroku route
 <https://typhinet.herokuapp.com/api/file/create>
 
-# Upload clean.csv to mongoDB
+#### Upload clean.csv to mongoDB
 
 local route
 <http://localhost:8080/api/mongo/upload>
@@ -104,7 +104,7 @@ local route
 heroku route
 <https://typhinet.herokuapp.com/api/mongo/upload>
 
-# Create the file clean_db.csv from mongoDB
+#### Create the file clean_db.csv from mongoDB
 
 local route
 <http://localhost:8080/api/mongo/download>
