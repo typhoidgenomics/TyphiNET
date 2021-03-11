@@ -2,7 +2,7 @@
 # TyphiNET web dashboard
 ![Code Count](https://img.shields.io/github/languages/count/zadyson/TyphiNET) 
 ![Main Code Base](https://img.shields.io/github/languages/top/zadyson/TyphiNET) 
-![License](https://img.shields.io/badge/license-MIT-blue) 
+![License](https://img.shields.io/badge/) 
 ![Version](https://img.shields.io/badge/version-1.0-red) 
 ![Last Commit](https://img.shields.io/github/last-commit/zadyson/TyphiNET) 
 ![Open Issues](https://img.shields.io/github/issues-raw/zadyson/TyphiNET) 
@@ -11,7 +11,7 @@
 ## Table of Contents
 
 * [Description](#Description)
-* [Installation](#Installation)
+* [Installation](#Installation
 
 ## Description
 
@@ -116,7 +116,3 @@ Para baixar os dados que estão no mongo basta utilizar a rota:
 Rodando localmente:
 http://localhost:8080/api/mongo/download
 
-Rodando no heroku:
-https://typhinet.herokuapp.com/api/mongo/download
-
-É recomendado utilizar essa rota apenas caso tenha sido feito alguma alteração em algum dado.
