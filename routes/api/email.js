@@ -22,7 +22,7 @@ router.post('/', async function(req, res, next) {
 
     let info = await transporter.sendMail({
         from: `"${email.firstName} ${email.lastName}" <typhinet@gmail.com>`, // sender address 
-        to: "lcerdeira@gmail.com", // list of receivers
+        to: "user@gmail.com", // list of receivers
         subject: `Company ${email.company} intertest`, // Subject line
         text: "", // plain text body
         html: `
