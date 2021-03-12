@@ -1,10 +1,10 @@
 import ObjectsToCsv from 'objects-to-csv'
 import fs from 'fs'
+import path from 'path'
 import { dirname } from 'path'
 import chokidar from 'chokidar'
 import { fileURLToPath } from 'url'
-const __dirname = dirname(fileURLToPath(
-    import.meta.url))
+const __dirname = dirname(fileURLToPath(import.meta.url))
 const path_clean = path.join(__dirname, '../assets/webscrap/clean/clean.csv')
 var path_clean_db
 const watcher = chokidar.watch(path.join(__dirname, '../assets/webscrap/clean/'), { ignored: /^\./, persistent: true })
