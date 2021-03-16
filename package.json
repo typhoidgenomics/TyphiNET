@@ -14,10 +14,10 @@
         "predeploy": "npm run build",
         "heroku-postbuild": "yarn build"
     },
-        "homepage": "https://lcerdeira.github.io/TyphiNET",
     "eslintConfig": {
         "extends": "react-app"
     },
+    "license": "GPL-3.0",
     "dependencies": {
         "chokidar": "^3.5.1",
         "cookie-parser": "~1.4.4",
