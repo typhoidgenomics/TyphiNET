@@ -5,8 +5,7 @@ import path from 'path';
 import { dirname } from 'path'
 import { fileURLToPath } from 'url'
 import * as Tools from '../../services/services.js';
-const __dirname = dirname(fileURLToPath(
-    import.meta.url));
+const __dirname = dirname(fileURLToPath(import.meta.url));
 const router = express.Router()
 
 //Route GET to create the clean.csv
