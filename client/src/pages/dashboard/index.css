@@ -8,6 +8,22 @@
   padding-bottom: calc(16px + env(safe-area-inset-bottom))
 }
 
+.info-button{
+  border: none;
+  color: black;
+  display: inline-block;
+  cursor: pointer;
+  border-radius: 50px;
+  height: 22px;
+  margin-left: 5px;
+  text-transform: uppercase;
+}
+
+.info-button:hover {
+  background-color: rgba(128, 128, 128, 0.486);
+  color: white;
+}
+
 .info-wrapper {
   display: flex;
   flex-direction: row;
