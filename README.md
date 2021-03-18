@@ -5,6 +5,7 @@
 ![Code Count](https://img.shields.io/github/languages/count/zadyson/TyphiNET)
 ![Main Code Base](https://img.shields.io/github/languages/top/zadyson/TyphiNET)
 ![Version](https://img.shields.io/badge/version-1.0-red)
+![License](https://img.shields.io/badge/license-GPLv3-blue) 
 ![Last Commit](https://img.shields.io/github/last-commit/zadyson/TyphiNET)
 ![Open Issues](https://img.shields.io/github/issues-raw/zadyson/TyphiNET)
 ![Repo Size](https://img.shields.io/github/repo-size/zadyson/TyphiNET)
