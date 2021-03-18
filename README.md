@@ -68,7 +68,9 @@ yarn start:prod
 [HTTPS](https://typhinet.erc.monash.edu/)
 [dev](https://typhinet.herokuapp.com//)
 
-TODO  - need to format to route API style and add more informations
+#### Notes
+
+Comment or uncomment line, inside the file constant.js (client/src/constant.js) for app point to correct API route (Heroku por localhost)  
 
 #### Create the clean.csv
 
