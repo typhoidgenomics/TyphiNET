@@ -4,19 +4,15 @@
   display: flex;
   flex-direction: column;
   background-color: rgba(0, 0, 0, 0.1);
-  padding: 16px;
   padding-bottom: calc(16px + env(safe-area-inset-bottom))
 }
 
-.info-button{
-  border: none;
-  color: black;
-  display: inline-block;
+.icon-info{
   cursor: pointer;
-  border-radius: 50px;
-  height: 22px;
   margin-left: 5px;
-  text-transform: uppercase;
+  color: white;
+  background-color: black;
+  border-radius: 100px;
 }
 
 .info-button:hover {
@@ -280,7 +276,6 @@
 }
 
 .footer {
-  margin: 16px -16px -16px -16px;
   padding: 16px;
   display: flex;
   flex-direction: row;
@@ -338,6 +333,7 @@
   text-align: center;
   font-size: 18px;
   font-weight: 500;
+  word-wrap: normal;
 }
 
 .download-sheet-button {
@@ -388,6 +384,7 @@
   justify-content: space-around;
   margin-top: 24px;
   margin-bottom: -8px;
+  padding: 0px 16px;
 }
 
 .modal-close-button {
@@ -400,9 +397,6 @@
 }
 
 @media (max-width: 767px) {
-  .dashboard {
-    width: unset;
-  }
   .footer {
     flex-direction: column;
     text-align: center;
