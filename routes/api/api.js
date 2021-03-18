@@ -381,7 +381,11 @@ router.get('/:filter1/:country/:min_year/:max_year/:travel', function (req, res,
 
                 let filter_value = new Object()
                 filter_value["NAME"] = data["NAME"]
-                filter_value["COUNTRY_ONLY"] = data["COUNTRY_ONLY"]
+                if (data["TRAVEL"] == "travel") {
+                    filter_value["COUNTRY_ONLY"] = data["TRAVEL_LOCATION"]
+                }else{
+                    filter_value["COUNTRY_ONLY"] = data["COUNTRY_ONLY"]
+                }
                 filter_value["YEAR"] = data["DATE"]
                 filter_value["GENOTYPE"] = data["GENOTYPE"]
 
@@ -623,5 +627,12 @@ router.get('/:country/:min_year/:max_year/:travel', function (req, res, next) {
             return res.json(country_unique_genotype);
         });
 });
+
+router.get('/totalGenotypes', function (req, res, next){
+    fs.readFile('assets/webscrap/clean/totalGenotypes.txt', (err, data) => {
+        let genotypes = data.toString().split(',')
+        return res.json({genotypes: genotypes})
+    })
+})
 
 export default router
