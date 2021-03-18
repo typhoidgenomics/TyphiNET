@@ -18,7 +18,7 @@ import ReactTooltip from "react-tooltip";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Brush, LineChart, Line, Legend } from 'recharts';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus, faMinus, faCrosshairs, faCamera, faTable, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { faPlus, faMinus, faCrosshairs, faCamera, faTable, faTimes, faInfoCircle} from '@fortawesome/free-solid-svg-icons'
 import download from 'downloadjs';
 import { svgAsPngUri } from 'save-svg-as-png';
 import typhinetLogoImg from '../../assets/img/logo-typhinet.png';
@@ -140,6 +140,7 @@ const DashboardPage = () => {
   const [contactModalVisible, setContactModalVisible] = useState(false)
 
   const isDesktop = window.innerWidth > 767
+  const isMobile = window.innerWidth < 500
 
   const genotypes = [
     '0.0.1', '0.0.2', '0.0.3', '0.1',
@@ -794,13 +795,13 @@ const DashboardPage = () => {
     .range(["#4575b4", "#91bfdb", "#e0f3f8", "#fee090", "#fc8d59", "#d73027"]);
 
   const mapRedColorScale = scaleLinear()
-    .domain([1, 50, 100])
+    .domain([0, 50, 100])
     .range(["#ffebee", "#f44336", "#b71c1c"]);
 
   const tooltip = (positionY, width1, width2, sort, wrapperS, stroke, chart = -1) => {
     return (
       <Tooltip
-        position={{ y: positionY }}
+        position={{ y: positionY, x: isMobile ? -20: 0 }}
         wrapperStyle={wrapperS}
         content={({ active, payload, label }) => {
           if (payload !== null) {
@@ -826,8 +827,8 @@ const DashboardPage = () => {
                       return (
                         <div key={index + item} style={{ display: "flex", flexDirection: "row", alignItems: "center", width: width2, marginBottom: 8 }}>
                           <div style={{ backgroundColor: stroke ? item.stroke : item.fill, height: 18, width: 18, border: "solid rgb(0,0,0,0.75) 0.5px", flex: "none" }} />
-                          <div style={{ display: "flex", flexDirection: "column", marginLeft: 8 }}>
-                            <span style={{ fontFamily: "Montserrat", color: "rgba(0,0,0,0.75)", fontWeight: 500, fontSize: 14 }}>{item.name}</span>
+                          <div style={{ display: "flex", flexDirection: "column", marginLeft: 8, width: "95%" }}>
+                            <span style={{ fontFamily: "Montserrat", color: "rgba(0,0,0,0.75)", fontWeight: 500, fontSize: 14, wordWrap: 'break-word', width: isMobile ? '80%' : '100%' }}>{item.name}</span>
                             <span style={{ fontFamily: "Montserrat", color: "rgba(0,0,0,0.75)", fontSize: 12 }}>N = {item.value}</span>
                             <span style={{ fontFamily: "Montserrat", color: "rgba(0,0,0,0.75)", fontSize: 10 }}>{percentage}%</span>
                           </div>
@@ -856,9 +857,8 @@ const DashboardPage = () => {
       }
       maxH = Math.ceil(maxH / 50) * 50
       return (
-        <ResponsiveContainer width="90%">
+        <ResponsiveContainer width="100%">
           <BarChart
-            width={500}
             height={300}
             data={populationStructureChartData}
             margin={{
@@ -870,7 +870,7 @@ const DashboardPage = () => {
             <YAxis domain={[0, maxH]} />
             <Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} />
 
-            {tooltip(300, 550, "20%", false, { zIndex: 100 }, false)}
+            {tooltip(300, window.innerWidth > 600?  550 : 250, window.innerWidth > 600 ? "20%" : "50%", false, { zIndex: 100, top: 20 }, false)}
             {genotypes.map((item) => <Bar dataKey={item} stackId="a" fill={getColorForGenotype(item)} />)}
           </BarChart>
         </ResponsiveContainer>
@@ -890,7 +890,7 @@ const DashboardPage = () => {
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis type={"number"} domain={[0, chartMaxWidth]} />
             <YAxis dataKey="name" type={"category"} domain={[0, 50]}/>
-            {tooltip(300, 700, "14.28%", false, { zIndex: 100 }, false)}
+            {tooltip(300, window.innerWidth > 600?  700 : 250, window.innerWidth > 600 ? "14.28%" : "50%", false, { zIndex: 100 }, false)}
             {genotypes.map((item) => <Bar dataKey={item} stackId="a" barSize={50} fill={getColorForGenotype(item)} />)}
           </BarChart>
         </ResponsiveContainer>
@@ -905,7 +905,6 @@ const DashboardPage = () => {
     }
 
     const data = amrClassChartData.slice(0, amrClassChartData.length - 1)
-    console.log(data)
     return (
       <ResponsiveContainer width="90%">
         <BarChart
@@ -918,7 +917,7 @@ const DashboardPage = () => {
           layout="horizontal"
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="genotype" type={"category"} interval={0} tick={{ fontSize: info.fontsize }} />
+          <XAxis dataKey="genotype" type={"category"} interval={isMobile ? 1 : 0} tick={{ fontSize: info.fontsize }} />
           <YAxis domain={[0, maxSum]} type={"number"} />
           <Brush dataKey="genotype" height={20} stroke={"rgb(31, 187, 211)"} />
 
@@ -1029,7 +1028,7 @@ const DashboardPage = () => {
     return (
       <Tooltip
         position={{ x: 0 }}
-        wrapperStyle={{ zIndex: 100, top: 100 }}
+        wrapperStyle={{ zIndex: 100, top: 50 }}
         allowEscapeViewBox={{ x: true, y: true }}
         content={({ active, payload, label }) => {
           if (payload !== null) {
@@ -1038,7 +1037,7 @@ const DashboardPage = () => {
                 <div style={{ backgroundColor: "rgba(255,255,255,1)", border: "solid rgba(0,0,0,0.25) 1px", padding: 16, display: "flex", flexDirection: "column" }}>
                   <span style={{ fontFamily: "Montserrat", fontWeight: 600, fontSize: 24 }}>{label}</span>
                   <div style={{ height: 14 }} />
-                  <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", width: 325 }}>
+                  <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", width: 250 }}>
                     {payload.reverse().map((item, index) => {
                       let percentage = ((item.value / amrClassChartData[amrClassChartData.length - 1].totalSum[item.name]) * 100)
                       if (Math.round(percentage) !== percentage)
@@ -1068,9 +1067,8 @@ const DashboardPage = () => {
 
   const plotDrugTrendsChart = () => {
     return (
-      <ResponsiveContainer width="90%">
+      <ResponsiveContainer width="100%">
         <LineChart
-          width={500}
           height={300}
           data={drugTrendsChartData.slice(0, drugTrendsChartData.length - 1)}
           margin={{
@@ -1078,7 +1076,7 @@ const DashboardPage = () => {
           }}
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" interval="preserveStartEnd" />
+          <XAxis dataKey="name" interval={"preserveStartEnd"} />
           <YAxis />
           <Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} />
 
@@ -1086,22 +1084,23 @@ const DashboardPage = () => {
             content={(props) => {
               const { payload } = props;
               return (
-                <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", width: "86%", justifyContent: "space-between", marginLeft: 60, marginTop: 10, paddingLeft: isDesktop ? 32 : 0, paddingRight: isDesktop ? 32 : 0 }}>
-                  {payload.map((entry, index) => {
-                    const { dataKey, color } = entry
-                    return (
-                      <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "center", width: isDesktop ? "30%" : "50%", marginBottom: 4 }}>
-                        <div style={{ height: 8, width: 8, borderRadius: 4, backgroundColor: color, flexShrink: 0 }} />
-                        <span style={{ fontSize: 12, marginLeft: 4 }}>{dataKey}</span>
-                      </div>
-                    )
-                  })}
+                <div style={{display: "flex", flexDirection: "row", justifyContent: 'flex-end'}}>
+                  <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", width: isMobile ? "93%" : "85%", justifyContent: "space-between", marginTop: 10, paddingLeft: isDesktop ? 92 : 35, paddingRight: isDesktop ? 32 : 0 }}>
+                    {payload.map((entry, index) => {
+                      const { dataKey, color } = entry
+                      return (
+                        <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "center", width: isDesktop ? "30%" : "50%", marginBottom: 4 }}>
+                          <div style={{ height: 8, width: 8, borderRadius: 4, backgroundColor: color, flexShrink: 0 }} />
+                          <span style={{ fontSize: 12, paddingLeft: 4, width: '90%' }}>{dataKey}</span>
+                        </div>
+                      )
+                    })}
+                  </div>
                 </div>
               );
             }}
           />
-
-          {tooltip(270, 350, "50%", true, { zIndex: 100 }, true, 1)}
+          {tooltip(150, isMobile ? 250 : 325, "50%", true, { zIndex: 100, top: 175}, true, 1)}
           {amrClassesForFilter.slice(1).map((item) => (<Line dataKey={item} stroke={getColorForDrug(item)} connectNulls type="monotone" />))}
         </LineChart>
       </ResponsiveContainer>
@@ -1112,7 +1111,6 @@ const DashboardPage = () => {
     return (
       <ResponsiveContainer width="90%">
         <BarChart
-          width={500}
           height={300}
           data={drugsAndGenotypesChartData.slice(0, drugsAndGenotypesChartData.length - 1)}
           margin={{
@@ -1127,21 +1125,23 @@ const DashboardPage = () => {
             content={(props) => {
               const { payload } = props;
               return (
-                <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", width: "86%", justifyContent: "space-between", marginLeft: 60, marginTop: 8, paddingLeft: isDesktop ? 32 : 0, paddingRight: isDesktop ? 32 : 0 }}>
-                  {payload.map((entry, index) => {
-                    const { dataKey, color } = entry
-                    return (
-                      <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "center", width: isDesktop ? "30%" : "50%", marginBottom: 4 }}>
-                        <div style={{ height: 8, width: 8, borderRadius: 4, backgroundColor: color, flexShrink: 0 }} />
-                        <span style={{ fontSize: 12, marginLeft: 4 }}>{dataKey}</span>
-                      </div>
-                    )
-                  })}
+                <div style={{display: "flex", flexDirection: "row", justifyContent: isMobile ? '' : 'flex-end'}}>
+                  <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", width: isMobile ? "100%" : "85%", justifyContent: "space-between", marginLeft: isDesktop ? 60 : 0, marginTop: 8, paddingLeft: isDesktop ? 32 : 0, paddingRight: isDesktop ? 32 : 0 }}>
+                    {payload.map((entry, index) => {
+                      const { dataKey, color } = entry
+                      return (
+                        <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "center", width: isDesktop ? "30%" : "50%", marginBottom: 4 }}>
+                          <div style={{ height: 8, width: 8, borderRadius: 4, backgroundColor: color, flexShrink: 0 }} />
+                          <span style={{ fontSize: 12, marginLeft: 4 }}>{dataKey}</span>
+                        </div>
+                      )
+                    })}
+                  </div>
                 </div>
               );
             }}
           />
-          {tooltip(150, 325, "50%", false, { zIndex: 100, top: 100 }, false, 0)}
+          {tooltip(150, isMobile ? 250 : 325, "50%", false, { zIndex: 100, top: 160 }, false, 0)}
           {amrClassesForFilter.slice(1).map((item) => (<Bar dataKey={item} fill={getColorForDrug(item)} />))}
         </BarChart>
       </ResponsiveContainer>
@@ -1305,7 +1305,7 @@ const DashboardPage = () => {
         return (
           <>
             <div className="samples-info">
-              <div className="color" style={{ backgroundColor: "darkgrey" }} />
+              <div className="color" style={{ backgroundColor: "#F5F4F6" }} />
               <span>0%</span>
             </div>
             {percentageSteps.map((g, n) => {
@@ -1508,24 +1508,7 @@ const DashboardPage = () => {
   }
 
   return (
-    <div className="dashboard">
-      {/* <dialog open id="favDialog">
-        <form method="dialog">
-          <section>
-            <p><label for="favAnimal">Favorite animal:</label>
-            <select id="favAnimal">
-              <option></option>
-              <option>Brine shrimp</option>
-              <option>Red panda</option>
-              <option>Spider monkey</option>
-            </select></p>
-          </section>
-          <menu>
-            <button id="cancel" type="reset">Cancel</button>
-            <button type="submit">Confirm</button>
-          </menu>
-        </form>
-      </dialog> */}
+    <div className="dashboard" style={{padding: '16px 0px'}}>
       <div className="info-wrapper">
         {isDesktop && (
           <>
@@ -1550,9 +1533,7 @@ const DashboardPage = () => {
         <div className="card">
           <span>
             Total Genotypes 
-            <button id="updateDetails" className="info-button">
-              Info
-            </button>
+            <FontAwesomeIcon icon={faInfoCircle} className="icon-info" title="Total genotypes present in TyphiNET database / Total genotypes worldwide published"/>
           </span>
           {totalGenotypes.length === actualGenotypes.length ? (
             <span className="value">{totalGenotypes.length}</span>
@@ -1594,12 +1575,15 @@ const DashboardPage = () => {
                       const d = worldMapComplementaryData[geo.properties.NAME]; /* .NAME || .NAME_LONG */
                       let country
 
-                      let fill = "#F5F4F6"
+                      let fill = "lightgrey"
 
                       switch (mapView) {
                         case 'No. Samples':
-                          if (sample && sample.count !== 0)
+                          if (sample && sample.count !== 0){
                             fill = mapSamplesColorScale(sample.count);
+                          }else if (sample && sample.count === 0){
+                            fill = '#F5F4F6'
+                          }
                           break;
                         case 'AMR Profiles':
                           country = worldMapAmrProfilesData.find(s => s.displayName === geo.properties.NAME)
@@ -1610,7 +1594,7 @@ const DashboardPage = () => {
                           country = worldMapGenotypesData.find(s => s.displayName === geo.properties.NAME)
                           if (country !== undefined) {
                             const temp = country.genotypes
-                            temp.sort((a, b) => a.count < b.count ? 1 : -1)
+                            temp.sort((a, b) => a.count <= b.count ? 1 : -1)
                             fill = getColorForGenotype(temp[0].lineage)
                           }
                           break;
@@ -1623,52 +1607,77 @@ const DashboardPage = () => {
                                 fill = mapRedColorScale(temp.percentage)
                                 break;
                               case 'Non-H58':
-                                fill = "darkgrey"
+                                fill = '#F5F4F6'
                                 break;
                               default:
+                                fill = '#F5F4F6'
                                 break;
                             }
                           }
                           break;
                         case 'MDR':
                           country = worldMapMDRData.find(s => s.displayName === geo.properties.NAME)
-                          if (country !== undefined && country.percentage)
+                          if (country !== undefined && country.percentage){
                             fill = mapRedColorScale(country.percentage);
+                          }else if (country !== undefined){
+                            fill = '#F5F4F6'
+                          }
                           break;
                         case 'XDR':
                           country = worldMapXDRData.find(s => s.displayName === geo.properties.NAME)
-                          if (country !== undefined && country.percentage)
+                          if (country !== undefined && country.percentage){
                             fill = mapRedColorScale(country.percentage);
+                          }else if (country !== undefined){
+                            fill = '#F5F4F6'
+                          }
                           break;
                         case 'DCS':
                           country = worldMapDCSData.find(s => s.displayName === geo.properties.NAME)
-                          if (country !== undefined && country.percentage)
+                          if (country !== undefined && country.percentage){
                             fill = mapRedColorScale(country.percentage);
+                          }else if (country !== undefined){
+                            fill = '#F5F4F6'
+                          }
                           break;
                         case 'Azith':
                           country = worldMapAZITHData.find(s => s.displayName === geo.properties.NAME)
-                          if (country !== undefined && country.percentage)
+                          if (country !== undefined && country.percentage){
                             fill = mapRedColorScale(country.percentage);
+                          }else if (country !== undefined){
+                            fill = '#F5F4F6'
+                          }
                           break;
                         case 'CipI':
                           country = worldMapCIPIData.find(s => s.displayName === geo.properties.NAME)
-                          if (country !== undefined && country.percentage)
+                          if (country !== undefined && country.percentage){
                             fill = mapRedColorScale(country.percentage);
+                          }else if (country !== undefined){
+                            fill = '#F5F4F6'
+                          }
                           break;
                         case 'CipR':
                           country = worldMapCIPRData.find(s => s.displayName === geo.properties.NAME)
-                          if (country !== undefined && country.percentage)
+                          if (country !== undefined && country.percentage){
                             fill = mapRedColorScale(country.percentage);
+                          }else if (country !== undefined){
+                            fill = '#F5F4F6'
+                          }
                           break;
                         case 'Resistance to Drug':
                           country = worldMapDrugsData.find(s => s.displayName === geo.properties.NAME)
-                          if (country !== undefined && country.drugs.length > 0)
+                          if (country !== undefined && country.drugs.length > 0){
                             fill = getColorForDrug(country.drugs[0].name);
+                          }else if (country !== undefined){
+                            fill = '#F5F4F6'
+                          }
                           break;
                         case 'Plasmid Incompatibility Type':
                           country = worldMapPlasmidIncompatibilityTypeData.find(s => s.displayName === geo.properties.NAME)
-                          if (country !== undefined && country.incTypes.length > 0)
+                          if (country !== undefined && country.incTypes.length > 0){
                             fill = getColorForIncType(country.incTypes[0].type);
+                          }else if (country !== undefined){
+                            fill = '#F5F4F6'
+                          }
                           break;
                         default:
                           break;
@@ -1723,7 +1732,7 @@ const DashboardPage = () => {
                               case 'Dominant Genotype':
                                 if (country !== undefined) {
                                   let temp = country.genotypes
-                                  temp.sort((a, b) => a.count < b.count ? 1 : -1)
+                                  temp.sort((a, b) => a.count <= b.count ? 1 : -1)
                                   setTooltipContent({
                                     name: NAME,
                                     genotypeInfo: temp
@@ -1897,11 +1906,11 @@ const DashboardPage = () => {
                 {renderMapLegend()}
               </div>
             )}
-            {(samplesQty > 0 && isDesktop) && (
+            {(samplesQty > 0) && (
               <div className="map-upper-left-buttons ">
                 <div className="map-filters" style={{ width: isDesktop ? 200 : "-webkit-fill-available" }}>
-                  <span style={{ fontWeight: 600, fontSize: 20, marginBottom: 20 }}>Filters</span>
-                  <div style={{ marginBottom: 16 }}>
+                  <span style={{ fontWeight: 600, fontSize: 20, marginBottom: isDesktop ? 20 : 10 }}>Filters</span>
+                  <div style={{ marginBottom: isDesktop ? 16 : 8 }}>
                     <Typography style={{ fontWeight: 500, fontFamily: "Montserrat", color: "rgb(117,117,117)", fontSize: 12 }}>
                       Select dataset
                     </Typography>
@@ -1909,7 +1918,7 @@ const DashboardPage = () => {
                       value={dataset}
                       exclusive
                       size="small"
-                      style={{ marginTop: 5 }}
+                      style={{ marginTop: 5}}
                       onChange={(evt, newDataset) => {
                         if (newDataset !== null)
                           setDataset(newDataset)
@@ -1931,6 +1940,7 @@ const DashboardPage = () => {
                       Select time period
                     </Typography>
                     <CustomSlider
+                      style={{marginTop: isDesktop ? '' : -5, marginBottom: isDesktop ? '' : -5}}
                       value={actualTimePeriodRange}
                       min={timePeriodRange[0]}
                       max={timePeriodRange[1]}
@@ -2156,9 +2166,9 @@ const DashboardPage = () => {
         </FormControl>
         <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
           <div style={{ display: "flex", flexDirection: isDesktop ? "row" : "column", marginTop: 16, paddingBottom: 20 }}>
-            <div style={{ display: "flex", flexDirection: "column", flex: 0.5, marginRight: 30}}>
-              <div id="RFWG" style={{ height: 458, minWidth: 200, width: "100%", display: "flex", flexDirection: "column" }}>
-                <div style={{ width: "100%", flexDirection: "row", whiteSpace: "nowrap", textAlign: "center", display: "flex", justifyContent: "center" }}>
+            <div style={{ display: "flex", flexDirection: "column", flex: 0.5, paddingRight: isMobile ? 0 : 10}}>
+              <div id="RFWG" style={{ height: 458, width: "100%", display: "flex", flexDirection: "column" }}>
+                <div style={{ width: "100%", flexDirection: "row", textAlign: "center", display: "flex", justifyContent: "center" }}>
                   <span style={{ paddingRight: 32, marginRight: -22 }} className="chart-title">Resistance frequencies within genotypes</span>
                   <div style={{ display: "inline-block", position: "relative" }}>
                     <TooltipMaterialUI title={<span style={{ fontFamily: "Montserrat" }}>Download Chart as PNG</span>} placement="right">
@@ -2181,14 +2191,14 @@ const DashboardPage = () => {
                     )}
                   </div>
                 </div>
-                <span className="chart-title" style={{ marginRight: -22, marginBottom: -8, fontSize: 10, fontWeight: 400 }}>Top Five Genotypes</span>
+                <span className="chart-title" style={{ marginRight: -22, marginBottom: -8, marginTop: isDesktop ? 0 : 10, fontSize: 10, fontWeight: 400 }}>Top Five Genotypes</span>
                 <div style={{ height: 420, display: "flex", flexDirection: "row", alignItems: "center" }}>
-                  <span className="y-axis-label-vertical" style={{ marginRight: 8, marginBottom: isDesktop ? 84 : 154 }}>Number of occurrences</span>
+                  <span className="y-axis-label-vertical" style={{ paddingRight: 8, marginBottom: isDesktop ? 84 : 154 }}>Number of occurrences</span>
                   {plotDrugsAndGenotypesChart()}
                 </div>
               </div>
               <div id="RFWAG" style={{ width: "100%", display: "flex", flexDirection: "column", paddingTop: 50 }}>
-                <div style={{ width: "100%", flexDirection: "row", whiteSpace: "nowrap", textAlign: "center", display: "flex", justifyContent: "center" }}>
+                <div style={{ width: "100%", flexDirection: "row", textAlign: "center", display: "flex", justifyContent: "center" }}>
                   <span className="chart-title" style={{ marginRight: -22, paddingRight: 32 }}>Resistance determinants within all genotypes</span>
                   <div style={{ display: "inline-block", position: "relative" }}>
                     <TooltipMaterialUI title={<span style={{ fontFamily: "Montserrat" }}>Download Chart as PNG</span>} placement="right">
@@ -2211,7 +2221,7 @@ const DashboardPage = () => {
                     )}
                   </div>
                 </div>
-                <span className="chart-title" style={{ fontSize: 10, fontWeight: 400, paddingBottom: 10 }}>Top Ten Genotypes</span>
+                <span className="chart-title" style={{ fontSize: 10, fontWeight: 400, paddingBottom: 10, marginTop: isDesktop ? 0 : 10 }}>Top Ten Genotypes</span>
                 <div style={{ width: isDesktop ? "60%" : "90%", alignSelf: "center", marginBottom: -4, marginRight: isDesktop ? "-10%" : 0 }}>
                   <FormControl fullWidth className={classes.formControlSelect} style={{ marginTop: 0 }}>
                     <InputLabel style={{ fontWeight: 500, fontFamily: "Montserrat" }}>Select Drug Class</InputLabel>
@@ -2232,14 +2242,14 @@ const DashboardPage = () => {
                   </FormControl>
                 </div>
                 <div style={{ height: 350, display: "flex", flexDirection: "row", alignItems: "center" }}>
-                  <span className="y-axis-label-vertical" style={{ marginRight: 8 }}>Number of occurrences</span>
+                  <span className="y-axis-label-vertical" style={{ paddingRight: 8 }}>Number of occurrences</span>
                   {plotAmrClassChart()}
                 </div>
               </div>
             </div>
-            <div style={{ display: "flex", flexDirection: "column", flex: 0.5, marginRight: -30 }}>
-              <div id="DRT" style={{ minWidth: 200, width: "100%", display: "flex", flexDirection: "column", marginTop: 5 }}>
-                <div style={{ width: "100%", flexDirection: "row", whiteSpace: "nowrap", textAlign: "center", display: "flex", justifyContent: "center" }}>
+            <div style={{ display: "flex", flexDirection: "column", flex: 0.5, paddingLeft: isMobile ? 0 : 10, marginRight: 0, marginTop: window.innerWidth < 500 ? 25 : 0 }}>
+              <div id="DRT" style={{width: "100%", display: "flex", flexDirection: "column", marginTop: 5 }}>
+                <div style={{ width: "100%", flexDirection: "row", textAlign: "center", display: "flex", justifyContent: "center" }}>
                   <span className="chart-title" style={{ marginRight: -22, paddingRight: 32 }}>Drug resistance trends</span>
                   <div style={{ display: "inline-block", position: "relative" }}>
                     <TooltipMaterialUI title={<span style={{ fontFamily: "Montserrat" }}>Download Chart as PNG</span>} placement="right">
@@ -2262,13 +2272,13 @@ const DashboardPage = () => {
                     )}
                   </div>
                 </div>
-                <div style={{ height: 422, display: "flex", flexDirection: "row", alignItems: "center" }}>
-                  <span className="y-axis-label-vertical" style={{ marginRight: 8, paddingBottom: isDesktop ? 84 : 124 }}>Number of occurrences</span>
+                <div style={{ height: 422, display: "flex", flexDirection: "row", alignItems: "center", width: "100%"}}>
+                  <span className="y-axis-label-vertical" style={{ paddingBottom: isDesktop ? 84 : 124 }}>Number of occurrences</span>
                   {plotDrugTrendsChart()}
                 </div>
               </div>
-              <div id="GD" style={{ width: "100%", display: "flex", flexDirection: "column", paddingTop: 47 }}>
-                <div style={{ width: "100%", flexDirection: "row", whiteSpace: "nowrap", textAlign: "center", display: "flex", justifyContent: "center" }}>
+              <div id="GD" style={{ width: "100%", display: "flex", flexDirection: "column", paddingTop: window.innerWidth < 500 ? 25 : 47 }}>
+                <div style={{ width: "100%", flexDirection: "row", textAlign: "center", display: "flex", justifyContent: "center" }}>
                   <span className="chart-title" style={{ marginRight: -22, paddingRight: 32 }}>Genotype distribution</span>
                   <div style={{ display: "inline-block", position: "relative" }}>
                     <TooltipMaterialUI title={<span style={{ fontFamily: "Montserrat" }}>Download Chart as PNG</span>} placement="right">
@@ -2309,7 +2319,7 @@ const DashboardPage = () => {
                     </Select>
                   </FormControl>
                 </div>
-                <div style={{ height: 350, display: "flex", flexDirection: populationStructureFilter === 1 ? "row" : "column-reverse", alignItems: "center", marginLeft: populationStructureFilter === 2 ? -22 : 0 }}>
+                <div style={{ width: '100%', height: 350, display: "flex", flexDirection: populationStructureFilter === 1 ? "row" : "column-reverse", alignItems: "center", paddingLeft: populationStructureFilter === 2 ? -22 : 0 }}>
                   {getPopulationStructureChartLabel()}
                   {plotPopulationStructureChart()}
                 </div>
