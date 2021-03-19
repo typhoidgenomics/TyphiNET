@@ -431,12 +431,27 @@ router.get('/create', function(req, res) {
             });
 
             let temp = []
+<<<<<<< HEAD
             for (let d = 0; d < data_to_write.length; d++) {
+=======
+            let totalGenotypes = []
+            for (let d = 0; d < data_to_write.length; d++) {
+                if (!totalGenotypes.includes(data_to_write[d]['GENOTYPE'])) {
+                    totalGenotypes.push(data_to_write[d]['GENOTYPE'])
+                }
+>>>>>>> 38f7e72d69851b8727141004db43546b36809f22
                 if (data_to_write[d]["COUNTRY_ONLY"] !== "-" && data_to_write[d]["DATE"] !== "-") {
                     temp.push(data_to_write[d])
                 }
             }
 
+<<<<<<< HEAD
+=======
+            fs.writeFile('assets/webscrap/clean/totalGenotypes.txt', totalGenotypes.toString(), (err) => { 
+                if (err) throw err; 
+            }) 
+
+>>>>>>> 38f7e72d69851b8727141004db43546b36809f22
             await Tools.CreateFile(temp, "clean.csv")
 
         })

@@ -8,8 +8,15 @@
         "start": "if-env NODE_ENV=production && yarn start:prod || yarn start:dev",
         "start:prod": "node server.js",
         "start:dev": "concurrently \"nodemon --ignore 'client/*'\" \"yarn client\"",
+<<<<<<< HEAD
         "client": "cd client && npm start",
         "build": "cd client && npm run build"
+=======
+        "client": "cd client && yarn start",
+        "install": "cd client && yarn",
+        "build": "cd client && yarn build",
+        "heroku-postbuild": "yarn build"
+>>>>>>> 38f7e72d69851b8727141004db43546b36809f22
     },
     "license": "GPL-3.0",
     "dependencies": {
@@ -47,13 +54,21 @@
         "downloadjs": "^1.4.7",
         "react": "^17.0.1",
         "react-dom": "^17.0.1",
+<<<<<<< HEAD
         "react-scripts": "^4.0.3",
+=======
+>>>>>>> 38f7e72d69851b8727141004db43546b36809f22
         "react-simple-maps": "^2.3.0",
         "react-tooltip": "^4.2.10",
         "recharts": "^1.8.5",
         "rodal": "^1.8.1",
         "save-svg-as-png": "^1.4.17",
+<<<<<<< HEAD
         "web-vitals": "^0.2.4"
+=======
+        "web-vitals": "^0.2.4",
+        "react-scripts": "^4.0.3"
+>>>>>>> 38f7e72d69851b8727141004db43546b36809f22
     },
     "devDependencies": {
         "browser-sync": "^2.26.13",
@@ -64,6 +79,11 @@
         "supertest": "^6.0.0"
     },
     "engines": {
+<<<<<<< HEAD
         "node": "14.15.0"
+=======
+        "node": "14.15.0",
+        "yarn": "1.22.5"
+>>>>>>> 38f7e72d69851b8727141004db43546b36809f22
     }
 }
