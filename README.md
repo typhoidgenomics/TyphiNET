@@ -68,10 +68,6 @@ yarn start:prod
 [HTTPS](https://typhinet.erc.monash.edu/)
 [dev](https://typhinet.herokuapp.com//)
 
-#### Notes
-
-Comment or uncomment line, inside the file constant.js (client/src/constant.js) for app point to correct API route (Heroku por localhost)  
-
 #### Create the clean.csv
 
 clean.csv need be create only if the file doesn't exist in the directory assets/webscrap/clean.
@@ -114,3 +110,11 @@ local route
 
 heroku route
 <https://typhinet.herokuapp.com/api/mongo/download>
+
+### Heroku deploy
+
+Change the API_ENDPOINT inside ``client/src/constant.js`` for heroku.
+``
+//export const API_ENDPOINT = "http://localhost:8080/api/"; 
+export const API_ENDPOINT = "https://typhinet.herokuapp.com/api/";
+``
