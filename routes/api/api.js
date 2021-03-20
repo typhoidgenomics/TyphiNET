@@ -4,7 +4,7 @@ import csv from 'csv-parser';
 import fs from 'fs';
 import * as Tools from '../../services/services.js';
 
-router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel', function(req, res, next) {
+router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel', function (req, res, next) {
     let params = req.params;
     let resultsJson = [];
     let read_file = Tools.path_clean_db || Tools.path_clean;
@@ -103,25 +103,32 @@ router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel', function(req, 
         })
 })
 
-
-router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', function(req, res, next) {
+//Rota para a filtragens relacionadas ao amrClassChart
+//Primeiro parâmetro trata-se do país
+//Segundo e terceiro parâmetro são datas limites, sendo o segundo o ano mínimo e o terceiro o ano máximo
+//por último, o amr_class que deseja verificar
+router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', function (req, res, next) {
     let params = req.params
     let results_json = [];
     let results = [];
     let cotrim = ["dfrA1", "dfrA5", "dfrA7", "dfrA14", "dfrA15", "dfrA17", "dfrA18"];
-
+    //Essa variável verifica se o arquivo clean_db.csv está criado, se tiver o path dele será passado para a 
+    //variável read_file, e então os dados que serão enviados ao front serão desse arquivo.
+    //Se não, o path será do clean.csv
     let read_file = Tools.path_clean_db || Tools.path_clean
-
+    //Passo o path para o ReadStream, insiro os dados no vetor results_json
     fs.createReadStream(read_file)
         .pipe(csv())
         .on('data', (data_full) => results_json.push(data_full))
         .on('end', () => {
-
+            //Objeto que conterá os dados a serem enviados pro front
             let data_to_send = {}
             const TOTAL_VALUES = results_json.length
             let travel = params.travel
             let data_travel = false
-
+            //utilizo um for para percorrer todos os dados e verificar se as condições que foram requisitadas são atendidas
+            //O primeiro if eu verifico se o parâmetro passado para country é all, se for, ele irá fazer a verificação em todos os países
+            //Se não, ele irá apenas filtrar pelo país escolhido
             for (let data of results_json) {
                 if (travel == "full") {
                     data_travel = true
@@ -313,7 +320,7 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
 
 });
 
-router.get('/getYearLimits', function(req, res, next) {
+router.get('/getYearLimits', function (req, res, next) {
     let results = []
     let min
     let max
@@ -337,7 +344,10 @@ router.get('/getYearLimits', function(req, res, next) {
         })
 })
 
-router.get('/:filter1/:country/:min_year/:max_year/:travel', function(req, res, next) {
+//Filtra por 1 número que representa o tipo de dado a ser retornado
+//Também filtra pelo valor da coluna Travel, podendo retornar todos os dados
+//Apenas os que possuem o valor Travel ou os que estão unknown/local
+router.get('/:filter1/:country/:min_year/:max_year/:travel', function (req, res, next) {
     let params = req.params
     let results_json = [];
     let results = [];
@@ -416,7 +426,7 @@ router.get('/:filter1/:country/:min_year/:max_year/:travel', function(req, res, 
                     drugs.push("Tetracyclines")
 
                 filter_value["DRUGS"] = drugs
-                    /* DRUG */
+                /* DRUG */
 
                 if ((data["COUNTRY_ONLY"] == params.country) && (data["DATE"] >= params.min_year && data["DATE"] <= params.max_year) && data_travel) {
                     if (params.filter1 == "1") {
@@ -470,7 +480,8 @@ router.get('/:filter1/:country/:min_year/:max_year/:travel', function(req, res, 
         });
 });
 
-router.get('/:country/:min_year/:max_year/:travel', function(req, res, next) {
+//Retorna as colunas que contém os valores de H58, MDR, DCS e AzithR, retorna a porcentagem desses dados
+router.get('/:country/:min_year/:max_year/:travel', function (req, res, next) {
     let params = req.params
     let country_unique_genotype = {}
     let results = []
@@ -520,9 +531,9 @@ router.get('/:country/:min_year/:max_year/:travel', function(req, res, next) {
                             country_unique_genotype[params.country]["GENOTYPES"]["GENOTYPES_LIST"].push(data["GENOTYPE"])
                         }
                         country_unique_genotype[params.country]["TOTAL_OCCURRENCE"]++
-                            if (data["GENOTYPE_SIMPLE"] == "H58") {
-                                country_unique_genotype[params.country]["H58"]++
-                            }
+                        if (data["GENOTYPE_SIMPLE"] == "H58") {
+                            country_unique_genotype[params.country]["H58"]++
+                        }
                         if (data["MDR"] == "MDR") {
                             country_unique_genotype[params.country]["MDR"]++
                         }
@@ -552,10 +563,10 @@ router.get('/:country/:min_year/:max_year/:travel', function(req, res, next) {
 
                     if ((data["DATE"] >= params.min_year && data["DATE"] <= params.max_year) && data_travel) {
                         country_unique_genotype[data["COUNTRY_ONLY"]]["TOTAL_OCCURRENCE"]++
-                            if (country_unique_genotype[data["COUNTRY_ONLY"]]["GENOTYPES"]["GENOTYPES_LIST"].indexOf(data["GENOTYPE"]) == -1) {
-                                country_unique_genotype[data["COUNTRY_ONLY"]]["GENOTYPES"]["GENOTYPES_LIST"].push(data["GENOTYPE"])
-                                country_unique_genotype[data["COUNTRY_ONLY"]]["GENOTYPES"]["TOTAL"]++
-                            }
+                        if (country_unique_genotype[data["COUNTRY_ONLY"]]["GENOTYPES"]["GENOTYPES_LIST"].indexOf(data["GENOTYPE"]) == -1) {
+                            country_unique_genotype[data["COUNTRY_ONLY"]]["GENOTYPES"]["GENOTYPES_LIST"].push(data["GENOTYPE"])
+                            country_unique_genotype[data["COUNTRY_ONLY"]]["GENOTYPES"]["TOTAL"]++
+                        }
                         if (data["GENOTYPE_SIMPLE"] == "H58") {
                             country_unique_genotype[data["COUNTRY_ONLY"]]["H58"]++
                         }
@@ -613,10 +624,10 @@ router.get('/:country/:min_year/:max_year/:travel', function(req, res, next) {
         });
 });
 
-router.get('/totalGenotypes', function(req, res, next) {
+router.get('/totalGenotypes', function (req, res, next){
     fs.readFile('assets/webscrap/clean/totalGenotypes.txt', (err, data) => {
         let genotypes = data.toString().split(',')
-        return res.json({ genotypes: genotypes })
+        return res.json({genotypes: genotypes})
     })
 })
 
