@@ -2382,10 +2382,10 @@ const DashboardPage = () => {
           </p>
         </div>
         <div className="footer-buttons-wrapper">
-          <div
+        <div
             className="flex-button"
             onClick={() => {
-              setContactModalVisible(true)
+              window.open('mailto:dashboard@typhi.net', '_blank')
             }}
           >
             <FontAwesomeIcon icon={faEnvelope} style={{ marginRight: 8 }} />
