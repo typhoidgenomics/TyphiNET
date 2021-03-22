@@ -130,7 +130,7 @@ const DashboardPage = () => {
   const [populationStructureChartData, setPopulationStructureChartData] = useState([])
   const [amrClassChartData, setAmrClassChartData] = useState([])
 
-  const [mapView, setMapView] = React.useState('Dominant Genotype');
+  const [mapView, setMapView] = React.useState('CipI');
   const [dataset, setDataset] = React.useState('full');
   const [totalGenomes, setTotalGenomes] = useState([])
   const [actualGenomes, setActualGenomes] = useState([])
