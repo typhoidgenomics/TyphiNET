@@ -2422,7 +2422,7 @@ const DashboardPage = () => {
         </div>
         <div style={{ flex: 1 }} />
         <div className="footer">
-          <span>Data obtained from: <a href="https://pathogen.watch" rel="noreferrer" target="_blank">pathogen watch project</a> on 07/02/2021. <a href="https://holtlab.net" rel="noreferrer" target="_blank">Holt Lab</a></span>
+          <span>Data obtained from Typhoid <a href="https://pathogen.watch" rel="noreferrer" target="_blank">Pathogenwatch</a> on 07/02/2021. <a href="https://holtlab.net" rel="noreferrer" target="_blank">Holt Lab.</a></span>
         </div>
 
         <div style={{ zIndex: 1000 }}>
