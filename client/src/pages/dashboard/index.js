@@ -1584,7 +1584,7 @@ const DashboardPage = () => {
           </div>
         </div>
         <div className="map-filters-wrapper" style={{ flexDirection: 'column' }}>
-          <h2 style={{ textAlign: "center" }}>Global Overview of Salmonella Typhi</h2>
+          <h2 style={{ textAlign: "center" }}>Global Overview of <i>Salmonella</i> Typhi</h2>
           <div className="map-filters-wrapper-inside" style={{ flexDirection: dimensions.width > desktop ? 'row' : 'column' }}>
             <div className="map-wrapper">
               <ComposableMap
