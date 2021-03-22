@@ -976,10 +976,10 @@ const DashboardPage = () => {
       case 'Fluoroquinolones (DCS)':
         return (armClassFilterComponent({
           left: 10, fontsize: 14, strokeWidth: 0.5, width: 3, bars: [
-            ['3_QRDR', "rgb(198,127,251)", "error-3_QRDR"],
-            ['2_QRDR', "rgb(70,191,195)", "error-2_QRDR"],
-            ['1_QRDR + qnrS', "rgb(125,172,32)", "error-1_QRDR + qnrS"],
-            ['1_QRDR', "rgb(244,119,112)", "error-1_QRDR"]]
+            ['3_QRDR', "#8dd3c7", "error-3_QRDR"],
+            ['2_QRDR', "#bebada", "error-2_QRDR"],
+            ['1_QRDR + qnrS', "#fccde5", "error-1_QRDR + qnrS"],
+            ['1_QRDR', "#80b1d3", "error-1_QRDR"]]
         }))
       case 'Chloramphenicol':
         return (armClassFilterComponent({
