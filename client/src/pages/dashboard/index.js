@@ -2229,7 +2229,7 @@ const DashboardPage = () => {
                       )}
                     </div>
                   </div>
-                  <span className="chart-title" style={{ marginRight: -22, marginBottom: -8, marginTop: dimensions.width > desktop ? 5 : 10, fontSize: 10, fontWeight: 400 }}>Top Five Genotypes</span>
+                  <span className="chart-title" style={{ marginRight: -22, marginBottom: -8, marginTop: dimensions.width > desktop ? 5 : 10, fontSize: 10, fontWeight: 400 }}>Top Genotypes (up to 5)</span>
                   <div style={{ height: 420, display: "flex", flexDirection: "row", alignItems: "center" }}>
                     <span className="y-axis-label-vertical" style={{ paddingRight: 8, marginBottom: dimensions.width > desktop ? 84 : 154 }}>Number of occurrences</span>
                     {plotDrugsAndGenotypesChart()}
@@ -2259,7 +2259,7 @@ const DashboardPage = () => {
                       )}
                     </div>
                   </div>
-                  <span className="chart-title" style={{ fontSize: 10, fontWeight: 400, paddingBottom: 10, marginTop: dimensions.width > desktop ? 5 : 10 }}>Top Ten Genotypes</span>
+                  <span className="chart-title" style={{ fontSize: 10, fontWeight: 400, paddingBottom: 10, marginTop: dimensions.width > desktop ? 5 : 10 }}>Top Genotypes (up to 10)</span>
                   <div style={{ width: dimensions.width > desktop ? "60%" : "90%", alignSelf: "center", marginBottom: -4, marginRight: dimensions.width > desktop ? "-10%" : 0 }}>
                     <FormControl fullWidth className={classes.formControlSelect} style={{ marginTop: 0 }}>
                       <InputLabel style={{ fontWeight: 500, fontFamily: "Montserrat" }}>Select Drug Class</InputLabel>
