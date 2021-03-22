@@ -1498,18 +1498,9 @@ const DashboardPage = () => {
             fullWidth
             style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }}
           >
-            <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'Dominant Genotype'}>
-              Dominant Genotype
-          </MenuItem>
-            <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'No. Samples'}>
-              No. Samples
-          </MenuItem>
             {/* <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'AMR Profiles'}>
               AMR Profiles
           </MenuItem> */}
-            <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'H58 / Non-H58'}>
-              H58
-          </MenuItem>
             {/* <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'Plasmid Incompatibility Type'}>
               Plasmid Incompatibility Type
           </MenuItem> */}
@@ -1530,6 +1521,15 @@ const DashboardPage = () => {
           </MenuItem>
             <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'CipR'}>
               CipR
+          </MenuItem>
+          <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'Dominant Genotype'}>
+              Dominant Genotype
+          </MenuItem>
+          <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'H58 / Non-H58'}>
+              H58
+          </MenuItem>
+            <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'No. Samples'}>
+              No. Samples
           </MenuItem>
             {/* <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'Resistance to Drug'}>
               Resistance to Drug
