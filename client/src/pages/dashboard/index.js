@@ -2340,7 +2340,7 @@ const DashboardPage = () => {
                     </div>
                   </div>
                   <div style={{ width: dimensions.width > desktop ? "60%" : "90%", alignSelf: "center", paddingRight: dimensions.width > desktop && populationStructureFilter !== 1 ? "-10%" : 0, paddingBottom: populationStructureFilter === 1 ? -8 : 16 }}>
-                    <FormControl fullWidth className={classes.formControlSelect} style={{ marginBottom: 5, marginTop: 23 }}>
+                    {/*<FormControl fullWidth className={classes.formControlSelect} style={{ marginBottom: 5, marginTop: 23 }}>
                       <InputLabel style={{ fontWeight: 500, fontFamily: "Montserrat" }}>Population Structure</InputLabel>
                       <Select
                         value={populationStructureFilter}
@@ -2355,8 +2355,10 @@ const DashboardPage = () => {
                           H58 / Non-H58
                         </MenuItem>
                       </Select>
-                    </FormControl>
+                      </FormControl>*/}
                   </div>
+                  <p> </p>
+                  <p> </p>
                   <div style={{ width: '100%', height: 350, display: "flex", flexDirection: populationStructureFilter === 1 ? "row" : "column-reverse", alignItems: "center", paddingLeft: populationStructureFilter === 2 ? -22 : 0 }}>
                     {getPopulationStructureChartLabel()}
                     {plotPopulationStructureChart()}
