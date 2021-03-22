@@ -2237,7 +2237,7 @@ const DashboardPage = () => {
                 </div>
                 <div id="RFWAG" style={{ width: "100%", display: "flex", flexDirection: "column", paddingTop: 50 }}>
                   <div style={{ width: "100%", flexDirection: "row", textAlign: "center", display: "flex", justifyContent: "center" }}>
-                    <span className="chart-title" style={{ marginRight: -22, paddingRight: 32 }}>Resistance determinants within all genotypes</span>
+                    <span className="chart-title" style={{ marginRight: -22, paddingRight: 32 }}>Resistance determinants within genotypes</span>
                     <div style={{ display: "inline-block", position: "relative" }}>
                       <TooltipMaterialUI title={<span style={{ fontFamily: "Montserrat" }}>Download Chart as PNG</span>} placement="right">
                         <div
