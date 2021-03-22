@@ -1505,30 +1505,30 @@ const DashboardPage = () => {
               Plasmid Incompatibility Type
           </MenuItem> */}
             <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'MDR'}>
-              MDR
+              Multidrug resistant (MDR)
           </MenuItem>
             <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'XDR'}>
-              XDR
+              Extremely drug resistant (XDR)
           </MenuItem>
             {/* <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'DCS'}>
               DCS
           </MenuItem> */}
             <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'Azith'}>
-              AzithR
+              Azithromycin resistant
           </MenuItem>
             <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'CipI'}>
-              CipI
+              Ciprofloxacin insusceptible
           </MenuItem>
             <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'CipR'}>
-              CipR
+              Ciprofloxacin resistant
           </MenuItem>
           <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'Dominant Genotype'}>
               Dominant Genotype
           </MenuItem>
           <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'H58 / Non-H58'}>
-              H58
+            H58 genotype
           </MenuItem>
-            <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'No. Samples'}>
+          <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'No. Samples'}>
               No. Samples
           </MenuItem>
             {/* <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'Resistance to Drug'}>
