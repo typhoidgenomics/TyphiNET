@@ -120,7 +120,7 @@ const DashboardPage = () => {
   const [countriesForFilter, setCountriesForFilter] = React.useState(['All']);
   const [actualCountry, setActualCountry] = useState("All");
   const [populationStructureFilter, setPopulationStructureFilter] = React.useState(1);
-  const amrClassesForFilter = [/*"AMR Profiles", */"Ampicillin", "Azithromycin", "Chloramphenicol", "Co-trimoxazole", "ESBL", "Fluoroquinolones (DCS)", "Sulphonamides", "Tetracyclines", "Trimethoprim"]
+  const amrClassesForFilter = [/*"AMR Profiles", */,"Fluoroquinolones (DCS)","Ampicillin", "Azithromycin", "Chloramphenicol", "Co-trimoxazole", "ESBL",  "Sulphonamides", "Tetracyclines", "Trimethoprim"]
   const [amrClassFilter, setAmrClassFilter] = React.useState(amrClassesForFilter[0])
 
   const [drugTrendsChartData, setDrugTrendsChartData] = useState([])
