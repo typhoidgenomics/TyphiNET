@@ -21,7 +21,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faMinus, faCrosshairs, faCamera, faTable, faTimes, faInfoCircle} from '@fortawesome/free-solid-svg-icons'
 import download from 'downloadjs';
 import { svgAsPngUri } from 'save-svg-as-png';
-import typhinetLogoImg from '../../assets/img/logo-typhinet.png';
+import typhinetLogoImg from '../../assets/img/TyphiNET_logo_04112020_dev_version.svg';
 import geography from '../../assets/world-110m.json'
 import { API_ENDPOINT } from '../../constants';
 import { getColorForGenotype, getColorForAMR, getColorForDrug, getColorForIncType } from '../../util/colorHelper';
@@ -2381,6 +2381,9 @@ const DashboardPage = () => {
            </p>
            <p>
             The TyphiNET dashboard is coordinated by Dr Zoe Dyson, Dr Louise Cerderia & Prof Kat Holt at the <a href="https://www.lshtm.ac.uk/" target="_blank" rel="noreferrer">London School of Hygiene and Tropical Medicine</a> & <a href="https://www.monash.edu/">Monash University</a>, supported by the Wellcome Trust (Open Research Fund, 219692/Z/19/Z) and the EU Horizon 2020 research and innovation programme (Marie Skłodowska-Curie grant #845681). 
+          </p>
+          <p>
+            <b>Note: This is a development version, data are incomplete and there are known bugs.</b>
           </p>
         </div>
         <div className="footer-buttons-wrapper">
