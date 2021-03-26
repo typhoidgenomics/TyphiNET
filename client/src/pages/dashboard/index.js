@@ -21,7 +21,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faMinus, faCrosshairs, faCamera, faTable, faTimes, faInfoCircle} from '@fortawesome/free-solid-svg-icons'
 import download from 'downloadjs';
 import { svgAsPngUri } from 'save-svg-as-png';
-import typhinetLogoImg from '../../assets/img/logo-typhinet.png';
+import typhinetLogoImg from '../../assets/img/TyphiNET_logo_04112020_dev_version.svg';
 import geography from '../../assets/world-110m.json'
 import { API_ENDPOINT } from '../../constants';
 import { getColorForGenotype, getColorForAMR, getColorForDrug, getColorForIncType } from '../../util/colorHelper';
@@ -121,7 +121,7 @@ const DashboardPage = () => {
   const [actualCountry, setActualCountry] = useState("All");
   const [populationStructureFilter, setPopulationStructureFilter] = React.useState(1);
   const amrClassesForFilter = [/*"AMR Profiles", */"Ampicillin", "Azithromycin", "Chloramphenicol", "Co-trimoxazole", "ESBL", "Fluoroquinolones (DCS)", "Sulphonamides", "Tetracyclines", "Trimethoprim"]
-  const [amrClassFilter, setAmrClassFilter] = React.useState(amrClassesForFilter[0])
+  const [amrClassFilter, setAmrClassFilter] = React.useState(amrClassesForFilter[5])
 
   const [drugTrendsChartData, setDrugTrendsChartData] = useState([])
   const [drugsAndGenotypesChartData, setDrugsAndGenotypesChartData] = useState([])
@@ -130,7 +130,7 @@ const DashboardPage = () => {
   const [populationStructureChartData, setPopulationStructureChartData] = useState([])
   const [amrClassChartData, setAmrClassChartData] = useState([])
 
-  const [mapView, setMapView] = React.useState('Dominant Genotype');
+  const [mapView, setMapView] = React.useState('CipI');
   const [dataset, setDataset] = React.useState('full');
   const [totalGenomes, setTotalGenomes] = useState([])
   const [actualGenomes, setActualGenomes] = useState([])
@@ -976,10 +976,10 @@ const DashboardPage = () => {
       case 'Fluoroquinolones (DCS)':
         return (armClassFilterComponent({
           left: 10, fontsize: 14, strokeWidth: 0.5, width: 3, bars: [
-            ['3_QRDR', "rgb(198,127,251)", "error-3_QRDR"],
-            ['2_QRDR', "rgb(70,191,195)", "error-2_QRDR"],
-            ['1_QRDR + qnrS', "rgb(125,172,32)", "error-1_QRDR + qnrS"],
-            ['1_QRDR', "rgb(244,119,112)", "error-1_QRDR"]]
+            ['3_QRDR', "#8dd3c7", "error-3_QRDR"],
+            ['2_QRDR', "#bebada", "error-2_QRDR"],
+            ['1_QRDR + qnrS', "#fccde5", "error-1_QRDR + qnrS"],
+            ['1_QRDR', "#80b1d3", "error-1_QRDR"]]
         }))
       case 'Chloramphenicol':
         return (armClassFilterComponent({
@@ -1498,38 +1498,38 @@ const DashboardPage = () => {
             fullWidth
             style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }}
           >
-            <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'Dominant Genotype'}>
-              Dominant Genotype
-          </MenuItem>
-            <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'No. Samples'}>
-              No. Samples
-          </MenuItem>
             {/* <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'AMR Profiles'}>
               AMR Profiles
           </MenuItem> */}
-            <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'H58 / Non-H58'}>
-              H58
-          </MenuItem>
             {/* <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'Plasmid Incompatibility Type'}>
               Plasmid Incompatibility Type
           </MenuItem> */}
             <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'MDR'}>
-              MDR
+              Multidrug resistant (MDR)
           </MenuItem>
             <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'XDR'}>
-              XDR
+              Extremely drug resistant (XDR)
           </MenuItem>
             {/* <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'DCS'}>
               DCS
           </MenuItem> */}
             <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'Azith'}>
-              AzithR
+              Azithromycin resistant
           </MenuItem>
             <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'CipI'}>
-              CipI
+              Ciprofloxacin insusceptible
           </MenuItem>
             <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'CipR'}>
-              CipR
+              Ciprofloxacin resistant
+          </MenuItem>
+          <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'Dominant Genotype'}>
+              Dominant Genotype
+          </MenuItem>
+          <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'H58 / Non-H58'}>
+            H58 genotype
+          </MenuItem>
+          <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'No. Samples'}>
+              No. Samples
           </MenuItem>
             {/* <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'Resistance to Drug'}>
               Resistance to Drug
@@ -1584,7 +1584,7 @@ const DashboardPage = () => {
           </div>
         </div>
         <div className="map-filters-wrapper" style={{ flexDirection: 'column' }}>
-          <h2 style={{ textAlign: "center" }}>Global Overview of Salmonella Typhi</h2>
+          <h2 style={{ textAlign: "center" }}>Global Overview of <i>Salmonella</i> Typhi</h2>
           <div className="map-filters-wrapper-inside" style={{ flexDirection: dimensions.width > desktop ? 'row' : 'column' }}>
             <div className="map-wrapper">
               <ComposableMap
@@ -2229,7 +2229,7 @@ const DashboardPage = () => {
                       )}
                     </div>
                   </div>
-                  <span className="chart-title" style={{ marginRight: -22, marginBottom: -8, marginTop: dimensions.width > desktop ? 5 : 10, fontSize: 10, fontWeight: 400 }}>Top Five Genotypes</span>
+                  <span className="chart-title" style={{ marginRight: -22, marginBottom: -8, marginTop: dimensions.width > desktop ? 5 : 10, fontSize: 10, fontWeight: 400 }}>Top Genotypes (up to 5)</span>
                   <div style={{ height: 420, display: "flex", flexDirection: "row", alignItems: "center" }}>
                     <span className="y-axis-label-vertical" style={{ paddingRight: 8, marginBottom: dimensions.width > desktop ? 84 : 154 }}>Number of occurrences</span>
                     {plotDrugsAndGenotypesChart()}
@@ -2237,7 +2237,7 @@ const DashboardPage = () => {
                 </div>
                 <div id="RFWAG" style={{ width: "100%", display: "flex", flexDirection: "column", paddingTop: 50 }}>
                   <div style={{ width: "100%", flexDirection: "row", textAlign: "center", display: "flex", justifyContent: "center" }}>
-                    <span className="chart-title" style={{ marginRight: -22, paddingRight: 32 }}>Resistance determinants within all genotypes</span>
+                    <span className="chart-title" style={{ marginRight: -22, paddingRight: 32 }}>Resistance determinants within genotypes</span>
                     <div style={{ display: "inline-block", position: "relative" }}>
                       <TooltipMaterialUI title={<span style={{ fontFamily: "Montserrat" }}>Download Chart as PNG</span>} placement="right">
                         <div
@@ -2259,7 +2259,7 @@ const DashboardPage = () => {
                       )}
                     </div>
                   </div>
-                  <span className="chart-title" style={{ fontSize: 10, fontWeight: 400, paddingBottom: 10, marginTop: dimensions.width > desktop ? 5 : 10 }}>Top Ten Genotypes</span>
+                  <span className="chart-title" style={{ fontSize: 10, fontWeight: 400, paddingBottom: 10, marginTop: dimensions.width > desktop ? 5 : 10 }}>Top Genotypes (up to 10)</span>
                   <div style={{ width: dimensions.width > desktop ? "60%" : "90%", alignSelf: "center", marginBottom: -4, marginRight: dimensions.width > desktop ? "-10%" : 0 }}>
                     <FormControl fullWidth className={classes.formControlSelect} style={{ marginTop: 0 }}>
                       <InputLabel style={{ fontWeight: 500, fontFamily: "Montserrat" }}>Select Drug Class</InputLabel>
@@ -2340,7 +2340,7 @@ const DashboardPage = () => {
                     </div>
                   </div>
                   <div style={{ width: dimensions.width > desktop ? "60%" : "90%", alignSelf: "center", paddingRight: dimensions.width > desktop && populationStructureFilter !== 1 ? "-10%" : 0, paddingBottom: populationStructureFilter === 1 ? -8 : 16 }}>
-                    <FormControl fullWidth className={classes.formControlSelect} style={{ marginBottom: 5, marginTop: 23 }}>
+                    {/*<FormControl fullWidth className={classes.formControlSelect} style={{ marginBottom: 5, marginTop: 23 }}>
                       <InputLabel style={{ fontWeight: 500, fontFamily: "Montserrat" }}>Population Structure</InputLabel>
                       <Select
                         value={populationStructureFilter}
@@ -2355,8 +2355,10 @@ const DashboardPage = () => {
                           H58 / Non-H58
                         </MenuItem>
                       </Select>
-                    </FormControl>
+                      </FormControl>*/}
                   </div>
+                  <p> </p>
+                  <p> </p>
                   <div style={{ width: '100%', height: 350, display: "flex", flexDirection: populationStructureFilter === 1 ? "row" : "column-reverse", alignItems: "center", paddingLeft: populationStructureFilter === 2 ? -22 : 0 }}>
                     {getPopulationStructureChartLabel()}
                     {plotPopulationStructureChart()}
@@ -2375,27 +2377,20 @@ const DashboardPage = () => {
         <div className="about-wrapper">
           <h2 style={{ marginBottom: 0 }}>About TyphiNET</h2>
           <p>
-            TyphiNET is a multi-institutional global collaborative network. Our goal is to facilitate data sharing, and assist in removing barriers to the re-use of pathogen genomic data from both endemic surveillance projects, as well as those data routinely generated by public health reference laboratories, for global public health benefit.
+            The TyphiNET dashboard collates antimicrobial resistance (AMR) and genotype (lineage) information extracted from whole genome sequence (WGS) data from the bacterial pathogen <i>Salmonella</i> Typhi, the agent of typhoid fever. Data are sourced monthly from Typhoid <a href= "https://pathogen.watch/" target="_blank" rel="noreferrer">Pathogenwatch</a>. Information on genotype definitions and population structure can be found in <a href="https://www.nature.com/articles/ncomms12827">Wong et al, 2016</a>, and details of AMR determinants in <a href="https://www.biorxiv.org/content/10.1101/2020.07.03.186692v2.abstract">Argimon et al, 2020</a>.
+           </p>
+           <p>
+            The TyphiNET dashboard is coordinated by Dr Zoe Dyson, Dr Louise Cerderia & Prof Kat Holt at the <a href="https://www.lshtm.ac.uk/" target="_blank" rel="noreferrer">London School of Hygiene and Tropical Medicine</a> & <a href="https://www.monash.edu/">Monash University</a>, supported by the Wellcome Trust (Open Research Fund, 219692/Z/19/Z) and the EU Horizon 2020 research and innovation programme (Marie Skłodowska-Curie grant #845681). 
           </p>
           <p>
-            The TyphiNET online platform is designed to collate all available whole genome sequence (WGS) data from the bacterial pathogen Salmonella Typhi. As bacterial WGS data is uniquely enriched with many characteristics of the infecting pathogen, we aim to provide up to date global estimates of both antimicrobial resistance and circulating genotypes for S. Typhi. We aim to improve global typhoid fever surveillance in the short term, and to provide evidence to assist in the improvement of intervention strategies and treatment guidelines for this pathogen in the long term.
+            <b>Note: This is a development version, data are incomplete and there are known bugs.</b>
           </p>
-          <p>
-            TyphiNET is coordinated by Dr Zoe Dyson, Dr Louise Cerdeira and Prof Kat Holt. We are based at the Department of Infection Biology at the <a href="https://www.lshtm.ac.uk/" target="_blank" rel="noreferrer">London School of Hygiene and Tropical Medicine</a>, as well as the Department of Infectious Diseases at <a href="https://www.monash.edu/medicine/ccs/infectious-diseases/home" target="_blank" rel="noreferrer">Monash University</a>. For more information about Holt lab projects and members, please visit the <a href="https://holtlab.net/" target="_blank" rel="noreferrer">Holt Lab website</a>.
-          </p>
-          <p>
-            TyphiNET has received funding from the European Union's Horizon 2020 research and innovation programme under the Marie Skłodowska-Curie grant agreement TyphiNET No 845681. We are also grateful to the Wellcome Trust for support from their Open Research Fund programme (219692/Z/19/Z). Follow us on <a href="https://twitter.com/typhinet" target="_blank" rel="noreferrer">Twitter</a>.
-          </p>
-          <h2 style={{ marginBottom: 0 }}>Genomic analysis framework:</h2>
-          <p>
-            TyphiNET utilises the <a href="https://github.com/katholt/genotyphi/" target="_blank" rel="noreferrer">GenoTyphi</a> genotyping scheme, publised by <a href="https://www.nature.com/articles/ncomms12827" target="_blank" rel="noreferrer">Wong <i>et al.</i> 2016</a>, and discussed in this <a href="https://holtlab.net/2016/10/12/global-picture-typhoid/" target="_blank" rel="noreferrer">blog post</a>.  Data are sourced monthly from the <a href="https://pathogen.watch/" target="_blank" rel="noreferrer">Pathogenwatch</a> online data analysis platform described in this <a href="https://www.biorxiv.org/content/10.1101/2020.07.03.186692v1.abstract" target="_blank" rel="noreferrer">preprint</a> by Argimón <i>et al.</i> 2020.
-        </p>
         </div>
         <div className="footer-buttons-wrapper">
-          <div
+        <div
             className="flex-button"
             onClick={() => {
-              setContactModalVisible(true)
+              window.open('mailto:dashboard@typhi.net', '_blank')
             }}
           >
             <FontAwesomeIcon icon={faEnvelope} style={{ marginRight: 8 }} />
@@ -2422,7 +2417,7 @@ const DashboardPage = () => {
         </div>
         <div style={{ flex: 1 }} />
         <div className="footer">
-          <span>Data obtained from: <a href="https://pathogen.watch" rel="noreferrer" target="_blank">pathogen watch project</a> on 07/02/2021. <a href="https://holtlab.net" rel="noreferrer" target="_blank">Holt Lab</a></span>
+          <span>Data obtained from Typhoid <a href="https://pathogen.watch" rel="noreferrer" target="_blank">Pathogenwatch</a> on 07/02/2021. <a href="https://holtlab.net" rel="noreferrer" target="_blank">Holt Lab.</a></span>
         </div>
 
         <div style={{ zIndex: 1000 }}>
