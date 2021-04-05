@@ -5,7 +5,6 @@
 ![Code Count](https://img.shields.io/github/languages/count/zadyson/TyphiNET)
 ![Main Code Base](https://img.shields.io/github/languages/top/zadyson/TyphiNET)
 ![Version](https://img.shields.io/badge/version-1.0-red)
-![License](https://img.shields.io/badge/license-GPLv3-blue) 
 ![Last Commit](https://img.shields.io/github/last-commit/zadyson/TyphiNET)
 ![Open Issues](https://img.shields.io/github/issues-raw/zadyson/TyphiNET)
 ![Repo Size](https://img.shields.io/github/repo-size/zadyson/TyphiNET)
@@ -68,6 +67,8 @@ yarn start:prod
 [HTTPS](https://typhinet.erc.monash.edu/)
 [dev](https://typhinet.herokuapp.com//)
 
+TODO  - need to format to route API style and add more informations
+
 #### Create the clean.csv
 
 clean.csv need be create only if the file doesn't exist in the directory assets/webscrap/clean.
@@ -110,11 +111,3 @@ local route
 
 heroku route
 <https://typhinet.herokuapp.com/api/mongo/download>
-
-### Heroku deploy
-
-Change the API_ENDPOINT inside ``client/src/constant.js`` for heroku.
-``
-//export const API_ENDPOINT = "http://localhost:8080/api/"; 
-export const API_ENDPOINT = "https://typhinet.herokuapp.com/api/";
-``

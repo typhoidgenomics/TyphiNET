@@ -17,6 +17,7 @@ router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel', function (req,
             let travel = params.travel
             let data_travel = false
             let allDrugs = {}
+
             for (let data of resultsJson) {
 
                 if (travel == "full") {
@@ -38,14 +39,19 @@ router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel', function (req,
                     }
                 }
 
+                //Check if country and date are not empty
+                const checkCountry = data["COUNTRY_ONLY"] !== "-"
+                const checkDate = data["DATE"] !== "-"
 
-                if (data["DATE"] >= params.minYear && data["DATE"] <= params.maxYear && data_travel) {
+                if (checkCountry && checkDate && data["DATE"] >= params.minYear && data["DATE"] <= params.maxYear && data_travel) {
                     let drugs = []
 
-                    if (!(data["DATE"] in allDrugs)) {
-                        allDrugs[data["DATE"]] = 1
-                    } else {
-                        allDrugs[data["DATE"]] += 1
+                    if (params.country === "all" || (params.country === data["COUNTRY_ONLY"])) {
+                        if (!(data["DATE"] in allDrugs)) {
+                            allDrugs[data["DATE"]] = 1
+                        } else {
+                            allDrugs[data["DATE"]] += 1
+                        }
                     }
 
                     if (data["azith_pred_pheno"] == "AzithR") {
@@ -53,7 +59,7 @@ router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel', function (req,
                     }
 
                     if (data["dcs_category"] == "DCS")
-                        drugs.push("Fluoroquinolones (DCS)")
+                        drugs.push("Fluoroquinolones")
 
                     if (data["ESBL_category"] == "ESBL")
                         drugs.push("ESBL")
@@ -79,7 +85,8 @@ router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel', function (req,
                     const rawTrendObject = {
                         YEAR: data["DATE"],
                         GENOTYPE: data["GENOTYPE"],
-                        DRUGS: drugs
+                        DRUGS: drugs,
+                        COUNTRY: data["COUNTRY_ONLY"]
                     }
                     if (params.country == data.COUNTRY_ONLY) {
                         rawTrendArray.push(rawTrendObject)
@@ -95,40 +102,33 @@ router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel', function (req,
                         YEAR: entry.YEAR,
                         GENOTYPE: entry.GENOTYPE,
                         DRUG: drug,
+                        COUNTRY: entry.COUNTRY
                     })
                 })
             })
-            response.push(allDrugs)
+            response.push([allDrugs])
             res.json(response);
         })
 })
 
-//Rota para a filtragens relacionadas ao amrClassChart
-//Primeiro parâmetro trata-se do país
-//Segundo e terceiro parâmetro são datas limites, sendo o segundo o ano mínimo e o terceiro o ano máximo
-//por último, o amr_class que deseja verificar
 router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', function (req, res, next) {
     let params = req.params
     let results_json = [];
     let results = [];
     let cotrim = ["dfrA1", "dfrA5", "dfrA7", "dfrA14", "dfrA15", "dfrA17", "dfrA18"];
-    //Essa variável verifica se o arquivo clean_db.csv está criado, se tiver o path dele será passado para a 
-    //variável read_file, e então os dados que serão enviados ao front serão desse arquivo.
-    //Se não, o path será do clean.csv
+    let numberGenotypes = {};
     let read_file = Tools.path_clean_db || Tools.path_clean
-    //Passo o path para o ReadStream, insiro os dados no vetor results_json
+
     fs.createReadStream(read_file)
         .pipe(csv())
         .on('data', (data_full) => results_json.push(data_full))
         .on('end', () => {
-            //Objeto que conterá os dados a serem enviados pro front
+
             let data_to_send = {}
             const TOTAL_VALUES = results_json.length
             let travel = params.travel
             let data_travel = false
-            //utilizo um for para percorrer todos os dados e verificar se as condições que foram requisitadas são atendidas
-            //O primeiro if eu verifico se o parâmetro passado para country é all, se for, ele irá fazer a verificação em todos os países
-            //Se não, ele irá apenas filtrar pelo país escolhido
+
             for (let data of results_json) {
                 if (travel == "full") {
                     data_travel = true
@@ -150,9 +150,19 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
                 }
 
                 let country = params.country == "all" ? data["COUNTRY_ONLY"] : params.country
-                if ((data["COUNTRY_ONLY"] == country) && (params.min_year <= data["DATE"] && data["DATE"] <= params.max_year) && data_travel) {
+
+                //Check if country and date are not empty
+                const checkCountry = data["COUNTRY_ONLY"] !== "-"
+                const checkDate = data["DATE"] !== "-"
+
+                if (checkCountry && checkDate && (data["COUNTRY_ONLY"] == country) && (params.min_year <= data["DATE"] && data["DATE"] <= params.max_year) && data_travel) {
                     data_to_send = {
                         "GENOTYPE": data["GENOTYPE"]
+                    }
+                    if (!(data["GENOTYPE"] in numberGenotypes)) {
+                        numberGenotypes[data["GENOTYPE"]] = 1
+                    }else{
+                        numberGenotypes[data["GENOTYPE"]] += 1
                     }
 
                     if (params.amr_class == "AMR Profiles") {
@@ -161,23 +171,31 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
                     }
 
                     if (params.amr_class == "Azithromycin" && data["azith_pred_pheno"] == "AzithR") {
-                        if (data["ereA"] == "1")
-                            data_to_send["GENE"] = "ereA"
-                        else
-                            data_to_send["GENE"] = "acrB_R717Q"
 
-                        results.push(data_to_send)
+                        let genes = []
+
+                        if (data["ereA"] == "1")
+                            genes.push("ereA")
+
+                        if (data["acrB_R717Q"] == "1")
+                            genes.push("acrB_R717Q")
+
+                        for (let gene of genes) {
+                            results.push({
+                                ...data_to_send,
+                                GENE: gene
+                            })
+                        }
                     }
 
-                    if (params.amr_class == "Fluoroquinolones (DCS)" && data["dcs_category"] == "DCS") {
-                        data_to_send["GENE"] = data["dcs_mechanisms"]
+                    if (params.amr_class == "Fluoroquinolones" && data["dcs_category"] == "DCS") {
+                        if (!["0_QRDR","0_QRDR + qnrS"].includes(data["dcs_mechanisms"])) {
+                            data_to_send["GENE"] = data["dcs_mechanisms"]
+                        }
                         results.push(data_to_send)
                     }
 
                     if (params.amr_class == "ESBL" && data["ESBL_category"] == "ESBL") {
-                        // data_to_send["ESBL"] = data["ESBL_category"]
-                        //data_to_send["ESBL TOTAL"] = data_to_send["ESBL TOTAL"]==undefined ? 1:data_to_send["ESBL TOTAL"]++
-                        //data_to_send["ESBL %"] = data_to_send["ESBL TOTAL"]==undefined ? 0:data_to_send["ESBL TOTAL"] / TOTAL_VALUES * 100
                         let genes = []
 
                         if (data["blaCTX-M-15_23"] == "1")
@@ -214,8 +232,11 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
                         }
                     }
 
-                    if (params.amr_class == "Ampicillin" && data["blaTEM-1D"] == "1") {
-                        data_to_send["GENE"] = "blaTEM-1D"
+                    if (params.amr_class == "Ampicillin") {
+                        if (data["blaTEM-1D"] === "1") {
+                            data_to_send["GENE"] = "blaTEM-1D"
+                        }
+
                         results.push(data_to_send)
                     }
 
@@ -224,10 +245,11 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
 
                         for (const index in cotrim) {
                             if (data[cotrim[index]] == "1") {
-                                if (data["sul1"] == "1") {
+                                if (data["sul1"] == "1" && data["sul2"] == "1") {
+                                    genes.push(cotrim[index] + "-sul1-sul2")
+                                } else if (data["sul1"] == "1") {
                                     genes.push(cotrim[index] + "-sul1")
-                                }
-                                if (data["sul2"] == "1") {
+                                } else if (data["sul2"] == "1") {
                                     genes.push(cotrim[index] + "-sul2")
                                 }
                             }
@@ -243,11 +265,12 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
 
                     if (params.amr_class == "Sulphonamides" && data["sul_any"] == "1") {
                         let genes = []
-
-                        if (data["sul1"] == "1")
+                        
+                        if (data["sul1"] === "1" && data["sul2"] === "1")
+                            genes.push("sul1-sul2")
+                        else if (data["sul1"] === "1")
                             genes.push("sul1")
-
-                        if (data["sul2"] == "1")
+                        else if (data["sul2"] === "1")
                             genes.push("sul2")
 
                         for (let gene of genes) {
@@ -292,6 +315,17 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
 
                     if (params.amr_class == "Tetracyclines" && data["tetracycline_category"] == "TetR") {
                         let genes = []
+                        // const tets = ["tetA(A)", "tetA(B)", "tetA(C)", "tetA(D)"]
+                        // let finalTet = "TetA("
+                        // for (let tet of tets) {
+                        //     if (data[tet.toString()] === "1") {
+                        //         finalTet = finalTet + tet[tet.length - 2]
+                        //     }
+                        // }
+                        // finalTet = finalTet + ")"
+                        // if (finalTet !== "TetA()") {
+                        //     genes.push(finalTet.toString())
+                        // }
 
                         if (data["tetA(A)"] == "1")
                             genes.push("tetA(A)")
@@ -313,8 +347,8 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
                         }
                     }
                 }
-
             }
+
             return res.json(results);
         });
 
@@ -324,6 +358,9 @@ router.get('/getYearLimits', function (req, res, next) {
     let results = []
     let min
     let max
+    let countries = []
+    let allGenotypes = {}
+    let totalGenotypes = []
     let read_file = Tools.path_clean_db || Tools.path_clean
     fs.createReadStream(read_file)
         .pipe(csv())
@@ -331,22 +368,40 @@ router.get('/getYearLimits', function (req, res, next) {
         .on('end', () => {
             min = results[0].DATE
             max = results[0].DATE
+            
             for (let data of results) {
-                if (!isNaN(data.DATE)) {
-                    min = (data.DATE < min) ? data.DATE : min
-                    max = (data.DATE > max) ? data.DATE : max
+
+                if (!totalGenotypes.includes(data.GENOTYPE)) {
+                    totalGenotypes.push(data.GENOTYPE)
+                }
+
+                //Check if country and date are not empty
+                if (data.COUNTRY_ONLY !== "-" && data.DATE !== "-") {
+
+                    if (!isNaN(data.DATE)) {
+                        min = (data.DATE < min) ? data.DATE : min
+                        max = (data.DATE > max) ? data.DATE : max
+                    }
+                    if (!countries.includes(data.COUNTRY_ONLY)) {
+                        countries.push(data.COUNTRY_ONLY)
+                    }
+                    if (!(data["GENOTYPE"] in allGenotypes)) {
+                        allGenotypes[data["GENOTYPE"]] = 1
+                    } else {
+                        allGenotypes[data["GENOTYPE"]] += 1
+                    }
                 }
             }
             return res.json({
                 min: parseInt(min),
-                max: parseInt(max)
+                max: parseInt(max),
+                countries: countries,
+                allGenotypes: allGenotypes,
+                totalGenotypes: totalGenotypes
             });
         })
 })
 
-//Filtra por 1 número que representa o tipo de dado a ser retornado
-//Também filtra pelo valor da coluna Travel, podendo retornar todos os dados
-//Apenas os que possuem o valor Travel ou os que estão unknown/local
 router.get('/:filter1/:country/:min_year/:max_year/:travel', function (req, res, next) {
     let params = req.params
     let results_json = [];
@@ -402,7 +457,7 @@ router.get('/:filter1/:country/:min_year/:max_year/:travel', function (req, res,
                     drugs.push("Azithromycin")
 
                 if (data["dcs_category"] == "DCS")
-                    drugs.push("Fluoroquinolones (DCS)")
+                    drugs.push("Fluoroquinolones")
 
                 if (data["ESBL_category"] == "ESBL")
                     drugs.push("ESBL")
@@ -428,41 +483,46 @@ router.get('/:filter1/:country/:min_year/:max_year/:travel', function (req, res,
                 filter_value["DRUGS"] = drugs
                 /* DRUG */
 
-                if ((data["COUNTRY_ONLY"] == params.country) && (data["DATE"] >= params.min_year && data["DATE"] <= params.max_year) && data_travel) {
-                    if (params.filter1 == "1") {
-                        filter_value["blaCTX-M-15_23"] = data["blaCTX-M-15_23"]
-                        results.push(filter_value)
-                    } else if (params.filter1 == "2") {
-                        filter_value["amr_category"] = data["amr_category"]
-                        results.push(filter_value)
-                    } else if (params.filter1 == "3") {
-                        filter_value["amr_category"] = data["amr_category"]
-                        filter_value["GENOTYPE_SIMPLE"] = data["GENOTYPE_SIMPLE"]
-                        results.push(filter_value)
-                    } else if (params.filter1 == "4") {
+                //Check if country and date are not empty
+                if (data["COUNTRY_ONLY"] !== "-" && data["DATE"] !== "-") {
 
-                        filter_value["Inc Types"] = data["Inc Types"]
-                        results.push(filter_value)
-                    } else {
-                        results.push(filter_value)
+                    if ((data["COUNTRY_ONLY"] == params.country) && (data["DATE"] >= params.min_year && data["DATE"] <= params.max_year) && data_travel) {
+                        if (params.filter1 == "1") {
+                            filter_value["blaCTX-M-15_23"] = data["blaCTX-M-15_23"]
+                            results.push(filter_value)
+                        } else if (params.filter1 == "2") {
+                            filter_value["amr_category"] = data["amr_category"]
+                            results.push(filter_value)
+                        } else if (params.filter1 == "3") {
+                            filter_value["amr_category"] = data["amr_category"]
+                            filter_value["GENOTYPE_SIMPLE"] = data["GENOTYPE_SIMPLE"]
+                            results.push(filter_value)
+                        } else if (params.filter1 == "4") {
+    
+                            filter_value["Inc Types"] = data["Inc Types"]
+                            results.push(filter_value)
+                        } else {
+                            results.push(filter_value)
+                        }
+                    } else if ((params.country == "all") && (params.min_year <= data["DATE"] && data["DATE"] <= params.max_year) && data_travel == true) {
+                        if (params.filter1 == "1") {
+                            filter_value["blaCTX-M-15_23"] = data["blaCTX-M-15_23"]
+                            results.push(filter_value)
+                        } else if (params.filter1 == "2") {
+                            filter_value["amr_category"] = data["amr_category"]
+                            results.push(filter_value)
+                        } else if (params.filter1 == "3") {
+                            filter_value["amr_category"] = data["amr_category"]
+                            filter_value["GENOTYPE_SIMPLE"] = data["GENOTYPE_SIMPLE"]
+                            results.push(filter_value)
+                        } else if (params.filter1 == "4") {
+                            filter_value["Inc Types"] = data["Inc Types"]
+                            results.push(filter_value)
+                        } else {
+                            results.push(filter_value)
+                        }
                     }
-                } else if ((params.country == "all") && (params.min_year <= data["DATE"] && data["DATE"] <= params.max_year) && data_travel == true) {
-                    if (params.filter1 == "1") {
-                        filter_value["blaCTX-M-15_23"] = data["blaCTX-M-15_23"]
-                        results.push(filter_value)
-                    } else if (params.filter1 == "2") {
-                        filter_value["amr_category"] = data["amr_category"]
-                        results.push(filter_value)
-                    } else if (params.filter1 == "3") {
-                        filter_value["amr_category"] = data["amr_category"]
-                        filter_value["GENOTYPE_SIMPLE"] = data["GENOTYPE_SIMPLE"]
-                        results.push(filter_value)
-                    } else if (params.filter1 == "4") {
-                        filter_value["Inc Types"] = data["Inc Types"]
-                        results.push(filter_value)
-                    } else {
-                        results.push(filter_value)
-                    }
+
                 }
 
             }
@@ -480,7 +540,6 @@ router.get('/:filter1/:country/:min_year/:max_year/:travel', function (req, res,
         });
 });
 
-//Retorna as colunas que contém os valores de H58, MDR, DCS e AzithR, retorna a porcentagem desses dados
 router.get('/:country/:min_year/:max_year/:travel', function (req, res, next) {
     let params = req.params
     let country_unique_genotype = {}
@@ -511,80 +570,86 @@ router.get('/:country/:min_year/:max_year/:travel', function (req, res, next) {
                         }
                     }
                 }
-                if (params.country != "all") {
-                    if (country_unique_genotype[params.country] == undefined) {
-                        country_unique_genotype[params.country] = {
-                            "GENOTYPES": {
-                                "GENOTYPES_LIST": [],
-                                "TOTAL": 0
-                            },
-                            "H58": 0,
-                            "MDR": 0,
-                            "DCS": 0,
-                            "AzithR": 0,
-                            "TOTAL_OCCURRENCE": 0
-                        }
-                    }
 
-                    if ((data["COUNTRY_ONLY"] == params.country) && (params.min_year <= data["DATE"] && data["DATE"] <= params.max_year) && data_travel) {
-                        if (country_unique_genotype[params.country]["GENOTYPES"]["GENOTYPES_LIST"].indexOf(data["GENOTYPE"]) == -1) {
-                            country_unique_genotype[params.country]["GENOTYPES"]["GENOTYPES_LIST"].push(data["GENOTYPE"])
-                        }
-                        country_unique_genotype[params.country]["TOTAL_OCCURRENCE"]++
-                        if (data["GENOTYPE_SIMPLE"] == "H58") {
-                            country_unique_genotype[params.country]["H58"]++
-                        }
-                        if (data["MDR"] == "MDR") {
-                            country_unique_genotype[params.country]["MDR"]++
-                        }
-                        if (data["dcs_category"] == "DCS") {
-                            country_unique_genotype[params.country]["DCS"]++
-                        }
-                        if (data["azith_pred_pheno"] == "AzithR") {
-                            country_unique_genotype[params.country]["AzithR"]++
-                        }
-                    }
-                } else {
-                    if (country_unique_genotype[data["COUNTRY_ONLY"]] == undefined) {
-                        country_unique_genotype[data["COUNTRY_ONLY"]] = {
-                            "GENOTYPES": {
-                                "GENOTYPES_LIST": [],
-                                "TOTAL": 0
-                            },
-                            "H58": 0,
-                            "MDR": 0,
-                            "DCS": 0,
-                            "AzithR": 0,
-                            "CipI": 0,
-                            "CipR": 0,
-                            "TOTAL_OCCURRENCE": 0
-                        }
-                    }
+                //Check if country and date are not empty
+                if (data["COUNTRY_ONLY"] !== "-" && data["DATE"] !== "-") {
 
-                    if ((data["DATE"] >= params.min_year && data["DATE"] <= params.max_year) && data_travel) {
-                        country_unique_genotype[data["COUNTRY_ONLY"]]["TOTAL_OCCURRENCE"]++
-                        if (country_unique_genotype[data["COUNTRY_ONLY"]]["GENOTYPES"]["GENOTYPES_LIST"].indexOf(data["GENOTYPE"]) == -1) {
-                            country_unique_genotype[data["COUNTRY_ONLY"]]["GENOTYPES"]["GENOTYPES_LIST"].push(data["GENOTYPE"])
-                            country_unique_genotype[data["COUNTRY_ONLY"]]["GENOTYPES"]["TOTAL"]++
+                    if (params.country != "all") {
+                        if (country_unique_genotype[params.country] == undefined) {
+                            country_unique_genotype[params.country] = {
+                                "GENOTYPES": {
+                                    "GENOTYPES_LIST": [],
+                                    "TOTAL": 0
+                                },
+                                "H58": 0,
+                                "MDR": 0,
+                                "DCS": 0,
+                                "AzithR": 0,
+                                "TOTAL_OCCURRENCE": 0
+                            }
                         }
-                        if (data["GENOTYPE_SIMPLE"] == "H58") {
-                            country_unique_genotype[data["COUNTRY_ONLY"]]["H58"]++
+    
+                        if ((data["COUNTRY_ONLY"] == params.country) && (params.min_year <= data["DATE"] && data["DATE"] <= params.max_year) && data_travel) {
+                            if (country_unique_genotype[params.country]["GENOTYPES"]["GENOTYPES_LIST"].indexOf(data["GENOTYPE"]) == -1) {
+                                country_unique_genotype[params.country]["GENOTYPES"]["GENOTYPES_LIST"].push(data["GENOTYPE"])
+                            }
+                            country_unique_genotype[params.country]["TOTAL_OCCURRENCE"]++
+                            if (data["GENOTYPE_SIMPLE"] == "H58") {
+                                country_unique_genotype[params.country]["H58"]++
+                            }
+                            if (data["MDR"] == "MDR") {
+                                country_unique_genotype[params.country]["MDR"]++
+                            }
+                            if (data["dcs_category"] == "DCS") {
+                                country_unique_genotype[params.country]["DCS"]++
+                            }
+                            if (data["azith_pred_pheno"] == "AzithR") {
+                                country_unique_genotype[params.country]["AzithR"]++
+                            }
                         }
-                        if (data["MDR"] == "MDR") {
-                            country_unique_genotype[data["COUNTRY_ONLY"]]["MDR"]++
+                    } else {
+                        if (country_unique_genotype[data["COUNTRY_ONLY"]] == undefined) {
+                            country_unique_genotype[data["COUNTRY_ONLY"]] = {
+                                "GENOTYPES": {
+                                    "GENOTYPES_LIST": [],
+                                    "TOTAL": 0
+                                },
+                                "H58": 0,
+                                "MDR": 0,
+                                "DCS": 0,
+                                "AzithR": 0,
+                                "CipI": 0,
+                                "CipR": 0,
+                                "TOTAL_OCCURRENCE": 0
+                            }
                         }
-                        if (data["dcs_category"] == "DCS") {
-                            country_unique_genotype[data["COUNTRY_ONLY"]]["DCS"]++
+    
+                        if ((data["DATE"] >= params.min_year && data["DATE"] <= params.max_year) && data_travel) {
+                            country_unique_genotype[data["COUNTRY_ONLY"]]["TOTAL_OCCURRENCE"]++
+                            if (country_unique_genotype[data["COUNTRY_ONLY"]]["GENOTYPES"]["GENOTYPES_LIST"].indexOf(data["GENOTYPE"]) == -1) {
+                                country_unique_genotype[data["COUNTRY_ONLY"]]["GENOTYPES"]["GENOTYPES_LIST"].push(data["GENOTYPE"])
+                                country_unique_genotype[data["COUNTRY_ONLY"]]["GENOTYPES"]["TOTAL"]++
+                            }
+                            if (data["GENOTYPE_SIMPLE"] == "H58") {
+                                country_unique_genotype[data["COUNTRY_ONLY"]]["H58"]++
+                            }
+                            if (data["MDR"] == "MDR") {
+                                country_unique_genotype[data["COUNTRY_ONLY"]]["MDR"]++
+                            }
+                            if (data["dcs_category"] == "DCS") {
+                                country_unique_genotype[data["COUNTRY_ONLY"]]["DCS"]++
+                            }
+                            if (data["azith_pred_pheno"] == "AzithR") {
+                                country_unique_genotype[data["COUNTRY_ONLY"]]["AzithR"]++
+                            }
+                            if (data["cip_pred_pheno"] == "CipI") {
+                                country_unique_genotype[data["COUNTRY_ONLY"]]["CipI"]++
+                            }
+                            if (data["cip_pred_pheno"] == "CipR") {
+                                country_unique_genotype[data["COUNTRY_ONLY"]]["CipR"]++
+                            }
                         }
-                        if (data["azith_pred_pheno"] == "AzithR") {
-                            country_unique_genotype[data["COUNTRY_ONLY"]]["AzithR"]++
-                        }
-                        if (data["cip_pred_pheno"] == "CipI") {
-                            country_unique_genotype[data["COUNTRY_ONLY"]]["CipI"]++
-                        }
-                        if (data["cip_pred_pheno"] == "CipR") {
-                            country_unique_genotype[data["COUNTRY_ONLY"]]["CipR"]++
-                        }
+    
                     }
 
                 }
@@ -624,11 +689,5 @@ router.get('/:country/:min_year/:max_year/:travel', function (req, res, next) {
         });
 });
 
-router.get('/totalGenotypes', function (req, res, next){
-    fs.readFile('assets/webscrap/clean/totalGenotypes.txt', (err, data) => {
-        let genotypes = data.toString().split(',')
-        return res.json({genotypes: genotypes})
-    })
-})
 
 export default router

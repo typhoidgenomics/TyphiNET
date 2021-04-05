@@ -431,22 +431,26 @@ router.get('/create', function(req, res) {
             });
 
             let temp = []
-            let totalGenotypes = []
+            // let totalGenotypes = []
             for (let d = 0; d < data_to_write.length; d++) {
-                if (!totalGenotypes.includes(data_to_write[d]['GENOTYPE'])) {
-                    totalGenotypes.push(data_to_write[d]['GENOTYPE'])
+                if (data_to_write[d]["TRAVEL"] === "travel") {
+                    data_to_write[d]["COUNTRY_ONLY"] = data_to_write[d]["TRAVEL_LOCATION"]
                 }
-                if (data_to_write[d]["COUNTRY_ONLY"] !== "-" && data_to_write[d]["DATE"] !== "-") {
-                    if (data_to_write[d]["TRAVEL"] === "travel") {
-                        data_to_write[d]["COUNTRY_ONLY"] = data_to_write[d]["TRAVEL_LOCATION"]
-                    }
-                    temp.push(data_to_write[d])
-                }
+                temp.push(data_to_write[d])
+                // if (!totalGenotypes.includes(data_to_write[d]['GENOTYPE'])) {
+                //     totalGenotypes.push(data_to_write[d]['GENOTYPE'])
+                // }
+                // if (data_to_write[d]["COUNTRY_ONLY"] !== "-" && data_to_write[d]["DATE"] !== "-") {
+                //     if (data_to_write[d]["TRAVEL"] === "travel") {
+                //         data_to_write[d]["COUNTRY_ONLY"] = data_to_write[d]["TRAVEL_LOCATION"]
+                //     }
+                //     temp.push(data_to_write[d])
+                // }
             }
 
-            fs.writeFile('assets/webscrap/clean/totalGenotypes.txt', totalGenotypes.toString(), (err) => { 
-                if (err) throw err; 
-            }) 
+            // fs.writeFile('assets/webscrap/clean/totalGenotypes.txt', totalGenotypes.toString(), (err) => { 
+            //     if (err) throw err; 
+            // }) 
 
             await Tools.CreateFile(temp, "clean.csv")
 

@@ -18,7 +18,16 @@
   z-index: 10;
   padding: 8px 4px;
   font-size: 22px;
-  color: gray
+  color: gray;
+}
+
+.fab-button {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  padding: 16px;
 }
 
 .menu-bar-mobile svg {
@@ -414,6 +423,22 @@
 
 .modal-close-button:hover {
   opacity: 0.5;
+}
+
+.loading{
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.logoImageMenu-loading {
+  height: 100px;
+  align-self: center;
 }
 
 @media (max-width: 767px) {

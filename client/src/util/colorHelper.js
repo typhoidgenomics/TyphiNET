@@ -158,7 +158,7 @@ export const getColorForDrug = (drug) => {
   switch (drug) {
     case 'Azithromycin':
       return "rgb(144,211,199)";
-    case 'Fluoroquinolones (DCS)':
+    case 'Fluoroquinolones':
       return "rgb(255,236,120)";
     case 'ESBL':
       return "rgb(190,186,217)";
@@ -229,6 +229,43 @@ export const getColorForIncType = (incType) => {
       return 'rgb(248,117,116)'
     case 'IncX3':
       return 'rgb(190,177,231)'
+    default:
+      return "#F5F4F6";
+  }
+}
+
+export const getColorForTetracyclines = (tetA) => {
+  switch (tetA) {
+    case 'tetA(A)':
+      return 'rgb(174,227,154)'
+    case 'tetA(B)':
+      return '#D7AEF7'
+    case 'tetA(C)':
+      return '#FFEC78'
+    case 'tetA(D)':
+      return '#FCB469'
+    case 'tetA(AB)':
+      return 'rgb(223,207,231)'
+    case 'tetA(ABC)':
+      return 'rgb(66,69,94)'
+    case 'tetA(ABD)':
+      return 'rgb(251,172,246)'
+    case 'tetA(ABCD)':
+      return 'rgb(34,151,67)'
+    case 'tetA(AC)':
+      return 'rgb(238,83,190)'
+    case 'tetA(ACD)':
+      return 'rgb(68,242,112)'
+    case 'tetA(AD)':
+      return 'rgb(251,45,76)'
+    case 'tetA(BC)':
+      return 'rgb(101,230,249)'
+    case 'tetA(BD)':
+      return 'rgb(123,44,49)'
+    case 'tetA(BCD)':
+      return 'rgb(231,173,121)'
+    case 'tetA(CD)':
+      return 'rgb(32,80,46)'
     default:
       return "#F5F4F6";
   }
