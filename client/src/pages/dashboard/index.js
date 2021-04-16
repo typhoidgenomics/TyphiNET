@@ -811,6 +811,20 @@ const DashboardPage = () => {
       })
       finalDrugTrendsChartData.forEach((data) => {
         data.total = allDrugs[data["name"]];
+        let maxValue = 0;
+        const drugsPercentage = {}
+        for (const key in data) {
+          if (key !== 'name' && key !== 'total') {
+            if (data[key] > maxValue) {
+              maxValue = data[key]
+            }
+            const aux = Math.round((data[key] * 100) / data.total)
+            drugsPercentage[key] = data[key]
+            data[key] = aux
+          }
+        }
+        data.higherPercentage = Math.round((maxValue * 100) / data.total)
+        data.drugsPercentage = drugsPercentage
       })
 
       finalDrugsAndGenotypesChartData.forEach((data) => {
@@ -900,17 +914,18 @@ const DashboardPage = () => {
                       // if (chart === 0) {
                       //   percentage = ((item.value / drugsAndGenotypesChartData[drugsAndGenotypesChartData.length - 1].totalSum[item.name]) * 100)
                       // } else 
-                      // if (chart === 1) {
-                      //   percentage = ((item.value / drugTrendsChartData[drugTrendsChartData.length - 1].totalSum[item.payload.name]) * 100)
-                      // }
-                      if (Math.round(percentage) !== percentage)
-                        percentage = percentage.toFixed(2)
+                      if (chart === 1) {
+                        percentage = ((item.payload.drugsPercentage[item.dataKey] / item.payload.total) * 100)
+                      }
+                      // if (Math.round(percentage) !== percentage)
+                      //   percentage = percentage.toFixed(2)
+                      percentage = Math.round(percentage)
                       return (
                         <div key={index + item} style={{ display: "flex", flexDirection: "row", alignItems: "center", width: width2, marginBottom: 8 }}>
                           <div style={{ backgroundColor: stroke ? item.stroke : item.fill, height: 18, width: 18, border: "solid rgb(0,0,0,0.75) 0.5px", flex: "none" }} />
                           <div style={{ display: "flex", flexDirection: "column", marginLeft: 8, width: "95%" }}>
                             <span style={{ fontFamily: "Montserrat", color: "rgba(0,0,0,0.75)", fontWeight: 500, fontSize: 14, wordWrap: 'break-word', width: dimensions.width < mobile ? '80%' : '100%' }}>{item.name}</span>
-                            <span style={{ fontFamily: "Montserrat", color: "rgba(0,0,0,0.75)", fontSize: 12 }}>N = {item.value}</span>
+                            <span style={{ fontFamily: "Montserrat", color: "rgba(0,0,0,0.75)", fontSize: 12 }}>N = {chart === 1 ? item.payload.drugsPercentage[item.dataKey] : item.value}</span>
                             <span style={{ fontFamily: "Montserrat", color: "rgba(0,0,0,0.75)", fontSize: 10 }}>{percentage}%</span>
                           </div>
                         </div>
@@ -999,8 +1014,9 @@ const DashboardPage = () => {
                     <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", width: 250 }}>
                       {payload.reverse().map((item, index) => {
                         let percentage = ((item.value / item.payload.total2) * 100)
-                        if (Math.round(percentage) !== percentage)
-                          percentage = percentage.toFixed(2)
+                        // if (Math.round(percentage) !== percentage)
+                        //   percentage = percentage.toFixed(2)
+                        percentage = Math.round(percentage)
                         return (
                           <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "center", width: "33.33%", marginBottom: 8 }}>
                             <div style={{ backgroundColor: item.fill, height: 18, width: 18, border: "solid rgb(0,0,0,0.75) 0.5px", flex: "none" }} />
@@ -1183,15 +1199,15 @@ const DashboardPage = () => {
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" interval={"preserveStartEnd"} tick={{ fontSize: 14 }}/>
-            <YAxis />
+            <YAxis/>
             <Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} />
 
             <Legend
               content={(props) => {
                 const { payload } = props;
                 return (
-                  <div style={{display: "flex", flexDirection: "row", justifyContent: 'center'}}>
-                    <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", width: dimensions.width < mobile ? "93%" : "95%", justifyContent: "space-between", marginTop: 10}}>
+                  <div style={{display: "flex", flexDirection: "row", justifyContent: 'flex-end'}}>
+                    <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", paddingLeft: 55, justifyContent: "space-between", marginTop: 10}}>
                       {payload.map((entry, index) => {
                         const { dataKey, color } = entry
                         return (
@@ -1235,13 +1251,13 @@ const DashboardPage = () => {
               content={(props) => {
                 const { payload } = props;
                 return (
-                  <div style={{display: "flex", flexDirection: "row", justifyContent: 'center'}}>
-                    <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", width: dimensions.width < mobile ? "93%" : "95%", justifyContent: "space-between", marginTop: 10}}>
+                  <div style={{display: "flex", flexDirection: "row", justifyContent: 'flex-end'}}>
+                    <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", paddingLeft: 55, justifyContent: "space-between", marginTop: 10}}>
                       {payload.map((entry, index) => {
                         const { dataKey, color } = entry
                         return (
                           <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "start", width: 120, marginBottom: 4, marginLeft: 3, marginRight: 3 }}>
-                            <div style={{ height: 8, width: 8, borderRadius: 4, marginTop: 3 ,backgroundColor: color, flexShrink: 0 }} />
+                            <div style={{ height: 8, width: 8, borderRadius: 4, marginTop: 3, backgroundColor: color, flexShrink: 0 }} />
                             <span style={{ fontSize: 12, paddingLeft: 4}}>{dataKey}</span>
                           </div>
                         )
@@ -1624,7 +1640,7 @@ const DashboardPage = () => {
       <div className="menu-bar-mobile">
         <img className="logoImageMenu-mobile" src={typhinetLogoImg} alt="TyphiNET" />
       </div>
-      <div style={{padding: dimensions.width > 770 ? '16px' : '16px 0px'}}>
+      <div style={{padding: dimensions.width > 770 ? '16px 16px 0px 16px' : '16px 0px 0px 0px'}}>
         <div className="info-wrapper">
           {dimensions.width > desktop && (
             <>
@@ -2402,7 +2418,7 @@ const DashboardPage = () => {
                     </div>
                   </div>
                   <div style={{ height: 422, display: "flex", flexDirection: "row", alignItems: "center"}}>
-                    <span className="y-axis-label-vertical" style={{ paddingTop: /*dimensions.width > desktop ? 0 : 0*/ 80 }}>Number of occurrences</span>
+                    <span className="y-axis-label-vertical" style={{ paddingTop: /*dimensions.width > desktop ? 0 : 0*/ 80 }}>Resistant (%)</span>
                     {plotDrugTrendsChart}
                   </div>
                 </div>
@@ -2505,38 +2521,7 @@ const DashboardPage = () => {
         <div className="footer">
           <span>Data obtained from: <a href="https://pathogen.watch" rel="noreferrer" target="_blank">pathogen watch project</a> on 07/02/2021. <a href="https://holtlab.net" rel="noreferrer" target="_blank">Holt Lab</a></span>
         </div>
-
-        {/* <div style={{ zIndex: 1000 }}>
-          <Rodal
-            visible={contactModalVisible}
-            showCloseButton={false}
-            customStyles={{ padding: 0, overflow: "hidden", width: dimensions.width > desktop ? "75%" : "95%", height: dimensions.width > desktop ? "75%" : "95%" }}
-            onClose={() => {
-              setContactModalVisible(false);
-            }}
-          >
-            <div style={{ backgroundColor: "transparent", height: "100%", width: "100%", overflow: "hidden" }}>
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", height: "100%" }}>
-                <div
-                  className="modal-close-button"
-                  style={{ position: "absolute", right: 24, top: 24, height: 24, width: 24, zIndex: 500 }}
-                  onClick={() => {
-                    setContactModalVisible(false);
-                  }}
-                >
-                  <FontAwesomeIcon icon={faTimes} style={{ marginRight: 8, color: "black", fontSize: 24 }} />
-                </div>
-                <div style={{
-                  padding: 32, height: "100%", width: "-webkit-fill-available", display: "flex", flexDirection: "column", overflowY: "scroll"
-                }}>
-                  <span style={{ fontWeight: 600, fontSize: 20, marginBottom: 20 }}>Contact</span>
-                  <ContactPage />
-                </div>
-              </div>
-            </div>
-          </Rodal>
-        </div> */}
-        <div className="fab-button">
+        <div className="fab-button" style={{marginTop: -80}}>
           <TooltipMaterialUI title={<span style={{ fontFamily: "Montserrat" }}>Reset Configurations</span>} placement="left">
             <Fab
               color="primary"
