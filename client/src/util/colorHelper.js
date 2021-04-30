@@ -38,6 +38,8 @@ export const getColorForGenotype = (genotype) => {
     case '2.1.7':
     case '2.1.8':
     case '2.1.9':
+    case '2.1.7.1':
+    case '2.1.7.2':
       return "#adff2f";
     case '2.2':
     case '2.2.0':
@@ -106,10 +108,14 @@ export const getColorForGenotype = (genotype) => {
     case '4.3.1':
       return "#ff0000";
     case '4.3.1.1':
+    case '4.3.1.1.EA1':
       return "#f1b6da";
     case '4.3.1.2':
+    case '4.3.1.2.EA2':
+    case '4.3.1.2.EA3':
       return "#c51b7d";
     case '4.3.1.3':
+    case '4.3.1.3.Bd1':
       return "#fb8072";
     default:
       return "#F5F4F6";
@@ -171,7 +177,7 @@ export const getColorForDrug = (drug) => {
     case 'Sulphonamides':
       return "rgb(180,221,112)";
     case 'Trimethoprim':
-      return "rgb(144,211,199)";
+      return "rgb(102,102,255)";
     case 'Tetracyclines':
       return "rgb(251,207,229)";
     default:

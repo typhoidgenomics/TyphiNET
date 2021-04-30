@@ -236,7 +236,8 @@ const DashboardPage = () => {
     '3.5', '3.5.1', '3.5.2', '3.5.3',
     '3.5.4', '4.1', '4.2', '4.2.1',
     '4.2.2', '4.2.3', '4.3.1', '4.3.1.1',
-    '4.3.1.1.P1', '4.3.1.2', '4.3.1.3'].sort((a, b) => a.localeCompare(b)));
+    '4.3.1.1.P1','4.3.1.1.EA1','4.3.1.2', '4.3.1.2.EA2',
+    '4.3.1.2.EA3', '4.3.1.3', '4.3.1.3.Bdq'].sort((a, b) => a.localeCompare(b)));
 
   useEffect(() => {
     axios.get(`${API_ENDPOINT}filters/getYearLimits`)
@@ -325,17 +326,6 @@ const DashboardPage = () => {
   
       if (totalGenomes.length === 0)
         setTotalGenomes(genomes)
-  
-      // if (totalGenotypes.length === 0){
-      //   if (actualCountry === "All") {
-      //     axios.get(`${API_ENDPOINT}filters/totalGenotypes`)
-      //     .then((res) => {
-      //       setTotalGenotypes(res.data.genotypes)
-      //     })
-      //   }else{
-      //     setTotalGenotypes(genotypes)
-      //   }
-      // }
   
       setActualGenomes(genomes)
       setActualGenotypes(genotypes)
@@ -1375,7 +1365,7 @@ const DashboardPage = () => {
   const [dowloadBaseSpreadsheet] = useState(() => () => {
     axios.get(`${API_ENDPOINT}file/download`)
       .then((res) => {
-        download(res.data, 'TyphiNET Database.csv');
+        download(res.data, 'TyphiNET_Database.csv');
       })
   })
 
