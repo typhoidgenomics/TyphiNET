@@ -59,7 +59,7 @@ router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel', function (req,
                     }
 
                     if (data["dcs_category"] == "DCS")
-                        drugs.push("Fluoroquinolones")
+                        drugs.push("Fluoroquinolones (DCS)")
 
                     if (data["ESBL_category"] == "ESBL")
                         drugs.push("ESBL")
@@ -188,7 +188,7 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
                         }
                     }
 
-                    if (params.amr_class == "Fluoroquinolones" && data["dcs_category"] == "DCS") {
+                    if (params.amr_class == "Fluoroquinolones (DCS)" && data["dcs_category"] == "DCS") {
                         if (!["0_QRDR", "0_QRDR + qnrS"].includes(data["dcs_mechanisms"])) {
                             data_to_send["GENE"] = data["dcs_mechanisms"]
                         }
@@ -209,7 +209,7 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
 
                         for (let gene of genes) {
                             results.push({
-                                ...data_to_send,
+                                data_to_send,
                                 GENE: gene
                             })
                         }
@@ -226,7 +226,7 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
 
                         for (let gene of genes) {
                             results.push({
-                                ...data_to_send,
+                                data_to_send,
                                 GENE: gene
                             })
                         }
@@ -257,7 +257,7 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
 
                         for (let gene of genes) {
                             results.push({
-                                ...data_to_send,
+                                data_to_send,
                                 GENE: gene
                             })
                         }
@@ -275,7 +275,7 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
 
                         for (let gene of genes) {
                             results.push({
-                                ...data_to_send,
+                                data_to_send,
                                 GENE: gene
                             })
                         }
@@ -307,7 +307,7 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
 
                         for (let gene of genes) {
                             results.push({
-                                ...data_to_send,
+                                data_to_send,
                                 GENE: gene
                             })
                         }
@@ -341,7 +341,7 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
 
                         for (let gene of genes) {
                             results.push({
-                                ...data_to_send,
+                                data_to_send,
                                 GENE: gene
                             })
                         }
@@ -457,7 +457,7 @@ router.get('/:filter1/:country/:min_year/:max_year/:travel', function (req, res,
                     drugs.push("Azithromycin")
 
                 if (data["dcs_category"] == "DCS")
-                    drugs.push("Fluoroquinolones")
+                    drugs.push("Fluoroquinolones (DCS)")
 
                 if (data["ESBL_category"] == "ESBL")
                     drugs.push("ESBL")

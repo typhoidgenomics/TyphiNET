@@ -135,7 +135,7 @@ const DashboardPage = () => {
   const [countriesForFilter, setCountriesForFilter] = React.useState(['All']);
   const [actualCountry, setActualCountry] = useState("All");
   const [populationStructureFilter, setPopulationStructureFilter] = React.useState(1);
-  const [amrClassesForFilter] = useState([/*"AMR Profiles", */"Ampicillin", "Azithromycin", "Chloramphenicol", "Co-trimoxazole", "ESBL", "Fluoroquinolones", "Sulphonamides", "Tetracyclines", "Trimethoprim"])
+  const [amrClassesForFilter] = useState([/*"AMR Profiles", */"Ampicillin", "Azithromycin", "Chloramphenicol", "Co-trimoxazole", "ESBL", "Fluoroquinolones (DCS)", "Sulphonamides", "Tetracyclines", "Trimethoprim"])
   const [amrClassFilter, setAmrClassFilter] = React.useState(amrClassesForFilter[5])
 
   const [drugTrendsChartData, setDrugTrendsChartData] = useState([])
@@ -1074,7 +1074,7 @@ const DashboardPage = () => {
               ['ereA-acrB_R717Q', "#FFEC78", "error-ereA-acrB_R717Q"]
             ]
           }))
-        case 'Fluoroquinolones':
+        case 'Fluoroquinolones (DCS)':
           return (armClassFilterComponent({
             left: 10, fontsize: 14, strokeWidth: 0.5, width: 3, bars: [
               ['3_QRDR', "#6baed6", "error-3_QRDR"],
