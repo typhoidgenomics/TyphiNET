@@ -1,5 +1,5 @@
 import './index.css';
-import React, { useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import { scaleLinear } from "d3-scale";
 import Loader from "react-loader-spinner";
 import { ComposableMap, Geographies, Geography, Sphere, Graticule, ZoomableGroup } from "react-simple-maps";
@@ -20,7 +20,7 @@ import ReactTooltip from "react-tooltip";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Brush, LineChart, Line, Legend } from 'recharts';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus, faMinus, faCrosshairs, faCamera, faTable, faInfoCircle, faUndoAlt} from '@fortawesome/free-solid-svg-icons'
+import { faPlus, faMinus, faCrosshairs, faCamera, faTable, faInfoCircle, faUndoAlt } from '@fortawesome/free-solid-svg-icons'
 import download from 'downloadjs';
 import { svgAsPngUri } from 'save-svg-as-png';
 import typhinetLogoImg from '../../assets/img/logo-typhinet.png';
@@ -115,10 +115,10 @@ const DashboardPage = () => {
   const [worldMapAmrProfilesData, setWorldMapAmrProfilesData] = useState([]);
   const [worldMapPlasmidIncompatibilityTypeData, setWorldMapPlasmidIncompatibilityTypeData] = useState([]);
 
-  const [plotAmrClassChart, setPlotAmrClassChart] = useState(function () {})
-  const [plotDrugsAndGenotypesChart, setPlotDrugsAndGenotypesChart] = useState(function () {})
-  const [plotPopulationStructureChart, setPlotPopulationStructureChart] = useState(function () {})
-  const [plotDrugTrendsChart, setPlotDrugTrendsChart] = useState(function () {})
+  const [plotAmrClassChart, setPlotAmrClassChart] = useState(function () { })
+  const [plotDrugsAndGenotypesChart, setPlotDrugsAndGenotypesChart] = useState(function () { })
+  const [plotPopulationStructureChart, setPlotPopulationStructureChart] = useState(function () { })
+  const [plotDrugTrendsChart, setPlotDrugTrendsChart] = useState(function () { })
 
   const [captureControlMapInProgress, setCaptureControlMapInProgress] = useState(false)
   const [captureControlChartRFWGInProgress, setCaptureControlChartRFWGInProgress] = useState(false)
@@ -172,7 +172,7 @@ const DashboardPage = () => {
   const [mobile] = useState(500)
   const [middle] = useState(1300)
 
-  const [dimensions, setDimensions] = React.useState({ 
+  const [dimensions, setDimensions] = React.useState({
     height: window.innerHeight,
     width: window.innerWidth
   })
@@ -236,7 +236,7 @@ const DashboardPage = () => {
     '3.5', '3.5.1', '3.5.2', '3.5.3',
     '3.5.4', '4.1', '4.2', '4.2.1',
     '4.2.2', '4.2.3', '4.3.1', '4.3.1.1',
-    '4.3.1.1.P1','4.3.1.1.EA1','4.3.1.2', '4.3.1.2.EA2',
+    '4.3.1.1.P1', '4.3.1.1.EA1', '4.3.1.2', '4.3.1.2.EA2',
     '4.3.1.2.EA3', '4.3.1.3', '4.3.1.3.Bdq'].sort((a, b) => a.localeCompare(b)));
 
   useEffect(() => {
@@ -276,15 +276,15 @@ const DashboardPage = () => {
   useEffect(() => {
     const parseDataForGenotypeChart = (data) => {
       var finalPopulationStructureChartData = [];
-  
+
       var genomes = data;
       var genotypes = [];
-  
+
       data.forEach((entry) => {
         if (!genotypes.some(g => g === entry.GENOTYPE)) {
           genotypes.push(entry.GENOTYPE)
         }
-  
+
         /* POPULATION STRUCTURE CHART GENERATION */
         if (populationStructureFilter === 1) { /* Genotype */
           if (!finalPopulationStructureChartData.some(e => e.name === entry.YEAR)) {
@@ -295,7 +295,7 @@ const DashboardPage = () => {
           } else {
             let year = finalPopulationStructureChartData.find(e => e.name === entry.YEAR);
             let yearIndex = finalPopulationStructureChartData.findIndex(e => e.name === entry.YEAR);
-  
+
             if (year[entry.GENOTYPE] === undefined) {
               year[entry.GENOTYPE] = 1
             } else {
@@ -313,7 +313,7 @@ const DashboardPage = () => {
             } else {
               let genotypeSimple = finalPopulationStructureChartData.find(e => e.name === entry['GENOTYPE_SIMPLE']);
               let genotypeSimpleIndex = finalPopulationStructureChartData.findIndex(e => e.name === entry['GENOTYPE_SIMPLE']);
-  
+
               if (genotypeSimple[entry.GENOTYPE] === undefined) {
                 genotypeSimple[entry.GENOTYPE] = 1
               } else {
@@ -323,13 +323,13 @@ const DashboardPage = () => {
             }
         }
       })
-  
+
       if (totalGenomes.length === 0)
         setTotalGenomes(genomes)
-  
+
       setActualGenomes(genomes)
       setActualGenotypes(genotypes)
-  
+
       finalPopulationStructureChartData.forEach((data) => {
         let sum = 0;
         Object.entries(data).forEach((entry) => {
@@ -338,10 +338,10 @@ const DashboardPage = () => {
         })
         data.total = sum;
       })
-  
+
       if (!arraysEqual(finalPopulationStructureChartData, populationStructureChartData))
         setPopulationStructureChartData(finalPopulationStructureChartData)
-  
+
       let populationStructureChartSums = []
       finalPopulationStructureChartData.forEach((year) => {
         let sum = 0
@@ -355,10 +355,10 @@ const DashboardPage = () => {
           sum
         })
       })
-  
+
       if (populationStructureChartSums.length > 0) {
         let highestSum = populationStructureChartSums.sort((a, b) => b.sum - a.sum)[0].sum;
-  
+
         if (populationStructureFilter === 1) {
           if (highestSum > chartMaxHeight)
             setChartMaxHeight(Math.ceil(highestSum / 100) * 100)
@@ -368,12 +368,12 @@ const DashboardPage = () => {
         }
       }
     }
-  
+
     const parseDataForCountryMap = (data) => {
       let finalCountries = [];
-  
+
       let samplesData = [], genotypesData = [], h58Data = [], mdrData = [], xdrData = [], drugsData = [], amrData = [], incTypesData = [], dcsData = [], azithData = [], cipIData = [], cipRData = [];
-  
+
       const countData = (array, elementToCount, parentName, childName) => {
         let temp = []
         array.forEach(entry => {
@@ -390,7 +390,7 @@ const DashboardPage = () => {
           } else {
             let country = temp.find(e => e.name === entry['COUNTRY_ONLY']);
             let countryIndex = temp.findIndex(e => e.name === entry['COUNTRY_ONLY']);
-  
+
             if (!country[parentName].some(e => e[childName] === entry[elementToCount])) {
               country[parentName].push({
                 [childName]: entry[elementToCount],
@@ -403,39 +403,39 @@ const DashboardPage = () => {
               country[parentName][index] = parent
             }
             country.total = country.total + 1
-  
+
             temp[countryIndex] = country;
           }
         })
-  
+
         let congoCountryIndex = temp.findIndex(e => e.name === 'Democratic Republic of Congo');
         if (congoCountryIndex !== -1)
           temp[congoCountryIndex].displayName = 'Dem. Rep. Congo'
-  
+
         let centralAfricanRepublicCountryIndex = temp.findIndex(e => e.name === 'Central African Republic');
         if (centralAfricanRepublicCountryIndex !== -1)
           temp[centralAfricanRepublicCountryIndex].displayName = 'Central African Rep.'
-  
+
         let ivoryCoastCountryIndex = temp.findIndex(e => e.name === "Ivory Coast");
         if (ivoryCoastCountryIndex !== -1)
           temp[ivoryCoastCountryIndex].displayName = "Côte d'Ivoire"
-  
+
         let timorLesteCountryIndex = temp.findIndex(e => e.name === "East Timor");
         if (timorLesteCountryIndex !== -1)
           temp[timorLesteCountryIndex].displayName = "Timor-Leste"
-  
+
         temp.forEach((country) => {
           country[parentName].sort((a, b) => b.count - a.count);
         })
         temp.sort((a, b) => a.name.localeCompare(b.name));
-  
+
         return temp
       }
-  
+
       data.forEach((entry) => {
         if (!finalCountries.some(e => e === entry['COUNTRY_ONLY']) && entry['COUNTRY_ONLY'] !== "-" && entry['COUNTRY_ONLY'] !== "")
           finalCountries.push(entry['COUNTRY_ONLY'])
-  
+
         if (!samplesData.some(e => e.name === entry['COUNTRY_ONLY'])) {
           samplesData.push({
             name: entry['COUNTRY_ONLY'],
@@ -449,24 +449,24 @@ const DashboardPage = () => {
           samplesData[countryIndex] = country;
         }
       })
-  
+
       if (!arraysEqual(samplesData, worldMapSamplesData)) {
         let congoCountryIndex = samplesData.findIndex(e => e.name === 'Democratic Republic of Congo');
         if (congoCountryIndex !== -1)
           samplesData[congoCountryIndex].displayName = 'Dem. Rep. Congo'
-  
+
         let centralAfricanRepublicCountryIndex = samplesData.findIndex(e => e.name === 'Central African Republic');
         if (centralAfricanRepublicCountryIndex !== -1)
           samplesData[centralAfricanRepublicCountryIndex].displayName = 'Central African Rep.'
-  
+
         let ivoryCoastCountryIndex = samplesData.findIndex(e => e.name === "Ivory Coast");
         if (ivoryCoastCountryIndex !== -1)
           samplesData[ivoryCoastCountryIndex].displayName = "Côte d'Ivoire"
-  
+
         let timorLesteCountryIndex = samplesData.findIndex(e => e.name === "East Timor");
         if (timorLesteCountryIndex !== -1)
           samplesData[timorLesteCountryIndex].displayName = "Timor-Leste"
-  
+
         setWorldMapSamplesData(samplesData)
         setSamplesQty(
           Math.ceil((
@@ -474,18 +474,18 @@ const DashboardPage = () => {
           ) / 50) * 50
         )
       }
-  
+
       finalCountries.sort((a, b) => a.localeCompare(b));
       finalCountries.unshift("All");
       setCountriesForFilter(finalCountries)
-  
+
       if (!finalCountries.includes(actualCountry))
         setActualCountry("All")
-  
+
       genotypesData = countData(data, "GENOTYPE", "genotypes", "lineage")
       if (!arraysEqual(genotypesData, worldMapGenotypesData))
         setWorldMapGenotypesData(genotypesData)
-  
+
       h58Data = countData(data, "GENOTYPE_SIMPLE", "genotypes", "type")
       h58Data.forEach(country => {
         country.genotypes.forEach((g, index) => {
@@ -498,7 +498,7 @@ const DashboardPage = () => {
       })
       if (!arraysEqual(h58Data, worldMapH58Data))
         setWorldMapH58Data(h58Data)
-  
+
       mdrData = countData(data, "MDR", "MDRs", "type")
       mdrData.forEach(country => {
         country.MDRs.forEach((mdr, index) => {
@@ -520,7 +520,7 @@ const DashboardPage = () => {
       })
       if (!arraysEqual(mdrData, worldMapMDRData))
         setWorldMapMDRData(mdrData)
-  
+
       xdrData = countData(data, "XDR", "XDRs", "type")
       xdrData.forEach(country => {
         country.XDRs.forEach((xdr, index) => {
@@ -542,7 +542,7 @@ const DashboardPage = () => {
       })
       if (!arraysEqual(xdrData, worldMapXDRData))
         setWorldMapXDRData(xdrData)
-  
+
       dcsData = countData(data, "DCS", "DCSs", "type")
       dcsData.forEach(country => {
         country.DCSs.forEach((dcs, index) => {
@@ -564,7 +564,7 @@ const DashboardPage = () => {
       })
       if (!arraysEqual(dcsData, worldMapDCSData))
         setWorldMapDCSData(dcsData)
-  
+
       azithData = countData(data, "Azith", "AZs", "type")
       azithData.forEach(country => {
         country.AZs.forEach((az, index) => {
@@ -586,7 +586,7 @@ const DashboardPage = () => {
       })
       if (!arraysEqual(azithData, worldMapAZITHData))
         setWorldMapAZITHData(azithData)
-  
+
       cipIData = countData(data, "CipI", "CipIs", "type")
       cipIData.forEach(country => {
         country.CipIs.forEach((cipIs, index) => {
@@ -608,7 +608,7 @@ const DashboardPage = () => {
       })
       if (!arraysEqual(cipIData, worldMapCIPIData))
         setWorldMapCIPIData(cipIData)
-  
+
       cipRData = countData(data, "CipR", "CipRs", "type")
       cipRData.forEach(country => {
         country.CipRs.forEach((cipRs, index) => {
@@ -630,7 +630,7 @@ const DashboardPage = () => {
       })
       if (!arraysEqual(cipRData, worldMapCIPRData))
         setWorldMapCIPRData(cipRData)
-  
+
       let dataForCountingDrugs = []
       data.forEach(entry => {
         entry.DRUGS.forEach(drug => {
@@ -643,11 +643,11 @@ const DashboardPage = () => {
       drugsData = countData(dataForCountingDrugs, "DRUG", "drugs", "name");
       if (!arraysEqual(drugsData, worldMapDrugsData))
         setWorldMapDrugsData(drugsData)
-  
+
       amrData = countData(data, "AMR", "amrProfiles", "name")
       if (!arraysEqual(amrData, worldMapAmrProfilesData))
         setWorldMapAmrProfilesData(amrData)
-  
+
       incTypesData = countData(data, "IncTypes", "incTypes", "type")
       incTypesData.forEach(country => {
         country.incTypes = country.incTypes.filter(g => g.type !== "")
@@ -655,7 +655,7 @@ const DashboardPage = () => {
       if (!arraysEqual(incTypesData, worldMapPlasmidIncompatibilityTypeData))
         setWorldMapPlasmidIncompatibilityTypeData(incTypesData)
     }
-  
+
     const parseDataForAmrClassChart = (data) => {
       let finalChartData = []
       let maxSum = 0
@@ -669,7 +669,7 @@ const DashboardPage = () => {
         } else {
           let genotype = finalChartData.find(e => e.genotype === entry.GENOTYPE);
           let genotypeIndex = finalChartData.findIndex(e => e.genotype === entry.GENOTYPE);
-  
+
           if (genotype[entry.GENE] === undefined) {
             genotype[entry.GENE] = 1
           } else {
@@ -686,7 +686,7 @@ const DashboardPage = () => {
         }
       })
       delete totalSum[""]
-  
+
       finalChartData.sort((a, b) => a.genotype.localeCompare(b.genotype));
       finalChartData.forEach((data) => {
         let sum = 0;
@@ -694,10 +694,10 @@ const DashboardPage = () => {
           if (entry[0] !== "genotype" && entry[0] !== "undefined") {
             let errorMargin = Math.ceil(entry[1] * 0.2) // 20%
             let lowerValue = errorMargin > entry[1] ? entry[1] : errorMargin;
-  
+
             if (entry[1] === 1)
               lowerValue = 1
-  
+
             if (entry[1] === 0)
               lowerValue = 0
 
@@ -750,14 +750,14 @@ const DashboardPage = () => {
           setAmrClassChartData(top10)
       }
     }
-  
+
     const parseDataForDrugTrendsChart = (data) => {
       let finalDrugTrendsChartData = []
       let finalDrugsAndGenotypesChartData = []
       let totalSum = {}
       let allDrugs = data[data.length - 1][0]
       data = data.slice(0, data.length - 1)
-  
+
       data.forEach((entry) => {
         if (!finalDrugTrendsChartData.some(e => e.name === entry.YEAR)) {
           finalDrugTrendsChartData.push({
@@ -767,7 +767,7 @@ const DashboardPage = () => {
         } else {
           let year = finalDrugTrendsChartData.find(e => e.name === entry.YEAR);
           let yearIndex = finalDrugTrendsChartData.findIndex(e => e.name === entry.YEAR);
-  
+
           if (year[entry.DRUG] === undefined) {
             year[entry.DRUG] = 1
           } else {
@@ -775,7 +775,7 @@ const DashboardPage = () => {
           }
           finalDrugTrendsChartData[yearIndex] = year;
         }
-  
+
         if (!finalDrugsAndGenotypesChartData.some(e => e.name === entry.GENOTYPE)) {
           finalDrugsAndGenotypesChartData.push({
             name: entry.GENOTYPE,
@@ -784,7 +784,7 @@ const DashboardPage = () => {
         } else {
           let genotype = finalDrugsAndGenotypesChartData.find(e => e.name === entry.GENOTYPE);
           let genotypeIndex = finalDrugsAndGenotypesChartData.findIndex(e => e.name === entry.GENOTYPE);
-  
+
           if (genotype[entry.DRUG] === undefined) {
             genotype[entry.DRUG] = 1
           } else {
@@ -792,7 +792,7 @@ const DashboardPage = () => {
           }
           finalDrugsAndGenotypesChartData[genotypeIndex] = genotype;
         }
-  
+
         if (!(entry.GENOTYPE in totalSum)) {
           totalSum[entry.GENOTYPE] = 1
         } else {
@@ -826,11 +826,11 @@ const DashboardPage = () => {
 
       finalDrugTrendsChartData.sort((a, b) => a.name.localeCompare(b.name))
       finalDrugTrendsChartData.push({ totalSum: allDrugs })
-  
+
       finalDrugsAndGenotypesChartData.sort((a, b) => b.total - a.total)
       finalDrugsAndGenotypesChartData = finalDrugsAndGenotypesChartData.slice(0, finalDrugsAndGenotypesChartData.length >= 5 ? 5 : finalDrugsAndGenotypesChartData.length)
       finalDrugsAndGenotypesChartData.push({ totalSum: totalSum })
-  
+
       if (!arraysEqual(finalDrugTrendsChartData, drugTrendsChartData))
         setDrugTrendsChartData(finalDrugTrendsChartData)
       if (!arraysEqual(finalDrugsAndGenotypesChartData, drugsAndGenotypesChartData)) {
@@ -864,7 +864,7 @@ const DashboardPage = () => {
       let classChartResponse = await axios.get(`${API_ENDPOINT}filters/amrClassChart/${actualCountry === "All" ? "all" : actualCountry}/${actualTimePeriodRange[0]}/${actualTimePeriodRange[1]}/${amrClassFilter}/${dataset}`)
       parseDataForAmrClassChart(classChartResponse.data)
 
-      setAppLoading((value) => { if (value < 2) return value + 1})
+      setAppLoading((value) => { if (value < 2) return value + 1 })
 
     }, 500);
     return () => clearTimeout(timeOutId);
@@ -881,11 +881,11 @@ const DashboardPage = () => {
   const [mapRedColorScale] = useState(() => scaleLinear()
     .domain([0, 50, 100])
     .range(["#ffebee", "#f44336", "#b71c1c"]));
-  
+
   const tooltip = React.useCallback((positionY, width1, width2, sort, wrapperS, stroke, chart = -1) => {
     return (
       <Tooltip
-        position={{ y: positionY, x: dimensions.width < mobile ? -20: 0 }}
+        position={{ y: positionY, x: dimensions.width < mobile ? -20 : 0 }}
         wrapperStyle={wrapperS}
         content={({ active, payload, label }) => {
           if (payload !== null) {
@@ -935,58 +935,58 @@ const DashboardPage = () => {
   useEffect(() => {
     const plotPopulationStructureChart = () => {
 
-    if (populationStructureFilter === 1) { /* Genotype */
-      let maxH = 0
-      for (let index = 0; index < populationStructureChartData.length; index++) {
-        if (populationStructureChartData[index].total > maxH) {
-          maxH = populationStructureChartData[index].total
+      if (populationStructureFilter === 1) { /* Genotype */
+        let maxH = 0
+        for (let index = 0; index < populationStructureChartData.length; index++) {
+          if (populationStructureChartData[index].total > maxH) {
+            maxH = populationStructureChartData[index].total
+          }
         }
-      }
-      maxH = Math.ceil(maxH / 50) * 50
-      return (
-        <ResponsiveContainer width="90%">
-          <BarChart
-            height={300}
-            data={populationStructureChartData}
-            margin={{
-              top: 20, bottom: 5, right: 0
-            }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" interval="preserveStartEnd" tick={{ fontSize: 14 }}/>
-            <YAxis domain={[0, maxH]} />
-            <Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} />
+        maxH = Math.ceil(maxH / 50) * 50
+        return (
+          <ResponsiveContainer width="90%">
+            <BarChart
+              height={300}
+              data={populationStructureChartData}
+              margin={{
+                top: 20, bottom: 5, right: 0
+              }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" interval="preserveStartEnd" tick={{ fontSize: 14 }} />
+              <YAxis domain={[0, maxH]} />
+              <Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} />
 
-            {tooltip(300, dimensions.width < 620 ? 250 : 530, dimensions.width > 620 ? "20%" : "50%", false, { zIndex: 100, top: 20, right: -20 }, false)}
-            {genotypes.map((item) => <Bar dataKey={item} stackId="a" fill={getColorForGenotype(item)} />)}
-          </BarChart>
-        </ResponsiveContainer>
-      )
-    } else { /* H58 and Non-H58 */
-      return (
-        <ResponsiveContainer width="90%">
-          <BarChart
-            width={500}
-            height={300}
-            data={populationStructureChartData}
-            margin={{
-              top: 20, bottom: 5, right: 0
-            }}
-            layout="vertical"
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis type={"number"} domain={[0, chartMaxWidth]} />
-            <YAxis dataKey="name" type={"category"} domain={[0, 50]}/>
-            {tooltip(300, dimensions.width < 620 ? 250 : 530, dimensions.width > 620 ? "20%" : "50%", false, { zIndex: 100, top: 20, right: -20 }, false)}
-            {genotypes.map((item) => <Bar dataKey={item} stackId="a" barSize={50} fill={getColorForGenotype(item)} />)}
-          </BarChart>
-        </ResponsiveContainer>
-      )
+              {tooltip(300, dimensions.width < 620 ? 250 : 530, dimensions.width > 620 ? "20%" : "50%", false, { zIndex: 100, top: 20, right: -20 }, false)}
+              {genotypes.map((item) => <Bar dataKey={item} stackId="a" fill={getColorForGenotype(item)} />)}
+            </BarChart>
+          </ResponsiveContainer>
+        )
+      } else { /* H58 and Non-H58 */
+        return (
+          <ResponsiveContainer width="90%">
+            <BarChart
+              width={500}
+              height={300}
+              data={populationStructureChartData}
+              margin={{
+                top: 20, bottom: 5, right: 0
+              }}
+              layout="vertical"
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis type={"number"} domain={[0, chartMaxWidth]} />
+              <YAxis dataKey="name" type={"category"} domain={[0, 50]} />
+              {tooltip(300, dimensions.width < 620 ? 250 : 530, dimensions.width > 620 ? "20%" : "50%", false, { zIndex: 100, top: 20, right: -20 }, false)}
+              {genotypes.map((item) => <Bar dataKey={item} stackId="a" barSize={50} fill={getColorForGenotype(item)} />)}
+            </BarChart>
+          </ResponsiveContainer>
+        )
+      }
     }
-  }
-  setPlotPopulationStructureChart(plotPopulationStructureChart)
+    setPlotPopulationStructureChart(plotPopulationStructureChart)
   }, [chartMaxWidth, dimensions, genotypes, populationStructureChartData, populationStructureFilter, tooltip])
-  
+
   useEffect(() => {
     const amrClassChartTooltip = () => {
       return (
@@ -1023,7 +1023,7 @@ const DashboardPage = () => {
                 );
               }
             }
-  
+
             return null;
           }}
         />
@@ -1035,7 +1035,7 @@ const DashboardPage = () => {
       if (amrClassChartData[amrClassChartData.length - 1] !== undefined) {
         maxSum = amrClassChartData[amrClassChartData.length - 1].maxSum
       }
-  
+
       const data = amrClassChartData.slice(0, amrClassChartData.length - 1)
       return (
         <ResponsiveContainer width="90%">
@@ -1052,7 +1052,7 @@ const DashboardPage = () => {
             <XAxis dataKey="genotype" type={"category"} interval={dimensions.width < middle ? 1 : 0} tick={{ fontSize: 14 }} />
             <YAxis domain={[0, maxSum]} type={"number"} />
             <Brush dataKey="genotype" height={20} stroke={"rgb(31, 187, 211)"} />
-  
+
             {amrClassChartTooltip()}
             {info.bars.map((item) => {
               return (
@@ -1119,13 +1119,13 @@ const DashboardPage = () => {
           let colors2 = ["#a50f15", "#6a5acd", "#f1b6da", "#fb8072", "#4682b4", "#2e8b57", "#98fb98"]
           let colors3 = ["#fcc5c0", "#bcbddc", "#fdd0a2", "#c994c7", "#9ecae1", "#a8ddb5", "#fc9272"]
           let bars = []
-  
+
           for (const index in cotrim) {
             bars.push([cotrim[index] + "-sul1", colors1[index], "error-" + cotrim[index] + "-sul1"])
             bars.push([cotrim[index] + "-sul2", colors2[index], "error-" + cotrim[index] + "-sul2"])
             bars.push([cotrim[index] + "-sul1-sul2", colors3[index], "error-" + cotrim[index] + "-sul1-sul2"])
           }
-  
+
           return (armClassFilterComponent({
             left: 3, fontsize: 14, strokeWidth: 0.5, width: 3, bars: bars
           }))
@@ -1188,22 +1188,22 @@ const DashboardPage = () => {
             }}
           >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" interval={"preserveStartEnd"} tick={{ fontSize: 14 }}/>
-            <YAxis/>
+            <XAxis dataKey="name" interval={"preserveStartEnd"} tick={{ fontSize: 14 }} />
+            <YAxis />
             <Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} />
 
             <Legend
               content={(props) => {
                 const { payload } = props;
                 return (
-                  <div style={{display: "flex", flexDirection: "row", justifyContent: 'flex-end'}}>
-                    <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", paddingLeft: 55, justifyContent: "space-between", marginTop: 10}}>
+                  <div style={{ display: "flex", flexDirection: "row", justifyContent: 'flex-end' }}>
+                    <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", paddingLeft: 55, justifyContent: "space-between", marginTop: 10 }}>
                       {payload.map((entry, index) => {
                         const { dataKey, color } = entry
                         return (
                           <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "start", width: 120, marginBottom: 4, marginLeft: 3, marginRight: 3 }}>
-                            <div style={{ height: 8, width: 8, borderRadius: 4, marginTop: 3 ,backgroundColor: color, flexShrink: 0 }} />
-                            <span style={{ fontSize: 12, paddingLeft: 4}}>{dataKey}</span>
+                            <div style={{ height: 8, width: 8, borderRadius: 4, marginTop: 3, backgroundColor: color, flexShrink: 0 }} />
+                            <span style={{ fontSize: 12, paddingLeft: 4 }}>{dataKey}</span>
                           </div>
                         )
                       })}
@@ -1212,7 +1212,7 @@ const DashboardPage = () => {
                 );
               }}
             />
-            {tooltip(150, dimensions.width < mobile ? 250 : 325, "50%", true, { zIndex: 100, top: 175, right: 0}, true, 1)}
+            {tooltip(150, dimensions.width < mobile ? 250 : 325, "50%", true, { zIndex: 100, top: 175, right: 0 }, true, 1)}
             {amrClassesForFilter.slice(1).map((item) => (<Line dataKey={item} stroke={getColorForDrug(item)} connectNulls dot={false} type="monotone" />))}
           </LineChart>
         </ResponsiveContainer>
@@ -1236,19 +1236,19 @@ const DashboardPage = () => {
             <XAxis dataKey="name" interval={dimensions.width < mobile ? 1 : 0} tick={{ fontSize: 14 }} />
             <YAxis />
             <Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} />
-  
+
             <Legend
               content={(props) => {
                 const { payload } = props;
                 return (
-                  <div style={{display: "flex", flexDirection: "row", justifyContent: 'flex-end'}}>
-                    <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", paddingLeft: 55, justifyContent: "space-between", marginTop: 10}}>
+                  <div style={{ display: "flex", flexDirection: "row", justifyContent: 'flex-end' }}>
+                    <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", paddingLeft: 55, justifyContent: "space-between", marginTop: 10 }}>
                       {payload.map((entry, index) => {
                         const { dataKey, color } = entry
                         return (
                           <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "start", width: 120, marginBottom: 4, marginLeft: 3, marginRight: 3 }}>
                             <div style={{ height: 8, width: 8, borderRadius: 4, marginTop: 3, backgroundColor: color, flexShrink: 0 }} />
-                            <span style={{ fontSize: 12, paddingLeft: 4}}>{dataKey}</span>
+                            <span style={{ fontSize: 12, paddingLeft: 4 }}>{dataKey}</span>
                           </div>
                         )
                       })}
@@ -1581,7 +1581,7 @@ const DashboardPage = () => {
             onChange={evt => setMapView(evt.target.value)}
             fullWidth
             style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }}
-          > 
+          >
             <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'MDR'}>
               Multidrug resistant (MDR)
             </MenuItem>
@@ -1630,7 +1630,7 @@ const DashboardPage = () => {
       <div className="menu-bar-mobile">
         <img className="logoImageMenu-mobile" src={typhinetLogoImg} alt="TyphiNET" />
       </div>
-      <div style={{padding: dimensions.width > 770 ? '16px 16px 0px 16px' : '16px 0px 0px 0px'}}>
+      <div style={{ padding: dimensions.width > 770 ? '16px 16px 0px 16px' : '16px 0px 0px 0px' }}>
         <div className="info-wrapper">
           {dimensions.width > desktop && (
             <>
@@ -1654,8 +1654,8 @@ const DashboardPage = () => {
           <div style={{ width: 16 }} />
           <div className="card">
             <span>
-              Total Genotypes 
-              <FontAwesomeIcon icon={faInfoCircle} onClick={handleClickOpen} className="icon-info"/>
+              Total Genotypes
+              <FontAwesomeIcon icon={faInfoCircle} onClick={handleClickOpen} className="icon-info" />
               <Dialog
                 open={open}
                 onClose={handleClose}
@@ -1665,7 +1665,7 @@ const DashboardPage = () => {
                 <DialogTitle id="alert-dialog-title">{"Information"}</DialogTitle>
                 <DialogContent>
                   <DialogContentText id="alert-dialog-description">
-                  Total genotypes present in TyphiNET database / Total genotypes worldwide published
+                    Total genotypes present in TyphiNET database / Total genotypes worldwide published
                   </DialogContentText>
                 </DialogContent>
                 <DialogActions>
@@ -1719,9 +1719,9 @@ const DashboardPage = () => {
 
                         switch (mapView) {
                           case 'No. Samples':
-                            if (sample && sample.count !== 0){
+                            if (sample && sample.count !== 0) {
                               fill = mapSamplesColorScale(sample.count);
-                            }else if (sample && sample.count === 0){
+                            } else if (sample && sample.count === 0) {
                               fill = '#F5F4F6'
                             }
                             break;
@@ -1757,65 +1757,65 @@ const DashboardPage = () => {
                             break;
                           case 'MDR':
                             country = worldMapMDRData.find(s => s.displayName === geo.properties.NAME)
-                            if (country !== undefined && country.percentage){
+                            if (country !== undefined && country.percentage) {
                               fill = mapRedColorScale(country.percentage);
-                            }else if (country !== undefined){
+                            } else if (country !== undefined) {
                               fill = '#F5F4F6'
                             }
                             break;
                           case 'XDR':
                             country = worldMapXDRData.find(s => s.displayName === geo.properties.NAME)
-                            if (country !== undefined && country.percentage){
+                            if (country !== undefined && country.percentage) {
                               fill = mapRedColorScale(country.percentage);
-                            }else if (country !== undefined){
+                            } else if (country !== undefined) {
                               fill = '#F5F4F6'
                             }
                             break;
                           case 'DCS':
                             country = worldMapDCSData.find(s => s.displayName === geo.properties.NAME)
-                            if (country !== undefined && country.percentage){
+                            if (country !== undefined && country.percentage) {
                               fill = mapRedColorScale(country.percentage);
-                            }else if (country !== undefined){
+                            } else if (country !== undefined) {
                               fill = '#F5F4F6'
                             }
                             break;
                           case 'Azith':
                             country = worldMapAZITHData.find(s => s.displayName === geo.properties.NAME)
-                            if (country !== undefined && country.percentage){
+                            if (country !== undefined && country.percentage) {
                               fill = mapRedColorScale(country.percentage);
-                            }else if (country !== undefined){
+                            } else if (country !== undefined) {
                               fill = '#F5F4F6'
                             }
                             break;
                           case 'CipI':
                             country = worldMapCIPIData.find(s => s.displayName === geo.properties.NAME)
-                            if (country !== undefined && country.percentage){
+                            if (country !== undefined && country.percentage) {
                               fill = mapRedColorScale(country.percentage);
-                            }else if (country !== undefined){
+                            } else if (country !== undefined) {
                               fill = '#F5F4F6'
                             }
                             break;
                           case 'CipR':
                             country = worldMapCIPRData.find(s => s.displayName === geo.properties.NAME)
-                            if (country !== undefined && country.percentage){
+                            if (country !== undefined && country.percentage) {
                               fill = mapRedColorScale(country.percentage);
-                            }else if (country !== undefined){
+                            } else if (country !== undefined) {
                               fill = '#F5F4F6'
                             }
                             break;
                           case 'Resistance to Drug':
                             country = worldMapDrugsData.find(s => s.displayName === geo.properties.NAME)
-                            if (country !== undefined && country.drugs.length > 0){
+                            if (country !== undefined && country.drugs.length > 0) {
                               fill = getColorForDrug(country.drugs[0].name);
-                            }else if (country !== undefined){
+                            } else if (country !== undefined) {
                               fill = '#F5F4F6'
                             }
                             break;
                           case 'Plasmid Incompatibility Type':
                             country = worldMapPlasmidIncompatibilityTypeData.find(s => s.displayName === geo.properties.NAME)
-                            if (country !== undefined && country.incTypes.length > 0){
+                            if (country !== undefined && country.incTypes.length > 0) {
                               fill = getColorForIncType(country.incTypes[0].type);
-                            }else if (country !== undefined){
+                            } else if (country !== undefined) {
                               fill = '#F5F4F6'
                             }
                             break;
@@ -2055,7 +2055,7 @@ const DashboardPage = () => {
                         value={dataset}
                         exclusive
                         size="small"
-                        style={{ marginTop: 5}}
+                        style={{ marginTop: 5 }}
                         onChange={(evt, newDataset) => {
                           if (newDataset !== null)
                             setDataset(newDataset)
@@ -2077,7 +2077,7 @@ const DashboardPage = () => {
                         Select time period
                       </Typography>
                       <CustomSlider
-                        style={{marginTop: dimensions.width > desktop ? '' : -5, marginBottom: dimensions.width > desktop ? '' : -5}}
+                        style={{ marginTop: dimensions.width > desktop ? '' : -5, marginBottom: dimensions.width > desktop ? '' : -5 }}
                         value={actualTimePeriodRange}
                         min={timePeriodRange[0]}
                         max={timePeriodRange[1]}
@@ -2301,7 +2301,7 @@ const DashboardPage = () => {
           </FormControl>
           <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
             <div style={{ display: "flex", flexDirection: dimensions.width > desktop ? "row" : "column", marginTop: 16, paddingBottom: 20 }}>
-              <div style={{ display: "flex", flexDirection: "column", flex: 0.5, paddingRight: dimensions.width < mobile ? 0 : 10}}>
+              <div style={{ display: "flex", flexDirection: "column", flex: 0.5, paddingRight: dimensions.width < mobile ? 0 : 10 }}>
                 <div id="RFWG" style={{ height: 458, width: "100%", display: "flex", flexDirection: "column" }}>
                   <div style={{ width: "100%", flexDirection: "row", textAlign: "center", display: "flex", justifyContent: "center" }}>
                     <span style={{ paddingRight: 32, marginRight: -22, paddingLeft: 35 }} className="chart-title">Resistance frequencies within genotypes</span>
@@ -2382,8 +2382,8 @@ const DashboardPage = () => {
                   </div>
                 </div>
               </div>
-              <div style={{ display: "flex", flexDirection: "column", flex: 0.5, paddingLeft: dimensions.width < mobile ? 0 : 10, marginTop: dimensions.width < mobile ? 25 : 0}}>
-                <div id="DRT" style={{width: "100%", display: "flex", flexDirection: "column", marginTop: dimensions.width < desktop ? 50 : dimensions.width < 930 ? 0 : 0 }}>
+              <div style={{ display: "flex", flexDirection: "column", flex: 0.5, paddingLeft: dimensions.width < mobile ? 0 : 10, marginTop: dimensions.width < mobile ? 25 : 0 }}>
+                <div id="DRT" style={{ width: "100%", display: "flex", flexDirection: "column", marginTop: dimensions.width < desktop ? 50 : dimensions.width < 930 ? 0 : 0 }}>
                   <div style={{ width: "100%", flexDirection: "row", textAlign: "center", display: "flex", justifyContent: "center", paddingBottom: dimensions.width < desktop ? 0 : dimensions.width < 1010 ? 24 : 8 }}>
                     <span className="chart-title" style={{ paddingRight: 32, marginRight: -22 }}>Drug resistance trends</span>
                     <div style={{ display: "inline-block", position: "relative" }}>
@@ -2407,7 +2407,7 @@ const DashboardPage = () => {
                       )}
                     </div>
                   </div>
-                  <div style={{ height: 422, display: "flex", flexDirection: "row", alignItems: "center"}}>
+                  <div style={{ height: 422, display: "flex", flexDirection: "row", alignItems: "center" }}>
                     <span className="y-axis-label-vertical" style={{ paddingTop: /*dimensions.width > desktop ? 0 : 0*/ 80 }}>Resistant (%)</span>
                     {plotDrugTrendsChart}
                   </div>
@@ -2436,7 +2436,7 @@ const DashboardPage = () => {
                       )}
                     </div>
                   </div>
-                  <div style={{height: dimensions.width > 1120 ? '78px' : dimensions.width < desktop ? '0px' : '95px', width: dimensions.width > desktop ? "60%" : "90%", alignSelf: "center", paddingRight: dimensions.width > desktop && populationStructureFilter !== 1 ? "-10%" : 0, paddingBottom: populationStructureFilter === 1 ? -8 : 16 }}>
+                  <div style={{ height: dimensions.width > 1120 ? '78px' : dimensions.width < desktop ? '0px' : '95px', width: dimensions.width > desktop ? "60%" : "90%", alignSelf: "center", paddingRight: dimensions.width > desktop && populationStructureFilter !== 1 ? "-10%" : 0, paddingBottom: populationStructureFilter === 1 ? -8 : 16 }}>
                     {/* <FormControl fullWidth className={classes.formControlSelect} style={{ marginBottom: 5, marginTop: 23 }}>
                       <InputLabel style={{ fontWeight: 500, fontFamily: "Montserrat" }}>Population Structure</InputLabel>
                       <Select
@@ -2469,13 +2469,16 @@ const DashboardPage = () => {
             </div>
           </div>
         </div>
-        <div className="about-wrapper" style={{paddingBottom: '15px'}}>
+        <div className="about-wrapper" style={{ paddingBottom: '15px' }}>
           <h2 style={{ marginBottom: 0 }}>About TyphiNET</h2>
           <p>
             The TyphiNET dashboard collates antimicrobial resistance (AMR) and genotype (lineage) information extracted from whole genome sequence (WGS) data from the bacterial pathogen <i>Salmonella</i> Typhi, the agent of typhoid fever. Data are sourced monthly from Typhoid <a href="https://pathogen.watch/" target="_blank" rel="noreferrer">Pathogenwatch</a>. Information on genotype definitions and population structure can be found in <a href="https://www.nature.com/articles/ncomms12827">Wong et al, 2016</a>, and details of AMR determinants in <a href="https://www.biorxiv.org/content/10.1101/2020.07.03.186692v2.abstract">Argimon et al, 2020</a>.
           </p>
           <p>
             The TyphiNET dashboard is coordinated by Dr Zoe Dyson, Dr Louise Cerdeira &amp; Prof Kat Holt at the <a href="https://www.lshtm.ac.uk/" target="_blank" rel="noreferrer">London School of Hygiene and Tropical Medicine</a> &amp; <a href="https://www.monash.edu/">Monash University</a>, supported by the Wellcome Trust (Open Research Fund, 219692/Z/19/Z) and the EU Horizon 2020 research and innovation programme (Marie Skłodowska-Curie grant #845681).
+          </p>
+          <p>
+            Note: This is a beta version, data are incomplete.
           </p>
         </div>
         <div className="footer-buttons-wrapper">
@@ -2511,7 +2514,7 @@ const DashboardPage = () => {
         <div className="footer">
           <span>Data obtained from: <a href="https://pathogen.watch" rel="noreferrer" target="_blank">pathogen watch project</a> on 07/02/2021. <a href="https://holtlab.net" rel="noreferrer" target="_blank">Holt Lab</a></span>
         </div>
-        <div className="fab-button" style={{marginTop: -80}}>
+        <div className="fab-button" style={{ marginTop: -80 }}>
           <TooltipMaterialUI title={<span style={{ fontFamily: "Montserrat" }}>Reset Configurations</span>} placement="left">
             <Fab
               color="primary"
@@ -2534,10 +2537,10 @@ const DashboardPage = () => {
       </div>
       <div className="loading">
         {dimensions.width > desktop && (
-          <img className="logoImageMenu-loading" src={typhinetLogoImg} alt="TyphiNET" style={{paddingLeft:'20px'}}/>
+          <img className="logoImageMenu-loading" src={typhinetLogoImg} alt="TyphiNET" style={{ paddingLeft: '20px' }} />
         )}
         <Loader
-          style={{paddingLeft:'10px'}}
+          style={{ paddingLeft: '10px' }}
           type="Circles"
           color="#D91E45"
           height={70}

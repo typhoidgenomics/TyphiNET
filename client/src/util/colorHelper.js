@@ -115,7 +115,7 @@ export const getColorForGenotype = (genotype) => {
     case '4.3.1.2.EA3':
       return "#c51b7d";
     case '4.3.1.3':
-    case '4.3.1.3.Bd1':
+    case '4.3.1.3.Bdq':
       return "#fb8072";
     default:
       return "#F5F4F6";

@@ -161,7 +161,7 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
                     }
                     if (!(data["GENOTYPE"] in numberGenotypes)) {
                         numberGenotypes[data["GENOTYPE"]] = 1
-                    }else{
+                    } else {
                         numberGenotypes[data["GENOTYPE"]] += 1
                     }
 
@@ -182,14 +182,14 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
 
                         for (let gene of genes) {
                             results.push({
-                                ...data_to_send,
+                                data_to_send,
                                 GENE: gene
                             })
                         }
                     }
 
                     if (params.amr_class == "Fluoroquinolones" && data["dcs_category"] == "DCS") {
-                        if (!["0_QRDR","0_QRDR + qnrS"].includes(data["dcs_mechanisms"])) {
+                        if (!["0_QRDR", "0_QRDR + qnrS"].includes(data["dcs_mechanisms"])) {
                             data_to_send["GENE"] = data["dcs_mechanisms"]
                         }
                         results.push(data_to_send)
@@ -265,7 +265,7 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
 
                     if (params.amr_class == "Sulphonamides" && data["sul_any"] == "1") {
                         let genes = []
-                        
+
                         if (data["sul1"] === "1" && data["sul2"] === "1")
                             genes.push("sul1-sul2")
                         else if (data["sul1"] === "1")
@@ -368,7 +368,7 @@ router.get('/getYearLimits', function (req, res, next) {
         .on('end', () => {
             min = results[0].DATE
             max = results[0].DATE
-            
+
             for (let data of results) {
 
                 if (!totalGenotypes.includes(data.GENOTYPE)) {
@@ -498,7 +498,7 @@ router.get('/:filter1/:country/:min_year/:max_year/:travel', function (req, res,
                             filter_value["GENOTYPE_SIMPLE"] = data["GENOTYPE_SIMPLE"]
                             results.push(filter_value)
                         } else if (params.filter1 == "4") {
-    
+
                             filter_value["Inc Types"] = data["Inc Types"]
                             results.push(filter_value)
                         } else {
@@ -588,7 +588,7 @@ router.get('/:country/:min_year/:max_year/:travel', function (req, res, next) {
                                 "TOTAL_OCCURRENCE": 0
                             }
                         }
-    
+
                         if ((data["COUNTRY_ONLY"] == params.country) && (params.min_year <= data["DATE"] && data["DATE"] <= params.max_year) && data_travel) {
                             if (country_unique_genotype[params.country]["GENOTYPES"]["GENOTYPES_LIST"].indexOf(data["GENOTYPE"]) == -1) {
                                 country_unique_genotype[params.country]["GENOTYPES"]["GENOTYPES_LIST"].push(data["GENOTYPE"])
@@ -623,7 +623,7 @@ router.get('/:country/:min_year/:max_year/:travel', function (req, res, next) {
                                 "TOTAL_OCCURRENCE": 0
                             }
                         }
-    
+
                         if ((data["DATE"] >= params.min_year && data["DATE"] <= params.max_year) && data_travel) {
                             country_unique_genotype[data["COUNTRY_ONLY"]]["TOTAL_OCCURRENCE"]++
                             if (country_unique_genotype[data["COUNTRY_ONLY"]]["GENOTYPES"]["GENOTYPES_LIST"].indexOf(data["GENOTYPE"]) == -1) {
@@ -649,7 +649,7 @@ router.get('/:country/:min_year/:max_year/:travel', function (req, res, next) {
                                 country_unique_genotype[data["COUNTRY_ONLY"]]["CipR"]++
                             }
                         }
-    
+
                     }
 
                 }
