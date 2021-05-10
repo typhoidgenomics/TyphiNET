@@ -2478,7 +2478,7 @@ const DashboardPage = () => {
             The TyphiNET dashboard is coordinated by Dr Zoe Dyson, Dr Louise Cerdeira &amp; Prof Kat Holt at the <a href="https://www.lshtm.ac.uk/" target="_blank" rel="noreferrer">London School of Hygiene and Tropical Medicine</a> &amp; <a href="https://www.monash.edu/">Monash University</a>, supported by the Wellcome Trust (Open Research Fund, 219692/Z/19/Z) and the EU Horizon 2020 research and innovation programme (Marie Skłodowska-Curie grant #845681).
           </p>
           <p>
-            Note: This is a beta version, data are incomplete.
+            <b>Note: This is a beta version, data are incomplete</b>.
           </p>
         </div>
         <div className="footer-buttons-wrapper">
