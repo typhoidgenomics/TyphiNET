@@ -4,7 +4,7 @@ import csv from 'csv-parser';
 import fs from 'fs';
 import * as Tools from '../../services/services.js';
 
-router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel', function (req, res, next) {
+router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel', function(req, res, next) {
     let params = req.params;
     let resultsJson = [];
     let read_file = Tools.path_clean_db || Tools.path_clean;
@@ -111,7 +111,7 @@ router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel', function (req,
         })
 })
 
-router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', function (req, res, next) {
+router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', function(req, res, next) {
     let params = req.params
     let results_json = [];
     let results = [];
@@ -182,7 +182,7 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
 
                         for (let gene of genes) {
                             results.push({
-                                data_to_send,
+                                ...data_to_send,
                                 GENE: gene
                             })
                         }
@@ -209,7 +209,7 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
 
                         for (let gene of genes) {
                             results.push({
-                                data_to_send,
+                                ...data_to_send,
                                 GENE: gene
                             })
                         }
@@ -226,7 +226,7 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
 
                         for (let gene of genes) {
                             results.push({
-                                data_to_send,
+                                ...data_to_send,
                                 GENE: gene
                             })
                         }
@@ -257,7 +257,7 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
 
                         for (let gene of genes) {
                             results.push({
-                                data_to_send,
+                                ...data_to_send,
                                 GENE: gene
                             })
                         }
@@ -275,7 +275,7 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
 
                         for (let gene of genes) {
                             results.push({
-                                data_to_send,
+                                ...data_to_send,
                                 GENE: gene
                             })
                         }
@@ -307,7 +307,7 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
 
                         for (let gene of genes) {
                             results.push({
-                                data_to_send,
+                                ...data_to_send,
                                 GENE: gene
                             })
                         }
@@ -315,17 +315,17 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
 
                     if (params.amr_class == "Tetracyclines" && data["tetracycline_category"] == "TetR") {
                         let genes = []
-                        // const tets = ["tetA(A)", "tetA(B)", "tetA(C)", "tetA(D)"]
-                        // let finalTet = "TetA("
-                        // for (let tet of tets) {
-                        //     if (data[tet.toString()] === "1") {
-                        //         finalTet = finalTet + tet[tet.length - 2]
-                        //     }
-                        // }
-                        // finalTet = finalTet + ")"
-                        // if (finalTet !== "TetA()") {
-                        //     genes.push(finalTet.toString())
-                        // }
+                            // const tets = ["tetA(A)", "tetA(B)", "tetA(C)", "tetA(D)"]
+                            // let finalTet = "TetA("
+                            // for (let tet of tets) {
+                            //     if (data[tet.toString()] === "1") {
+                            //         finalTet = finalTet + tet[tet.length - 2]
+                            //     }
+                            // }
+                            // finalTet = finalTet + ")"
+                            // if (finalTet !== "TetA()") {
+                            //     genes.push(finalTet.toString())
+                            // }
 
                         if (data["tetA(A)"] == "1")
                             genes.push("tetA(A)")
@@ -341,7 +341,7 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
 
                         for (let gene of genes) {
                             results.push({
-                                data_to_send,
+                                ...data_to_send,
                                 GENE: gene
                             })
                         }
@@ -354,7 +354,7 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
 
 });
 
-router.get('/getYearLimits', function (req, res, next) {
+router.get('/getYearLimits', function(req, res, next) {
     let results = []
     let min
     let max
@@ -402,7 +402,7 @@ router.get('/getYearLimits', function (req, res, next) {
         })
 })
 
-router.get('/:filter1/:country/:min_year/:max_year/:travel', function (req, res, next) {
+router.get('/:filter1/:country/:min_year/:max_year/:travel', function(req, res, next) {
     let params = req.params
     let results_json = [];
     let results = [];
@@ -481,7 +481,7 @@ router.get('/:filter1/:country/:min_year/:max_year/:travel', function (req, res,
                     drugs.push("Tetracyclines")
 
                 filter_value["DRUGS"] = drugs
-                /* DRUG */
+                    /* DRUG */
 
                 //Check if country and date are not empty
                 if (data["COUNTRY_ONLY"] !== "-" && data["DATE"] !== "-") {
@@ -540,7 +540,7 @@ router.get('/:filter1/:country/:min_year/:max_year/:travel', function (req, res,
         });
 });
 
-router.get('/:country/:min_year/:max_year/:travel', function (req, res, next) {
+router.get('/:country/:min_year/:max_year/:travel', function(req, res, next) {
     let params = req.params
     let country_unique_genotype = {}
     let results = []
@@ -594,9 +594,9 @@ router.get('/:country/:min_year/:max_year/:travel', function (req, res, next) {
                                 country_unique_genotype[params.country]["GENOTYPES"]["GENOTYPES_LIST"].push(data["GENOTYPE"])
                             }
                             country_unique_genotype[params.country]["TOTAL_OCCURRENCE"]++
-                            if (data["GENOTYPE_SIMPLE"] == "H58") {
-                                country_unique_genotype[params.country]["H58"]++
-                            }
+                                if (data["GENOTYPE_SIMPLE"] == "H58") {
+                                    country_unique_genotype[params.country]["H58"]++
+                                }
                             if (data["MDR"] == "MDR") {
                                 country_unique_genotype[params.country]["MDR"]++
                             }
@@ -626,10 +626,10 @@ router.get('/:country/:min_year/:max_year/:travel', function (req, res, next) {
 
                         if ((data["DATE"] >= params.min_year && data["DATE"] <= params.max_year) && data_travel) {
                             country_unique_genotype[data["COUNTRY_ONLY"]]["TOTAL_OCCURRENCE"]++
-                            if (country_unique_genotype[data["COUNTRY_ONLY"]]["GENOTYPES"]["GENOTYPES_LIST"].indexOf(data["GENOTYPE"]) == -1) {
-                                country_unique_genotype[data["COUNTRY_ONLY"]]["GENOTYPES"]["GENOTYPES_LIST"].push(data["GENOTYPE"])
-                                country_unique_genotype[data["COUNTRY_ONLY"]]["GENOTYPES"]["TOTAL"]++
-                            }
+                                if (country_unique_genotype[data["COUNTRY_ONLY"]]["GENOTYPES"]["GENOTYPES_LIST"].indexOf(data["GENOTYPE"]) == -1) {
+                                    country_unique_genotype[data["COUNTRY_ONLY"]]["GENOTYPES"]["GENOTYPES_LIST"].push(data["GENOTYPE"])
+                                    country_unique_genotype[data["COUNTRY_ONLY"]]["GENOTYPES"]["TOTAL"]++
+                                }
                             if (data["GENOTYPE_SIMPLE"] == "H58") {
                                 country_unique_genotype[data["COUNTRY_ONLY"]]["H58"]++
                             }
