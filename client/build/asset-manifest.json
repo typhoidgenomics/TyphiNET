@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/static/css/main.b5e594ac.chunk.css",
-    "main.js": "/static/js/main.4794182e.chunk.js",
-    "main.js.map": "/static/js/main.4794182e.chunk.js.map",
+    "main.js": "/static/js/main.0a1a12de.chunk.js",
+    "main.js.map": "/static/js/main.0a1a12de.chunk.js.map",
     "runtime-main.js": "/static/js/runtime-main.e580a120.js",
     "runtime-main.js.map": "/static/js/runtime-main.e580a120.js.map",
     "static/css/2.dbb6bb58.chunk.css": "/static/css/2.dbb6bb58.chunk.css",
@@ -14,13 +14,13 @@
     "static/css/2.dbb6bb58.chunk.css.map": "/static/css/2.dbb6bb58.chunk.css.map",
     "static/css/main.b5e594ac.chunk.css.map": "/static/css/main.b5e594ac.chunk.css.map",
     "static/js/2.058c30b1.chunk.js.LICENSE.txt": "/static/js/2.058c30b1.chunk.js.LICENSE.txt",
-    "static/media/logo-typhinet.0436daef.png": "/static/media/logo-typhinet.0436daef.png"
+    "static/media/logo-typhinet.791189fb.png": "/static/media/logo-typhinet.791189fb.png"
   },
   "entrypoints": [
     "static/js/runtime-main.e580a120.js",
     "static/css/2.dbb6bb58.chunk.css",
     "static/js/2.058c30b1.chunk.js",
     "static/css/main.b5e594ac.chunk.css",
-    "static/js/main.4794182e.chunk.js"
+    "static/js/main.0a1a12de.chunk.js"
   ]
 }
