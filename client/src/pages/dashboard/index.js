@@ -125,7 +125,6 @@ const DashboardPage = () => {
   const [captureControlChartDRTInProgress, setCaptureControlChartDRTInProgress] = useState(false)
   const [captureControlChartGDInProgress, setCaptureControlChartGDInProgress] = useState(false)
   const [captureControlChartRFWAGInProgress, setCaptureControlChartRFWAGInProgress] = useState(false)
-
   const [tooltipContent, setTooltipContent] = useState(null);
 
   const [allCountries, setAllCountries] = useState([]);
@@ -1353,11 +1352,11 @@ const DashboardPage = () => {
           const typhinetLogoWidth = typhinetLogo.width * 0.5
           const typhinetLogoHeight = typhinetLogo.height * 0.5
 
-          ctx.drawImage(typhinetLogo, 26, canvas.height - typhinetLogoHeight - 16, typhinetLogoWidth, typhinetLogoHeight);
+          // ctx.drawImage(typhinetLogo, 26, canvas.height - typhinetLogoHeight - 16, typhinetLogoWidth, typhinetLogoHeight);
 
           const base64 = canvas.toDataURL();
           stopLoading(index)
-          download(base64, 'Genome Samples (World Map) - TyphiNET.png');
+          download(base64, 'Global Overview Salmonella Typhi - TyphiNET.png');
         });
     }
   })
