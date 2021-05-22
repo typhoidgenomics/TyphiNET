@@ -20,7 +20,7 @@ import ReactTooltip from "react-tooltip";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Brush, LineChart, Line, Legend } from 'recharts';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus, faMinus, faCrosshairs, faCamera, faTable, faInfoCircle, faUndoAlt } from '@fortawesome/free-solid-svg-icons'
+import { faPlus, faMinus, faCrosshairs, faCamera, faTable, faFilePdf, faInfoCircle, faUndoAlt } from '@fortawesome/free-solid-svg-icons'
 import download from 'downloadjs';
 import { svgAsPngUri } from 'save-svg-as-png';
 import typhinetLogoImg from '../../assets/img/logo-typhinet.png';
@@ -39,6 +39,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
+import { jsPDF } from "jspdf";
 
 const useStyles = makeStyles((theme) => ({
   formControlSelect: {
@@ -676,6 +677,7 @@ const DashboardPage = () => {
           }
           finalChartData[genotypeIndex] = genotype;
         }
+
         if (entry.GENOTYPE !== "") {
           if (!(entry.GENE in totalSum)) {
             totalSum[entry.GENE] = 1
@@ -687,8 +689,25 @@ const DashboardPage = () => {
       delete totalSum[""]
 
       finalChartData.sort((a, b) => a.genotype.localeCompare(b.genotype));
+
+      let genotypes = []
+      finalChartData.forEach(element => {
+        let keys = Object.keys(element).slice(1)
+        let filteredData = keys.filter((key) => {return !(key.includes('No')) && !(key.includes('0_'))})
+        if (filteredData.length === 0) {
+          genotypes.push(element.genotype)
+        }
+      });
+
+      for (const genotype in genotypes) {
+        finalChartData = finalChartData.filter((obj) => {
+          return obj.genotype !== genotypes[genotype]
+        })
+      }
+
       finalChartData.forEach((data) => {
         let sum = 0;
+        let sum2 = 0
         Object.entries(data).forEach((entry) => {
           if (entry[0] !== "genotype" && entry[0] !== "undefined") {
             let errorMargin = Math.ceil(entry[1] * 0.2) // 20%
@@ -701,17 +720,22 @@ const DashboardPage = () => {
               lowerValue = 0
 
             data[`error-${entry[0]}`] = [lowerValue, errorMargin]
-
-            sum += entry[1];
-            if (entry[1] > maxSum) {
-              maxSum = entry[1]
+            
+            if (!(entry[0].includes('No')) && !(entry[0].includes('0_'))) {
+              sum += entry[1];
+              if (entry[1] > maxSum) {
+                maxSum = entry[1]
+              }
             }
+            sum2 += entry[1]
+            
           }
           if (entry[0] === "genotype") {
             data.total2 = allGenotypes[entry[1].toString()];
           }
         })
         data.total = sum;
+        data.total3 = sum2
       })
       finalChartData = finalChartData.filter(g => g.genotype !== undefined && g.genotype !== "0")
       let top10 = []
@@ -740,7 +764,7 @@ const DashboardPage = () => {
           return -1
         return a.total > b.total ? -1 : 1
       })
-      top10.push({ maxSum: top10.length === 0 ? 0 : Math.ceil(top10[0].total / 50) * 50, totalSum: totalSum })
+      top10.push({ maxSum: top10.length === 0 ? 0 : Math.ceil(top10[0].total3 / 50) * 50, totalSum: totalSum })
       if (amrClassFilter !== "Co-trimoxazole") {
         if (!arraysEqual(amrClassChartData, top10))
           setAmrClassChartData(top10)
@@ -873,9 +897,23 @@ const DashboardPage = () => {
     return JSON.stringify(a1) === JSON.stringify(a2);
   }
 
-  const mapSamplesColorScale = scaleLinear()
-    .domain([1, samplesQty / 5, 2 * (samplesQty / 5), 3 * (samplesQty / 5), 4 * (samplesQty / 5), samplesQty])
-    .range(["#4575b4", "#91bfdb", "#e0f3f8", "#fee090", "#fc8d59", "#d73027"]);
+  // const mapSamplesColorScale = scaleLinear()
+  //   .domain([1, samplesQty / 5, 2 * (samplesQty / 5), 3 * (samplesQty / 5), 4 * (samplesQty / 5), samplesQty])
+  //   .range(["#4575b4", "#91bfdb", "#e0f3f8", "#fee090", "#fc8d59", "#d73027"]);
+
+  const mapSamplesColorScale = (domain) => {
+    if (domain >= 1 && domain <= 10) {
+      return '#4575b4'
+    } else if (domain >= 11 && domain <= 25) {
+      return '#91bfdb'
+    } else if (domain >= 26 && domain <= 100) {
+      return '#addd8e'
+    } else if (domain >= 101 && domain <= 300) {
+      return '#fee090'
+    } else if (domain > 300) {
+      return '#fc8d59'
+    }
+  }
 
   const [mapRedColorScale] = useState(() => scaleLinear()
     .domain([0, 50, 100])
@@ -942,6 +980,7 @@ const DashboardPage = () => {
           }
         }
         maxH = Math.ceil(maxH / 50) * 50
+        console.log(populationStructureChartData);
         return (
           <ResponsiveContainer width="90%">
             <BarChart
@@ -955,6 +994,27 @@ const DashboardPage = () => {
               <XAxis dataKey="name" interval="preserveStartEnd" tick={{ fontSize: 14 }} />
               <YAxis domain={[0, maxH]} />
               <Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} />
+
+              <Legend
+                content={(props) => {
+                  const { payload } = props;
+                  return (
+                    <div style={{ display: "flex", flexDirection: "column", height: 70}}>
+                      <div style={{ display: "flex", flexDirection: "column", flexWrap: "wrap", overflowX: 'scroll', height: 70, marginLeft: 55, justifyContent: "space-between", marginTop: 10 }}>
+                        {payload.map((entry, index) => {
+                          const { dataKey, color } = entry
+                          return (
+                            <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "start", width: 100, marginBottom: 4, marginLeft: 3, marginRight: 3 }}>
+                              <div style={{ height: 8, width: 8, borderRadius: 4, marginTop: 3, backgroundColor: color, flexShrink: 0 }} />
+                              <span style={{ fontSize: 12, paddingLeft: 4 }}>{dataKey}</span>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  );
+                }}
+              />
 
               {tooltip(300, dimensions.width < 620 ? 250 : 530, dimensions.width > 620 ? "20%" : "50%", false, { zIndex: 100, top: 20, right: -20 }, false)}
               {genotypes.map((item) => <Bar dataKey={item} stackId="a" fill={getColorForGenotype(item)} />)}
@@ -976,6 +1036,7 @@ const DashboardPage = () => {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis type={"number"} domain={[0, chartMaxWidth]} />
               <YAxis dataKey="name" type={"category"} domain={[0, 50]} />
+              
               {tooltip(300, dimensions.width < 620 ? 250 : 530, dimensions.width > 620 ? "20%" : "50%", false, { zIndex: 100, top: 20, right: -20 }, false)}
               {genotypes.map((item) => <Bar dataKey={item} stackId="a" barSize={50} fill={getColorForGenotype(item)} />)}
             </BarChart>
@@ -1052,6 +1113,27 @@ const DashboardPage = () => {
             <YAxis domain={[0, maxSum]} type={"number"} />
             <Brush dataKey="genotype" height={20} stroke={"rgb(31, 187, 211)"} />
 
+            <Legend
+              content={(props) => {
+                const { payload } = props;
+                return (
+                  <div style={{ display: "flex", flexDirection: "column", height: 70}}>
+                    <div style={{ display: "flex", flexDirection: "column", flexWrap: "wrap", overflowX: 'scroll', height: 70, marginLeft: 55, justifyContent: "space-between", marginTop: 10 }}>
+                      {payload.map((entry, index) => {
+                        const { dataKey, color } = entry
+                        return (
+                          <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "start", width: 120, marginBottom: 4, marginLeft: 3, marginRight: 3 }}>
+                            <div style={{ height: 8, width: 8, borderRadius: 4, marginTop: 3, backgroundColor: color, flexShrink: 0 }} />
+                            <span style={{ fontSize: 12, paddingLeft: 4 }}>{dataKey}</span>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                );
+              }}
+            />
+
             {amrClassChartTooltip()}
             {info.bars.map((item) => {
               return (
@@ -1070,7 +1152,8 @@ const DashboardPage = () => {
             left: -5, fontsize: 14, strokeWidth: 1, width: null, bars: [
               ['acrB_R717Q', "#addd8e", "error-acrB_R717Q"],
               ['ereA', "#9e9ac8", "error-ereA"],
-              ['ereA-acrB_R717Q', "#FFEC78", "error-ereA-acrB_R717Q"]
+              ['ereA-acrB_R717Q', "#FFEC78", "error-ereA-acrB_R717Q"],
+              ['No AMR', "#B9B9B9", "error-No AMR"]
             ]
           }))
         case 'Fluoroquinolones (DCS)':
@@ -1079,27 +1162,32 @@ const DashboardPage = () => {
               ['3_QRDR', "#6baed6", "error-3_QRDR"],
               ['2_QRDR', "#FFEC78", "error-2_QRDR"],
               ['1_QRDR + qnrS', "#66c2a4", "error-1_QRDR + qnrS"],
-              ['1_QRDR', "#FBCFE5", "error-1_QRDR"]]
+              ['1_QRDR', "#FBCFE5", "error-1_QRDR"],
+              ['0_QRDR', "#B9B9B9", "error-0_QRDR"],
+              ['0_QRDR + qnrS', "#8D8D8D", "error-0_QRDR + qnrS"]]
           }))
         case 'Chloramphenicol':
           return (armClassFilterComponent({
             left: 3, fontsize: 14, strokeWidth: 1, width: null, bars: [
               ['cmlA', "#addd8e", "error-cmlA"],
               ['catA1', "#9e9ac8", "error-catA1"],
-              ["catA1-cmlA", "#FFEC78", "error-catA1-cmlA"]
+              ["catA1-cmlA", "#FFEC78", "error-catA1-cmlA"],
+              ['No AMR', "#B9B9B9", "error-No AMR"]
             ]
           }))
         case 'Ampicillin':
           return (armClassFilterComponent({
             left: 3, fontsize: 14, strokeWidth: 1, width: null, bars: [
-              ['blaTEM-1D', "#addd8e", "error-blaTEM-1D"]]
+              ['blaTEM-1D', "#addd8e", "error-blaTEM-1D"],
+              ['No AMR', "#B9B9B9", "error-No AMR"]]
           }))
         case 'Sulphonamides':
           return (armClassFilterComponent({
             left: 3, fontsize: 14, strokeWidth: 1, width: null, bars: [
               ['sul2', "#ffeda0", "error-sul2"],
               ['sul1', "#fd8d3c", "error-sul1"],
-              ['sul1-sul2', "#B4DD70", "error-sul1-sul2"]]
+              ['sul1-sul2', "#B4DD70", "error-sul1-sul2"],
+              ['No AMR', "#B9B9B9", "error-No AMR"]]
           }))
         case 'Trimethoprim':
           return (armClassFilterComponent({
@@ -1110,14 +1198,15 @@ const DashboardPage = () => {
               ['dfrA17', "#FCB469", "error-dfrA17"],
               ['dfrA15', "#FBCFE5", "error-dfrA15"],
               ['dfrA14', "#6baed6", "error-dfrA14"],
-              ['dfrA1', "#B4DD70", "error-dfrA1"]]
+              ['dfrA1', "#B4DD70", "error-dfrA1"],
+              ['No AMR', "#B9B9B9", "error-No AMR"]]
           }))
         case 'Co-trimoxazole':
           let cotrim = ["dfrA1", "dfrA5", "dfrA7", "dfrA14", "dfrA15", "dfrA17", "dfrA18"];
           let colors1 = ["#ffeda0", "#fd8d3c", "#addd8e", "#9e9ac8", "#6baed6", "#7a0177", "#54278f"]
           let colors2 = ["#a50f15", "#6a5acd", "#f1b6da", "#fb8072", "#4682b4", "#2e8b57", "#98fb98"]
           let colors3 = ["#fcc5c0", "#bcbddc", "#fdd0a2", "#c994c7", "#9ecae1", "#a8ddb5", "#fc9272"]
-          let bars = []
+          let bars = [['No AMR', "#B9B9B9", "error-No AMR"]]
 
           for (const index in cotrim) {
             bars.push([cotrim[index] + "-sul1", colors1[index], "error-" + cotrim[index] + "-sul1"])
@@ -1135,17 +1224,19 @@ const DashboardPage = () => {
               ['tetA(C)', getColorForTetracyclines('tetA(C)'), "error-tetA(C)"],
               ['tetA(B)', getColorForTetracyclines('tetA(B)'), "error-tetA(B)"],
               ['tetA(A)', getColorForTetracyclines('tetA(A)'), "error-tetA(A)"],
-              ['tetA(AB)', getColorForTetracyclines('tetA(AB)'), "error-tetA(AB)"],
-              ['tetA(ABC)', getColorForTetracyclines('tetA(ABC)'), "error-tetA(ABC)"],
-              ['tetA(ABCD)', getColorForTetracyclines('tetA(ABCD)'), "error-tetA(ABCD)"],
-              ['tetA(ABD)', getColorForTetracyclines('tetA(ABD)'), "error-tetA(ABD)"],
-              ['tetA(AC)', getColorForTetracyclines('tetA(AC)'), "error-tetA(AC)"],
-              ['tetA(AD)', getColorForTetracyclines('tetA(AD)'), "error-tetA(AD)"],
-              ['tetA(ACD)', getColorForTetracyclines('tetA(ACD)'), "error-tetA(ACD)"],
-              ['tetA(BC)', getColorForTetracyclines('tetA(BC)'), "error-tetA(BC)"],
-              ['tetA(BD)', getColorForTetracyclines('tetA(BD)'), "error-tetA(BD)"],
-              ['tetA(BCD)', getColorForTetracyclines('tetA(BCD)'), "error-tetA(BCD)"],
-              ['tetA(CD)', getColorForTetracyclines('tetA(CD)'), "error-tetA(CD)"]]
+              ['No AMR', "#B9B9B9", "error-No AMR"]
+            ]
+              // ['tetA(AB)', getColorForTetracyclines('tetA(AB)'), "error-tetA(AB)"],
+              // ['tetA(ABC)', getColorForTetracyclines('tetA(ABC)'), "error-tetA(ABC)"],
+              // ['tetA(ABCD)', getColorForTetracyclines('tetA(ABCD)'), "error-tetA(ABCD)"],
+              // ['tetA(ABD)', getColorForTetracyclines('tetA(ABD)'), "error-tetA(ABD)"],
+              // ['tetA(AC)', getColorForTetracyclines('tetA(AC)'), "error-tetA(AC)"],
+              // ['tetA(AD)', getColorForTetracyclines('tetA(AD)'), "error-tetA(AD)"],
+              // ['tetA(ACD)', getColorForTetracyclines('tetA(ACD)'), "error-tetA(ACD)"],
+              // ['tetA(BC)', getColorForTetracyclines('tetA(BC)'), "error-tetA(BC)"],
+              // ['tetA(BD)', getColorForTetracyclines('tetA(BD)'), "error-tetA(BD)"],
+              // ['tetA(BCD)', getColorForTetracyclines('tetA(BCD)'), "error-tetA(BCD)"],
+              // ['tetA(CD)', getColorForTetracyclines('tetA(CD)'), "error-tetA(CD)"]]
           }))
         case 'AMR Profiles':
           return (armClassFilterComponent({
@@ -1166,7 +1257,8 @@ const DashboardPage = () => {
             left: 3, fontsize: 14, strokeWidth: 1, width: null, bars: [
               ['blaSHV-12', "#addd8e", "error-blaSHV-12"],
               ['blaOXA-7', "#9e9ac8", "error-blaOXA-7"],
-              ['blaCTX-M-15_23', "#6baed6", "error-blaCTX-M-15_23"]]
+              ['blaCTX-M-15_23', "#6baed6", "error-blaCTX-M-15_23"],
+              ['No AMR', "#B9B9B9", "error-No AMR"]]
           }))
         default:
           return null;
@@ -1296,7 +1388,7 @@ const DashboardPage = () => {
     }
   })
 
-  const [capturePicture] = useState(() => (id, index) => {
+  const [capturePicture] = useState(() => async (id, index) => {
     switch (index) {
       case 0:
         setCaptureControlMapInProgress(true)
@@ -1313,8 +1405,39 @@ const DashboardPage = () => {
       default:
         break;
     }
+    
+    if (index === 5) {
+      let ids = ["RFWG", "RFWAG", "DRT", "GD"]
 
-    if (index !== 0) {
+      var doc = new jsPDF({unit: 'mm', format: 'a4', orientation: 'l'});
+      doc.setFontSize(25);
+      doc.text("Global Overview Salmonella Typhi", 80, 15);
+
+      await svgAsPngUri(document.getElementById('control-map'), { scale: 4, backgroundColor: "white", width: 1200, left: -200 })
+        .then(async (uri) => {
+          doc.addImage(uri, "PNG", 0, 18, 298, 160);
+        })
+      
+      doc.setFontSize(14);
+      doc.text("Map View: " + mapView, 10, 180);
+      doc.text("Dataset: " + dataset, 10, 187);
+      doc.text("Time Period: " + actualTimePeriodRange[0] + " to " + actualTimePeriodRange[1], 10, 194);
+      doc.text("Country: " + actualCountry, 10, 201);
+      doc.addPage('a4', 'p')
+
+      for (let index = 0; index < ids.length; index++) {
+        await domtoimage.toPng(document.getElementById(ids[index]), { quality: 0.95, bgcolor: "white" })
+          .then(function (dataUrl) {
+            doc.addImage(dataUrl, "PNG", 5, 10, 210, 160);
+          });
+        if (index < ids.length - 1) {
+          doc.addPage('a4', 'p')
+        }
+      }
+
+      doc.save("Global Overview Salmonella Typhi - ALL INFO - TyphiNET.pdf");
+
+    } else if (index !== 0) {
       const names = ["Resistance Frequencies Within Genotypes (Chart) - TiphyNET.png", "Drug Resistance Trends (Chart) - TiphyNET.png", "Genotype Distribution (Chart) - TiphyNET.png", "Resistance determinants within all genotypes (Chart) - TiphyNET.png"]
       domtoimage.toPng(document.getElementById(id), { quality: 0.95, bgcolor: "white" })
         .then(function (dataUrl) {
@@ -1349,22 +1472,60 @@ const DashboardPage = () => {
           typhinetLogo.src = typhinetLogoImg;
           await typhinetLogoPromise;
 
-          const typhinetLogoWidth = typhinetLogo.width * 0.5
-          const typhinetLogoHeight = typhinetLogo.height * 0.5
-
-          // ctx.drawImage(typhinetLogo, 26, canvas.height - typhinetLogoHeight - 16, typhinetLogoWidth, typhinetLogoHeight);
-
           const base64 = canvas.toDataURL();
           stopLoading(index)
           download(base64, 'Global Overview Salmonella Typhi - TyphiNET.png');
         });
     }
+
   })
 
   const [dowloadBaseSpreadsheet] = useState(() => () => {
     axios.get(`${API_ENDPOINT}file/download`)
       .then((res) => {
-        download(res.data, 'TyphiNET_Database.csv');
+        let cols_to_remove = ['azith_pred_pheno', 'cip_pred_pheno', 'dcs_category', 'amr_category', 'num_qrdr', 'num_acrb', 'ESBL_category', 'chloramphenicol_category', 'tetracycline_category', 'cip_pheno_qrdr_gene', 'dcs_mechanisms', 'num_amr_genes', 'dfra_any', 'sul_any', 'co_trim', 'GENOTYPE_SIMPLE', 'h58_genotypes']
+        let indexes = []
+        let csv = res.data.split('\n')
+        let lines = []
+
+        for (let index = 0; index < csv.length; index++) {
+          let line = csv[index].split(',')
+          if (line[1] !== '-' && line[2] !== '-') {
+            lines.push(line)
+          }
+        }
+
+        for (let index = 0; index < cols_to_remove.length; index++) {
+          let currentIndex = lines[0].indexOf(cols_to_remove[index])
+          indexes.push(currentIndex)
+        }
+
+        let newLines = []
+        for (let i = 0; i < lines.length; i++) {
+          let aux = []
+          for (let index = 0; index < lines[i].length; index++) {
+            if (!indexes.includes(index)) {
+              aux.push(lines[i][index])
+            }
+          }
+          newLines.push(aux)
+        }
+        let newCSV = ""
+        for (let i = 0; i < newLines.length; i++) {
+          let aux = ""
+          for (let index = 0; index < newLines[i].length; index++) {
+            aux += newLines[i][index]
+            if (index !== newLines[i].length - 1) {
+              aux += ","
+            }
+          }
+          if (i !== newLines.length - 1) {
+            aux += "\n"
+          }
+          newCSV += aux
+        }
+
+        download(newCSV, 'TyphiNET_Database.csv');
       })
   })
 
@@ -1373,18 +1534,20 @@ const DashboardPage = () => {
 
     switch (mapView) {
       case 'No. Samples':
+        let legends = ['1 - 10', '11 - 25', '26 - 100', '101 - 300', '> 300']
+        let aux = [1, 11, 26, 101, 301]
         return (
           <>
             <div className="samples-info">
               <div className="color" style={{ backgroundColor: "#F5F4F6" }} />
               <span>0</span>
             </div>
-            {[...Array(6).keys()].map((n) => {
-              const samplesLegend = n !== 0 ? n * (samplesQty / 5) : 1
+            {[...Array(5).keys()].map((n) => {
+              // const samplesLegend = n !== 0 ? n * (samplesQty / 5) : 1
               return (
                 <div key={n} className="samples-info">
-                  <div className="color" style={{ backgroundColor: mapSamplesColorScale(samplesLegend) }} />
-                  <span>{samplesLegend}</span>
+                  <div className="color" style={{ backgroundColor: mapSamplesColorScale(aux[n]) }} />
+                  <span>{legends[n]}</span>
                 </div>
               )
             })}
@@ -2375,14 +2538,14 @@ const DashboardPage = () => {
                       </Select>
                     </FormControl>
                   </div>
-                  <div style={{ height: 350, display: "flex", flexDirection: "row", alignItems: "center" }}>
+                  <div style={{ height: 400, display: "flex", flexDirection: "row", alignItems: "center" }}>
                     <span className="y-axis-label-vertical" style={{ paddingRight: 8 }}>Number of occurrences</span>
                     {plotAmrClassChart}
                   </div>
                 </div>
               </div>
               <div style={{ display: "flex", flexDirection: "column", flex: 0.5, paddingLeft: dimensions.width < mobile ? 0 : 10, marginTop: dimensions.width < mobile ? 25 : 0 }}>
-                <div id="DRT" style={{ width: "100%", display: "flex", flexDirection: "column", marginTop: dimensions.width < desktop ? 50 : dimensions.width < 930 ? 0 : 0 }}>
+                <div id="DRT" style={{ width: "100%", display: "flex", flexDirection: "column", paddingTop: dimensions.width < desktop ? 50 : dimensions.width < 930 ? 0 : 0 }}>
                   <div style={{ width: "100%", flexDirection: "row", textAlign: "center", display: "flex", justifyContent: "center", paddingBottom: dimensions.width < desktop ? 0 : dimensions.width < 1010 ? 24 : 8 }}>
                     <span className="chart-title" style={{ paddingRight: 32, marginRight: -22 }}>Drug resistance trends</span>
                     <div style={{ display: "inline-block", position: "relative" }}>
@@ -2453,7 +2616,7 @@ const DashboardPage = () => {
                       </Select>
                     </FormControl> */}
                   </div>
-                  <div style={{ width: '100%', height: 350, display: "flex", flexDirection: /*populationStructureFilter === 1 ? "row" : "column-reverse"*/"row", alignItems: "center", paddingLeft: populationStructureFilter === 2 ? -22 : 0 }}>
+                  <div style={{ width: '100%', height: 400, display: "flex", flexDirection: /*populationStructureFilter === 1 ? "row" : "column-reverse"*/"row", alignItems: "center", paddingLeft: populationStructureFilter === 2 ? -22 : 0 }}>
                     {getPopulationStructureChartLabel()}
                     {plotPopulationStructureChart}
                   </div>
@@ -2464,6 +2627,10 @@ const DashboardPage = () => {
               <div className="download-sheet-button" onClick={() => dowloadBaseSpreadsheet()}>
                 <FontAwesomeIcon icon={faTable} style={{ marginRight: 8 }} />
                 <span>Download TyphiNET Database</span>
+              </div>
+              <div style={{marginTop: dimensions.width > desktop ? 0 : 20, marginLeft: dimensions.width > desktop ? 20 : 0}} className="download-sheet-button" onClick={() => capturePicture('', 5)}>
+                <FontAwesomeIcon icon={faFilePdf} style={{ marginRight: 8 }} />
+                <span>Download Filtered Map and Graphs</span>
               </div>
             </div>
           </div>

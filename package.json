@@ -38,6 +38,7 @@
         "fast-csv": "^4.3.6",
         "http-errors": "~1.6.3",
         "if-env": "^1.0.4",
+        "jspdf": "^2.3.1",
         "material-dashboard": "^2.1.0",
         "mongodb": "^3.6.3",
         "mongoose": "^5.11.15",

@@ -24,7 +24,7 @@ router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel', function(req, 
                     data_travel = true
                 } else {
                     if (travel == "global") {
-                        if (data["TRAVEL"] == "unknown" || data["TRAVEL"] == "local") {
+                        if (/*data["TRAVEL"] == "unknown" || */data["TRAVEL"] == "local") {
                             data_travel = true
                         } else {
                             data_travel = false
@@ -134,7 +134,7 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
                     data_travel = true
                 } else {
                     if (travel == "global") {
-                        if (data["TRAVEL"] == "unknown" || data["TRAVEL"] == "local") {
+                        if (/*data["TRAVEL"] == "unknown" || */data["TRAVEL"] == "local") {
                             data_travel = true
                         } else {
                             data_travel = false
@@ -170,15 +170,23 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
                         results.push(data_to_send)
                     }
 
-                    if (params.amr_class == "Azithromycin" && data["azith_pred_pheno"] == "AzithR") {
+                    if (params.amr_class == "Azithromycin") {
 
                         let genes = []
 
-                        if (data["ereA"] == "1")
-                            genes.push("ereA")
-
-                        if (data["acrB_R717Q"] == "1")
-                            genes.push("acrB_R717Q")
+                        if (data["azith_pred_pheno"] == "AzithR") {
+                            if (data["ereA"] == "1" && data["acrB_R717Q"] == "1"){
+                                genes.push("ereA-acrB_R717Q")
+                            } else {
+                                if (data["ereA"] == "1")
+                                    genes.push("ereA")
+    
+                                if (data["acrB_R717Q"] == "1")
+                                    genes.push("acrB_R717Q")
+                            }
+                        } else if (data["azith_pred_pheno"] == "AzithS"){
+                            genes.push("No AMR")
+                        }
 
                         for (let gene of genes) {
                             results.push({
@@ -189,23 +197,28 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
                     }
 
                     if (params.amr_class == "Fluoroquinolones (DCS)" && data["dcs_category"] == "DCS") {
-                        if (!["0_QRDR", "0_QRDR + qnrS"].includes(data["dcs_mechanisms"])) {
-                            data_to_send["GENE"] = data["dcs_mechanisms"]
-                        }
+                        // if (!["0_QRDR", "0_QRDR + qnrS"].includes(data["dcs_mechanisms"])) {
+                        //     data_to_send["GENE"] = data["dcs_mechanisms"]
+                        // }
+                        data_to_send["GENE"] = data["dcs_mechanisms"]
                         results.push(data_to_send)
                     }
 
-                    if (params.amr_class == "ESBL" && data["ESBL_category"] == "ESBL") {
+                    if (params.amr_class == "ESBL") {
                         let genes = []
 
-                        if (data["blaCTX-M-15_23"] == "1")
-                            genes.push("blaCTX-M-15_23")
+                        if (data["ESBL_category"] == "ESBL") {
+                            if (data["blaCTX-M-15_23"] == "1")
+                                genes.push("blaCTX-M-15_23")
 
-                        if (data["blaOXA-7"] == "1")
-                            genes.push("blaOXA-7")
+                            if (data["blaOXA-7"] == "1")
+                                genes.push("blaOXA-7")
 
-                        if (data["blaSHV-12"] == "1")
-                            genes.push("blaSHV-12")
+                            if (data["blaSHV-12"] == "1")
+                                genes.push("blaSHV-12")
+                        } else if (data["ESBL_category"] == "Non-ESBL") {
+                            genes.push("No AMR")
+                        }
 
                         for (let gene of genes) {
                             results.push({
@@ -215,14 +228,22 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
                         }
                     }
 
-                    if (params.amr_class == "Chloramphenicol" && data["chloramphenicol_category"] == "ChlR") {
+                    if (params.amr_class == "Chloramphenicol") {
                         let genes = []
 
-                        if (data["catA1"] == "1")
-                            genes.push("catA1")
+                        if (data["chloramphenicol_category"] == "ChlR") {
+                            if (data["catA1"] == "1" && data["cmlA"] == "1") {
+                                genes.push("catA1-cmlA")
+                            } else {
+                                if (data["catA1"] == "1")
+                                    genes.push("catA1")
 
-                        if (data["cmlA"] == "1")
-                            genes.push("cmlA")
+                                if (data["cmlA"] == "1")
+                                    genes.push("cmlA")
+                            }
+                        } else if (data["chloramphenicol_category"] == "ChlS") {
+                            genes.push("No AMR")
+                        }
 
                         for (let gene of genes) {
                             results.push({
@@ -233,26 +254,39 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
                     }
 
                     if (params.amr_class == "Ampicillin") {
-                        if (data["blaTEM-1D"] === "1") {
-                            data_to_send["GENE"] = "blaTEM-1D"
-                        }
-
-                        results.push(data_to_send)
-                    }
-
-                    if (params.amr_class == "Co-trimoxazole" && data["co_trim"] == "1") {
                         let genes = []
 
-                        for (const index in cotrim) {
-                            if (data[cotrim[index]] == "1") {
-                                if (data["sul1"] == "1" && data["sul2"] == "1") {
-                                    genes.push(cotrim[index] + "-sul1-sul2")
-                                } else if (data["sul1"] == "1") {
-                                    genes.push(cotrim[index] + "-sul1")
-                                } else if (data["sul2"] == "1") {
-                                    genes.push(cotrim[index] + "-sul2")
+                        if (data["blaTEM-1D"] === "1") {
+                            genes.push("blaTEM-1D")
+                        } else {
+                            genes.push("No AMR")
+                        }
+
+                        for (let gene of genes) {
+                            results.push({
+                                ...data_to_send,
+                                GENE: gene
+                            })
+                        }
+                    }
+
+                    if (params.amr_class == "Co-trimoxazole") {
+                        let genes = []
+
+                        if (data["co_trim"] == "1") {
+                            for (const index in cotrim) {
+                                if (data[cotrim[index]] == "1") {
+                                    if (data["sul1"] == "1" && data["sul2"] == "1") {
+                                        genes.push(cotrim[index] + "-sul1-sul2")
+                                    } else if (data["sul1"] == "1") {
+                                        genes.push(cotrim[index] + "-sul1")
+                                    } else if (data["sul2"] == "1") {
+                                        genes.push(cotrim[index] + "-sul2")
+                                    }
                                 }
                             }
+                        } else if (data["co_trim"] == "0") {
+                            genes.push("No AMR")
                         }
 
                         for (let gene of genes) {
@@ -263,15 +297,19 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
                         }
                     }
 
-                    if (params.amr_class == "Sulphonamides" && data["sul_any"] == "1") {
+                    if (params.amr_class == "Sulphonamides") {
                         let genes = []
 
-                        if (data["sul1"] === "1" && data["sul2"] === "1")
-                            genes.push("sul1-sul2")
-                        else if (data["sul1"] === "1")
-                            genes.push("sul1")
-                        else if (data["sul2"] === "1")
-                            genes.push("sul2")
+                        if (data["sul_any"] == "1") {
+                            if (data["sul1"] === "1" && data["sul2"] === "1")
+                                genes.push("sul1-sul2")
+                            else if (data["sul1"] === "1")
+                                genes.push("sul1")
+                            else if (data["sul2"] === "1")
+                                genes.push("sul2")
+                        } else if (data["sul_any"] == "0") {
+                            genes.push("No AMR")
+                        }
 
                         for (let gene of genes) {
                             results.push({
@@ -281,29 +319,33 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
                         }
                     }
 
-                    if (params.amr_class == "Trimethoprim" && data["dfra_any"] == "1") {
+                    if (params.amr_class == "Trimethoprim") {
                         let genes = []
 
-                        if (data["dfrA1"] == "1")
-                            genes.push("dfrA1")
-
-                        if (data["dfrA14"] == "1")
-                            genes.push("dfrA14")
-
-                        if (data["dfrA15"] == "1")
-                            genes.push("dfrA15")
-
-                        if (data["dfrA17"] == "1")
-                            genes.push("dfrA17")
-
-                        if (data["dfrA18"] == "1")
-                            genes.push("dfrA18")
-
-                        if (data["dfrA5"] == "1")
-                            genes.push("dfrA5")
-
-                        if (data["dfrA7"] == "1")
-                            genes.push("dfrA7")
+                        if (data["dfra_any"] == "1") {
+                            if (data["dfrA1"] == "1")
+                                genes.push("dfrA1")
+    
+                            if (data["dfrA14"] == "1")
+                                genes.push("dfrA14")
+    
+                            if (data["dfrA15"] == "1")
+                                genes.push("dfrA15")
+    
+                            if (data["dfrA17"] == "1")
+                                genes.push("dfrA17")
+    
+                            if (data["dfrA18"] == "1")
+                                genes.push("dfrA18")
+    
+                            if (data["dfrA5"] == "1")
+                                genes.push("dfrA5")
+    
+                            if (data["dfrA7"] == "1")
+                                genes.push("dfrA7")
+                        } else if (data["dfra_any"] == "0") {
+                            genes.push("No AMR")
+                        }
 
                         for (let gene of genes) {
                             results.push({
@@ -313,31 +355,35 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
                         }
                     }
 
-                    if (params.amr_class == "Tetracyclines" && data["tetracycline_category"] == "TetR") {
+                    if (params.amr_class == "Tetracyclines") {
                         let genes = []
-                            // const tets = ["tetA(A)", "tetA(B)", "tetA(C)", "tetA(D)"]
-                            // let finalTet = "TetA("
-                            // for (let tet of tets) {
-                            //     if (data[tet.toString()] === "1") {
-                            //         finalTet = finalTet + tet[tet.length - 2]
-                            //     }
-                            // }
-                            // finalTet = finalTet + ")"
-                            // if (finalTet !== "TetA()") {
-                            //     genes.push(finalTet.toString())
-                            // }
+                        // const tets = ["tetA(A)", "tetA(B)", "tetA(C)", "tetA(D)"]
+                        // let finalTet = "TetA("
+                        // for (let tet of tets) {
+                        //     if (data[tet.toString()] === "1") {
+                        //         finalTet = finalTet + tet[tet.length - 2]
+                        //     }
+                        // }
+                        // finalTet = finalTet + ")"
+                        // if (finalTet !== "TetA()") {
+                        //     genes.push(finalTet.toString())
+                        // }
 
-                        if (data["tetA(A)"] == "1")
-                            genes.push("tetA(A)")
+                        if (data["tetracycline_category"] == "TetR") {
+                            if (data["tetA(A)"] == "1")
+                                genes.push("tetA(A)")
 
-                        if (data["tetA(B)"] == "1")
-                            genes.push("tetA(B)")
+                            if (data["tetA(B)"] == "1")
+                                genes.push("tetA(B)")
 
-                        if (data["tetA(C)"] == "1")
-                            genes.push("tetA(C)")
+                            if (data["tetA(C)"] == "1")
+                                genes.push("tetA(C)")
 
-                        if (data["tetA(D)"] == "1")
-                            genes.push("tetA(D)")
+                            if (data["tetA(D)"] == "1")
+                                genes.push("tetA(D)")
+                        } else if (data["tetracycline_category"] == "TetS") {
+                            genes.push("No AMR")
+                        }
 
                         for (let gene of genes) {
                             results.push({
@@ -412,6 +458,7 @@ router.get('/:filter1/:country/:min_year/:max_year/:travel', function(req, res, 
         .pipe(csv())
         .on('data', (data) => results_json.push(data))
         .on('end', () => {
+            
             let travel = params.travel
             let data_travel = false
             for (let data of results_json) {
@@ -419,7 +466,7 @@ router.get('/:filter1/:country/:min_year/:max_year/:travel', function(req, res, 
                     data_travel = true
                 } else {
                     if (travel == "global") {
-                        if (data["TRAVEL"] == "unknown" || data["TRAVEL"] == "local") {
+                        if (/*data["TRAVEL"] == "unknown" || */data["TRAVEL"] == "local") {
                             data_travel = true
                         } else {
                             data_travel = false
@@ -556,7 +603,8 @@ router.get('/:country/:min_year/:max_year/:travel', function(req, res, next) {
                     data_travel = true
                 } else {
                     if (travel == "global") {
-                        if (data["TRAVEL"] == "unknown") {
+                        // if (data["TRAVEL"] == "unknown") {
+                        if (data["TRAVEL"] == "local") {
                             data_travel = true
                         } else {
                             data_travel = false
