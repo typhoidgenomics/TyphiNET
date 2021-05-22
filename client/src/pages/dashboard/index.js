@@ -693,7 +693,7 @@ const DashboardPage = () => {
       let genotypes = []
       finalChartData.forEach(element => {
         let keys = Object.keys(element).slice(1)
-        let filteredData = keys.filter((key) => {return !(key.includes('No')) && !(key.includes('0_'))})
+        let filteredData = keys.filter((key) => { return !(key.includes('No')) && !(key.includes('0_')) })
         if (filteredData.length === 0) {
           genotypes.push(element.genotype)
         }
@@ -720,7 +720,7 @@ const DashboardPage = () => {
               lowerValue = 0
 
             data[`error-${entry[0]}`] = [lowerValue, errorMargin]
-            
+
             if (!(entry[0].includes('No')) && !(entry[0].includes('0_'))) {
               sum += entry[1];
               if (entry[1] > maxSum) {
@@ -728,7 +728,7 @@ const DashboardPage = () => {
               }
             }
             sum2 += entry[1]
-            
+
           }
           if (entry[0] === "genotype") {
             data.total2 = allGenotypes[entry[1].toString()];
@@ -999,7 +999,7 @@ const DashboardPage = () => {
                 content={(props) => {
                   const { payload } = props;
                   return (
-                    <div style={{ display: "flex", flexDirection: "column", height: 70}}>
+                    <div style={{ display: "flex", flexDirection: "column", height: 70 }}>
                       <div style={{ display: "flex", flexDirection: "column", flexWrap: "wrap", overflowX: 'scroll', height: 70, marginLeft: 55, justifyContent: "space-between", marginTop: 10 }}>
                         {payload.map((entry, index) => {
                           const { dataKey, color } = entry
@@ -1036,7 +1036,7 @@ const DashboardPage = () => {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis type={"number"} domain={[0, chartMaxWidth]} />
               <YAxis dataKey="name" type={"category"} domain={[0, 50]} />
-              
+
               {tooltip(300, dimensions.width < 620 ? 250 : 530, dimensions.width > 620 ? "20%" : "50%", false, { zIndex: 100, top: 20, right: -20 }, false)}
               {genotypes.map((item) => <Bar dataKey={item} stackId="a" barSize={50} fill={getColorForGenotype(item)} />)}
             </BarChart>
@@ -1117,7 +1117,7 @@ const DashboardPage = () => {
               content={(props) => {
                 const { payload } = props;
                 return (
-                  <div style={{ display: "flex", flexDirection: "column", height: 70}}>
+                  <div style={{ display: "flex", flexDirection: "column", height: 70 }}>
                     <div style={{ display: "flex", flexDirection: "column", flexWrap: "wrap", overflowX: 'scroll', height: 70, marginLeft: 55, justifyContent: "space-between", marginTop: 10 }}>
                       {payload.map((entry, index) => {
                         const { dataKey, color } = entry
@@ -1226,17 +1226,17 @@ const DashboardPage = () => {
               ['tetA(A)', getColorForTetracyclines('tetA(A)'), "error-tetA(A)"],
               ['No AMR', "#B9B9B9", "error-No AMR"]
             ]
-              // ['tetA(AB)', getColorForTetracyclines('tetA(AB)'), "error-tetA(AB)"],
-              // ['tetA(ABC)', getColorForTetracyclines('tetA(ABC)'), "error-tetA(ABC)"],
-              // ['tetA(ABCD)', getColorForTetracyclines('tetA(ABCD)'), "error-tetA(ABCD)"],
-              // ['tetA(ABD)', getColorForTetracyclines('tetA(ABD)'), "error-tetA(ABD)"],
-              // ['tetA(AC)', getColorForTetracyclines('tetA(AC)'), "error-tetA(AC)"],
-              // ['tetA(AD)', getColorForTetracyclines('tetA(AD)'), "error-tetA(AD)"],
-              // ['tetA(ACD)', getColorForTetracyclines('tetA(ACD)'), "error-tetA(ACD)"],
-              // ['tetA(BC)', getColorForTetracyclines('tetA(BC)'), "error-tetA(BC)"],
-              // ['tetA(BD)', getColorForTetracyclines('tetA(BD)'), "error-tetA(BD)"],
-              // ['tetA(BCD)', getColorForTetracyclines('tetA(BCD)'), "error-tetA(BCD)"],
-              // ['tetA(CD)', getColorForTetracyclines('tetA(CD)'), "error-tetA(CD)"]]
+            // ['tetA(AB)', getColorForTetracyclines('tetA(AB)'), "error-tetA(AB)"],
+            // ['tetA(ABC)', getColorForTetracyclines('tetA(ABC)'), "error-tetA(ABC)"],
+            // ['tetA(ABCD)', getColorForTetracyclines('tetA(ABCD)'), "error-tetA(ABCD)"],
+            // ['tetA(ABD)', getColorForTetracyclines('tetA(ABD)'), "error-tetA(ABD)"],
+            // ['tetA(AC)', getColorForTetracyclines('tetA(AC)'), "error-tetA(AC)"],
+            // ['tetA(AD)', getColorForTetracyclines('tetA(AD)'), "error-tetA(AD)"],
+            // ['tetA(ACD)', getColorForTetracyclines('tetA(ACD)'), "error-tetA(ACD)"],
+            // ['tetA(BC)', getColorForTetracyclines('tetA(BC)'), "error-tetA(BC)"],
+            // ['tetA(BD)', getColorForTetracyclines('tetA(BD)'), "error-tetA(BD)"],
+            // ['tetA(BCD)', getColorForTetracyclines('tetA(BCD)'), "error-tetA(BCD)"],
+            // ['tetA(CD)', getColorForTetracyclines('tetA(CD)'), "error-tetA(CD)"]]
           }))
         case 'AMR Profiles':
           return (armClassFilterComponent({
@@ -1405,11 +1405,11 @@ const DashboardPage = () => {
       default:
         break;
     }
-    
+
     if (index === 5) {
       let ids = ["RFWG", "RFWAG", "DRT", "GD"]
 
-      var doc = new jsPDF({unit: 'mm', format: 'a4', orientation: 'l'});
+      var doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'l' });
       doc.setFontSize(25);
       doc.text("Global Overview Salmonella Typhi", 80, 15);
 
@@ -1417,7 +1417,7 @@ const DashboardPage = () => {
         .then(async (uri) => {
           doc.addImage(uri, "PNG", 0, 18, 298, 160);
         })
-      
+
       doc.setFontSize(14);
       doc.text("Map View: " + mapView, 10, 180);
       doc.text("Dataset: " + dataset, 10, 187);
@@ -2628,9 +2628,9 @@ const DashboardPage = () => {
                 <FontAwesomeIcon icon={faTable} style={{ marginRight: 8 }} />
                 <span>Download TyphiNET Database</span>
               </div>
-              <div style={{marginTop: dimensions.width > desktop ? 0 : 20, marginLeft: dimensions.width > desktop ? 20 : 0}} className="download-sheet-button" onClick={() => capturePicture('', 5)}>
+              <div style={{ marginTop: dimensions.width > desktop ? 0 : 20, marginLeft: dimensions.width > desktop ? 20 : 0 }} className="download-sheet-button" onClick={() => capturePicture('', 5)}>
                 <FontAwesomeIcon icon={faFilePdf} style={{ marginRight: 8 }} />
-                <span>Download Filtered Map and Graphs</span>
+                <span>Download Static report from current view</span>
               </div>
             </div>
           </div>
@@ -2638,7 +2638,7 @@ const DashboardPage = () => {
         <div className="about-wrapper" style={{ paddingBottom: '15px' }}>
           <h2 style={{ marginBottom: 0 }}>About TyphiNET</h2>
           <p>
-            The TyphiNET dashboard collates antimicrobial resistance (AMR) and genotype (lineage) information extracted from whole genome sequence (WGS) data from the bacterial pathogen <i>Salmonella</i> Typhi, the agent of typhoid fever. Data are sourced monthly from Typhoid <a href="https://pathogen.watch/" target="_blank" rel="noreferrer">Pathogenwatch</a>. Information on genotype definitions and population structure can be found in <a href="https://www.nature.com/articles/ncomms12827">Wong et al, 2016</a>, and details of AMR determinants in <a href="https://www.biorxiv.org/content/10.1101/2020.07.03.186692v2.abstract">Argimon et al, 2020</a>. (DCS = decreased ciprofloxacin susceptibility).
+            The TyphiNET dashboard collates antimicrobial resistance (AMR) and genotype (lineage) information extracted from whole genome sequence (WGS) data from the bacterial pathogen <i>Salmonella</i> Typhi, the agent of typhoid fever. Data are sourced monthly from Typhoid <a href="https://pathogen.watch/" target="_blank" rel="noreferrer">Pathogenwatch</a>. Information on genotype definitions and population structure can be found in <a href="https://www.nature.com/articles/ncomms12827">Wong et al, 2016</a>, and details of AMR determinants in <a href="https://www.nature.com/articles/s41467-021-23091-2">Argimon et al, 2021</a>. (DCS = decreased ciprofloxacin susceptibility).
           </p>
           <p>
             The TyphiNET dashboard is coordinated by Dr Zoe Dyson, Dr Louise Cerdeira &amp; Prof Kat Holt at the <a href="https://www.lshtm.ac.uk/" target="_blank" rel="noreferrer">London School of Hygiene and Tropical Medicine</a> &amp; <a href="https://www.monash.edu/">Monash University</a>, supported by the Wellcome Trust (Open Research Fund, 219692/Z/19/Z) and the EU Horizon 2020 research and innovation programme (Marie Skłodowska-Curie grant #845681).
