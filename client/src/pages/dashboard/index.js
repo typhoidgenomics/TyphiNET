@@ -100,7 +100,7 @@ const DashboardPage = () => {
   const classes = useStyles();
 
   const [controlMapPosition, setControlMapPosition] = useState({ coordinates: [0, 0], zoom: 1 });
-  const [samplesQty, setSamplesQty] = useState(0);
+  // const [samplesQty, setSamplesQty] = useState(0);
 
   const [worldMapSamplesData, setWorldMapSamplesData] = useState([]);
   const [worldMapComplementaryData, setWorldMapComplementaryData] = useState({});
@@ -135,6 +135,7 @@ const DashboardPage = () => {
   const [countriesForFilter, setCountriesForFilter] = React.useState(['All']);
   const [actualCountry, setActualCountry] = useState("All");
   const [populationStructureFilter, setPopulationStructureFilter] = React.useState(1);
+  const [RFWGFilter, setRFWGFilter] = React.useState(1);
   const [amrClassesForFilter] = useState([/*"AMR Profiles", */"Ampicillin", "Azithromycin", "Chloramphenicol", "Co-trimoxazole", "ESBL", "Fluoroquinolones (DCS)", "Sulphonamides", "Tetracyclines", "Trimethoprim"])
   const [amrClassFilter, setAmrClassFilter] = React.useState(amrClassesForFilter[5])
 
@@ -286,42 +287,43 @@ const DashboardPage = () => {
         }
 
         /* POPULATION STRUCTURE CHART GENERATION */
-        if (populationStructureFilter === 1) { /* Genotype */
-          if (!finalPopulationStructureChartData.some(e => e.name === entry.YEAR)) {
-            finalPopulationStructureChartData.push({
-              name: entry.YEAR,
-              [entry.GENOTYPE]: 1
-            })
+        // if (populationStructureFilter === 1) { /* Genotype */
+        if (!finalPopulationStructureChartData.some(e => e.name === entry.YEAR)) {
+          finalPopulationStructureChartData.push({
+            name: entry.YEAR,
+            [entry.GENOTYPE]: 1
+          })
+        } else {
+          let year = finalPopulationStructureChartData.find(e => e.name === entry.YEAR);
+          let yearIndex = finalPopulationStructureChartData.findIndex(e => e.name === entry.YEAR);
+
+          if (year[entry.GENOTYPE] === undefined) {
+            year[entry.GENOTYPE] = 1
           } else {
-            let year = finalPopulationStructureChartData.find(e => e.name === entry.YEAR);
-            let yearIndex = finalPopulationStructureChartData.findIndex(e => e.name === entry.YEAR);
-
-            if (year[entry.GENOTYPE] === undefined) {
-              year[entry.GENOTYPE] = 1
-            } else {
-              year[entry.GENOTYPE] = year[entry.GENOTYPE] + 1
-            }
-            finalPopulationStructureChartData[yearIndex] = year;
+            year[entry.GENOTYPE] = year[entry.GENOTYPE] + 1
           }
-        } else { /* H58 / Non-H58 */
-          if (entry['GENOTYPE_SIMPLE'] === 'H58' || entry['GENOTYPE_SIMPLE'] === 'Non-H58')
-            if (!finalPopulationStructureChartData.some(e => e.name === entry['GENOTYPE_SIMPLE'])) {
-              finalPopulationStructureChartData.push({
-                name: entry['GENOTYPE_SIMPLE'],
-                [entry.GENOTYPE]: 1
-              })
-            } else {
-              let genotypeSimple = finalPopulationStructureChartData.find(e => e.name === entry['GENOTYPE_SIMPLE']);
-              let genotypeSimpleIndex = finalPopulationStructureChartData.findIndex(e => e.name === entry['GENOTYPE_SIMPLE']);
-
-              if (genotypeSimple[entry.GENOTYPE] === undefined) {
-                genotypeSimple[entry.GENOTYPE] = 1
-              } else {
-                genotypeSimple[entry.GENOTYPE] = genotypeSimple[entry.GENOTYPE] + 1
-              }
-              finalPopulationStructureChartData[genotypeSimpleIndex] = genotypeSimple;
-            }
+          finalPopulationStructureChartData[yearIndex] = year;
         }
+        // } 
+        // else { /* H58 / Non-H58 */
+        //   if (entry['GENOTYPE_SIMPLE'] === 'H58' || entry['GENOTYPE_SIMPLE'] === 'Non-H58')
+        //     if (!finalPopulationStructureChartData.some(e => e.name === entry['GENOTYPE_SIMPLE'])) {
+        //       finalPopulationStructureChartData.push({
+        //         name: entry['GENOTYPE_SIMPLE'],
+        //         [entry.GENOTYPE]: 1
+        //       })
+        //     } else {
+        //       let genotypeSimple = finalPopulationStructureChartData.find(e => e.name === entry['GENOTYPE_SIMPLE']);
+        //       let genotypeSimpleIndex = finalPopulationStructureChartData.findIndex(e => e.name === entry['GENOTYPE_SIMPLE']);
+
+        //       if (genotypeSimple[entry.GENOTYPE] === undefined) {
+        //         genotypeSimple[entry.GENOTYPE] = 1
+        //       } else {
+        //         genotypeSimple[entry.GENOTYPE] = genotypeSimple[entry.GENOTYPE] + 1
+        //       }
+        //       finalPopulationStructureChartData[genotypeSimpleIndex] = genotypeSimple;
+        //     }
+        // }
       })
 
       if (totalGenomes.length === 0)
@@ -359,13 +361,15 @@ const DashboardPage = () => {
       if (populationStructureChartSums.length > 0) {
         let highestSum = populationStructureChartSums.sort((a, b) => b.sum - a.sum)[0].sum;
 
-        if (populationStructureFilter === 1) {
-          if (highestSum > chartMaxHeight)
-            setChartMaxHeight(Math.ceil(highestSum / 100) * 100)
-        } else {
-          if (highestSum > chartMaxWidth)
-            setChartMaxWidth(Math.ceil(highestSum / 100) * 100)
-        }
+        // if (populationStructureFilter === 1) {
+        //   if (highestSum > chartMaxHeight)
+        //     setChartMaxHeight(Math.ceil(highestSum / 100) * 100)
+        // } else {
+        //   if (highestSum > chartMaxWidth)
+        //     setChartMaxWidth(Math.ceil(highestSum / 100) * 100)
+        // }
+        if (highestSum > chartMaxHeight)
+          setChartMaxHeight(Math.ceil(highestSum / 100) * 100)
       }
     }
 
@@ -468,11 +472,11 @@ const DashboardPage = () => {
           samplesData[timorLesteCountryIndex].displayName = "Timor-Leste"
 
         setWorldMapSamplesData(samplesData)
-        setSamplesQty(
-          Math.ceil((
-            samplesData.length > 0 ? samplesData.sort((a, b) => b.count - a.count)[0].count : 0
-          ) / 50) * 50
-        )
+        // setSamplesQty(
+        //   Math.ceil((
+        //     samplesData.length > 0 ? samplesData.sort((a, b) => b.count - a.count)[0].count : 0
+        //   ) / 50) * 50
+        // )
       }
 
       finalCountries.sort((a, b) => a.localeCompare(b));
@@ -864,11 +868,12 @@ const DashboardPage = () => {
     const timeOutId = setTimeout(async () => {
       let filter;
 
-      if (populationStructureFilter === 1) {
-        filter = 2
-      } else {
-        filter = 3 /* H58 and Non-H58 */
-      }
+      filter = 2
+      // if (populationStructureFilter === 1) {
+      //   filter = 2
+      // } else {
+      //   filter = 3 /* H58 and Non-H58 */
+      // }
 
       let genotypeChartResponse = await axios.get(`${API_ENDPOINT}filters/${filter}/${actualCountry === "All" ? "all" : actualCountry}/${actualTimePeriodRange[0]}/${actualTimePeriodRange[1]}/${dataset}`)
       parseDataForGenotypeChart(genotypeChartResponse.data)
@@ -938,21 +943,19 @@ const DashboardPage = () => {
                   <div style={{ display: "flex", flexWrap: "wrap", width: width1, flexDirection: "" }}>
                     {payload.reverse().map((item, index) => {
                       let percentage = ((item.value / item.payload.total) * 100)
-                      // if (chart === 0) {
-                      //   percentage = ((item.value / drugsAndGenotypesChartData[drugsAndGenotypesChartData.length - 1].totalSum[item.name]) * 100)
-                      // } else 
                       if (chart === 1) {
                         percentage = ((item.payload.drugsPercentage[item.dataKey] / item.payload.total) * 100)
                       }
-                      // if (Math.round(percentage) !== percentage)
-                      //   percentage = percentage.toFixed(2)
                       percentage = Math.round(percentage)
+                      if ((populationStructureFilter === 2 && chart === 3) || (RFWGFilter === 2 && chart === 4)) {
+                        percentage = item.value
+                      }
                       return (
                         <div key={index + item} style={{ display: "flex", flexDirection: "row", alignItems: "center", width: width2, marginBottom: 8 }}>
                           <div style={{ backgroundColor: stroke ? item.stroke : item.fill, height: 18, width: 18, border: "solid rgb(0,0,0,0.75) 0.5px", flex: "none" }} />
                           <div style={{ display: "flex", flexDirection: "column", marginLeft: 8, width: "95%" }}>
                             <span style={{ fontFamily: "Montserrat", color: "rgba(0,0,0,0.75)", fontWeight: 500, fontSize: 14, wordWrap: 'break-word', width: dimensions.width < mobile ? '80%' : '100%' }}>{item.name}</span>
-                            <span style={{ fontFamily: "Montserrat", color: "rgba(0,0,0,0.75)", fontSize: 12 }}>N = {chart === 1 ? item.payload.drugsPercentage[item.dataKey] : item.value}</span>
+                            <span style={{ fontFamily: "Montserrat", color: "rgba(0,0,0,0.75)", fontSize: 12 }}>N = {(populationStructureFilter === 2 && chart === 3) || (RFWGFilter === 2 && chart === 4) ? item.payload.quantities[item.name] : chart === 1 ? item.payload.drugsPercentage[item.dataKey] : item.value}</span>
                             <span style={{ fontFamily: "Montserrat", color: "rgba(0,0,0,0.75)", fontSize: 10 }}>{percentage}%</span>
                           </div>
                         </div>
@@ -967,12 +970,12 @@ const DashboardPage = () => {
         }}
       />
     )
-  }, [dimensions, mobile])
+  }, [dimensions, mobile, populationStructureFilter])
 
   useEffect(() => {
     const plotPopulationStructureChart = () => {
 
-      if (populationStructureFilter === 1) { /* Genotype */
+      if (populationStructureFilter === 1) { /* QUANTITY */
         let maxH = 0
         for (let index = 0; index < populationStructureChartData.length; index++) {
           if (populationStructureChartData[index].total > maxH) {
@@ -980,7 +983,6 @@ const DashboardPage = () => {
           }
         }
         maxH = Math.ceil(maxH / 50) * 50
-        console.log(populationStructureChartData);
         return (
           <ResponsiveContainer width="90%">
             <BarChart
@@ -1021,24 +1023,60 @@ const DashboardPage = () => {
             </BarChart>
           </ResponsiveContainer>
         )
-      } else { /* H58 and Non-H58 */
+      } else { /* PERCENTAGE */
+        let maxH = 100
+
+        let teste = JSON.parse(JSON.stringify(populationStructureChartData))
+        teste.forEach(element => {
+          element["quantities"] = {}
+          const keys = Object.keys(element);
+          for (const key in keys) {
+            if (keys[key] !== 'name' && keys[key] !== 'total' && keys[key] !== 'quantities') {
+              let aux = keys[key]
+              element.quantities[aux] = element[aux]
+              element[aux] = Math.round((element[aux] * 100) / element.total)
+            }
+          }
+        });
+
         return (
           <ResponsiveContainer width="90%">
             <BarChart
-              width={500}
               height={300}
-              data={populationStructureChartData}
+              data={teste}
               margin={{
                 top: 20, bottom: 5, right: 0
               }}
-              layout="vertical"
+              barCategoryGap={'10%'}
             >
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis type={"number"} domain={[0, chartMaxWidth]} />
-              <YAxis dataKey="name" type={"category"} domain={[0, 50]} />
+              <XAxis dataKey="name" interval="preserveStartEnd" tick={{ fontSize: 14 }} />
+              <YAxis domain={[0, maxH]} allowDataOverflow={true} />
+              <Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} />
 
-              {tooltip(300, dimensions.width < 620 ? 250 : 530, dimensions.width > 620 ? "20%" : "50%", false, { zIndex: 100, top: 20, right: -20 }, false)}
-              {genotypes.map((item) => <Bar dataKey={item} stackId="a" barSize={50} fill={getColorForGenotype(item)} />)}
+              <Legend
+                content={(props) => {
+                  const { payload } = props;
+                  return (
+                    <div style={{ display: "flex", flexDirection: "column", height: 70 }}>
+                      <div style={{ display: "flex", flexDirection: "column", flexWrap: "wrap", overflowX: 'scroll', height: 70, marginLeft: 55, justifyContent: "space-between", marginTop: 10 }}>
+                        {payload.map((entry, index) => {
+                          const { dataKey, color } = entry
+                          return (
+                            <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "start", width: 100, marginBottom: 4, marginLeft: 3, marginRight: 3 }}>
+                              <div style={{ height: 8, width: 8, borderRadius: 4, marginTop: 3, backgroundColor: color, flexShrink: 0 }} />
+                              <span style={{ fontSize: 12, paddingLeft: 4 }}>{dataKey}</span>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  );
+                }}
+              />
+
+              {tooltip(300, dimensions.width < 620 ? 250 : 530, dimensions.width > 620 ? "20%" : "50%", false, { zIndex: 100, top: 20, right: -20 }, false, 3)}
+              {genotypes.map((item) => <Bar dataKey={item} stackId="a" fill={getColorForGenotype(item)} />)}
             </BarChart>
           </ResponsiveContainer>
         )
@@ -1272,7 +1310,7 @@ const DashboardPage = () => {
       return (
         <ResponsiveContainer width="90%">
           <LineChart
-            height={300}
+            height={360}
             data={drugTrendsChartData.slice(0, drugTrendsChartData.length - 1)}
             margin={{
               top: 20, bottom: 5, right: 0, left: -5
@@ -1314,55 +1352,103 @@ const DashboardPage = () => {
 
   useEffect(() => {
     const plotDrugsAndGenotypesChart = () => {
-      return (
-        <ResponsiveContainer width="90%">
-          <BarChart
-            height={300}
-            data={drugsAndGenotypesChartData.slice(0, drugsAndGenotypesChartData.length - 1)}
-            margin={{
-              top: 20, left: -5, bottom: 5, right: 0
-            }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" interval={dimensions.width < mobile ? 1 : 0} tick={{ fontSize: 14 }} />
-            <YAxis />
-            <Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} />
-
-            <Legend
-              content={(props) => {
-                const { payload } = props;
-                return (
-                  <div style={{ display: "flex", flexDirection: "row", justifyContent: 'flex-end' }}>
-                    <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", paddingLeft: 55, justifyContent: "space-between", marginTop: 10 }}>
-                      {payload.map((entry, index) => {
-                        const { dataKey, color } = entry
-                        return (
-                          <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "start", width: 120, marginBottom: 4, marginLeft: 3, marginRight: 3 }}>
-                            <div style={{ height: 8, width: 8, borderRadius: 4, marginTop: 3, backgroundColor: color, flexShrink: 0 }} />
-                            <span style={{ fontSize: 12, paddingLeft: 4 }}>{dataKey}</span>
-                          </div>
-                        )
-                      })}
-                    </div>
-                  </div>
-                );
+      if (RFWGFilter === 1) {
+        return (
+          <ResponsiveContainer width="90%">
+            <BarChart
+              height={360}
+              data={drugsAndGenotypesChartData.slice(0, drugsAndGenotypesChartData.length - 1)}
+              margin={{
+                top: 20, left: -5, bottom: 5, right: 0
               }}
-            />
-            {tooltip(150, dimensions.width < mobile ? 250 : 325, "50%", false, { zIndex: 100, top: 160 }, false, 0)}
-            {amrClassesForFilter.slice(1).map((item) => (<Bar dataKey={item} fill={getColorForDrug(item)} />))}
-          </BarChart>
-        </ResponsiveContainer>
-      )
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" interval={dimensions.width < mobile ? 1 : 0} tick={{ fontSize: 14 }} />
+              <YAxis />
+              <Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} />
+
+              <Legend
+                content={(props) => {
+                  const { payload } = props;
+                  return (
+                    <div style={{ display: "flex", flexDirection: "row", justifyContent: 'flex-end' }}>
+                      <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", paddingLeft: 55, justifyContent: "space-between", marginTop: 10 }}>
+                        {payload.map((entry, index) => {
+                          const { dataKey, color } = entry
+                          return (
+                            <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "start", width: 120, marginBottom: 4, marginLeft: 3, marginRight: 3 }}>
+                              <div style={{ height: 8, width: 8, borderRadius: 4, marginTop: 3, backgroundColor: color, flexShrink: 0 }} />
+                              <span style={{ fontSize: 12, paddingLeft: 4 }}>{dataKey}</span>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  );
+                }}
+              />
+              {tooltip(150, dimensions.width < mobile ? 250 : 325, "50%", false, { zIndex: 100, top: 160 }, false, 0)}
+              {amrClassesForFilter.slice(1).map((item) => (<Bar dataKey={item} fill={getColorForDrug(item)} />))}
+            </BarChart>
+          </ResponsiveContainer>
+        )
+      } else {
+        let teste = JSON.parse(JSON.stringify(drugsAndGenotypesChartData.slice(0, drugsAndGenotypesChartData.length - 1)))
+        teste.forEach(element => {
+          element["quantities"] = {}
+          const keys = Object.keys(element);
+          for (const key in keys) {
+            if (keys[key] !== 'name' && keys[key] !== 'total' && keys[key] !== 'quantities') {
+              let aux = keys[key]
+              element.quantities[aux] = element[aux]
+              element[aux] = Math.round((element[aux] * 100) / element.total)
+            }
+          }
+        });
+
+        return (
+          <ResponsiveContainer width="90%">
+            <BarChart
+              height={360}
+              data={teste}
+              margin={{
+                top: 20, left: -5, bottom: 5, right: 0
+              }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" interval={dimensions.width < mobile ? 1 : 0} tick={{ fontSize: 14 }} />
+              <YAxis domain={[0, 100]} />
+              <Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} />
+
+              <Legend
+                content={(props) => {
+                  const { payload } = props;
+                  return (
+                    <div style={{ display: "flex", flexDirection: "row", justifyContent: 'flex-end' }}>
+                      <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", paddingLeft: 55, justifyContent: "space-between", marginTop: 10 }}>
+                        {payload.map((entry, index) => {
+                          const { dataKey, color } = entry
+                          return (
+                            <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "start", width: 120, marginBottom: 4, marginLeft: 3, marginRight: 3 }}>
+                              <div style={{ height: 8, width: 8, borderRadius: 4, marginTop: 3, backgroundColor: color, flexShrink: 0 }} />
+                              <span style={{ fontSize: 12, paddingLeft: 4 }}>{dataKey}</span>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  );
+                }}
+              />
+              {tooltip(150, dimensions.width < mobile ? 250 : 325, "50%", false, { zIndex: 100, top: 160 }, false, 4)}
+              {amrClassesForFilter.slice(1).map((item) => (<Bar dataKey={item} fill={getColorForDrug(item)} />))}
+            </BarChart>
+          </ResponsiveContainer>
+        )
+      }
     }
     setPlotDrugsAndGenotypesChart(plotDrugsAndGenotypesChart)
-  }, [amrClassesForFilter, dimensions, drugsAndGenotypesChartData, tooltip, mobile])
-
-  const [getPopulationStructureChartLabel] = useState(() => () => {
-    if (populationStructureFilter === 1)
-      return <span className="y-axis-label-vertical" style={{ paddingBottom: dimensions.width > desktop ? 0 : 0 }}>Number of genomes</span>
-    else
-      return <span className="x-axis-label-horizontal">Number of genomes</span>
-  })
+  }, [amrClassesForFilter, dimensions, drugsAndGenotypesChartData, tooltip, mobile, RFWGFilter])
 
   function imgOnLoadPromise(obj) {
     return new Promise((resolve, reject) => {
@@ -1388,7 +1474,7 @@ const DashboardPage = () => {
     }
   })
 
-  const [capturePicture] = useState(() => async (id, index) => {
+  const [capturePicture] = useState(() => async (id, index, mv = '', acf = '') => {
     switch (index) {
       case 0:
         setCaptureControlMapInProgress(true)
@@ -1423,12 +1509,53 @@ const DashboardPage = () => {
       doc.text("Dataset: " + dataset, 10, 187);
       doc.text("Time Period: " + actualTimePeriodRange[0] + " to " + actualTimePeriodRange[1], 10, 194);
       doc.text("Country: " + actualCountry, 10, 201);
+
+      if (mv === 'Dominant Genotype') {
+        var img = new Image()
+        img.src = "legends/MV_DG.png"
+        doc.addImage(img, 'PNG', 80, 175, 180, 33)
+      } else if (mv === 'No. Samples') {
+        var img2 = new Image()
+        img2.src = "legends/MV_NS.png"
+        doc.addImage(img2, 'PNG', 10, 30, 28, 35)
+      } else {
+        var img3 = new Image()
+        img3.src = "legends/MV_outros.png"
+        doc.addImage(img3, 'PNG', 10, 30, 30, 50)
+      }
+
       doc.addPage('a4', 'p')
 
       for (let index = 0; index < ids.length; index++) {
         await domtoimage.toPng(document.getElementById(ids[index]), { quality: 0.95, bgcolor: "white" })
           .then(function (dataUrl) {
-            doc.addImage(dataUrl, "PNG", 5, 10, 210, 160);
+            if (index === 1) {
+              doc.addImage(dataUrl, "PNG", 5, 0, 210, 160);
+            } else {
+              doc.addImage(dataUrl, "PNG", 5, 10, 210, 160);
+            }
+
+            if (index === 1) {
+              var img4 = new Image()
+              if (acf === 'Co-trimoxazole') {
+                img4.src = "legends/COTRIM.png"
+                doc.addImage(img4, 'PNG', 33, 150, 172, 40)
+              } else if (acf === 'Fluoroquinolones (DCS)') {
+                img4.src = "legends/DCS.png"
+                doc.addImage(img4, 'PNG', 30, 140, 173, 20)
+              } else if (acf === 'Trimethoprim') {
+                img4.src = "legends/TRI.png"
+                doc.addImage(img4, 'PNG', 30, 141, 173, 20)
+              } else if (acf === 'Tetracyclines') {
+                img4.src = "legends/TETRA.png"
+                doc.addImage(img4, 'PNG', 30, 141, 173, 20)
+              }
+
+            } else if (index === 3) {
+              var img5 = new Image()
+              img5.src = "legends/GD.png"
+              doc.addImage(img5, 'PNG', 5, 152, 200, 70)
+            }
           });
         if (index < ids.length - 1) {
           doc.addPage('a4', 'p')
@@ -1748,7 +1875,7 @@ const DashboardPage = () => {
               Multidrug resistant (MDR)
             </MenuItem>
             <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'XDR'}>
-              Extremely drug resistant (XDR)
+              Extensively drug resistant (XDR)
             </MenuItem>
             <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'Azith'}>
               Azithromycin resistant
@@ -2464,7 +2591,7 @@ const DashboardPage = () => {
           <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
             <div style={{ display: "flex", flexDirection: dimensions.width > desktop ? "row" : "column", marginTop: 16, paddingBottom: 20 }}>
               <div style={{ display: "flex", flexDirection: "column", flex: 0.5, paddingRight: dimensions.width < mobile ? 0 : 10 }}>
-                <div id="RFWG" style={{ height: 458, width: "100%", display: "flex", flexDirection: "column" }}>
+                <div id="RFWG" style={{ height: 520, width: "100%", display: "flex", flexDirection: "column" }}>
                   <div style={{ width: "100%", flexDirection: "row", textAlign: "center", display: "flex", justifyContent: "center" }}>
                     <span style={{ paddingRight: 32, marginRight: -22, paddingLeft: 35 }} className="chart-title">Resistance frequencies within genotypes</span>
                     <div style={{ display: "inline-block", position: "relative" }}>
@@ -2489,8 +2616,26 @@ const DashboardPage = () => {
                     </div>
                   </div>
                   <span className="chart-title" style={{ marginLeft: 45, marginBottom: -8, marginTop: dimensions.width > 1010 ? 5 : dimensions.width > desktop ? 10 : 10, fontSize: 10, fontWeight: 400 }}>Top Genotypes (up to 5)</span>
-                  <div style={{ height: 420, display: "flex", flexDirection: "row", alignItems: "center" }}>
-                    <span className="y-axis-label-vertical" style={{ paddingRight: 8, marginBottom: /*dimensions.width > desktop ? 80 : 90*/ 100 }}>Number of occurrences</span>
+                  <div style={{ paddingTop: '0px', height: '74px', width: dimensions.width > desktop ? "60%" : "90%", alignSelf: "center", paddingBottom: -8 }}>
+                    <FormControl fullWidth className={classes.formControlSelect} style={{ marginBottom: 5, marginTop: 23 }}>
+                      <InputLabel style={{ fontWeight: 500, fontFamily: "Montserrat" }}>Data view</InputLabel>
+                      <Select
+                        value={RFWGFilter}
+                        onChange={evt => setRFWGFilter(evt.target.value)}
+                        fullWidth
+                        style={{ fontWeight: 600, fontFamily: "Montserrat" }}
+                      >
+                        <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat" }} value={1}>
+                          Quantity
+                        </MenuItem>
+                        <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat" }} value={2}>
+                          Percentage
+                        </MenuItem>
+                      </Select>
+                    </FormControl>
+                  </div>
+                  <div style={{ height: 490, display: "flex", flexDirection: "row", alignItems: "center" }}>
+                    <span className="y-axis-label-vertical" style={{ paddingRight: 8, marginBottom: /*dimensions.width > desktop ? 80 : 90*/ 100 }}>{RFWGFilter === 1 ? 'Number of occurrences' : 'Number of occurrences (%)'}</span>
                     {plotDrugsAndGenotypesChart}
                   </div>
                 </div>
@@ -2538,7 +2683,7 @@ const DashboardPage = () => {
                       </Select>
                     </FormControl>
                   </div>
-                  <div style={{ height: 400, display: "flex", flexDirection: "row", alignItems: "center" }}>
+                  <div style={{ height: 406, display: "flex", flexDirection: "row", alignItems: "center" }}>
                     <span className="y-axis-label-vertical" style={{ paddingRight: 8 }}>Number of occurrences</span>
                     {plotAmrClassChart}
                   </div>
@@ -2569,7 +2714,7 @@ const DashboardPage = () => {
                       )}
                     </div>
                   </div>
-                  <div style={{ height: 422, display: "flex", flexDirection: "row", alignItems: "center" }}>
+                  <div style={{ paddingTop: dimensions.width < desktop ? '10px' : '76px', height: 403, display: "flex", flexDirection: "row", alignItems: "center" }}>
                     <span className="y-axis-label-vertical" style={{ paddingTop: /*dimensions.width > desktop ? 0 : 0*/ 80 }}>Resistant (%)</span>
                     {plotDrugTrendsChart}
                   </div>
@@ -2598,26 +2743,27 @@ const DashboardPage = () => {
                       )}
                     </div>
                   </div>
-                  <div style={{ height: dimensions.width > 1120 ? '78px' : dimensions.width < desktop ? '0px' : '95px', width: dimensions.width > desktop ? "60%" : "90%", alignSelf: "center", paddingRight: dimensions.width > desktop && populationStructureFilter !== 1 ? "-10%" : 0, paddingBottom: populationStructureFilter === 1 ? -8 : 16 }}>
-                    {/* <FormControl fullWidth className={classes.formControlSelect} style={{ marginBottom: 5, marginTop: 23 }}>
-                      <InputLabel style={{ fontWeight: 500, fontFamily: "Montserrat" }}>Population Structure</InputLabel>
+                  <div style={{ paddingTop: dimensions.width < desktop ? '0px' : dimensions.width > 1120 ? '8px' : '29px', height: dimensions.width > 1120 ? '78px' : '74px', width: dimensions.width > desktop ? "60%" : "90%", alignSelf: "center", paddingBottom: -8 }}>
+                    <FormControl fullWidth className={classes.formControlSelect} style={{ marginBottom: 5, marginTop: 23 }}>
+                      <InputLabel style={{ fontWeight: 500, fontFamily: "Montserrat" }}>Data view</InputLabel>
                       <Select
-                        value={populationStructureFilter}
+                        value={populationStructureFilter} RFWGFilter
                         onChange={evt => setPopulationStructureFilter(evt.target.value)}
                         fullWidth
                         style={{ fontWeight: 600, fontFamily: "Montserrat" }}
                       >
                         <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat" }} value={1}>
-                          Genotype
+                          Quantity
                         </MenuItem>
                         <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat" }} value={2}>
-                          H58 / Non-H58
+                          Percentage
                         </MenuItem>
                       </Select>
-                    </FormControl> */}
+                    </FormControl>
                   </div>
-                  <div style={{ width: '100%', height: 400, display: "flex", flexDirection: /*populationStructureFilter === 1 ? "row" : "column-reverse"*/"row", alignItems: "center", paddingLeft: populationStructureFilter === 2 ? -22 : 0 }}>
-                    {getPopulationStructureChartLabel()}
+                  <div style={{ width: '100%', height: 404, display: "flex", flexDirection: /*populationStructureFilter === 1 ? "row" : "column-reverse"*/"row", alignItems: "center" }}>
+                    {/* {getPopulationStructureChartLabel()} */}
+                    <span className="y-axis-label-vertical">{populationStructureFilter === 1 ? 'Number of genomes' : 'Number of genomes (%)'}</span>
                     {plotPopulationStructureChart}
                   </div>
                 </div>
@@ -2626,11 +2772,11 @@ const DashboardPage = () => {
             <div style={{ display: "flex", flexDirection: dimensions.width > desktop ? "row" : "column", padding: 12, alignItems: "center", width: "-webkit-fill-available", justifyContent: "center" }}>
               <div className="download-sheet-button" onClick={() => dowloadBaseSpreadsheet()}>
                 <FontAwesomeIcon icon={faTable} style={{ marginRight: 8 }} />
-                <span>Download TyphiNET Database</span>
+                <span>Download database</span>
               </div>
-              <div style={{ marginTop: dimensions.width > desktop ? 0 : 20, marginLeft: dimensions.width > desktop ? 20 : 0 }} className="download-sheet-button" onClick={() => capturePicture('', 5)}>
+              <div style={{ marginTop: dimensions.width > desktop ? 0 : 20, marginLeft: dimensions.width > desktop ? 20 : 0 }} className="download-sheet-button" onClick={() => capturePicture('', 5, mapView, amrClassFilter)}>
                 <FontAwesomeIcon icon={faFilePdf} style={{ marginRight: 8 }} />
-                <span>Download Static report from current view</span>
+                <span>Download report from current view</span>
               </div>
             </div>
           </div>
@@ -2638,10 +2784,10 @@ const DashboardPage = () => {
         <div className="about-wrapper" style={{ paddingBottom: '15px' }}>
           <h2 style={{ marginBottom: 0 }}>About TyphiNET</h2>
           <p>
-            The TyphiNET dashboard collates antimicrobial resistance (AMR) and genotype (lineage) information extracted from whole genome sequence (WGS) data from the bacterial pathogen <i>Salmonella</i> Typhi, the agent of typhoid fever. Data are sourced monthly from Typhoid <a href="https://pathogen.watch/" target="_blank" rel="noreferrer">Pathogenwatch</a>. Information on genotype definitions and population structure can be found in <a href="https://www.nature.com/articles/ncomms12827">Wong et al, 2016</a>, and details of AMR determinants in <a href="https://www.nature.com/articles/s41467-021-23091-2">Argimon et al, 2021</a>. (DCS = decreased ciprofloxacin susceptibility).
+            The TyphiNET dashboard collates antimicrobial resistance (AMR) and genotype (lineage) information extracted from whole genome sequence (WGS) data from the bacterial pathogen <i>Salmonella</i> Typhi, the agent of typhoid fever. Data are sourced monthly from Typhoid <a href="https://pathogen.watch/" target="_blank" rel="noreferrer">Pathogenwatch</a>. Information on genotype definitions and population structure can be found in <a href="https://www.nature.com/articles/ncomms12827" target="_blank" rel="noreferrer">Wong et al, 2016</a>, and details of AMR determinants in <a href="https://www.nature.com/articles/s41467-021-23091-2" target="_blank" rel="noreferrer">Argimon et al, 2021</a>. (DCS = decreased ciprofloxacin susceptibility).
           </p>
           <p>
-            The TyphiNET dashboard is coordinated by Dr Zoe Dyson, Dr Louise Cerdeira &amp; Prof Kat Holt at the <a href="https://www.lshtm.ac.uk/" target="_blank" rel="noreferrer">London School of Hygiene and Tropical Medicine</a> &amp; <a href="https://www.monash.edu/">Monash University</a>, supported by the Wellcome Trust (Open Research Fund, 219692/Z/19/Z) and the EU Horizon 2020 research and innovation programme (Marie Skłodowska-Curie grant #845681).
+            The TyphiNET dashboard is coordinated by Dr Zoe Dyson, Dr Louise Cerdeira &amp; Prof Kat Holt at the <a href="https://www.lshtm.ac.uk/" target="_blank" rel="noreferrer">London School of Hygiene and Tropical Medicine</a> &amp; <a href="https://www.monash.edu/" target="_blank" rel="noreferrer">Monash University</a>, supported by the Wellcome Trust (Open Research Fund, 219692/Z/19/Z) and the EU Horizon 2020 research and innovation programme (Marie Skłodowska-Curie grant #845681).
           </p>
           <p>
             <b>Note: This is a beta version, data are incomplete</b>.
