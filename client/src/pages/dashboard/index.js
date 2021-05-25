@@ -2774,10 +2774,10 @@ const DashboardPage = () => {
                 <FontAwesomeIcon icon={faTable} style={{ marginRight: 8 }} />
                 <span>Download database</span>
               </div>
-              <div style={{ marginTop: dimensions.width > desktop ? 0 : 20, marginLeft: dimensions.width > desktop ? 20 : 0 }} className="download-sheet-button" onClick={() => capturePicture('', 5, mapView, amrClassFilter)}>
+              {/* <div style={{ marginTop: dimensions.width > desktop ? 0 : 20, marginLeft: dimensions.width > desktop ? 20 : 0 }} className="download-sheet-button" onClick={() => capturePicture('', 5, mapView, amrClassFilter)}>
                 <FontAwesomeIcon icon={faFilePdf} style={{ marginRight: 8 }} />
                 <span>Download report from current view</span>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
