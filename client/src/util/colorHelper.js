@@ -164,7 +164,7 @@ export const getColorForDrug = (drug) => {
   switch (drug) {
     case 'Azithromycin':
       return "rgb(144,211,199)";
-    case 'Fluoroquinolones (DCS)':
+    case 'Fluoroquinolones (CipI/R)':
       return "rgb(255,236,120)";
     case 'ESBL':
       return "rgb(190,186,217)";

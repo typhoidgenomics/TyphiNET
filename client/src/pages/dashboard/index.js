@@ -136,7 +136,7 @@ const DashboardPage = () => {
   const [actualCountry, setActualCountry] = useState("All");
   const [populationStructureFilter, setPopulationStructureFilter] = React.useState(1);
   const [RFWGFilter, setRFWGFilter] = React.useState(1);
-  const [amrClassesForFilter] = useState([/*"AMR Profiles", */"Ampicillin", "Azithromycin", "Chloramphenicol", "Co-trimoxazole", "ESBL", "Fluoroquinolones (DCS)", "Sulphonamides", "Tetracyclines", "Trimethoprim"])
+  const [amrClassesForFilter] = useState([/*"AMR Profiles", */"Ampicillin", "Azithromycin", "Chloramphenicol", "Co-trimoxazole", "ESBL", "Fluoroquinolones (CipI/R)", "Sulphonamides", "Tetracyclines", "Trimethoprim"])
   const [amrClassFilter, setAmrClassFilter] = React.useState(amrClassesForFilter[5])
 
   const [drugTrendsChartData, setDrugTrendsChartData] = useState([])
@@ -1194,7 +1194,7 @@ const DashboardPage = () => {
               ['No AMR', "#B9B9B9", "error-No AMR"]
             ]
           }))
-        case 'Fluoroquinolones (DCS)':
+        case 'Fluoroquinolones (CipI/R)':
           return (armClassFilterComponent({
             left: 10, fontsize: 14, strokeWidth: 0.5, width: 3, bars: [
               ['3_QRDR', "#6baed6", "error-3_QRDR"],
@@ -1540,7 +1540,7 @@ const DashboardPage = () => {
               if (acf === 'Co-trimoxazole') {
                 img4.src = "legends/COTRIM.png"
                 doc.addImage(img4, 'PNG', 33, 150, 172, 40)
-              } else if (acf === 'Fluoroquinolones (DCS)') {
+              } else if (acf === 'Fluoroquinolones (CipI/R)') {
                 img4.src = "legends/DCS.png"
                 doc.addImage(img4, 'PNG', 30, 140, 173, 20)
               } else if (acf === 'Trimethoprim') {
@@ -1562,10 +1562,10 @@ const DashboardPage = () => {
         }
       }
 
-      doc.save("Global Overview Salmonella Typhi - ALL INFO - TyphiNET.pdf");
+      doc.save("Global Overview Salmonella Typhi - TyphiNET.pdf");
 
     } else if (index !== 0) {
-      const names = ["Resistance Frequencies Within Genotypes (Chart) - TiphyNET.png", "Drug Resistance Trends (Chart) - TiphyNET.png", "Genotype Distribution (Chart) - TiphyNET.png", "Resistance determinants within all genotypes (Chart) - TiphyNET.png"]
+      const names = ["Resistance frequencies within genotypes - TyphiNET.png", "Drug Resistance Trends - TyphiNET.png", "Genotype Distribution - TyphiNET.png", "Resistance determinants within all genotypes - TyphiNET.png"]
       domtoimage.toPng(document.getElementById(id), { quality: 0.95, bgcolor: "white" })
         .then(function (dataUrl) {
           var link = document.createElement('a');
@@ -1881,10 +1881,10 @@ const DashboardPage = () => {
               Azithromycin resistant
             </MenuItem>
             <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'CipI'}>
-              Ciprofloxacin insusceptible
+              Ciprofloxacin insusceptible (CipI)
             </MenuItem>
             <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'CipR'}>
-              Ciprofloxacin resistant
+              Ciprofloxacin resistant (CipR)
             </MenuItem>
             <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'Dominant Genotype'}>
               Dominant Genotype
@@ -2626,16 +2626,16 @@ const DashboardPage = () => {
                         style={{ fontWeight: 600, fontFamily: "Montserrat" }}
                       >
                         <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat" }} value={1}>
-                          Quantity
+                          Number of genomes
                         </MenuItem>
                         <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat" }} value={2}>
-                          Percentage
+                          Percentage within genotype
                         </MenuItem>
                       </Select>
                     </FormControl>
                   </div>
                   <div style={{ height: 490, display: "flex", flexDirection: "row", alignItems: "center" }}>
-                    <span className="y-axis-label-vertical" style={{ paddingRight: 8, marginBottom: /*dimensions.width > desktop ? 80 : 90*/ 100 }}>{RFWGFilter === 1 ? 'Number of occurrences' : 'Number of occurrences (%)'}</span>
+                    <span className="y-axis-label-vertical" style={{ paddingRight: 8, marginBottom: /*dimensions.width > desktop ? 80 : 90*/ 100 }}>{RFWGFilter === 1 ? 'Number of genomes' : 'Percentage within genotype'}</span>
                     {plotDrugsAndGenotypesChart}
                   </div>
                 </div>
@@ -2753,17 +2753,17 @@ const DashboardPage = () => {
                         style={{ fontWeight: 600, fontFamily: "Montserrat" }}
                       >
                         <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat" }} value={1}>
-                          Quantity
+                          Number of genomes
                         </MenuItem>
                         <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat" }} value={2}>
-                          Percentage
+                          Percentage per year
                         </MenuItem>
                       </Select>
                     </FormControl>
                   </div>
                   <div style={{ width: '100%', height: 404, display: "flex", flexDirection: /*populationStructureFilter === 1 ? "row" : "column-reverse"*/"row", alignItems: "center" }}>
                     {/* {getPopulationStructureChartLabel()} */}
-                    <span className="y-axis-label-vertical">{populationStructureFilter === 1 ? 'Number of genomes' : 'Number of genomes (%)'}</span>
+                    <span className="y-axis-label-vertical">{populationStructureFilter === 1 ? 'Number of genomes' : '%Genomes per year'}</span>
                     {plotPopulationStructureChart}
                   </div>
                 </div>
@@ -2784,7 +2784,7 @@ const DashboardPage = () => {
         <div className="about-wrapper" style={{ paddingBottom: '15px' }}>
           <h2 style={{ marginBottom: 0 }}>About TyphiNET</h2>
           <p>
-            The TyphiNET dashboard collates antimicrobial resistance (AMR) and genotype (lineage) information extracted from whole genome sequence (WGS) data from the bacterial pathogen <i>Salmonella</i> Typhi, the agent of typhoid fever. Data are sourced monthly from Typhoid <a href="https://pathogen.watch/" target="_blank" rel="noreferrer">Pathogenwatch</a>. Information on genotype definitions and population structure can be found in <a href="https://www.nature.com/articles/ncomms12827" target="_blank" rel="noreferrer">Wong et al, 2016</a>, and details of AMR determinants in <a href="https://www.nature.com/articles/s41467-021-23091-2" target="_blank" rel="noreferrer">Argimon et al, 2021</a>. (DCS = decreased ciprofloxacin susceptibility).
+            The TyphiNET dashboard collates antimicrobial resistance (AMR) and genotype (lineage) information extracted from whole genome sequence (WGS) data from the bacterial pathogen <i>Salmonella</i> Typhi, the agent of typhoid fever. Data are sourced monthly from Typhoid <a href="https://pathogen.watch/" target="_blank" rel="noreferrer">Pathogenwatch</a>. Information on genotype definitions and population structure can be found in <a href="https://www.nature.com/articles/ncomms12827" target="_blank" rel="noreferrer">Wong et al, 2016</a>, and details of AMR determinants in <a href="https://www.nature.com/articles/s41467-021-23091-2" target="_blank" rel="noreferrer">Argimon et al, 2021</a>. (CipI/R = decreased ciprofloxacin susceptibility).
           </p>
           <p>
             The TyphiNET dashboard is coordinated by Dr Zoe Dyson, Dr Louise Cerdeira &amp; Prof Kat Holt at the <a href="https://www.lshtm.ac.uk/" target="_blank" rel="noreferrer">London School of Hygiene and Tropical Medicine</a> &amp; <a href="https://www.monash.edu/" target="_blank" rel="noreferrer">Monash University</a>, supported by the Wellcome Trust (Open Research Fund, 219692/Z/19/Z) and the EU Horizon 2020 research and innovation programme (Marie Skłodowska-Curie grant #845681).

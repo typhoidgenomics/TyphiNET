@@ -4,7 +4,7 @@ import csv from 'csv-parser';
 import fs from 'fs';
 import * as Tools from '../../services/services.js';
 
-router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel', function(req, res, next) {
+router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel', function (req, res, next) {
     let params = req.params;
     let resultsJson = [];
     let read_file = Tools.path_clean_db || Tools.path_clean;
@@ -59,7 +59,7 @@ router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel', function(req, 
                     }
 
                     if (data["dcs_category"] == "DCS")
-                        drugs.push("Fluoroquinolones (DCS)")
+                        drugs.push("Fluoroquinolones (CipI/R)")
 
                     if (data["ESBL_category"] == "ESBL")
                         drugs.push("ESBL")
@@ -111,7 +111,7 @@ router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel', function(req, 
         })
 })
 
-router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', function(req, res, next) {
+router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', function (req, res, next) {
     let params = req.params
     let results_json = [];
     let results = [];
@@ -175,16 +175,16 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
                         let genes = []
 
                         if (data["azith_pred_pheno"] == "AzithR") {
-                            if (data["ereA"] == "1" && data["acrB_R717Q"] == "1"){
+                            if (data["ereA"] == "1" && data["acrB_R717Q"] == "1") {
                                 genes.push("ereA-acrB_R717Q")
                             } else {
                                 if (data["ereA"] == "1")
                                     genes.push("ereA")
-    
+
                                 if (data["acrB_R717Q"] == "1")
                                     genes.push("acrB_R717Q")
                             }
-                        } else if (data["azith_pred_pheno"] == "AzithS"){
+                        } else if (data["azith_pred_pheno"] == "AzithS") {
                             genes.push("No AMR")
                         }
 
@@ -196,7 +196,7 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
                         }
                     }
 
-                    if (params.amr_class == "Fluoroquinolones (DCS)" && data["dcs_category"] == "DCS") {
+                    if (params.amr_class == "Fluoroquinolones (CipI/R)" && data["dcs_category"] == "DCS") {
                         // if (!["0_QRDR", "0_QRDR + qnrS"].includes(data["dcs_mechanisms"])) {
                         //     data_to_send["GENE"] = data["dcs_mechanisms"]
                         // }
@@ -325,22 +325,22 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
                         if (data["dfra_any"] == "1") {
                             if (data["dfrA1"] == "1")
                                 genes.push("dfrA1")
-    
+
                             if (data["dfrA14"] == "1")
                                 genes.push("dfrA14")
-    
+
                             if (data["dfrA15"] == "1")
                                 genes.push("dfrA15")
-    
+
                             if (data["dfrA17"] == "1")
                                 genes.push("dfrA17")
-    
+
                             if (data["dfrA18"] == "1")
                                 genes.push("dfrA18")
-    
+
                             if (data["dfrA5"] == "1")
                                 genes.push("dfrA5")
-    
+
                             if (data["dfrA7"] == "1")
                                 genes.push("dfrA7")
                         } else if (data["dfra_any"] == "0") {
@@ -400,7 +400,7 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
 
 });
 
-router.get('/getYearLimits', function(req, res, next) {
+router.get('/getYearLimits', function (req, res, next) {
     let results = []
     let min
     let max
@@ -448,7 +448,7 @@ router.get('/getYearLimits', function(req, res, next) {
         })
 })
 
-router.get('/:filter1/:country/:min_year/:max_year/:travel', function(req, res, next) {
+router.get('/:filter1/:country/:min_year/:max_year/:travel', function (req, res, next) {
     let params = req.params
     let results_json = [];
     let results = [];
@@ -458,7 +458,7 @@ router.get('/:filter1/:country/:min_year/:max_year/:travel', function(req, res, 
         .pipe(csv())
         .on('data', (data) => results_json.push(data))
         .on('end', () => {
-            
+
             let travel = params.travel
             let data_travel = false
             for (let data of results_json) {
@@ -504,7 +504,7 @@ router.get('/:filter1/:country/:min_year/:max_year/:travel', function(req, res, 
                     drugs.push("Azithromycin")
 
                 if (data["dcs_category"] == "DCS")
-                    drugs.push("Fluoroquinolones (DCS)")
+                    drugs.push("Fluoroquinolones (CipI/R)")
 
                 if (data["ESBL_category"] == "ESBL")
                     drugs.push("ESBL")
@@ -528,7 +528,7 @@ router.get('/:filter1/:country/:min_year/:max_year/:travel', function(req, res, 
                     drugs.push("Tetracyclines")
 
                 filter_value["DRUGS"] = drugs
-                    /* DRUG */
+                /* DRUG */
 
                 //Check if country and date are not empty
                 if (data["COUNTRY_ONLY"] !== "-" && data["DATE"] !== "-") {
@@ -587,7 +587,7 @@ router.get('/:filter1/:country/:min_year/:max_year/:travel', function(req, res, 
         });
 });
 
-router.get('/:country/:min_year/:max_year/:travel', function(req, res, next) {
+router.get('/:country/:min_year/:max_year/:travel', function (req, res, next) {
     let params = req.params
     let country_unique_genotype = {}
     let results = []
@@ -642,9 +642,9 @@ router.get('/:country/:min_year/:max_year/:travel', function(req, res, next) {
                                 country_unique_genotype[params.country]["GENOTYPES"]["GENOTYPES_LIST"].push(data["GENOTYPE"])
                             }
                             country_unique_genotype[params.country]["TOTAL_OCCURRENCE"]++
-                                if (data["GENOTYPE_SIMPLE"] == "H58") {
-                                    country_unique_genotype[params.country]["H58"]++
-                                }
+                            if (data["GENOTYPE_SIMPLE"] == "H58") {
+                                country_unique_genotype[params.country]["H58"]++
+                            }
                             if (data["MDR"] == "MDR") {
                                 country_unique_genotype[params.country]["MDR"]++
                             }
@@ -674,10 +674,10 @@ router.get('/:country/:min_year/:max_year/:travel', function(req, res, next) {
 
                         if ((data["DATE"] >= params.min_year && data["DATE"] <= params.max_year) && data_travel) {
                             country_unique_genotype[data["COUNTRY_ONLY"]]["TOTAL_OCCURRENCE"]++
-                                if (country_unique_genotype[data["COUNTRY_ONLY"]]["GENOTYPES"]["GENOTYPES_LIST"].indexOf(data["GENOTYPE"]) == -1) {
-                                    country_unique_genotype[data["COUNTRY_ONLY"]]["GENOTYPES"]["GENOTYPES_LIST"].push(data["GENOTYPE"])
-                                    country_unique_genotype[data["COUNTRY_ONLY"]]["GENOTYPES"]["TOTAL"]++
-                                }
+                            if (country_unique_genotype[data["COUNTRY_ONLY"]]["GENOTYPES"]["GENOTYPES_LIST"].indexOf(data["GENOTYPE"]) == -1) {
+                                country_unique_genotype[data["COUNTRY_ONLY"]]["GENOTYPES"]["GENOTYPES_LIST"].push(data["GENOTYPE"])
+                                country_unique_genotype[data["COUNTRY_ONLY"]]["GENOTYPES"]["TOTAL"]++
+                            }
                             if (data["GENOTYPE_SIMPLE"] == "H58") {
                                 country_unique_genotype[data["COUNTRY_ONLY"]]["H58"]++
                             }
