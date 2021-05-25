@@ -136,7 +136,7 @@ const DashboardPage = () => {
   const [actualCountry, setActualCountry] = useState("All");
   const [populationStructureFilter, setPopulationStructureFilter] = React.useState(1);
   const [RFWGFilter, setRFWGFilter] = React.useState(1);
-  const [amrClassesForFilter] = useState([/*"AMR Profiles", */"Ampicillin", "Azithromycin", "Chloramphenicol", "Co-trimoxazole", "ESBL", "Fluoroquinolones (CipI/R)", "Sulphonamides", "Tetracyclines", "Trimethoprim"])
+  const [amrClassesForFilter] = useState([/*"AMR Profiles", */"Ampicillin", "Azithromycin", "Chloramphenicol", "Co-trimoxazole", "ESBL", "Fluoroquinolones (CipI-R)", "Sulphonamides", "Tetracyclines", "Trimethoprim"])
   const [amrClassFilter, setAmrClassFilter] = React.useState(amrClassesForFilter[5])
 
   const [drugTrendsChartData, setDrugTrendsChartData] = useState([])
@@ -1194,7 +1194,7 @@ const DashboardPage = () => {
               ['No AMR', "#B9B9B9", "error-No AMR"]
             ]
           }))
-        case 'Fluoroquinolones (CipI/R)':
+        case 'Fluoroquinolones (CipI-R)':
           return (armClassFilterComponent({
             left: 10, fontsize: 14, strokeWidth: 0.5, width: 3, bars: [
               ['3_QRDR', "#6baed6", "error-3_QRDR"],
@@ -1540,7 +1540,7 @@ const DashboardPage = () => {
               if (acf === 'Co-trimoxazole') {
                 img4.src = "legends/COTRIM.png"
                 doc.addImage(img4, 'PNG', 33, 150, 172, 40)
-              } else if (acf === 'Fluoroquinolones (CipI/R)') {
+              } else if (acf === 'Fluoroquinolones (CipI-R)') {
                 img4.src = "legends/DCS.png"
                 doc.addImage(img4, 'PNG', 30, 140, 173, 20)
               } else if (acf === 'Trimethoprim') {
@@ -2784,7 +2784,7 @@ const DashboardPage = () => {
         <div className="about-wrapper" style={{ paddingBottom: '15px' }}>
           <h2 style={{ marginBottom: 0 }}>About TyphiNET</h2>
           <p>
-            The TyphiNET dashboard collates antimicrobial resistance (AMR) and genotype (lineage) information extracted from whole genome sequence (WGS) data from the bacterial pathogen <i>Salmonella</i> Typhi, the agent of typhoid fever. Data are sourced monthly from Typhoid <a href="https://pathogen.watch/" target="_blank" rel="noreferrer">Pathogenwatch</a>. Information on genotype definitions and population structure can be found in <a href="https://www.nature.com/articles/ncomms12827" target="_blank" rel="noreferrer">Wong et al, 2016</a>, and details of AMR determinants in <a href="https://www.nature.com/articles/s41467-021-23091-2" target="_blank" rel="noreferrer">Argimon et al, 2021</a>. (CipI/R = decreased ciprofloxacin susceptibility).
+            The TyphiNET dashboard collates antimicrobial resistance (AMR) and genotype (lineage) information extracted from whole genome sequence (WGS) data from the bacterial pathogen <i>Salmonella</i> Typhi, the agent of typhoid fever. Data are sourced monthly from Typhoid <a href="https://pathogen.watch/" target="_blank" rel="noreferrer">Pathogenwatch</a>. Information on genotype definitions and population structure can be found in <a href="https://www.nature.com/articles/ncomms12827" target="_blank" rel="noreferrer">Wong et al, 2016</a>, and details of AMR determinants in <a href="https://www.nature.com/articles/s41467-021-23091-2" target="_blank" rel="noreferrer">Argimon et al, 2021</a>. (CipI-R = decreased ciprofloxacin susceptibility).
           </p>
           <p>
             The TyphiNET dashboard is coordinated by Dr Zoe Dyson, Dr Louise Cerdeira &amp; Prof Kat Holt at the <a href="https://www.lshtm.ac.uk/" target="_blank" rel="noreferrer">London School of Hygiene and Tropical Medicine</a> &amp; <a href="https://www.monash.edu/" target="_blank" rel="noreferrer">Monash University</a>, supported by the Wellcome Trust (Open Research Fund, 219692/Z/19/Z) and the EU Horizon 2020 research and innovation programme (Marie Skłodowska-Curie grant #845681).

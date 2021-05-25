@@ -59,7 +59,7 @@ router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel', function (req,
                     }
 
                     if (data["dcs_category"] == "DCS")
-                        drugs.push("Fluoroquinolones (CipI/R)")
+                        drugs.push("Fluoroquinolones (CipI-R)")
 
                     if (data["ESBL_category"] == "ESBL")
                         drugs.push("ESBL")
@@ -196,7 +196,7 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
                         }
                     }
 
-                    if (params.amr_class == "Fluoroquinolones (CipI/R)" && data["dcs_category"] == "DCS") {
+                    if (params.amr_class == "Fluoroquinolones (CipI-R)" && data["dcs_category"] == "DCS") {
                         // if (!["0_QRDR", "0_QRDR + qnrS"].includes(data["dcs_mechanisms"])) {
                         //     data_to_send["GENE"] = data["dcs_mechanisms"]
                         // }
@@ -504,7 +504,7 @@ router.get('/:filter1/:country/:min_year/:max_year/:travel', function (req, res,
                     drugs.push("Azithromycin")
 
                 if (data["dcs_category"] == "DCS")
-                    drugs.push("Fluoroquinolones (CipI/R)")
+                    drugs.push("Fluoroquinolones (CipI-R)")
 
                 if (data["ESBL_category"] == "ESBL")
                     drugs.push("ESBL")
