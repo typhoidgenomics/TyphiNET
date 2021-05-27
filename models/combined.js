@@ -118,6 +118,9 @@ const CombinedSchema = mongoose.Schema({
     "blaCTX-M-15_23": {
         type: String
     },
+    "blaCTX-M-55": {
+        type: String
+    },
     "blaOXA-7": {
         type: String
     },
@@ -250,6 +253,9 @@ const CombinedSchema = mongoose.Schema({
     "parC_E84K": {
         type: String
     },
+    "acrB_R717L": {
+        type: String
+    },
     "acrB_R717Q": {
         type: String
     },
@@ -271,37 +277,37 @@ const CombinedSchema = mongoose.Schema({
     "amr_category": {
         type: String
     },
-    "PW_AMP": {
+    "AMP": {
         type: String
     },
-    "PW_CEP": {
+    "CEP": {
         type: String
     },
-    "PW_CHL": {
+    "CHL": {
         type: String
     },
-    "PW_CIP": {
+    "CIP": {
         type: String
     },
-    "PW_SMX": {
+    "SMX": {
         type: String
     },
-    "PW_TMP": {
+    "TMP": {
         type: String
     },
-    "PW_SXT": {
+    "SXT": {
         type: String
     },
-    "PW_TCY": {
+    "TCY": {
         type: String
     },
-    "PW_AZM": {
+    "AZM": {
         type: String
     },
-    "PW_CST": {
+    "CST": {
         type: String
     },
-    "PW_MEM": {
+    "MEM": {
         type: String
     }
 });

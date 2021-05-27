@@ -25,12 +25,12 @@ router.get('/create', function(req, res) {
 
     const headers_typing = ["REFERENCE", "MLST ST (EnteroBase)", "MLST PROFILE (EnteroBase)", "GENOTYPHI SNPs CALLED", "Inc Types"]
 
-    const headers_amr_genes = ["blaCTX-M-15_23", "blaOXA-7", "blaSHV-12", "blaTEM-1D", "catA1", "cmlA", "qnrB", "qnrS", "sul1", "sul2", "dfrA1", "dfrA14", "dfrA15", "dfrA17", "dfrA18", "dfrA5", "dfrA7", "tetA(A)",
+    const headers_amr_genes = ["blaCTX-M-15_23", "blaCTX-M-55", "blaOXA-7", "blaSHV-12", "blaTEM-1D", "catA1", "cmlA", "qnrB", "qnrS", "sul1", "sul2", "dfrA1", "dfrA14", "dfrA15", "dfrA17", "dfrA18", "dfrA5", "dfrA7", "tetA(A)",
         "tetA(B)", "tetA(C)", "tetA(D)", "ereA"
     ]
 
-    const headers_amr_snps = ["gyrA_S83F", "gyrA_S83Y", "gyrA_D87A", "gyrA_D87G", "gyrA_D87N", "gyrA_D87V", "gyrA_D87Y", "gyrB_S464F", "gyrB_S464Y", "parC_S80I", "parC_E84G", "parC_E84K", "acrB_R717Q"]
-    const headers_amr_profile = ["PW_AMP", "PW_CEP", "PW_CHL", "PW_CIP", "PW_SMX", "PW_TMP", "PW_SXT", "PW_TCY", "PW_AZM", "PW_CST", "PW_MEM"]
+    const headers_amr_snps = ["gyrA_S83F", "gyrA_S83Y", "gyrA_D87A", "gyrA_D87G", "gyrA_D87N", "gyrA_D87V", "gyrA_D87Y", "gyrB_S464F", "gyrB_S464Y", "parC_S80I", "parC_E84G", "parC_E84K", "acrB_R717Q", "acrB_R717L"]
+    const headers_amr_profile = ["AMP", "CEP", "CHL", "CIP", "SMX", "TMP", "SXT", "TCY", "AZM", "CST", "MEM"]
 
     let obj_parser = {}
     let data_to_write = []
@@ -431,21 +431,21 @@ router.get('/create', function(req, res) {
             });
 
             let temp = []
-            // let totalGenotypes = []
+                // let totalGenotypes = []
             for (let d = 0; d < data_to_write.length; d++) {
                 if (data_to_write[d]["TRAVEL"] === "travel") {
                     data_to_write[d]["COUNTRY_ONLY"] = data_to_write[d]["TRAVEL_LOCATION"]
                 }
                 temp.push(data_to_write[d])
-                // if (!totalGenotypes.includes(data_to_write[d]['GENOTYPE'])) {
-                //     totalGenotypes.push(data_to_write[d]['GENOTYPE'])
-                // }
-                // if (data_to_write[d]["COUNTRY_ONLY"] !== "-" && data_to_write[d]["DATE"] !== "-") {
-                //     if (data_to_write[d]["TRAVEL"] === "travel") {
-                //         data_to_write[d]["COUNTRY_ONLY"] = data_to_write[d]["TRAVEL_LOCATION"]
-                //     }
-                //     temp.push(data_to_write[d])
-                // }
+                    // if (!totalGenotypes.includes(data_to_write[d]['GENOTYPE'])) {
+                    //     totalGenotypes.push(data_to_write[d]['GENOTYPE'])
+                    // }
+                    // if (data_to_write[d]["COUNTRY_ONLY"] !== "-" && data_to_write[d]["DATE"] !== "-") {
+                    //     if (data_to_write[d]["TRAVEL"] === "travel") {
+                    //         data_to_write[d]["COUNTRY_ONLY"] = data_to_write[d]["TRAVEL_LOCATION"]
+                    //     }
+                    //     temp.push(data_to_write[d])
+                    // }
             }
 
             // fs.writeFile('assets/webscrap/clean/totalGenotypes.txt', totalGenotypes.toString(), (err) => { 
