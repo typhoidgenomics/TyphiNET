@@ -196,11 +196,9 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
                         }
                     }
 
-                    if (params.amr_class == "Fluoroquinolones (CipI-R)" && data["dcs_category"] == "DCS") {
-                        // if (!["0_QRDR", "0_QRDR + qnrS"].includes(data["dcs_mechanisms"])) {
-                        //     data_to_send["GENE"] = data["dcs_mechanisms"]
-                        // }
+                    if (params.amr_class == "Fluoroquinolones (CipI-R)") {
                         data_to_send["GENE"] = data["dcs_mechanisms"]
+
                         results.push(data_to_send)
                     }
 

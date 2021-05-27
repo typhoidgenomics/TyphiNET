@@ -948,7 +948,7 @@ const DashboardPage = () => {
                       }
                       percentage = Math.round(percentage)
                       if ((populationStructureFilter === 2 && chart === 3) || (RFWGFilter === 2 && chart === 4)) {
-                        percentage = item.value
+                        percentage = Math.round(item.value * 100) / 100
                       }
                       return (
                         <div key={index + item} style={{ display: "flex", flexDirection: "row", alignItems: "center", width: width2, marginBottom: 8 }}>
@@ -970,7 +970,7 @@ const DashboardPage = () => {
         }}
       />
     )
-  }, [dimensions, mobile, populationStructureFilter])
+  }, [dimensions, mobile, populationStructureFilter, RFWGFilter])
 
   useEffect(() => {
     const plotPopulationStructureChart = () => {
@@ -1001,12 +1001,12 @@ const DashboardPage = () => {
                 content={(props) => {
                   const { payload } = props;
                   return (
-                    <div style={{ display: "flex", flexDirection: "column", height: 70 }}>
-                      <div style={{ display: "flex", flexDirection: "column", flexWrap: "wrap", overflowX: 'scroll', height: 70, marginLeft: 55, justifyContent: "space-between", marginTop: 10 }}>
+                    <div style={{ display: "flex", flexDirection: "column", height: 180 }}>
+                      <div style={{ display: "flex", flexDirection: "column", flexWrap: "wrap", overflowX: 'scroll', height: 180, marginLeft: 55, justifyContent: "space-between", marginTop: 10 }}>
                         {payload.map((entry, index) => {
                           const { dataKey, color } = entry
                           return (
-                            <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "start", width: 100, marginBottom: 4, marginLeft: 3, marginRight: 3 }}>
+                            <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "start", marginBottom: 4, marginLeft: 3, marginRight: 10 }}>
                               <div style={{ height: 8, width: 8, borderRadius: 4, marginTop: 3, backgroundColor: color, flexShrink: 0 }} />
                               <span style={{ fontSize: 12, paddingLeft: 4 }}>{dataKey}</span>
                             </div>
@@ -1019,7 +1019,7 @@ const DashboardPage = () => {
               />
 
               {tooltip(300, dimensions.width < 620 ? 250 : 530, dimensions.width > 620 ? "20%" : "50%", false, { zIndex: 100, top: 20, right: -20 }, false)}
-              {genotypes.map((item) => <Bar dataKey={item} stackId="a" fill={getColorForGenotype(item)} />)}
+              {genotypes.map((item) => <Bar dataKey={item} stackId={0} fill={getColorForGenotype(item)} />)}
             </BarChart>
           </ResponsiveContainer>
         )
@@ -1034,7 +1034,7 @@ const DashboardPage = () => {
             if (keys[key] !== 'name' && keys[key] !== 'total' && keys[key] !== 'quantities') {
               let aux = keys[key]
               element.quantities[aux] = element[aux]
-              element[aux] = Math.round((element[aux] * 100) / element.total)
+              element[aux] = (element[aux] * 100) / element.total
             }
           }
         });
@@ -1058,12 +1058,12 @@ const DashboardPage = () => {
                 content={(props) => {
                   const { payload } = props;
                   return (
-                    <div style={{ display: "flex", flexDirection: "column", height: 70 }}>
-                      <div style={{ display: "flex", flexDirection: "column", flexWrap: "wrap", overflowX: 'scroll', height: 70, marginLeft: 55, justifyContent: "space-between", marginTop: 10 }}>
+                    <div style={{ display: "flex", flexDirection: "column", height: 180 }}>
+                      <div style={{ display: "flex", flexDirection: "column", flexWrap: "wrap", overflowX: 'scroll', height: 180, marginLeft: 55, justifyContent: "space-between", marginTop: 10 }}>
                         {payload.map((entry, index) => {
                           const { dataKey, color } = entry
                           return (
-                            <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "start", width: 100, marginBottom: 4, marginLeft: 3, marginRight: 3 }}>
+                            <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "start", marginBottom: 4, marginLeft: 3, marginRight: 10 }}>
                               <div style={{ height: 8, width: 8, borderRadius: 4, marginTop: 3, backgroundColor: color, flexShrink: 0 }} />
                               <span style={{ fontSize: 12, paddingLeft: 4 }}>{dataKey}</span>
                             </div>
@@ -1155,12 +1155,12 @@ const DashboardPage = () => {
               content={(props) => {
                 const { payload } = props;
                 return (
-                  <div style={{ display: "flex", flexDirection: "column", height: 70 }}>
-                    <div style={{ display: "flex", flexDirection: "column", flexWrap: "wrap", overflowX: 'scroll', height: 70, marginLeft: 55, justifyContent: "space-between", marginTop: 10 }}>
+                  <div style={{ display: "flex", flexDirection: "column", height: 180 }}>
+                    <div style={{ display: "flex", flexDirection: "column", flexWrap: "wrap", overflowX: 'scroll', height: 180, marginLeft: 55, justifyContent: "space-between", marginTop: 10 }}>
                       {payload.map((entry, index) => {
                         const { dataKey, color } = entry
                         return (
-                          <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "start", width: 120, marginBottom: 4, marginLeft: 3, marginRight: 3 }}>
+                          <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "start", marginBottom: 4, marginLeft: 3, marginRight: 10 }}>
                             <div style={{ height: 8, width: 8, borderRadius: 4, marginTop: 3, backgroundColor: color, flexShrink: 0 }} />
                             <span style={{ fontSize: 12, paddingLeft: 4 }}>{dataKey}</span>
                           </div>
@@ -1527,12 +1527,12 @@ const DashboardPage = () => {
       doc.addPage('a4', 'p')
 
       for (let index = 0; index < ids.length; index++) {
-        await domtoimage.toPng(document.getElementById(ids[index]), { quality: 0.95, bgcolor: "white" })
+        await domtoimage.toPng(document.getElementById(ids[index]), { quality: 0.5, bgcolor: "white" })
           .then(function (dataUrl) {
             if (index === 1) {
-              doc.addImage(dataUrl, "PNG", 5, 0, 210, 160);
+              doc.addImage(dataUrl, "PNG", 5, 0);
             } else {
-              doc.addImage(dataUrl, "PNG", 5, 10, 210, 160);
+              doc.addImage(dataUrl, "PNG", 5, 10);
             }
 
             if (index === 1) {
@@ -1562,11 +1562,11 @@ const DashboardPage = () => {
         }
       }
 
-      doc.save("Global Overview Salmonella Typhi - TyphiNET.pdf");
+      doc.save("Global Overview Salmonella Typhi - ALL INFO - TyphiNET.pdf");
 
     } else if (index !== 0) {
-      const names = ["Resistance frequencies within genotypes - TyphiNET.png", "Drug Resistance Trends - TyphiNET.png", "Genotype Distribution - TyphiNET.png", "Resistance determinants within all genotypes - TyphiNET.png"]
-      domtoimage.toPng(document.getElementById(id), { quality: 0.95, bgcolor: "white" })
+      const names = ["Resistance Frequencies Within Genotypes (Chart) - TyphiNET.png", "Drug Resistance Trends (Chart) - TyphiNET.png", "Genotype Distribution (Chart) - TyphiNET.png", "Resistance determinants within all genotypes (Chart) - TyphiNET.png"]
+      domtoimage.toPng(document.getElementById(id), { quality: 0.5, bgcolor: "white" })
         .then(function (dataUrl) {
           var link = document.createElement('a');
           link.download = names[index - 1];
@@ -1828,7 +1828,7 @@ const DashboardPage = () => {
           </>
         )
       // case 'Resistance to Drug':
-      //   let drugs = ["Ampicillin", "Azithromycin", "Chloramphenicol", "Co-trimoxazole", "ESBL", "Fluoroquinolones", "Sulphonamides", "Tetracyclines", "Trimethoprim"]
+      //   let drugs = ["Ampicillin", "Azithromycin", "Chloramphenicol", "Co-trimoxazole", "ESBL", "Fluoroquinolones (CipI-R)", "Sulphonamides", "Tetracyclines", "Trimethoprim"]
       //   return (
       //     <div style={{ maxHeight: 300, display: "flex", flexDirection: "column", overflowY: "scroll" }}>
       //       {drugs.map((d, n) => {
@@ -1875,7 +1875,7 @@ const DashboardPage = () => {
               Multidrug resistant (MDR)
             </MenuItem>
             <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'XDR'}>
-              Extensively drug resistant (XDR)
+              Extremely drug resistant (XDR)
             </MenuItem>
             <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'Azith'}>
               Azithromycin resistant
@@ -2635,7 +2635,7 @@ const DashboardPage = () => {
                     </FormControl>
                   </div>
                   <div style={{ height: 490, display: "flex", flexDirection: "row", alignItems: "center" }}>
-                    <span className="y-axis-label-vertical" style={{ paddingRight: 8, marginBottom: /*dimensions.width > desktop ? 80 : 90*/ 100 }}>{RFWGFilter === 1 ? 'Number of genomes' : 'Percentage within genotype'}</span>
+                    <span className="y-axis-label-vertical" style={{ paddingRight: 8, marginBottom: /*dimensions.width > desktop ? 80 : 90*/ 100 }}>{RFWGFilter === 1 ? 'Number of genomes' : 'Percentage within genotype (%)'}</span>
                     {plotDrugsAndGenotypesChart}
                   </div>
                 </div>
@@ -2683,8 +2683,8 @@ const DashboardPage = () => {
                       </Select>
                     </FormControl>
                   </div>
-                  <div style={{ height: 406, display: "flex", flexDirection: "row", alignItems: "center" }}>
-                    <span className="y-axis-label-vertical" style={{ paddingRight: 8 }}>Number of occurrences</span>
+                  <div style={{ height: 513, display: "flex", flexDirection: "row", alignItems: "center" }}>
+                    <span className="y-axis-label-vertical" style={{ paddingRight: 8, paddingTop: 190 }}>Number of occurrences</span>
                     {plotAmrClassChart}
                   </div>
                 </div>
@@ -2761,9 +2761,9 @@ const DashboardPage = () => {
                       </Select>
                     </FormControl>
                   </div>
-                  <div style={{ width: '100%', height: 404, display: "flex", flexDirection: /*populationStructureFilter === 1 ? "row" : "column-reverse"*/"row", alignItems: "center" }}>
+                  <div style={{ width: '100%', height: 511, display: "flex", flexDirection: /*populationStructureFilter === 1 ? "row" : "column-reverse"*/"row", alignItems: "center" }}>
                     {/* {getPopulationStructureChartLabel()} */}
-                    <span className="y-axis-label-vertical">{populationStructureFilter === 1 ? 'Number of genomes' : '%Genomes per year'}</span>
+                    <span className="y-axis-label-vertical" style={{ paddingTop: 190 }}>{populationStructureFilter === 1 ? 'Number of genomes' : '% Genomes per year'}</span>
                     {plotPopulationStructureChart}
                   </div>
                 </div>
@@ -2774,7 +2774,7 @@ const DashboardPage = () => {
                 <FontAwesomeIcon icon={faTable} style={{ marginRight: 8 }} />
                 <span>Download database</span>
               </div>
-              {/* <div style={{ marginTop: dimensions.width > desktop ? 0 : 20, marginLeft: dimensions.width > desktop ? 20 : 0 }} className="download-sheet-button" onClick={() => capturePicture('', 5, mapView, amrClassFilter)}>
+              {/* <div style={{marginTop: dimensions.width > desktop ? 0 : 20, marginLeft: dimensions.width > desktop ? 20 : 0}} className="download-sheet-button" onClick={() => capturePicture('', 5, mapView, amrClassFilter)}>
                 <FontAwesomeIcon icon={faFilePdf} style={{ marginRight: 8 }} />
                 <span>Download report from current view</span>
               </div> */}
@@ -2784,7 +2784,7 @@ const DashboardPage = () => {
         <div className="about-wrapper" style={{ paddingBottom: '15px' }}>
           <h2 style={{ marginBottom: 0 }}>About TyphiNET</h2>
           <p>
-            The TyphiNET dashboard collates antimicrobial resistance (AMR) and genotype (lineage) information extracted from whole genome sequence (WGS) data from the bacterial pathogen <i>Salmonella</i> Typhi, the agent of typhoid fever. Data are sourced monthly from Typhoid <a href="https://pathogen.watch/" target="_blank" rel="noreferrer">Pathogenwatch</a>. Information on genotype definitions and population structure can be found in <a href="https://www.nature.com/articles/ncomms12827" target="_blank" rel="noreferrer">Wong et al, 2016</a>, and details of AMR determinants in <a href="https://www.nature.com/articles/s41467-021-23091-2" target="_blank" rel="noreferrer">Argimon et al, 2021</a>. (CipI-R = decreased ciprofloxacin susceptibility).
+            The TyphiNET dashboard collates antimicrobial resistance (AMR) and genotype (lineage) information extracted from whole genome sequence (WGS) data from the bacterial pathogen <i>Salmonella</i> Typhi, the agent of typhoid fever. Data are sourced monthly from Typhoid <a href="https://pathogen.watch/" target="_blank" rel="noreferrer">Pathogenwatch</a>. Information on genotype definitions and population structure can be found in <a href="https://www.nature.com/articles/ncomms12827" target="_blank" rel="noreferrer">Wong et al, 2016</a>, and details of AMR determinants in <a href="https://www.nature.com/articles/s41467-021-23091-2" target="_blank" rel="noreferrer">Argimon et al, 2021</a>. (CipI"/"R = decreased ciprofloxacin susceptibility).
           </p>
           <p>
             The TyphiNET dashboard is coordinated by Dr Zoe Dyson, Dr Louise Cerdeira &amp; Prof Kat Holt at the <a href="https://www.lshtm.ac.uk/" target="_blank" rel="noreferrer">London School of Hygiene and Tropical Medicine</a> &amp; <a href="https://www.monash.edu/" target="_blank" rel="noreferrer">Monash University</a>, supported by the Wellcome Trust (Open Research Fund, 219692/Z/19/Z) and the EU Horizon 2020 research and innovation programme (Marie Skłodowska-Curie grant #845681).
