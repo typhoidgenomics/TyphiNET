@@ -23,7 +23,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faMinus, faCrosshairs, faCamera, faTable, faFilePdf, faInfoCircle, faUndoAlt } from '@fortawesome/free-solid-svg-icons'
 import download from 'downloadjs';
 import { svgAsPngUri } from 'save-svg-as-png';
-import typhinetLogoImg from '../../assets/img/logo-typhinet.png';
+// import typhinetLogoImg from '../../assets/img/logo-typhinet.png';
+import typhinetLogoImg from '../../assets/img/logo-typhinet-prod.png';
 import geography from '../../assets/world-110m.json'
 import { API_ENDPOINT } from '../../constants';
 import { getColorForGenotype, getColorForAMR, getColorForDrug, getColorForIncType, getColorForTetracyclines } from '../../util/colorHelper';
@@ -221,22 +222,22 @@ const DashboardPage = () => {
   })
 
   const [genotypes] = useState([
-    '0.0.1', '0.0.2', '0.0.3', '0.1',
-    '0.1.1', '0.1.2', '0.1.3', '1.1.1',
-    '1.1.2', '1.1.3', '1.2', '1.2.1',
-    '2', '2.0.1', '2.0.2', '2.1',
-    '2.1.1', '2.1.3', '2.1.5', '2.1.6',
-    '2.1.7', '2.1.8', '2.1.9', '2.2',
-    '2.2.1', '2.2.2', '2.2.3', '2.2.4',
-    '2.3.1', '2.3.2', '2.3.3', '2.3.4',
-    '2.3.5', '2.4', '2.4.1', '2.5',
-    '2.5.1', '3', '3.0.1', '3.0.2',
-    '3.1', '3.1.1', '3.1.2', '3.2',
-    '3.2.1', '3.2.2', '3.3', '3.3.1',
+    '0','0.0.1', '0.0.2', '0.0.3', '0.1.0', '0.1',
+    '0.1.1', '0.1.2', '0.1.3', '1.1', '1.1.1',
+    '1.1.2', '1.1.3', '1.1.4', '1.2', '1.2.1',
+    '2', '2.0.0', '2.0.1', '2.0.2', '2.1.0', '2.1',
+    '2.1.1', '2.1.2', '2.1.3', '2.1.4', '2.1.5', '2.1.6',
+    '2.1.7', '2.1.8', '2.1.9', '2.1.7.1', '2.1.7.2', '2.2',
+    '2.2.0', '2.2.1', '2.2.2', '2.2.3', '2.2.4',
+    '2.3', '2.3.1', '2.3.2', '2.3.3', '2.3.4',
+    '2.3.5', '2.4.0', '2.4', '2.4.1', '2.5.0', '2.5',
+    '2.5.1', '2.5.2', '3.0.0', '3', '3.0.1', '3.0.2',
+    '3.1.0', '3.1', '3.1.1', '3.1.2', '3.2',
+    '3.2.1', '3.2.2', '3.3.0', '3.3', '3.3.1',
     '3.3.2', '3.3.2.Bd1', '3.3.2.Bd2', '3.4',
     '3.5', '3.5.1', '3.5.2', '3.5.3',
-    '3.5.4', '4.1', '4.2', '4.2.1',
-    '4.2.2', '4.2.3', '4.3.1', '4.3.1.1',
+    '3.5.4', '4', '4.1.0', '4.1', '4.1.1', '4.2', '4.2.1',
+    '4.2.2', '4.2.3', '4.3', '4.3.0', '4.3.1', '4.3.1.1',
     '4.3.1.1.P1', '4.3.1.1.EA1', '4.3.1.2', '4.3.1.2.EA2',
     '4.3.1.2.EA3', '4.3.1.3', '4.3.1.3.Bdq'].sort((a, b) => a.localeCompare(b)));
 
@@ -909,9 +910,9 @@ const DashboardPage = () => {
   const mapSamplesColorScale = (domain) => {
     if (domain >= 1 && domain <= 10) {
       return '#4575b4'
-    } else if (domain >= 11 && domain <= 25) {
+    } else if (domain >= 11 && domain <= 20) {
       return '#91bfdb'
-    } else if (domain >= 26 && domain <= 100) {
+    } else if (domain >= 21 && domain <= 100) {
       return '#addd8e'
     } else if (domain >= 101 && domain <= 300) {
       return '#fee090'
@@ -1156,7 +1157,7 @@ const DashboardPage = () => {
                 const { payload } = props;
                 return (
                   <div style={{ display: "flex", flexDirection: "column", height: 180 }}>
-                    <div style={{ display: "flex", flexDirection: "column", flexWrap: "wrap", overflowX: 'scroll', height: 180, marginLeft: 55, justifyContent: "space-between", marginTop: 10 }}>
+                    <div style={{ display: "flex", flexDirection: "column", flexWrap: "wrap", overflowX: 'scroll', height: 180, marginLeft: 55, justifyContent: amrClassFilter === "Ampicillin" ? "" : "space-between", marginTop: 10 }}>
                       {payload.map((entry, index) => {
                         const { dataKey, color } = entry
                         return (
@@ -1474,7 +1475,7 @@ const DashboardPage = () => {
     }
   })
 
-  const [capturePicture] = useState(() => async (id, index, mv = '', acf = '') => {
+  const [capturePicture] = useState(() => async (id, index, info={}) => {
     switch (index) {
       case 0:
         setCaptureControlMapInProgress(true)
@@ -1491,89 +1492,241 @@ const DashboardPage = () => {
       default:
         break;
     }
+    if (info.dataset === "full") {
+      info.dataset = "All"
+    } else if (info.dataset === "local") {
+      info.dataset = "Travel"
+    } else {
+      info.dataset = "Local"
+    }
 
+    const names = ["Resistance Frequencies Within Genotypes", "Drug Resistance Trends", "Genotype Distribution", "Resistance determinants within all genotypes"]
+    const brokenNames = [["Resistance Frequencies", "Within Genotypes"], ["Resistance determinants", "within all genotypes"]]
+    
     if (index === 5) {
       let ids = ["RFWG", "RFWAG", "DRT", "GD"]
 
-      var doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'l' });
+      var doc = new jsPDF({unit: 'mm', format: 'a4', orientation: 'l'});
       doc.setFontSize(25);
-      doc.text("Global Overview Salmonella Typhi", 80, 15);
-
+      doc.text("Global overview Salmonella Typhi", 80, 15);
+      
       await svgAsPngUri(document.getElementById('control-map'), { scale: 4, backgroundColor: "white", width: 1200, left: -200 })
         .then(async (uri) => {
-          doc.addImage(uri, "PNG", 0, 18, 298, 160);
+          let canvas = document.createElement("canvas")
+          let ctx = canvas.getContext('2d');
+
+          let mapImg = document.createElement("img");
+          let mapImgPromise = imgOnLoadPromise(mapImg);
+          mapImg.src = uri;
+          await mapImgPromise;
+
+          canvas.width = 1400;
+          canvas.height = 700;
+          ctx.drawImage(mapImg, 0, 0, canvas.width, canvas.height);
+          var img = canvas.toDataURL("image/png")
+          doc.addImage(img, "PNG", 0, 18, 298, 155);
         })
-
+      
+      let actualMapView = info.mapView
+      switch (actualMapView) {
+        case "MDR":
+          actualMapView = "Multidrug resistant (MDR)"
+          break;
+        case "XDR":
+          actualMapView = "Extremely drug resistant (XDR)"
+          break;
+        case "Azith":
+          actualMapView = "Azithromycin resistant"
+          break;
+        case "CipI":
+          actualMapView = "Ciprofloxacin insusceptible (CipI)"
+          break;
+        case "CipR":
+          actualMapView = "Ciprofloxacin resistant (CipR)"
+          break;
+        case "H58 / Non-H58":
+          actualMapView = "H58 genotype"
+          break;
+        default:
+          break;
+      }
+      
       doc.setFontSize(14);
-      doc.text("Map View: " + mapView, 10, 180);
-      doc.text("Dataset: " + dataset, 10, 187);
-      doc.text("Time Period: " + actualTimePeriodRange[0] + " to " + actualTimePeriodRange[1], 10, 194);
-      doc.text("Country: " + actualCountry, 10, 201);
-
-      if (mv === 'Dominant Genotype') {
+      doc.text("Map view: " + actualMapView, 10, 180);
+      doc.text("Dataset: " + info.dataset, 10, 187);
+      doc.text("Time period: " + info.actualTimePeriodRange[0] + " to " + info.actualTimePeriodRange[1], 10, 194);
+      doc.text("Country: " + info.country, 10, 201);
+      
+      if (info.mapView === 'Dominant Genotype') {
         var img = new Image()
         img.src = "legends/MV_DG.png"
-        doc.addImage(img, 'PNG', 80, 175, 180, 33)
-      } else if (mv === 'No. Samples') {
+        doc.addImage(img, 'PNG', 90, 175, 160, 33)
+      } else if (info.mapView === 'No. Samples') {
         var img2 = new Image()
         img2.src = "legends/MV_NS.png"
-        doc.addImage(img2, 'PNG', 10, 30, 28, 35)
+        doc.addImage(img2, 'PNG', 260, 170, 28, 35)
       } else {
         var img3 = new Image()
         img3.src = "legends/MV_outros.png"
-        doc.addImage(img3, 'PNG', 10, 30, 30, 50)
+        doc.addImage(img3, 'PNG', 260, 155, 30, 50)
       }
 
-      doc.addPage('a4', 'p')
-
+      let typhinetLogo = new Image();
+      typhinetLogo.src = typhinetLogoImg;
+      doc.addImage(typhinetLogo, 'PNG', 0, 0, 50, 21)
+      
+      doc.addPage('a4', 'l')
+      const names2 = ["Resistance Frequencies Within Genotypes", "Resistance determinants within all genotypes", "Drug Resistance Trends", "Genotype Distribution"]
       for (let index = 0; index < ids.length; index++) {
-        await domtoimage.toPng(document.getElementById(ids[index]), { quality: 0.5, bgcolor: "white" })
+        let legend
+        if (index === 1 || index === 3) {
+          const graph = document.getElementById(ids[index])
+          legend = graph.getElementsByClassName('recharts-legend-wrapper')[0];
+          legend.style.display = 'none'
+        }
+        let url
+        await domtoimage.toPng(document.getElementById(ids[index]), { quality: 1, bgcolor: "white" })
           .then(function (dataUrl) {
-            if (index === 1) {
-              doc.addImage(dataUrl, "PNG", 5, 0);
-            } else {
-              doc.addImage(dataUrl, "PNG", 5, 10);
-            }
-
-            if (index === 1) {
-              var img4 = new Image()
-              if (acf === 'Co-trimoxazole') {
-                img4.src = "legends/COTRIM.png"
-                doc.addImage(img4, 'PNG', 33, 150, 172, 40)
-              } else if (acf === 'Fluoroquinolones (CipI-R)') {
-                img4.src = "legends/DCS.png"
-                doc.addImage(img4, 'PNG', 30, 140, 173, 20)
-              } else if (acf === 'Trimethoprim') {
-                img4.src = "legends/TRI.png"
-                doc.addImage(img4, 'PNG', 30, 141, 173, 20)
-              } else if (acf === 'Tetracyclines') {
-                img4.src = "legends/TETRA.png"
-                doc.addImage(img4, 'PNG', 30, 141, 173, 20)
-              }
-
-            } else if (index === 3) {
-              var img5 = new Image()
-              img5.src = "legends/GD.png"
-              doc.addImage(img5, 'PNG', 5, 152, 200, 70)
-            }
+            url = dataUrl
           });
+
+        if (index === 1 || index === 3) {
+          legend.style.display = 'block'
+        }
+        doc.setFontSize(14)
+        doc.text(names2[index], 25, 10)
+        doc.setFontSize(9)
+
+        let subtitleH = 0
+
+        if (index === 0) {
+          doc.text("Top Genotypes (up to 5)", 25, 15)
+          subtitleH = 3
+        }
+        if (index === 3) {
+          doc.text("Top Genotypes (up to 10)", 25, 15)
+          subtitleH = 3
+        }
+        
+        if (index === 1) {
+          doc.addImage(url, "PNG", 5, 15 + subtitleH);
+        }else {
+          doc.addImage(url, "PNG", 5, 15 + subtitleH);
+        }
+
+        if (index === 1) {
+          var img4 = new Image()
+          img4.src = "legends/" + info.amrClassFilter + ".png"
+          doc.addImage(img4, 'PNG', 26, 105 + subtitleH)
+        } else if (index === 3) {
+          var img5 = new Image()
+          img5.src = "legends/GD.png"
+          doc.addImage(img5, 'PNG', 26, 105 + subtitleH)
+        }
         if (index < ids.length - 1) {
-          doc.addPage('a4', 'p')
+          doc.addPage('a4', 'l')
         }
       }
 
       doc.save("Global Overview Salmonella Typhi - ALL INFO - TyphiNET.pdf");
 
     } else if (index !== 0) {
-      const names = ["Resistance Frequencies Within Genotypes (Chart) - TyphiNET.png", "Drug Resistance Trends (Chart) - TyphiNET.png", "Genotype Distribution (Chart) - TyphiNET.png", "Resistance determinants within all genotypes (Chart) - TyphiNET.png"]
-      domtoimage.toPng(document.getElementById(id), { quality: 0.5, bgcolor: "white" })
+
+      let graph = document.getElementById(id)
+      let canvas = document.createElement("canvas")
+      let ctx = canvas.getContext('2d');
+      let graphImg = document.createElement("img");
+      let graphImgPromise = imgOnLoadPromise(graphImg);
+
+      var legend = graph.getElementsByClassName('recharts-legend-wrapper')[0];
+      if (id === "RFWAG" || id === "GD") {
+        legend.style.display = 'none'
+      }
+      await domtoimage.toPng(graph, { quality: 0.1, bgcolor: "white" })
         .then(function (dataUrl) {
-          var link = document.createElement('a');
-          link.download = names[index - 1];
-          link.href = dataUrl;
-          stopLoading(index)
-          link.click();
+          graphImg.src = dataUrl;
+          legend.style.display = 'block'
         });
+      
+      let cHeight = 20
+      let logoHeight = 50
+      let legendHeight = 0
+      let filterHeight = 80
+      let subtitleHeight = 0
+      if (id === "RFWG" || id === "RFWAG") {
+        cHeight += 20
+        subtitleHeight = 20
+      }
+      let imgHeight = graphImg.height
+      if (id === "RFWAG" || id === "GD") {
+        imgHeight -= 180
+      }
+      if (id === "GD") {
+        legendHeight = 40
+      }
+      let imgWidth = graphImg.width
+      if (id === "RFWAG") {
+        imgWidth += 130
+        if (info.amrClassFilter === "Co-trimoxazole") {
+          imgWidth += 120
+        }
+      } else if (id === "GD") {
+        imgWidth += 370
+      }
+
+      await graphImgPromise;
+      canvas.width = imgWidth;
+      canvas.height = imgHeight + cHeight + logoHeight + legendHeight + filterHeight + subtitleHeight + 20;
+      ctx.fillStyle = "white";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.font = "18px Montserrat"
+      ctx.fillStyle = "black";
+      ctx.textAlign = "center";
+
+      if (id === "RFWG") {
+        ctx.fillText(brokenNames[0][0], canvas.width/2, 10 + logoHeight)
+        ctx.fillText(brokenNames[0][1], canvas.width/2, 30 + logoHeight)
+        ctx.font = "12px Montserrat"
+        ctx.fillText("Top Genotypes (up to 5)", canvas.width/2, 32 + logoHeight + subtitleHeight)
+      } else if (id === "RFWAG") {
+        ctx.fillText(brokenNames[1][0], canvas.width/2, 10 + logoHeight)
+        ctx.fillText(brokenNames[1][1], canvas.width/2, 30 + logoHeight)
+        ctx.font = "12px Montserrat"
+        ctx.fillText("Top Genotypes (up to 10)", canvas.width/2, 32 + logoHeight + subtitleHeight)
+      }else{
+        ctx.fillText(names[index - 1], canvas.width/2, 10 + logoHeight)
+      }
+
+      ctx.drawImage(graphImg, 0, cHeight + logoHeight + subtitleHeight);
+
+      if (id === "RFWAG" || id === "GD") {
+        let legendImg = document.createElement("img")
+        let legendImgPromise = imgOnLoadPromise(legendImg)
+        if (id === "RFWAG") {
+          legendImg.src = "legends/" + info.amrClassFilter + ".png";
+        } else {
+          legendImg.src = "legends/GD2.png";
+        }
+        await legendImgPromise;
+        ctx.drawImage(legendImg, graphImg.width, logoHeight + subtitleHeight + 17 + cHeight);
+      }
+
+      let typhinetLogo = document.createElement("img");
+      let typhinetLogoPromise = imgOnLoadPromise(typhinetLogo);
+      typhinetLogo.src = typhinetLogoImg;
+      await typhinetLogoPromise;
+      ctx.drawImage(typhinetLogo, 0, 0, 120, 50);
+
+      ctx.fillStyle = "black"
+      ctx.font = "14px Montserrat"
+      ctx.textAlign = "start"
+      ctx.fillText("Dataset: " + info.dataset, 10, canvas.height - 70)
+      ctx.fillText("Time period: " + info.actualTimePeriodRange[0] + " to " + info.actualTimePeriodRange[1], 10, canvas.height - 50)
+      ctx.fillText("Country: " + info.country, 10, canvas.height - 30)
+
+      const base64 = canvas.toDataURL();
+      stopLoading(index)
+      download(base64, names[index - 1] + " (Chart) - TiphyNET.png");
     } else {
       svgAsPngUri(document.getElementById(id), { scale: 4, backgroundColor: "white", width: 1200, left: -200 })
         .then(async (uri) => {
@@ -1586,18 +1739,85 @@ const DashboardPage = () => {
           mapImg.src = uri;
           await mapImgPromise;
 
-          canvas.width = 3600;
-          canvas.height = 1800;
+          let cWidth = 3600
+          let cHeight = 1800
+          let textHeight = 240
+          let legendHeight = 0
+          if (info.mapView === 'Dominant Genotype') {
+            legendHeight = 440
+          }
+
+          canvas.width = cWidth;
+          canvas.height = cHeight + textHeight + legendHeight;
 
           ctx.fillStyle = "white";
           ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-          ctx.drawImage(mapImg, 0, 0, canvas.width, canvas.height);
+          ctx.font = "bolder 50px Montserrat"
+          ctx.fillStyle = "black";
+          ctx.textAlign = "center";
+          ctx.fillText("Global overview Salmonella Typhi", canvas.width/2, 80)
+          ctx.font = "35px Montserrat"
+          ctx.textAlign = "center";
+
+          let actualMapView = info.mapView
+          switch (actualMapView) {
+            case "MDR":
+              actualMapView = "Multidrug resistant (MDR)"
+              break;
+            case "XDR":
+              actualMapView = "Extremely drug resistant (XDR)"
+              break;
+            case "Azith":
+              actualMapView = "Azithromycin resistant"
+              break;
+            case "CipI":
+              actualMapView = "Ciprofloxacin insusceptible (CipI)"
+              break;
+            case "CipR":
+              actualMapView = "Ciprofloxacin resistant (CipR)"
+              break;
+            case "H58 / Non-H58":
+              actualMapView = "H58 genotype"
+              break;
+            default:
+              break;
+          }
+
+          ctx.fillText("Map view: " + actualMapView, canvas.width/2, 140)
+          ctx.fillText("Dataset: " + info.dataset, canvas.width/2, 190)
+          ctx.fillText("Time period: " + info.actualTimePeriodRange[0] + " to " + info.actualTimePeriodRange[1], canvas.width/2, 240)
+
+          ctx.drawImage(mapImg, 0, textHeight, canvas.width, cHeight);
+
+          let legendImg = document.createElement("img");
+          let legendImgoPromise = imgOnLoadPromise(legendImg);
+          let h
+          let w
+          if (info.mapView === 'Dominant Genotype') {
+            legendImg.src = "legends/MV_DG.png";
+            await legendImgoPromise;
+            let centerWidth = (canvas.width - 1731)/2
+            ctx.drawImage(legendImg, centerWidth, canvas.height - legendHeight, 1731, 400);
+          } else if (info.mapView === 'No. Samples') {
+            legendImg.src = "legends/MV_NS.png";
+            await legendImgoPromise;
+            h = 350
+            w = 300
+            ctx.drawImage(legendImg, canvas.width - w, canvas.height - h, w, h);
+          } else {
+            legendImg.src = "legends/MV_outros.png";
+            await legendImgoPromise;
+            h = 350
+            w = 230
+            ctx.drawImage(legendImg, canvas.width - w, canvas.height - h, w, h);
+          }
 
           let typhinetLogo = document.createElement("img");
           let typhinetLogoPromise = imgOnLoadPromise(typhinetLogo);
           typhinetLogo.src = typhinetLogoImg;
           await typhinetLogoPromise;
+          ctx.drawImage(typhinetLogo, 0, 0, 600, 252);
 
           const base64 = canvas.toDataURL();
           stopLoading(index)
@@ -1661,8 +1881,8 @@ const DashboardPage = () => {
 
     switch (mapView) {
       case 'No. Samples':
-        let legends = ['1 - 10', '11 - 25', '26 - 100', '101 - 300', '> 300']
-        let aux = [1, 11, 26, 101, 301]
+        let legends = ['1 - 10', '11 - 20', '21 - 100', '101 - 300', '> 300']
+        let aux = [1, 11, 21, 101, 301]
         return (
           <>
             <div className="samples-info">
@@ -2423,7 +2643,7 @@ const DashboardPage = () => {
                     className={`button ${captureControlMapInProgress && "disabled"}`}
                     onClick={() => {
                       if (!captureControlMapInProgress)
-                        capturePicture('control-map', 0)
+                      capturePicture('control-map', 0, {mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange})
                     }}
                   >
                     <FontAwesomeIcon icon={faCamera} />
@@ -2591,7 +2811,7 @@ const DashboardPage = () => {
           <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
             <div style={{ display: "flex", flexDirection: dimensions.width > desktop ? "row" : "column", marginTop: 16, paddingBottom: 20 }}>
               <div style={{ display: "flex", flexDirection: "column", flex: 0.5, paddingRight: dimensions.width < mobile ? 0 : 10 }}>
-                <div id="RFWG" style={{ height: 520, width: "100%", display: "flex", flexDirection: "column" }}>
+                <div style={{ height: 520, width: "100%", display: "flex", flexDirection: "column" }}>
                   <div style={{ width: "100%", flexDirection: "row", textAlign: "center", display: "flex", justifyContent: "center" }}>
                     <span style={{ paddingRight: 32, marginRight: -22, paddingLeft: 35 }} className="chart-title">Resistance frequencies within genotypes</span>
                     <div style={{ display: "inline-block", position: "relative" }}>
@@ -2601,7 +2821,7 @@ const DashboardPage = () => {
                           className={`button ${captureControlChartRFWGInProgress && "disabled"}`}
                           onClick={() => {
                             if (!captureControlChartRFWGInProgress)
-                              capturePicture('RFWG', 1)
+                            capturePicture('RFWG', 1, {mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry})
                           }}
                         >
                           <FontAwesomeIcon icon={faCamera} size="sm" />
@@ -2634,12 +2854,12 @@ const DashboardPage = () => {
                       </Select>
                     </FormControl>
                   </div>
-                  <div style={{ height: 490, display: "flex", flexDirection: "row", alignItems: "center" }}>
+                  <div id="RFWG" style={{ height: 490, display: "flex", flexDirection: "row", alignItems: "center" }}>
                     <span className="y-axis-label-vertical" style={{ paddingRight: 8, marginBottom: /*dimensions.width > desktop ? 80 : 90*/ 100 }}>{RFWGFilter === 1 ? 'Number of genomes' : 'Percentage within genotype (%)'}</span>
                     {plotDrugsAndGenotypesChart}
                   </div>
                 </div>
-                <div id="RFWAG" style={{ width: "100%", display: "flex", flexDirection: "column", paddingTop: 50 }}>
+                <div style={{ width: "100%", display: "flex", flexDirection: "column", paddingTop: 50 }}>
                   <div style={{ width: "100%", flexDirection: "row", textAlign: "center", display: "flex", justifyContent: "center" }}>
                     <span className="chart-title" style={{ paddingLeft: 50, marginRight: -22, paddingRight: 32 }}>Resistance determinants within all genotypes</span>
                     <div style={{ display: "inline-block", position: "relative" }}>
@@ -2649,7 +2869,7 @@ const DashboardPage = () => {
                           className={`button ${captureControlChartRFWAGInProgress && "disabled"}`}
                           onClick={() => {
                             if (!captureControlChartRFWAGInProgress)
-                              capturePicture('RFWAG', 4)
+                            capturePicture('RFWAG', 4, {mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry, amrClassFilter: amrClassFilter})
                           }}
                         >
                           <FontAwesomeIcon icon={faCamera} size="sm" />
@@ -2683,14 +2903,14 @@ const DashboardPage = () => {
                       </Select>
                     </FormControl>
                   </div>
-                  <div style={{ height: 513, display: "flex", flexDirection: "row", alignItems: "center" }}>
+                  <div id="RFWAG" style={{ height: 513, display: "flex", flexDirection: "row", alignItems: "center" }}>
                     <span className="y-axis-label-vertical" style={{ paddingRight: 8, paddingTop: 190 }}>Number of occurrences</span>
                     {plotAmrClassChart}
                   </div>
                 </div>
               </div>
               <div style={{ display: "flex", flexDirection: "column", flex: 0.5, paddingLeft: dimensions.width < mobile ? 0 : 10, marginTop: dimensions.width < mobile ? 25 : 0 }}>
-                <div id="DRT" style={{ width: "100%", display: "flex", flexDirection: "column", paddingTop: dimensions.width < desktop ? 50 : dimensions.width < 930 ? 0 : 0 }}>
+                <div style={{ width: "100%", display: "flex", flexDirection: "column", paddingTop: dimensions.width < desktop ? 50 : dimensions.width < 930 ? 0 : 0 }}>
                   <div style={{ width: "100%", flexDirection: "row", textAlign: "center", display: "flex", justifyContent: "center", paddingBottom: dimensions.width < desktop ? 0 : dimensions.width < 1010 ? 24 : 8 }}>
                     <span className="chart-title" style={{ paddingRight: 32, marginRight: -22 }}>Drug resistance trends</span>
                     <div style={{ display: "inline-block", position: "relative" }}>
@@ -2700,7 +2920,7 @@ const DashboardPage = () => {
                           className={`button ${captureControlChartDRTInProgress && "disabled"}`}
                           onClick={() => {
                             if (!captureControlChartDRTInProgress)
-                              capturePicture('DRT', 2)
+                            capturePicture('DRT', 2, {mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry})
                           }}
                         >
                           <FontAwesomeIcon icon={faCamera} size="sm" />
@@ -2714,12 +2934,12 @@ const DashboardPage = () => {
                       )}
                     </div>
                   </div>
-                  <div style={{ paddingTop: dimensions.width < desktop ? '10px' : '76px', height: 403, display: "flex", flexDirection: "row", alignItems: "center" }}>
+                  <div id="DRT" style={{ paddingTop: dimensions.width < desktop ? '10px' : '76px', height: 403, display: "flex", flexDirection: "row", alignItems: "center" }}>
                     <span className="y-axis-label-vertical" style={{ paddingTop: /*dimensions.width > desktop ? 0 : 0*/ 80 }}>Resistant (%)</span>
                     {plotDrugTrendsChart}
                   </div>
                 </div>
-                <div id="GD" style={{ width: "100%", display: "flex", flexDirection: "column", paddingTop: dimensions.width < desktop ? 50 : dimensions.width < 1010 ? 29 : 45 }}>
+                <div style={{ width: "100%", display: "flex", flexDirection: "column", paddingTop: dimensions.width < desktop ? 50 : dimensions.width < 1010 ? 29 : 45 }}>
                   <div style={{ width: "100%", flexDirection: "row", textAlign: "center", display: "flex", justifyContent: "center" }}>
                     <span className="chart-title" style={{ marginRight: -22, paddingRight: 32 }}>Genotype distribution</span>
                     <div style={{ display: "inline-block", position: "relative" }}>
@@ -2729,7 +2949,7 @@ const DashboardPage = () => {
                           className={`button ${captureControlChartGDInProgress && "disabled"}`}
                           onClick={() => {
                             if (!captureControlChartGDInProgress)
-                              capturePicture('GD', 3)
+                            capturePicture('GD', 3, {mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry})
                           }}
                         >
                           <FontAwesomeIcon icon={faCamera} size="sm" />
@@ -2747,7 +2967,7 @@ const DashboardPage = () => {
                     <FormControl fullWidth className={classes.formControlSelect} style={{ marginBottom: 5, marginTop: 23 }}>
                       <InputLabel style={{ fontWeight: 500, fontFamily: "Montserrat" }}>Data view</InputLabel>
                       <Select
-                        value={populationStructureFilter} RFWGFilter
+                        value={populationStructureFilter}
                         onChange={evt => setPopulationStructureFilter(evt.target.value)}
                         fullWidth
                         style={{ fontWeight: 600, fontFamily: "Montserrat" }}
@@ -2761,7 +2981,7 @@ const DashboardPage = () => {
                       </Select>
                     </FormControl>
                   </div>
-                  <div style={{ width: '100%', height: 511, display: "flex", flexDirection: /*populationStructureFilter === 1 ? "row" : "column-reverse"*/"row", alignItems: "center" }}>
+                  <div id="GD" style={{ width: '100%', height: 511, display: "flex", flexDirection: /*populationStructureFilter === 1 ? "row" : "column-reverse"*/"row", alignItems: "center" }}>
                     {/* {getPopulationStructureChartLabel()} */}
                     <span className="y-axis-label-vertical" style={{ paddingTop: 190 }}>{populationStructureFilter === 1 ? 'Number of genomes' : '% Genomes per year'}</span>
                     {plotPopulationStructureChart}
@@ -2774,10 +2994,10 @@ const DashboardPage = () => {
                 <FontAwesomeIcon icon={faTable} style={{ marginRight: 8 }} />
                 <span>Download database</span>
               </div>
-              {/* <div style={{marginTop: dimensions.width > desktop ? 0 : 20, marginLeft: dimensions.width > desktop ? 20 : 0}} className="download-sheet-button" onClick={() => capturePicture('', 5, mapView, amrClassFilter)}>
+              <div style={{marginTop: dimensions.width > desktop ? 0 : 20, marginLeft: dimensions.width > desktop ? 20 : 0}} className="download-sheet-button" onClick={() => capturePicture('', 5, {mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry, amrClassFilter: amrClassFilter})}>
                 <FontAwesomeIcon icon={faFilePdf} style={{ marginRight: 8 }} />
                 <span>Download report from current view</span>
-              </div> */}
+              </div>
             </div>
           </div>
         </div>
