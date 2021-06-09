@@ -138,6 +138,7 @@ const DashboardPage = () => {
   const [populationStructureFilter, setPopulationStructureFilter] = React.useState(1);
   const [RFWGFilter, setRFWGFilter] = React.useState(1);
   const [amrClassesForFilter] = useState([/*"AMR Profiles", */"Ampicillin", "Azithromycin", "Chloramphenicol", "Co-trimoxazole", "ESBL", "Fluoroquinolones (CipI-R)", "Sulphonamides", "Tetracyclines", "Trimethoprim"])
+  const [drtClassesForFilter] = useState(["Ampicillin", "Azithromycin", "Chloramphenicol", "Co-trimoxazole", "ESBL", "Fluoroquinolones (CipI-R)", "Susceptible", "Sulphonamides", "Tetracyclines", "Trimethoprim"])
   const [amrClassFilter, setAmrClassFilter] = React.useState(amrClassesForFilter[5])
 
   const [drugTrendsChartData, setDrugTrendsChartData] = useState([])
@@ -222,7 +223,7 @@ const DashboardPage = () => {
   })
 
   const [genotypes] = useState([
-    '0','0.0.1', '0.0.2', '0.0.3', '0.1.0', '0.1',
+    '0', '0.0.1', '0.0.2', '0.0.3', '0.1.0', '0.1',
     '0.1.1', '0.1.2', '0.1.3', '1.1', '1.1.1',
     '1.1.2', '1.1.3', '1.1.4', '1.2', '1.2.1',
     '2', '2.0.0', '2.0.1', '2.0.2', '2.1.0', '2.1',
@@ -783,8 +784,9 @@ const DashboardPage = () => {
       let finalDrugTrendsChartData = []
       let finalDrugsAndGenotypesChartData = []
       let totalSum = {}
-      let allDrugs = data[data.length - 1][0]
-      data = data.slice(0, data.length - 1)
+      // let noAMRGenomes = data[data.length - 1][0]
+      let allDrugs = data[data.length - 2][0]
+      data = data.slice(0, data.length - 2)
 
       data.forEach((entry) => {
         if (!finalDrugTrendsChartData.some(e => e.name === entry.YEAR)) {
@@ -836,7 +838,7 @@ const DashboardPage = () => {
             if (data[key] > maxValue) {
               maxValue = data[key]
             }
-            const aux = Math.round((data[key] * 100) / data.total)
+            const aux = (data[key] * 100) / data.total
             drugsPercentage[key] = data[key]
             data[key] = aux
           }
@@ -851,6 +853,8 @@ const DashboardPage = () => {
             data.total = allGenotypes[entry[1]]
         })
       })
+
+      finalDrugTrendsChartData = finalDrugTrendsChartData.filter(item => item.total === 10 || item.total > 10)
 
       finalDrugTrendsChartData.sort((a, b) => a.name.localeCompare(b.name))
       finalDrugTrendsChartData.push({ totalSum: allDrugs })
@@ -947,7 +951,7 @@ const DashboardPage = () => {
                       if (chart === 1) {
                         percentage = ((item.payload.drugsPercentage[item.dataKey] / item.payload.total) * 100)
                       }
-                      percentage = Math.round(percentage)
+                      percentage = Math.round(percentage * 100) / 100
                       if ((populationStructureFilter === 2 && chart === 3) || (RFWGFilter === 2 && chart === 4)) {
                         percentage = Math.round(item.value * 100) / 100
                       }
@@ -1003,7 +1007,7 @@ const DashboardPage = () => {
                   const { payload } = props;
                   return (
                     <div style={{ display: "flex", flexDirection: "column", height: 180 }}>
-                      <div style={{ display: "flex", flexDirection: "column", flexWrap: "wrap", overflowX: 'scroll', height: 180, marginLeft: 55, justifyContent: "space-between", marginTop: 10 }}>
+                      <div style={{ display: "flex", flexDirection: "column", flexWrap: "wrap", overflowX: 'scroll', height: 180, marginLeft: 55, /*justifyContent: "space-between",*/ marginTop: 10 }}>
                         {payload.map((entry, index) => {
                           const { dataKey, color } = entry
                           return (
@@ -1060,7 +1064,7 @@ const DashboardPage = () => {
                   const { payload } = props;
                   return (
                     <div style={{ display: "flex", flexDirection: "column", height: 180 }}>
-                      <div style={{ display: "flex", flexDirection: "column", flexWrap: "wrap", overflowX: 'scroll', height: 180, marginLeft: 55, justifyContent: "space-between", marginTop: 10 }}>
+                      <div style={{ display: "flex", flexDirection: "column", flexWrap: "wrap", overflowX: 'scroll', height: 180, marginLeft: 55, /*justifyContent: "space-between"*/ marginTop: 10 }}>
                         {payload.map((entry, index) => {
                           const { dataKey, color } = entry
                           return (
@@ -1100,12 +1104,10 @@ const DashboardPage = () => {
                   <div style={{ backgroundColor: "rgba(255,255,255,1)", border: "solid rgba(0,0,0,0.25) 1px", padding: 16, display: "flex", flexDirection: "column" }}>
                     <span style={{ fontFamily: "Montserrat", fontWeight: 600, fontSize: 24 }}>{label}</span>
                     <div style={{ height: 14 }} />
-                    <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", width: 250 }}>
+                    <div style={{ display: "flex", flexWrap: "wrap", /*justifyContent: "space-between"*/ width: 250 }}>
                       {payload.reverse().map((item, index) => {
                         let percentage = ((item.value / item.payload.total2) * 100)
-                        // if (Math.round(percentage) !== percentage)
-                        //   percentage = percentage.toFixed(2)
-                        percentage = Math.round(percentage)
+                        percentage = Math.round(percentage * 100) / 100
                         return (
                           <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "center", width: "33.33%", marginBottom: 8 }}>
                             <div style={{ backgroundColor: item.fill, height: 18, width: 18, border: "solid rgb(0,0,0,0.75) 0.5px", flex: "none" }} />
@@ -1307,18 +1309,52 @@ const DashboardPage = () => {
   }, [amrClassFilter, dimensions, amrClassChartData, desktop, middle])
 
   useEffect(() => {
+    // const CustomizedDot = (props) => {
+    //   const { cx, cy, stroke, payload, value, dataKey } = props;
+
+    //   if (value !== undefined) {
+    //     switch (dataKey) {
+    //       case "Azithromycin":
+    //         return (
+    //           <svg x={cx - 6} y={cy - 7} width={120} height={120} fill={getColorForDrug(dataKey)} viewBox="0 0 1024 1024">
+    //             <path d="M 50,5 95,97.5 5,97.5 Z"/>
+    //           </svg>
+    //         );
+    //       case "Chloramphenicol":
+    //         return (
+    //           <svg x={cx - 7} y={cy - 7} width={160} height={160} fill={getColorForDrug(dataKey)} viewBox="0 0 1024 1024">
+    //             <path d="M 25, 50 a 25,25 0 1,1 50,0 a 25,25 0 1,1 -50,0"/>
+    //           </svg>
+    //         );
+    //       case "Fluoroquinolones (CipI-R)":
+    //         return (
+    //           <svg x={cx - 7} y={cy - 7} width={160} height={160} fill="black" viewBox="0 0 1024 1024">
+    //             {/* <path d="M0,0 150,0 150,50 0,50" /> */}
+    //           </svg>
+    //         );
+    //       default:
+    //         return (
+    //           <svg x={cx - 7} y={cy - 5} width={1} height={1} fill="transparent" viewBox="0 0 1024 1024"></svg>
+    //         );
+    //     }
+    //   }
+    //   return (
+    //     <svg x={cx - 7} y={cy - 5} width={1} height={1} fill="transparent" viewBox="0 0 1024 1024"></svg>
+    //   );
+    // };
+
     const plotDrugTrendsChart = () => {
       return (
         <ResponsiveContainer width="90%">
           <LineChart
-            height={360}
+            height={500}
             data={drugTrendsChartData.slice(0, drugTrendsChartData.length - 1)}
             margin={{
               top: 20, bottom: 5, right: 0, left: -5
             }}
           >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" interval={"preserveStartEnd"} tick={{ fontSize: 14 }} />
+            <XAxis padding={{ left: 20, right: 20 }} dataKey="name" interval={"preserveStartEnd"} tick={{ fontSize: 14 }} />
             <YAxis />
             <Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} />
 
@@ -1327,7 +1363,7 @@ const DashboardPage = () => {
                 const { payload } = props;
                 return (
                   <div style={{ display: "flex", flexDirection: "row", justifyContent: 'flex-end' }}>
-                    <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", paddingLeft: 55, justifyContent: "space-between", marginTop: 10 }}>
+                    <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", /*justifyContent: "space-between",*/ paddingLeft: 55, marginTop: 10 }}>
                       {payload.map((entry, index) => {
                         const { dataKey, color } = entry
                         return (
@@ -1342,14 +1378,14 @@ const DashboardPage = () => {
                 );
               }}
             />
-            {tooltip(150, dimensions.width < mobile ? 250 : 325, "50%", true, { zIndex: 100, top: 175, right: 0 }, true, 1)}
-            {amrClassesForFilter.slice(1).map((item) => (<Line dataKey={item} stroke={getColorForDrug(item)} connectNulls dot={false} type="monotone" />))}
+            {tooltip(310, dimensions.width < mobile ? 250 : 325, "50%", true, { zIndex: 100, top: 175, right: 0 }, true, 1)}
+            {drtClassesForFilter.slice(1).map((item) => (<Line dot={true} dataKey={item} strokeWidth={2} stroke={getColorForDrug(item)} connectNulls type="monotone" />))}
           </LineChart>
         </ResponsiveContainer>
       )
     }
     setPlotDrugTrendsChart(plotDrugTrendsChart)
-  }, [amrClassesForFilter, dimensions, drugTrendsChartData, tooltip, mobile])
+  }, [drtClassesForFilter, dimensions, drugTrendsChartData, tooltip, mobile])
 
   useEffect(() => {
     const plotDrugsAndGenotypesChart = () => {
@@ -1357,7 +1393,7 @@ const DashboardPage = () => {
         return (
           <ResponsiveContainer width="90%">
             <BarChart
-              height={360}
+              height={500}
               data={drugsAndGenotypesChartData.slice(0, drugsAndGenotypesChartData.length - 1)}
               margin={{
                 top: 20, left: -5, bottom: 5, right: 0
@@ -1373,7 +1409,7 @@ const DashboardPage = () => {
                   const { payload } = props;
                   return (
                     <div style={{ display: "flex", flexDirection: "row", justifyContent: 'flex-end' }}>
-                      <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", paddingLeft: 55, justifyContent: "space-between", marginTop: 10 }}>
+                      <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", paddingLeft: 55, /*justifyContent: "space-between"*/ marginTop: 10 }}>
                         {payload.map((entry, index) => {
                           const { dataKey, color } = entry
                           return (
@@ -1388,7 +1424,7 @@ const DashboardPage = () => {
                   );
                 }}
               />
-              {tooltip(150, dimensions.width < mobile ? 250 : 325, "50%", false, { zIndex: 100, top: 160 }, false, 0)}
+              {tooltip(350, dimensions.width < mobile ? 250 : 325, "50%", false, { zIndex: 100, top: 160 }, false, 0)}
               {amrClassesForFilter.slice(1).map((item) => (<Bar dataKey={item} fill={getColorForDrug(item)} />))}
             </BarChart>
           </ResponsiveContainer>
@@ -1402,7 +1438,7 @@ const DashboardPage = () => {
             if (keys[key] !== 'name' && keys[key] !== 'total' && keys[key] !== 'quantities') {
               let aux = keys[key]
               element.quantities[aux] = element[aux]
-              element[aux] = Math.round((element[aux] * 100) / element.total)
+              element[aux] = (element[aux] * 100) / element.total
             }
           }
         });
@@ -1410,7 +1446,7 @@ const DashboardPage = () => {
         return (
           <ResponsiveContainer width="90%">
             <BarChart
-              height={360}
+              height={500}
               data={teste}
               margin={{
                 top: 20, left: -5, bottom: 5, right: 0
@@ -1426,7 +1462,7 @@ const DashboardPage = () => {
                   const { payload } = props;
                   return (
                     <div style={{ display: "flex", flexDirection: "row", justifyContent: 'flex-end' }}>
-                      <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", paddingLeft: 55, justifyContent: "space-between", marginTop: 10 }}>
+                      <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", paddingLeft: 55, /*justifyContent: "space-between",*/ marginTop: 10 }}>
                         {payload.map((entry, index) => {
                           const { dataKey, color } = entry
                           return (
@@ -1475,7 +1511,7 @@ const DashboardPage = () => {
     }
   })
 
-  const [capturePicture] = useState(() => async (id, index, info={}) => {
+  const [capturePicture] = useState(() => async (id, index, info = {}) => {
     switch (index) {
       case 0:
         setCaptureControlMapInProgress(true)
@@ -1502,14 +1538,14 @@ const DashboardPage = () => {
 
     const names = ["Resistance Frequencies Within Genotypes", "Drug Resistance Trends", "Genotype Distribution", "Resistance determinants within all genotypes"]
     const brokenNames = [["Resistance Frequencies", "Within Genotypes"], ["Resistance determinants", "within all genotypes"]]
-    
+
     if (index === 5) {
       let ids = ["RFWG", "RFWAG", "DRT", "GD"]
 
-      var doc = new jsPDF({unit: 'mm', format: 'a4', orientation: 'l'});
+      var doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'l' });
       doc.setFontSize(25);
       doc.text("Global overview Salmonella Typhi", 80, 15);
-      
+
       await svgAsPngUri(document.getElementById('control-map'), { scale: 4, backgroundColor: "white", width: 1200, left: -200 })
         .then(async (uri) => {
           let canvas = document.createElement("canvas")
@@ -1526,7 +1562,7 @@ const DashboardPage = () => {
           var img = canvas.toDataURL("image/png")
           doc.addImage(img, "PNG", 0, 18, 298, 155);
         })
-      
+
       let actualMapView = info.mapView
       switch (actualMapView) {
         case "MDR":
@@ -1550,13 +1586,13 @@ const DashboardPage = () => {
         default:
           break;
       }
-      
+
       doc.setFontSize(14);
       doc.text("Map view: " + actualMapView, 10, 180);
       doc.text("Dataset: " + info.dataset, 10, 187);
       doc.text("Time period: " + info.actualTimePeriodRange[0] + " to " + info.actualTimePeriodRange[1], 10, 194);
       doc.text("Country: " + info.country, 10, 201);
-      
+
       if (info.mapView === 'Dominant Genotype') {
         var img = new Image()
         img.src = "legends/MV_DG.png"
@@ -1574,7 +1610,7 @@ const DashboardPage = () => {
       let typhinetLogo = new Image();
       typhinetLogo.src = typhinetLogoImg;
       doc.addImage(typhinetLogo, 'PNG', 0, 0, 50, 21)
-      
+
       doc.addPage('a4', 'l')
       const names2 = ["Resistance Frequencies Within Genotypes", "Resistance determinants within all genotypes", "Drug Resistance Trends", "Genotype Distribution"]
       for (let index = 0; index < ids.length; index++) {
@@ -1607,10 +1643,10 @@ const DashboardPage = () => {
           doc.text("Top Genotypes (up to 10)", 25, 15)
           subtitleH = 3
         }
-        
+
         if (index === 1) {
           doc.addImage(url, "PNG", 5, 15 + subtitleH);
-        }else {
+        } else {
           doc.addImage(url, "PNG", 5, 15 + subtitleH);
         }
 
@@ -1647,7 +1683,7 @@ const DashboardPage = () => {
           graphImg.src = dataUrl;
           legend.style.display = 'block'
         });
-      
+
       let cHeight = 20
       let logoHeight = 50
       let legendHeight = 0
@@ -1684,17 +1720,17 @@ const DashboardPage = () => {
       ctx.textAlign = "center";
 
       if (id === "RFWG") {
-        ctx.fillText(brokenNames[0][0], canvas.width/2, 10 + logoHeight)
-        ctx.fillText(brokenNames[0][1], canvas.width/2, 30 + logoHeight)
+        ctx.fillText(brokenNames[0][0], canvas.width / 2, 10 + logoHeight)
+        ctx.fillText(brokenNames[0][1], canvas.width / 2, 30 + logoHeight)
         ctx.font = "12px Montserrat"
-        ctx.fillText("Top Genotypes (up to 5)", canvas.width/2, 32 + logoHeight + subtitleHeight)
+        ctx.fillText("Top Genotypes (up to 5)", canvas.width / 2, 32 + logoHeight + subtitleHeight)
       } else if (id === "RFWAG") {
-        ctx.fillText(brokenNames[1][0], canvas.width/2, 10 + logoHeight)
-        ctx.fillText(brokenNames[1][1], canvas.width/2, 30 + logoHeight)
+        ctx.fillText(brokenNames[1][0], canvas.width / 2, 10 + logoHeight)
+        ctx.fillText(brokenNames[1][1], canvas.width / 2, 30 + logoHeight)
         ctx.font = "12px Montserrat"
-        ctx.fillText("Top Genotypes (up to 10)", canvas.width/2, 32 + logoHeight + subtitleHeight)
-      }else{
-        ctx.fillText(names[index - 1], canvas.width/2, 10 + logoHeight)
+        ctx.fillText("Top Genotypes (up to 10)", canvas.width / 2, 32 + logoHeight + subtitleHeight)
+      } else {
+        ctx.fillText(names[index - 1], canvas.width / 2, 10 + logoHeight)
       }
 
       ctx.drawImage(graphImg, 0, cHeight + logoHeight + subtitleHeight);
@@ -1756,7 +1792,7 @@ const DashboardPage = () => {
           ctx.font = "bolder 50px Montserrat"
           ctx.fillStyle = "black";
           ctx.textAlign = "center";
-          ctx.fillText("Global overview Salmonella Typhi", canvas.width/2, 80)
+          ctx.fillText("Global overview Salmonella Typhi", canvas.width / 2, 80)
           ctx.font = "35px Montserrat"
           ctx.textAlign = "center";
 
@@ -1784,9 +1820,9 @@ const DashboardPage = () => {
               break;
           }
 
-          ctx.fillText("Map view: " + actualMapView, canvas.width/2, 140)
-          ctx.fillText("Dataset: " + info.dataset, canvas.width/2, 190)
-          ctx.fillText("Time period: " + info.actualTimePeriodRange[0] + " to " + info.actualTimePeriodRange[1], canvas.width/2, 240)
+          ctx.fillText("Map view: " + actualMapView, canvas.width / 2, 140)
+          ctx.fillText("Dataset: " + info.dataset, canvas.width / 2, 190)
+          ctx.fillText("Time period: " + info.actualTimePeriodRange[0] + " to " + info.actualTimePeriodRange[1], canvas.width / 2, 240)
 
           ctx.drawImage(mapImg, 0, textHeight, canvas.width, cHeight);
 
@@ -1797,7 +1833,7 @@ const DashboardPage = () => {
           if (info.mapView === 'Dominant Genotype') {
             legendImg.src = "legends/MV_DG.png";
             await legendImgoPromise;
-            let centerWidth = (canvas.width - 1731)/2
+            let centerWidth = (canvas.width - 1731) / 2
             ctx.drawImage(legendImg, centerWidth, canvas.height - legendHeight, 1731, 400);
           } else if (info.mapView === 'No. Samples') {
             legendImg.src = "legends/MV_NS.png";
@@ -1881,7 +1917,7 @@ const DashboardPage = () => {
 
     switch (mapView) {
       case 'No. Samples':
-        let legends = ['1 - 10', '11 - 20', '21 - 100', '101 - 300', '> 300']
+        let legends = ['1 - 9', '10 - 19', '20 - 99', '100 - 299', '> 300']
         let aux = [1, 11, 21, 101, 301]
         return (
           <>
@@ -2643,7 +2679,7 @@ const DashboardPage = () => {
                     className={`button ${captureControlMapInProgress && "disabled"}`}
                     onClick={() => {
                       if (!captureControlMapInProgress)
-                      capturePicture('control-map', 0, {mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange})
+                        capturePicture('control-map', 0, { mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange })
                     }}
                   >
                     <FontAwesomeIcon icon={faCamera} />
@@ -2811,7 +2847,7 @@ const DashboardPage = () => {
           <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
             <div style={{ display: "flex", flexDirection: dimensions.width > desktop ? "row" : "column", marginTop: 16, paddingBottom: 20 }}>
               <div style={{ display: "flex", flexDirection: "column", flex: 0.5, paddingRight: dimensions.width < mobile ? 0 : 10 }}>
-                <div style={{ height: 520, width: "100%", display: "flex", flexDirection: "column" }}>
+                <div style={{ height: 717, width: "100%", display: "flex", flexDirection: "column" }}>
                   <div style={{ width: "100%", flexDirection: "row", textAlign: "center", display: "flex", justifyContent: "center" }}>
                     <span style={{ paddingRight: 32, marginRight: -22, paddingLeft: 35 }} className="chart-title">Resistance frequencies within genotypes</span>
                     <div style={{ display: "inline-block", position: "relative" }}>
@@ -2821,7 +2857,7 @@ const DashboardPage = () => {
                           className={`button ${captureControlChartRFWGInProgress && "disabled"}`}
                           onClick={() => {
                             if (!captureControlChartRFWGInProgress)
-                            capturePicture('RFWG', 1, {mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry})
+                              capturePicture('RFWG', 1, { mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry })
                           }}
                         >
                           <FontAwesomeIcon icon={faCamera} size="sm" />
@@ -2854,7 +2890,7 @@ const DashboardPage = () => {
                       </Select>
                     </FormControl>
                   </div>
-                  <div id="RFWG" style={{ height: 490, display: "flex", flexDirection: "row", alignItems: "center" }}>
+                  <div id="RFWG" style={{ height: 687, display: "flex", flexDirection: "row", alignItems: "center" }}>
                     <span className="y-axis-label-vertical" style={{ paddingRight: 8, marginBottom: /*dimensions.width > desktop ? 80 : 90*/ 100 }}>{RFWGFilter === 1 ? 'Number of genomes' : 'Percentage within genotype (%)'}</span>
                     {plotDrugsAndGenotypesChart}
                   </div>
@@ -2869,7 +2905,7 @@ const DashboardPage = () => {
                           className={`button ${captureControlChartRFWAGInProgress && "disabled"}`}
                           onClick={() => {
                             if (!captureControlChartRFWAGInProgress)
-                            capturePicture('RFWAG', 4, {mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry, amrClassFilter: amrClassFilter})
+                              capturePicture('RFWAG', 4, { mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry, amrClassFilter: amrClassFilter })
                           }}
                         >
                           <FontAwesomeIcon icon={faCamera} size="sm" />
@@ -2920,7 +2956,7 @@ const DashboardPage = () => {
                           className={`button ${captureControlChartDRTInProgress && "disabled"}`}
                           onClick={() => {
                             if (!captureControlChartDRTInProgress)
-                            capturePicture('DRT', 2, {mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry})
+                              capturePicture('DRT', 2, { mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry })
                           }}
                         >
                           <FontAwesomeIcon icon={faCamera} size="sm" />
@@ -2934,7 +2970,7 @@ const DashboardPage = () => {
                       )}
                     </div>
                   </div>
-                  <div id="DRT" style={{ paddingTop: dimensions.width < desktop ? '10px' : '76px', height: 403, display: "flex", flexDirection: "row", alignItems: "center" }}>
+                  <div id="DRT" style={{ paddingTop: dimensions.width < desktop ? '10px' : '76px', height: 600, display: "flex", flexDirection: "row", alignItems: "center" }}>
                     <span className="y-axis-label-vertical" style={{ paddingTop: /*dimensions.width > desktop ? 0 : 0*/ 80 }}>Resistant (%)</span>
                     {plotDrugTrendsChart}
                   </div>
@@ -2949,7 +2985,7 @@ const DashboardPage = () => {
                           className={`button ${captureControlChartGDInProgress && "disabled"}`}
                           onClick={() => {
                             if (!captureControlChartGDInProgress)
-                            capturePicture('GD', 3, {mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry})
+                              capturePicture('GD', 3, { mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry })
                           }}
                         >
                           <FontAwesomeIcon icon={faCamera} size="sm" />
@@ -2994,10 +3030,10 @@ const DashboardPage = () => {
                 <FontAwesomeIcon icon={faTable} style={{ marginRight: 8 }} />
                 <span>Download database</span>
               </div>
-              <div style={{marginTop: dimensions.width > desktop ? 0 : 20, marginLeft: dimensions.width > desktop ? 20 : 0}} className="download-sheet-button" onClick={() => capturePicture('', 5, {mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry, amrClassFilter: amrClassFilter})}>
+              {/* <div style={{ marginTop: dimensions.width > desktop ? 0 : 20, marginLeft: dimensions.width > desktop ? 20 : 0 }} className="download-sheet-button" onClick={() => capturePicture('', 5, { mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry, amrClassFilter: amrClassFilter })}>
                 <FontAwesomeIcon icon={faFilePdf} style={{ marginRight: 8 }} />
                 <span>Download report from current view</span>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

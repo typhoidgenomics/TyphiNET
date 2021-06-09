@@ -167,7 +167,7 @@ export const getColorForDrug = (drug) => {
     case 'Fluoroquinolones (CipI-R)':
       return "rgb(255,236,120)";
     case 'ESBL':
-      return "rgb(190,186,217)";
+      return "#DB90F0";
     case 'Chloramphenicol':
       return "rgb(249,129,117)";
     case 'Ampicillin':
@@ -180,6 +180,8 @@ export const getColorForDrug = (drug) => {
       return "rgb(102,102,255)";
     case 'Tetracyclines':
       return "rgb(251,207,229)";
+    case 'Susceptible':
+      return "lightGray";
     default:
       return "#F5F4F6";
   }

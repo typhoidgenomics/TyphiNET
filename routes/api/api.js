@@ -18,6 +18,7 @@ router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel', function (req,
             let data_travel = false
             let allDrugs = {}
 
+            let noAMRGenomes = {}
             for (let data of resultsJson) {
 
                 if (travel == "full") {
@@ -82,6 +83,10 @@ router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel', function (req,
                     if (data["tetracycline_category"] == "TetR")
                         drugs.push("Tetracyclines")
 
+                    if (data["amr_category"] == "No AMR detected") {
+                        drugs.push("Susceptible")
+                    }
+
                     const rawTrendObject = {
                         YEAR: data["DATE"],
                         GENOTYPE: data["GENOTYPE"],
@@ -107,6 +112,7 @@ router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel', function (req,
                 })
             })
             response.push([allDrugs])
+            response.push([noAMRGenomes])
             res.json(response);
         })
 })
