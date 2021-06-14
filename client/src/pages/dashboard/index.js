@@ -20,11 +20,11 @@ import ReactTooltip from "react-tooltip";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Brush, LineChart, Line, Legend } from 'recharts';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus, faMinus, faCrosshairs, faCamera, faTable, faFilePdf, faInfoCircle, faUndoAlt } from '@fortawesome/free-solid-svg-icons'
+import { faPlus, faMinus, faCrosshairs, faCamera, faTable, faFilePdf, faInfoCircle, faUndoAlt, faVirusSlash } from '@fortawesome/free-solid-svg-icons'
 import download from 'downloadjs';
 import { svgAsPngUri } from 'save-svg-as-png';
-// import typhinetLogoImg from '../../assets/img/logo-typhinet.png';
-import typhinetLogoImg from '../../assets/img/logo-typhinet-prod.png';
+import typhinetLogoImg from '../../assets/img/logo-typhinet.png';
+import typhinetLogoImg2 from '../../assets/img/logo-typhinet-prod.png';
 import geography from '../../assets/world-110m.json'
 import { API_ENDPOINT } from '../../constants';
 import { getColorForGenotype, getColorForAMR, getColorForDrug, getColorForIncType, getColorForTetracyclines } from '../../util/colorHelper';
@@ -108,6 +108,7 @@ const DashboardPage = () => {
   const [worldMapGenotypesData, setWorldMapGenotypesData] = useState([]);
   const [worldMapH58Data, setWorldMapH58Data] = useState([]);
   const [worldMapMDRData, setWorldMapMDRData] = useState([]);
+  const [worldMapSTADData, setWorldMapSTADData] = useState([]);
   const [worldMapXDRData, setWorldMapXDRData] = useState([]);
   const [worldMapDCSData, setWorldMapDCSData] = useState([]);
   const [worldMapAZITHData, setWorldMapAZITHData] = useState([]);
@@ -137,14 +138,15 @@ const DashboardPage = () => {
   const [actualCountry, setActualCountry] = useState("All");
   const [populationStructureFilter, setPopulationStructureFilter] = React.useState(1);
   const [RFWGFilter, setRFWGFilter] = React.useState(1);
-  const [amrClassesForFilter] = useState([/*"AMR Profiles", */"Ampicillin", "Azithromycin", "Chloramphenicol", "Co-trimoxazole", "ESBL", "Fluoroquinolones (CipI-R)", "Sulphonamides", "Tetracyclines", "Trimethoprim"])
-  const [drtClassesForFilter] = useState(["Ampicillin", "Azithromycin", "Chloramphenicol", "Co-trimoxazole", "ESBL", "Fluoroquinolones (CipI-R)", "Susceptible", "Sulphonamides", "Tetracyclines", "Trimethoprim"])
+  const [amrClassesForFilter] = useState([/*"AMR Profiles", */"Ampicillin", "Azithromycin", "Chloramphenicol", "Co-trimoxazole", "ESBL", "Fluoroquinolones (CipI/R)", "Sulphonamides", "Tetracyclines", "Trimethoprim"])
+  const [drtClassesForFilter] = useState(["Ampicillin", "Azithromycin", "Chloramphenicol", "Co-trimoxazole", "ESBL", "Fluoroquinolones (CipI/R)", "Susceptible", "Sulphonamides", "Tetracyclines", "Trimethoprim"])
   const [amrClassFilter, setAmrClassFilter] = React.useState(amrClassesForFilter[5])
+  const [RDWAGDataviewFilter, setRDWAGDataviewFilter] = React.useState(1)
 
   const [drugTrendsChartData, setDrugTrendsChartData] = useState([])
   const [drugsAndGenotypesChartData, setDrugsAndGenotypesChartData] = useState([])
   const [chartMaxHeight, setChartMaxHeight] = useState(0)
-  const [chartMaxWidth, setChartMaxWidth] = useState(0)
+  // const [chartMaxWidth, setChartMaxWidth] = useState(0)
   const [populationStructureChartData, setPopulationStructureChartData] = useState([])
   const [amrClassChartData, setAmrClassChartData] = useState([])
 
@@ -161,6 +163,7 @@ const DashboardPage = () => {
   // const [contactModalVisible, setContactModalVisible] = useState(false)
 
   const [open, setOpen] = React.useState(false);
+  const [open2, setOpen2] = React.useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -170,10 +173,20 @@ const DashboardPage = () => {
     setOpen(false);
   };
 
+  const handleClickOpen2 = () => {
+    setOpen2(true);
+  };
+
+  const handleClose2 = () => {
+    setOpen2(false);
+  };
+
   // const [dimensions.width > desktop, setdimensions.width > desktop] = useState(window.innerWidth > 767)
   const [desktop] = useState(767)
   const [mobile] = useState(500)
   const [middle] = useState(1300)
+
+  const [hoverColor] = useState("#D2F1F6")
 
   const [dimensions, setDimensions] = React.useState({
     height: window.innerHeight,
@@ -378,7 +391,7 @@ const DashboardPage = () => {
     const parseDataForCountryMap = (data) => {
       let finalCountries = [];
 
-      let samplesData = [], genotypesData = [], h58Data = [], mdrData = [], xdrData = [], drugsData = [], amrData = [], incTypesData = [], dcsData = [], azithData = [], cipIData = [], cipRData = [];
+      let samplesData = [], genotypesData = [], h58Data = [], mdrData = [], stadData = [], xdrData = [], drugsData = [], amrData = [], incTypesData = [], dcsData = [], azithData = [], cipIData = [], cipRData = [];
 
       const countData = (array, elementToCount, parentName, childName) => {
         let temp = []
@@ -504,6 +517,28 @@ const DashboardPage = () => {
       })
       if (!arraysEqual(h58Data, worldMapH58Data))
         setWorldMapH58Data(h58Data)
+
+      stadData = countData(data, "STAD", "STADs", "type")
+      stadData.forEach(country => {
+        country.STADs.forEach((stad, index) => {
+          if (stad.type === "No AMR detected") {
+            let percentage = ((stad.count / country.total) * 100)
+            if (Math.round(percentage) !== percentage)
+              percentage = percentage.toFixed(2)
+            percentage = parseFloat(percentage);
+            country.percentage = percentage;
+            country.count = stad.count;
+          }
+        })
+        if (country.percentage === undefined) {
+          country.percentage = parseFloat(0)
+        }
+        if (country.count === undefined) {
+          country.count = 0
+        }
+      })
+      if (!arraysEqual(stadData, worldMapSTADData))
+        setWorldMapSTADData(stadData)
 
       mdrData = countData(data, "MDR", "MDRs", "type")
       mdrData.forEach(country => {
@@ -713,7 +748,6 @@ const DashboardPage = () => {
 
       finalChartData.forEach((data) => {
         let sum = 0;
-        let sum2 = 0
         Object.entries(data).forEach((entry) => {
           if (entry[0] !== "genotype" && entry[0] !== "undefined") {
             let errorMargin = Math.ceil(entry[1] * 0.2) // 20%
@@ -733,7 +767,6 @@ const DashboardPage = () => {
                 maxSum = entry[1]
               }
             }
-            sum2 += entry[1]
 
           }
           if (entry[0] === "genotype") {
@@ -741,7 +774,6 @@ const DashboardPage = () => {
           }
         })
         data.total = sum;
-        data.total3 = sum2
       })
       finalChartData = finalChartData.filter(g => g.genotype !== undefined && g.genotype !== "0")
       let top10 = []
@@ -770,7 +802,8 @@ const DashboardPage = () => {
           return -1
         return a.total > b.total ? -1 : 1
       })
-      top10.push({ maxSum: top10.length === 0 ? 0 : Math.ceil(top10[0].total3 / 50) * 50, totalSum: totalSum })
+
+      top10.push({ maxSum: top10.length === 0 ? 0 : Math.ceil(top10[0].total2 / 50) * 50, totalSum: totalSum })
       if (amrClassFilter !== "Co-trimoxazole") {
         if (!arraysEqual(amrClassChartData, top10))
           setAmrClassChartData(top10)
@@ -894,7 +927,12 @@ const DashboardPage = () => {
       let drugTrendsChartResponse = await axios.get(`${API_ENDPOINT}filters/drugTrendsChart/${actualCountry === "All" ? "all" : actualCountry}/${actualTimePeriodRange[0]}/${actualTimePeriodRange[1]}/${dataset}`)
       parseDataForDrugTrendsChart(drugTrendsChartResponse.data)
 
-      let classChartResponse = await axios.get(`${API_ENDPOINT}filters/amrClassChart/${actualCountry === "All" ? "all" : actualCountry}/${actualTimePeriodRange[0]}/${actualTimePeriodRange[1]}/${amrClassFilter}/${dataset}`)
+      let classChartResponse
+      if (amrClassFilter === "Fluoroquinolones (CipI/R)") {
+        classChartResponse = await axios.get(`${API_ENDPOINT}filters/amrClassChart/${actualCountry === "All" ? "all" : actualCountry}/${actualTimePeriodRange[0]}/${actualTimePeriodRange[1]}/${"Fluoroquinolones (CipI-R)"}/${dataset}`)
+      } else {
+        classChartResponse = await axios.get(`${API_ENDPOINT}filters/amrClassChart/${actualCountry === "All" ? "all" : actualCountry}/${actualTimePeriodRange[0]}/${actualTimePeriodRange[1]}/${amrClassFilter}/${dataset}`)
+      }
       parseDataForAmrClassChart(classChartResponse.data)
 
       setAppLoading((value) => { if (value < 2) return value + 1 })
@@ -912,15 +950,15 @@ const DashboardPage = () => {
   //   .range(["#4575b4", "#91bfdb", "#e0f3f8", "#fee090", "#fc8d59", "#d73027"]);
 
   const mapSamplesColorScale = (domain) => {
-    if (domain >= 1 && domain <= 10) {
+    if (domain >= 1 && domain <= 9) {
       return '#4575b4'
-    } else if (domain >= 11 && domain <= 20) {
+    } else if (domain >= 10 && domain <= 19) {
       return '#91bfdb'
-    } else if (domain >= 21 && domain <= 100) {
+    } else if (domain >= 20 && domain <= 99) {
       return '#addd8e'
-    } else if (domain >= 101 && domain <= 300) {
+    } else if (domain >= 100 && domain <= 299) {
       return '#fee090'
-    } else if (domain > 300) {
+    } else if (domain >= 300) {
       return '#fc8d59'
     }
   }
@@ -934,6 +972,7 @@ const DashboardPage = () => {
       <Tooltip
         position={{ y: positionY, x: dimensions.width < mobile ? -20 : 0 }}
         wrapperStyle={wrapperS}
+        cursor={{ fill: hoverColor }}
         content={({ active, payload, label }) => {
           if (payload !== null) {
             if (sort) {
@@ -975,7 +1014,7 @@ const DashboardPage = () => {
         }}
       />
     )
-  }, [dimensions, mobile, populationStructureFilter, RFWGFilter])
+  }, [dimensions, mobile, populationStructureFilter, RFWGFilter, hoverColor])
 
   useEffect(() => {
     const plotPopulationStructureChart = () => {
@@ -999,7 +1038,8 @@ const DashboardPage = () => {
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" interval="preserveStartEnd" tick={{ fontSize: 14 }} />
-              <YAxis domain={[0, maxH]} />
+              <YAxis domain={[0, maxH]} allowDecimals={false} label={{ value: "Number of genomes", angle: -90, position: "insideBottomLeft", offset: 13 }} width={70} />
+
               <Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} />
 
               <Legend
@@ -1007,7 +1047,7 @@ const DashboardPage = () => {
                   const { payload } = props;
                   return (
                     <div style={{ display: "flex", flexDirection: "column", height: 180 }}>
-                      <div style={{ display: "flex", flexDirection: "column", flexWrap: "wrap", overflowX: 'scroll', height: 180, marginLeft: 55, /*justifyContent: "space-between",*/ marginTop: 10 }}>
+                      <div style={{ display: "flex", flexDirection: "column", flexWrap: "wrap", overflowX: 'scroll', height: 180, marginLeft: 55, justifyContent: "space-between", marginTop: 10 }}>
                         {payload.map((entry, index) => {
                           const { dataKey, color } = entry
                           return (
@@ -1056,7 +1096,7 @@ const DashboardPage = () => {
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" interval="preserveStartEnd" tick={{ fontSize: 14 }} />
-              <YAxis domain={[0, maxH]} allowDataOverflow={true} />
+              <YAxis domain={[0, maxH]} allowDataOverflow={true} allowDecimals={false} label={{ value: "% Genomes per year", angle: -90, position: "insideBottomLeft", offset: 13 }} width={70} />
               <Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} />
 
               <Legend
@@ -1064,7 +1104,7 @@ const DashboardPage = () => {
                   const { payload } = props;
                   return (
                     <div style={{ display: "flex", flexDirection: "column", height: 180 }}>
-                      <div style={{ display: "flex", flexDirection: "column", flexWrap: "wrap", overflowX: 'scroll', height: 180, marginLeft: 55, /*justifyContent: "space-between"*/ marginTop: 10 }}>
+                      <div style={{ display: "flex", flexDirection: "column", flexWrap: "wrap", overflowX: 'scroll', height: 180, marginLeft: 55, justifyContent: "space-between", marginTop: 10 }}>
                         {payload.map((entry, index) => {
                           const { dataKey, color } = entry
                           return (
@@ -1088,7 +1128,7 @@ const DashboardPage = () => {
       }
     }
     setPlotPopulationStructureChart(plotPopulationStructureChart)
-  }, [chartMaxWidth, dimensions, genotypes, populationStructureChartData, populationStructureFilter, tooltip])
+  }, [dimensions, genotypes, populationStructureChartData, populationStructureFilter, tooltip])
 
   useEffect(() => {
     const amrClassChartTooltip = () => {
@@ -1097,6 +1137,7 @@ const DashboardPage = () => {
           position={{ x: 0 }}
           wrapperStyle={{ zIndex: 100, top: 50 }}
           allowEscapeViewBox={{ x: true, y: true }}
+          cursor={{ fill: hoverColor }}
           content={({ active, payload, label }) => {
             if (payload !== null) {
               if (active) {
@@ -1104,16 +1145,21 @@ const DashboardPage = () => {
                   <div style={{ backgroundColor: "rgba(255,255,255,1)", border: "solid rgba(0,0,0,0.25) 1px", padding: 16, display: "flex", flexDirection: "column" }}>
                     <span style={{ fontFamily: "Montserrat", fontWeight: 600, fontSize: 24 }}>{label}</span>
                     <div style={{ height: 14 }} />
-                    <div style={{ display: "flex", flexWrap: "wrap", /*justifyContent: "space-between"*/ width: 250 }}>
+                    <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", width: 250 }}>
                       {payload.reverse().map((item, index) => {
-                        let percentage = ((item.value / item.payload.total2) * 100)
+                        let percentage
+                        if (RDWAGDataviewFilter === 1) {
+                          percentage = ((item.value / item.payload.total2) * 100)
+                        } else {
+                          percentage = item.value
+                        }
                         percentage = Math.round(percentage * 100) / 100
                         return (
                           <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "center", width: "33.33%", marginBottom: 8 }}>
                             <div style={{ backgroundColor: item.fill, height: 18, width: 18, border: "solid rgb(0,0,0,0.75) 0.5px", flex: "none" }} />
                             <div style={{ display: "flex", flexDirection: "column", marginLeft: 8, wordWrap: "break-word", overflowX: "hidden" }}>
                               <span style={{ fontFamily: "Montserrat", color: "rgba(0,0,0,0.75)", fontWeight: 500, fontSize: 14 }}>{item.name}</span>
-                              <span style={{ fontFamily: "Montserrat", color: "rgba(0,0,0,0.75)", fontSize: 12 }}>N = {item.value}</span>
+                              <span style={{ fontFamily: "Montserrat", color: "rgba(0,0,0,0.75)", fontSize: 12 }}>N = {RDWAGDataviewFilter === 2 ? item.payload.percentage[item.name] : item.value}</span>
                               <span style={{ fontFamily: "Montserrat", color: "rgba(0,0,0,0.75)", fontSize: 10 }}>{percentage}%</span>
                             </div>
                           </div>
@@ -1137,53 +1183,114 @@ const DashboardPage = () => {
         maxSum = amrClassChartData[amrClassChartData.length - 1].maxSum
       }
 
-      const data = amrClassChartData.slice(0, amrClassChartData.length - 1)
-      return (
-        <ResponsiveContainer width="90%">
-          <BarChart
-            width={500}
-            height={300}
-            data={data}
-            margin={{
-              top: 20, left: 0, bottom: 5, right: 0
-            }}
-            layout="horizontal"
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="genotype" type={"category"} interval={dimensions.width < middle ? 1 : 0} tick={{ fontSize: 14 }} />
-            <YAxis domain={[0, maxSum]} type={"number"} />
-            <Brush dataKey="genotype" height={20} stroke={"rgb(31, 187, 211)"} />
+      const dataAMR = amrClassChartData.slice(0, amrClassChartData.length - 1)
 
-            <Legend
-              content={(props) => {
-                const { payload } = props;
-                return (
-                  <div style={{ display: "flex", flexDirection: "column", height: 180 }}>
-                    <div style={{ display: "flex", flexDirection: "column", flexWrap: "wrap", overflowX: 'scroll', height: 180, marginLeft: 55, justifyContent: amrClassFilter === "Ampicillin" ? "" : "space-between", marginTop: 10 }}>
-                      {payload.map((entry, index) => {
-                        const { dataKey, color } = entry
-                        return (
-                          <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "start", marginBottom: 4, marginLeft: 3, marginRight: 10 }}>
-                            <div style={{ height: 8, width: 8, borderRadius: 4, marginTop: 3, backgroundColor: color, flexShrink: 0 }} />
-                            <span style={{ fontSize: 12, paddingLeft: 4 }}>{dataKey}</span>
-                          </div>
-                        )
-                      })}
-                    </div>
-                  </div>
-                );
+      if (RDWAGDataviewFilter === 1) {
+        return (
+          <ResponsiveContainer width="90%">
+            <BarChart
+              height={300}
+              data={dataAMR}
+              margin={{
+                top: 20, left: 0, bottom: 5, right: 0
               }}
-            />
+              layout="horizontal"
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="genotype" type={"category"} interval={dimensions.width < middle ? 1 : 0} tick={{ fontSize: 14 }} />
+              <YAxis domain={[0, maxSum]} type={"number"} allowDecimals={false} label={{ value: "Number of occurrences", angle: -90, position: "insideBottomLeft", offset: 13 }} width={70} />
+              <Brush dataKey="genotype" height={20} stroke={"rgb(31, 187, 211)"} />
 
-            {amrClassChartTooltip()}
-            {info.bars.map((item) => {
-              return (
-                <Bar dataKey={item[0]} fill={item[1]} stackId="a" barSize={30} />
-              )
-            })}
-          </BarChart>
-        </ResponsiveContainer>
-      )
+              <Legend
+                content={(props) => {
+                  const { payload } = props;
+                  return (
+                    <div style={{ display: "flex", flexDirection: "column", height: 180 }}>
+                      <div style={{ display: "flex", flexDirection: "column", flexWrap: "wrap", overflowX: 'scroll', height: 180, marginLeft: 55, justifyContent: amrClassFilter === "Ampicillin" ? "" : "space-between", marginTop: 10 }}>
+                        {payload.map((entry, index) => {
+                          const { dataKey, color } = entry
+                          return (
+                            <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "start", marginBottom: 4, marginLeft: 3, marginRight: 10 }}>
+                              <div style={{ height: 8, width: 8, borderRadius: 4, marginTop: 3, backgroundColor: color, flexShrink: 0 }} />
+                              <span style={{ fontSize: 12, paddingLeft: 4 }}>{dataKey}</span>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  );
+                }}
+              />
+
+              {amrClassChartTooltip()}
+              {info.bars.map((item) => {
+                return (
+                  <Bar dataKey={item[0]} fill={item[1]} stackId="a" barSize={30} />
+                )
+              })}
+            </BarChart>
+          </ResponsiveContainer>
+        )
+      } else if (RDWAGDataviewFilter === 2) {
+        let temp = JSON.parse(JSON.stringify(dataAMR))
+
+        temp.forEach(element => {
+          element.percentage = {}
+          for (const key in element) {
+            if (!["genotype", "total", "total2", "percentage"].includes(key) && !key.includes("error")) {
+              const aux = (element[key] * 100) / element.total2
+              element.percentage[key] = element[key]
+              element[key] = aux
+            }
+          }
+        })
+
+        return (
+          <ResponsiveContainer width="90%">
+            <BarChart
+              height={300}
+              data={temp}
+              margin={{
+                top: 20, left: 0, bottom: 5, right: 0
+              }}
+              layout="horizontal"
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="genotype" type={"category"} interval={dimensions.width < middle ? 1 : 0} tick={{ fontSize: 14 }} />
+              <YAxis domain={[0, 100]} type={"number"} allowDecimals={false} label={{ value: "% Genomes", angle: -90, position: "insideBottomLeft", offset: 13 }} width={70} />
+              <Brush dataKey="genotype" height={20} stroke={"rgb(31, 187, 211)"} />
+
+              <Legend
+                content={(props) => {
+                  const { payload } = props;
+                  return (
+                    <div style={{ display: "flex", flexDirection: "column", height: 180 }}>
+                      <div style={{ display: "flex", flexDirection: "column", flexWrap: "wrap", overflowX: 'scroll', height: 180, marginLeft: 55, justifyContent: amrClassFilter === "Ampicillin" ? "" : "space-between", marginTop: 10 }}>
+                        {payload.map((entry, index) => {
+                          const { dataKey, color } = entry
+                          return (
+                            <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "start", marginBottom: 4, marginLeft: 3, marginRight: 10 }}>
+                              <div style={{ height: 8, width: 8, borderRadius: 4, marginTop: 3, backgroundColor: color, flexShrink: 0 }} />
+                              <span style={{ fontSize: 12, paddingLeft: 4 }}>{dataKey}</span>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  );
+                }}
+              />
+
+              {amrClassChartTooltip()}
+              {info.bars.map((item) => {
+                return (
+                  <Bar dataKey={item[0]} fill={item[1]} stackId="a" barSize={30} />
+                )
+              })}
+            </BarChart>
+          </ResponsiveContainer>
+        )
+      }
     }
 
     const plotAmrClassChart = () => {
@@ -1191,20 +1298,24 @@ const DashboardPage = () => {
         case 'Azithromycin':
           return (armClassFilterComponent({
             left: -5, fontsize: 14, strokeWidth: 1, width: null, bars: [
-              ['acrB_R717Q', "#addd8e", "error-acrB_R717Q"],
               ['ereA', "#9e9ac8", "error-ereA"],
+              ['acrB_R717Q', "#addd8e", "error-acrB_R717Q"],
+              ['acrB_R717L', "#FBCFE5", "error-acrB_R717L"],
               ['ereA-acrB_R717Q', "#FFEC78", "error-ereA-acrB_R717Q"],
-              ['No AMR', "#B9B9B9", "error-No AMR"]
+              ['ereA-acrB_R717L', "#66c2a4", "error-ereA-acrB_R717L"],
+              ['acrB_R717Q-acrB_R717L', "#fd8d3c", "error-acrB_R717Q-acrB_R717L"],
+              ['ereA-acrB_R717Q-acrB_R717L', "#6baed6", "error-ereA-acrB_R717Q-acrB_R717L"],
+              ['None', "#B9B9B9", "error-None"]
             ]
           }))
-        case 'Fluoroquinolones (CipI-R)':
+        case 'Fluoroquinolones (CipI/R)':
           return (armClassFilterComponent({
             left: 10, fontsize: 14, strokeWidth: 0.5, width: 3, bars: [
               ['3_QRDR', "#6baed6", "error-3_QRDR"],
               ['2_QRDR', "#FFEC78", "error-2_QRDR"],
               ['1_QRDR + qnrS', "#66c2a4", "error-1_QRDR + qnrS"],
               ['1_QRDR', "#FBCFE5", "error-1_QRDR"],
-              ['0_QRDR', "#B9B9B9", "error-0_QRDR"],
+              ['None', "#B9B9B9", "error-None"],
               ['0_QRDR + qnrS', "#8D8D8D", "error-0_QRDR + qnrS"]]
           }))
         case 'Chloramphenicol':
@@ -1213,14 +1324,14 @@ const DashboardPage = () => {
               ['cmlA', "#addd8e", "error-cmlA"],
               ['catA1', "#9e9ac8", "error-catA1"],
               ["catA1-cmlA", "#FFEC78", "error-catA1-cmlA"],
-              ['No AMR', "#B9B9B9", "error-No AMR"]
+              ['None', "#B9B9B9", "error-None"]
             ]
           }))
         case 'Ampicillin':
           return (armClassFilterComponent({
             left: 3, fontsize: 14, strokeWidth: 1, width: null, bars: [
               ['blaTEM-1D', "#addd8e", "error-blaTEM-1D"],
-              ['No AMR', "#B9B9B9", "error-No AMR"]]
+              ['None', "#B9B9B9", "error-None"]]
           }))
         case 'Sulphonamides':
           return (armClassFilterComponent({
@@ -1228,7 +1339,7 @@ const DashboardPage = () => {
               ['sul2', "#ffeda0", "error-sul2"],
               ['sul1', "#fd8d3c", "error-sul1"],
               ['sul1-sul2', "#B4DD70", "error-sul1-sul2"],
-              ['No AMR', "#B9B9B9", "error-No AMR"]]
+              ['None', "#B9B9B9", "error-None"]]
           }))
         case 'Trimethoprim':
           return (armClassFilterComponent({
@@ -1240,14 +1351,14 @@ const DashboardPage = () => {
               ['dfrA15', "#FBCFE5", "error-dfrA15"],
               ['dfrA14', "#6baed6", "error-dfrA14"],
               ['dfrA1', "#B4DD70", "error-dfrA1"],
-              ['No AMR', "#B9B9B9", "error-No AMR"]]
+              ['None', "#B9B9B9", "error-None"]]
           }))
         case 'Co-trimoxazole':
           let cotrim = ["dfrA1", "dfrA5", "dfrA7", "dfrA14", "dfrA15", "dfrA17", "dfrA18"];
           let colors1 = ["#ffeda0", "#fd8d3c", "#addd8e", "#9e9ac8", "#6baed6", "#7a0177", "#54278f"]
           let colors2 = ["#a50f15", "#6a5acd", "#f1b6da", "#fb8072", "#4682b4", "#2e8b57", "#98fb98"]
           let colors3 = ["#fcc5c0", "#bcbddc", "#fdd0a2", "#c994c7", "#9ecae1", "#a8ddb5", "#fc9272"]
-          let bars = [['No AMR', "#B9B9B9", "error-No AMR"]]
+          let bars = [['None', "#B9B9B9", "error-None"]]
 
           for (const index in cotrim) {
             bars.push([cotrim[index] + "-sul1", colors1[index], "error-" + cotrim[index] + "-sul1"])
@@ -1265,7 +1376,7 @@ const DashboardPage = () => {
               ['tetA(C)', getColorForTetracyclines('tetA(C)'), "error-tetA(C)"],
               ['tetA(B)', getColorForTetracyclines('tetA(B)'), "error-tetA(B)"],
               ['tetA(A)', getColorForTetracyclines('tetA(A)'), "error-tetA(A)"],
-              ['No AMR', "#B9B9B9", "error-No AMR"]
+              ['None', "#B9B9B9", "error-None"]
             ]
             // ['tetA(AB)', getColorForTetracyclines('tetA(AB)'), "error-tetA(AB)"],
             // ['tetA(ABC)', getColorForTetracyclines('tetA(ABC)'), "error-tetA(ABC)"],
@@ -1279,34 +1390,35 @@ const DashboardPage = () => {
             // ['tetA(BCD)', getColorForTetracyclines('tetA(BCD)'), "error-tetA(BCD)"],
             // ['tetA(CD)', getColorForTetracyclines('tetA(CD)'), "error-tetA(CD)"]]
           }))
-        case 'AMR Profiles':
-          return (armClassFilterComponent({
-            left: dimensions.width > desktop ? 12 : -30, fontsize: dimensions.width > desktop ? 14 : 5, strokeWidth: 0.5, width: 3, bars: [
-              ['No AMR detected', getColorForAMR('No AMR detected'), "error-No AMR detected"],
-              ['MDR_DCS', getColorForAMR('MDR_DCS'), "error-MDR_DCS"],
-              ['MDR', getColorForAMR('MDR'), "error-MDR"],
-              ['DCS', getColorForAMR('DCS'), "error-DCS"],
-              ['AzithR_MDR', getColorForAMR('AzithR_MDR'), "error-AzithR_MDR"],
-              ['AzithR_DCS', getColorForAMR('AzithR_DCS'), "error-AzithR_DCS"],
-              ['AzithR_DCS_MDR', getColorForAMR('AzithR_DCS_MDR'), "error-AzithR_DCS_MDR"],
-              ['XDR', getColorForAMR('XDR'), "error-XDR"],
-              ['AMR', getColorForAMR('AMR'), "error-AMR"],
-              ['AMR_DCS', getColorForAMR('AMR_DCS'), "error-AMR_DCS"]]
-          }))
+        // case 'AMR Profiles':
+        //   return (armClassFilterComponent({
+        //     left: dimensions.width > desktop ? 12 : -30, fontsize: dimensions.width > desktop ? 14 : 5, strokeWidth: 0.5, width: 3, bars: [
+        //       ['No AMR detected', getColorForAMR('No AMR detected'), "error-No AMR detected"],
+        //       ['MDR_DCS', getColorForAMR('MDR_DCS'), "error-MDR_DCS"],
+        //       ['MDR', getColorForAMR('MDR'), "error-MDR"],
+        //       ['DCS', getColorForAMR('DCS'), "error-DCS"],
+        //       ['AzithR_MDR', getColorForAMR('AzithR_MDR'), "error-AzithR_MDR"],
+        //       ['AzithR_DCS', getColorForAMR('AzithR_DCS'), "error-AzithR_DCS"],
+        //       ['AzithR_DCS_MDR', getColorForAMR('AzithR_DCS_MDR'), "error-AzithR_DCS_MDR"],
+        //       ['XDR', getColorForAMR('XDR'), "error-XDR"],
+        //       ['AMR', getColorForAMR('AMR'), "error-AMR"],
+        //       ['AMR_DCS', getColorForAMR('AMR_DCS'), "error-AMR_DCS"]]
+        //   }))
         case 'ESBL':
           return (armClassFilterComponent({
             left: 3, fontsize: 14, strokeWidth: 1, width: null, bars: [
               ['blaSHV-12', "#addd8e", "error-blaSHV-12"],
               ['blaOXA-7', "#9e9ac8", "error-blaOXA-7"],
               ['blaCTX-M-15_23', "#6baed6", "error-blaCTX-M-15_23"],
-              ['No AMR', "#B9B9B9", "error-No AMR"]]
+              ['blaCTX-M-55', "#FBCFE5", "error-blaCTX-M-55"],
+              ['None', "#B9B9B9", "error-None"]]
           }))
         default:
           return null;
       }
     }
     setPlotAmrClassChart(plotAmrClassChart)
-  }, [amrClassFilter, dimensions, amrClassChartData, desktop, middle])
+  }, [hoverColor, RDWAGDataviewFilter, amrClassFilter, dimensions, amrClassChartData, desktop, middle])
 
   useEffect(() => {
     // const CustomizedDot = (props) => {
@@ -1326,7 +1438,7 @@ const DashboardPage = () => {
     //             <path d="M 25, 50 a 25,25 0 1,1 50,0 a 25,25 0 1,1 -50,0"/>
     //           </svg>
     //         );
-    //       case "Fluoroquinolones (CipI-R)":
+    //       case "Fluoroquinolones (CipI/R)":
     //         return (
     //           <svg x={cx - 7} y={cy - 7} width={160} height={160} fill="black" viewBox="0 0 1024 1024">
     //             {/* <path d="M0,0 150,0 150,50 0,50" /> */}
@@ -1355,7 +1467,7 @@ const DashboardPage = () => {
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis padding={{ left: 20, right: 20 }} dataKey="name" interval={"preserveStartEnd"} tick={{ fontSize: 14 }} />
-            <YAxis />
+            <YAxis allowDecimals={false} label={{ value: "Resistant (%)", angle: -90, position: "left", offset: -13 }} width={70} />
             <Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} />
 
             <Legend
@@ -1363,11 +1475,11 @@ const DashboardPage = () => {
                 const { payload } = props;
                 return (
                   <div style={{ display: "flex", flexDirection: "row", justifyContent: 'flex-end' }}>
-                    <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", /*justifyContent: "space-between",*/ paddingLeft: 55, marginTop: 10 }}>
+                    <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", justifyContent: dimensions.width < 1585 ? "space-between" : "", paddingLeft: 55, marginTop: 10 }}>
                       {payload.map((entry, index) => {
                         const { dataKey, color } = entry
                         return (
-                          <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "start", width: 120, marginBottom: 4, marginLeft: 3, marginRight: 3 }}>
+                          <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "start", width: dimensions.width < 1585 ? 120 : '19%', marginBottom: 4, marginLeft: 3, marginRight: 3 }}>
                             <div style={{ height: 8, width: 8, borderRadius: 4, marginTop: 3, backgroundColor: color, flexShrink: 0 }} />
                             <span style={{ fontSize: 12, paddingLeft: 4 }}>{dataKey}</span>
                           </div>
@@ -1401,7 +1513,7 @@ const DashboardPage = () => {
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" interval={dimensions.width < mobile ? 1 : 0} tick={{ fontSize: 14 }} />
-              <YAxis />
+              <YAxis allowDecimals={false} label={{ value: "Number of genomes", angle: -90, position: "left", offset: -13 }} width={75} />
               <Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} />
 
               <Legend
@@ -1409,11 +1521,11 @@ const DashboardPage = () => {
                   const { payload } = props;
                   return (
                     <div style={{ display: "flex", flexDirection: "row", justifyContent: 'flex-end' }}>
-                      <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", paddingLeft: 55, /*justifyContent: "space-between"*/ marginTop: 10 }}>
+                      <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", paddingLeft: 55, marginTop: 10, justifyContent: dimensions.width < 1585 ? "space-between" : "" }}>
                         {payload.map((entry, index) => {
                           const { dataKey, color } = entry
                           return (
-                            <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "start", width: 120, marginBottom: 4, marginLeft: 3, marginRight: 3 }}>
+                            <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "start", width: dimensions.width < 1585 ? 120 : '19%', marginBottom: 4, marginLeft: 3, marginRight: 3 }}>
                               <div style={{ height: 8, width: 8, borderRadius: 4, marginTop: 3, backgroundColor: color, flexShrink: 0 }} />
                               <span style={{ fontSize: 12, paddingLeft: 4 }}>{dataKey}</span>
                             </div>
@@ -1425,7 +1537,7 @@ const DashboardPage = () => {
                 }}
               />
               {tooltip(350, dimensions.width < mobile ? 250 : 325, "50%", false, { zIndex: 100, top: 160 }, false, 0)}
-              {amrClassesForFilter.slice(1).map((item) => (<Bar dataKey={item} fill={getColorForDrug(item)} />))}
+              {drtClassesForFilter.slice(1).map((item) => (<Bar dataKey={item} fill={getColorForDrug(item)} />))}
             </BarChart>
           </ResponsiveContainer>
         )
@@ -1454,7 +1566,7 @@ const DashboardPage = () => {
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" interval={dimensions.width < mobile ? 1 : 0} tick={{ fontSize: 14 }} />
-              <YAxis domain={[0, 100]} />
+              <YAxis domain={[0, 100]} allowDecimals={false} label={{ value: "Percentage within genotype (%)", angle: -90, position: "insideBottomLeft", offset: 18 }} width={70} />
               <Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} />
 
               <Legend
@@ -1462,11 +1574,11 @@ const DashboardPage = () => {
                   const { payload } = props;
                   return (
                     <div style={{ display: "flex", flexDirection: "row", justifyContent: 'flex-end' }}>
-                      <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", paddingLeft: 55, /*justifyContent: "space-between",*/ marginTop: 10 }}>
+                      <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", paddingLeft: 55, justifyContent: dimensions.width < 1585 ? "space-between" : "", marginTop: 10 }}>
                         {payload.map((entry, index) => {
                           const { dataKey, color } = entry
                           return (
-                            <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "start", width: 120, marginBottom: 4, marginLeft: 3, marginRight: 3 }}>
+                            <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "start", width: dimensions.width < 1585 ? 120 : '19%', marginBottom: 4, marginLeft: 3, marginRight: 3 }}>
                               <div style={{ height: 8, width: 8, borderRadius: 4, marginTop: 3, backgroundColor: color, flexShrink: 0 }} />
                               <span style={{ fontSize: 12, paddingLeft: 4 }}>{dataKey}</span>
                             </div>
@@ -1478,14 +1590,14 @@ const DashboardPage = () => {
                 }}
               />
               {tooltip(150, dimensions.width < mobile ? 250 : 325, "50%", false, { zIndex: 100, top: 160 }, false, 4)}
-              {amrClassesForFilter.slice(1).map((item) => (<Bar dataKey={item} fill={getColorForDrug(item)} />))}
+              {drtClassesForFilter.slice(1).map((item) => (<Bar dataKey={item} fill={getColorForDrug(item)} />))}
             </BarChart>
           </ResponsiveContainer>
         )
       }
     }
     setPlotDrugsAndGenotypesChart(plotDrugsAndGenotypesChart)
-  }, [amrClassesForFilter, dimensions, drugsAndGenotypesChartData, tooltip, mobile, RFWGFilter])
+  }, [drtClassesForFilter, dimensions, drugsAndGenotypesChartData, tooltip, mobile, RFWGFilter])
 
   function imgOnLoadPromise(obj) {
     return new Promise((resolve, reject) => {
@@ -1543,6 +1655,17 @@ const DashboardPage = () => {
       let ids = ["RFWG", "RFWAG", "DRT", "GD"]
 
       var doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'l' });
+
+      let typhinetLogo = new Image();
+      typhinetLogo.src = typhinetLogoImg2;
+      doc.addImage(typhinetLogo, 'PNG', 115, 0, 80, 34)
+      doc.setFontSize(16);
+      const paragraph1 = "Nunc ultrices blandit urna mollis porttitor. Vivamus viverra imperdiet justo, vitae fermentum elit accumsan placerat. Maecenas malesuada tincidunt rhoncus. Sed quam mauris, lacinia ac nisi consectetur, tincidunt pulvinar mauris. Proin ultricies quam sit amet dolor faucibus, at aliquam leo porttitor. Morbi at molestie nulla. Mauris porta lacus at augue facilisis volutpat. Suspendisse justo odio, congue nec diam ut, pretium blandit arcu. Duis vel leo euismod, pretium ante sit amet, viverra nibh."
+      const paragraph2 = "Quisque in tortor dignissim, mollis augue ac, sollicitudin ex. Quisque quis accumsan erat. Suspendisse sed nulla id ante fringilla sodales. Etiam sed pulvinar ex. Integer rutrum dolor a lobortis semper. Praesent fermentum feugiat justo ultrices facilisis. Etiam non sem ac ante rhoncus pretium eget eget dui. Duis non mollis nisl. Nullam id elementum augue, eget feugiat felis. Integer posuere nec sapien quis scelerisque. Etiam ut tortor dignissim, bibendum metus a, varius lectus. Nunc sollicitudin fringilla enim nec auctor. In vel rhoncus arcu. Morbi sed blandit libero."
+      doc.text(paragraph1, 10, 50, { align: 'justify', maxWidth: 130 })
+      doc.text(paragraph2, 155, 50, { align: 'justify', maxWidth: 130 })
+
+      doc.addPage('a4', 'l')
       doc.setFontSize(25);
       doc.text("Global overview Salmonella Typhi", 80, 15);
 
@@ -1607,19 +1730,19 @@ const DashboardPage = () => {
         doc.addImage(img3, 'PNG', 260, 155, 30, 50)
       }
 
-      let typhinetLogo = new Image();
-      typhinetLogo.src = typhinetLogoImg;
-      doc.addImage(typhinetLogo, 'PNG', 0, 0, 50, 21)
-
       doc.addPage('a4', 'l')
       const names2 = ["Resistance Frequencies Within Genotypes", "Resistance determinants within all genotypes", "Drug Resistance Trends", "Genotype Distribution"]
       for (let index = 0; index < ids.length; index++) {
         let legend
+        let brush
+        const graph = document.getElementById(ids[index])
         if (index === 1 || index === 3) {
-          const graph = document.getElementById(ids[index])
           legend = graph.getElementsByClassName('recharts-legend-wrapper')[0];
           legend.style.display = 'none'
         }
+        brush = graph.getElementsByClassName('recharts-brush')[0];
+        brush.style.display = 'none'
+
         let url
         await domtoimage.toPng(document.getElementById(ids[index]), { quality: 1, bgcolor: "white" })
           .then(function (dataUrl) {
@@ -1629,30 +1752,56 @@ const DashboardPage = () => {
         if (index === 1 || index === 3) {
           legend.style.display = 'block'
         }
-        doc.setFontSize(14)
-        doc.text(names2[index], 25, 10)
-        doc.setFontSize(9)
+        brush.style.display = 'block'
 
         let subtitleH = 0
-
         if (index === 0) {
-          doc.text("Top Genotypes (up to 5)", 25, 15)
           subtitleH = 3
         }
         if (index === 3) {
-          doc.text("Top Genotypes (up to 10)", 25, 15)
           subtitleH = 3
         }
 
-        if (index === 1) {
-          doc.addImage(url, "PNG", 5, 15 + subtitleH);
+        if (index === 2 && dimensions.width >= desktop) {
+          doc.addImage(url, "PNG", 5, 15 + subtitleH - 21);
         } else {
           doc.addImage(url, "PNG", 5, 15 + subtitleH);
         }
 
+        let imgWidth = jsPDF.API.getImageProperties(url).width
+        imgWidth = Math.floor(imgWidth * 0.264583)
+        doc.setFontSize(11)
+        const texts = [
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec dictum lorem sit amet auctor hendrerit. Morbi ut pulvinar leo, et dignissim tortor. Cras eget diam dignissim leo volutpat pharetra. Proin blandit consequat eleifend. Pellentesque imperdiet luctus aliquet. Sed vel tortor eros. Praesent interdum, tellus sit amet accumsan tincidunt, nisi magna interdum lorem, quis rhoncus eros massa ac risus.",
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec dictum lorem sit amet auctor hendrerit. Morbi ut pulvinar leo, et dignissim tortor. Cras eget diam dignissim leo volutpat pharetra. Proin blandit consequat eleifend. Pellentesque imperdiet luctus aliquet. Sed vel tortor eros. Praesent interdum, tellus sit amet accumsan tincidunt, nisi magna interdum lorem, quis rhoncus eros massa ac risus.",
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec dictum lorem sit amet auctor hendrerit. Morbi ut pulvinar leo, et dignissim tortor. Cras eget diam dignissim leo volutpat pharetra. Proin blandit consequat eleifend. Pellentesque imperdiet luctus aliquet. Sed vel tortor eros. Praesent interdum, tellus sit amet accumsan tincidunt, nisi magna interdum lorem, quis rhoncus eros massa ac risus.",
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec dictum lorem sit amet auctor hendrerit. Morbi ut pulvinar leo, et dignissim tortor. Cras eget diam dignissim leo volutpat pharetra. Proin blandit consequat eleifend. Pellentesque imperdiet luctus aliquet. Sed vel tortor eros. Praesent interdum, tellus sit amet accumsan tincidunt, nisi magna interdum lorem, quis rhoncus eros massa ac risus."
+        ]
+        let spaceBetween = -4
+        if (dimensions.width < 1750) {
+          spaceBetween = 13
+        }
+        doc.text(texts[index], imgWidth + spaceBetween, 23 + subtitleH, { align: 'justify', maxWidth: 50 })
+
+
+        doc.setFontSize(14)
+        doc.text(names2[index], 27, 10)
+        doc.setFontSize(9)
+
+        if (index === 0) {
+          doc.text("Top Genotypes (up to 5)", 27, 15)
+        }
+        if (index === 3) {
+          doc.text("Top Genotypes (up to 10)", 27, 15)
+        }
+
         if (index === 1) {
           var img4 = new Image()
-          img4.src = "legends/" + info.amrClassFilter + ".png"
+          if (amrClassFilter === "Fluoroquinolones (CipI/R)") {
+            img4.src = "legends/Fluoroquinolones (CipI-R).png"
+          } else {
+            img4.src = "legends/" + info.amrClassFilter + ".png"
+          }
           doc.addImage(img4, 'PNG', 26, 105 + subtitleH)
         } else if (index === 3) {
           var img5 = new Image()
@@ -1675,13 +1824,18 @@ const DashboardPage = () => {
       let graphImgPromise = imgOnLoadPromise(graphImg);
 
       var legend = graph.getElementsByClassName('recharts-legend-wrapper')[0];
+      var brush = graph.getElementsByClassName('recharts-brush')[0];
+
       if (id === "RFWAG" || id === "GD") {
         legend.style.display = 'none'
       }
+      brush.style.display = 'none'
+
       await domtoimage.toPng(graph, { quality: 0.1, bgcolor: "white" })
         .then(function (dataUrl) {
           graphImg.src = dataUrl;
           legend.style.display = 'block'
+          brush.style.display = 'block'
         });
 
       let cHeight = 20
@@ -1712,12 +1866,23 @@ const DashboardPage = () => {
 
       await graphImgPromise;
       canvas.width = imgWidth;
-      canvas.height = imgHeight + cHeight + logoHeight + legendHeight + filterHeight + subtitleHeight + 20;
+
+      let DRTHeight = 0
+      if (id === "DRT" && dimensions.width >= desktop) {
+        DRTHeight = 76
+      }
+      canvas.height = imgHeight + cHeight + logoHeight + legendHeight + filterHeight + subtitleHeight + 20 - DRTHeight;
       ctx.fillStyle = "white";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.font = "18px Montserrat"
       ctx.fillStyle = "black";
       ctx.textAlign = "center";
+
+      if (id === "DRT" && dimensions.width >= desktop) {
+        ctx.drawImage(graphImg, 10, cHeight + logoHeight + subtitleHeight - DRTHeight);
+      } else {
+        ctx.drawImage(graphImg, 10, cHeight + logoHeight + subtitleHeight);
+      }
 
       if (id === "RFWG") {
         ctx.fillText(brokenNames[0][0], canvas.width / 2, 10 + logoHeight)
@@ -1733,23 +1898,31 @@ const DashboardPage = () => {
         ctx.fillText(names[index - 1], canvas.width / 2, 10 + logoHeight)
       }
 
-      ctx.drawImage(graphImg, 0, cHeight + logoHeight + subtitleHeight);
-
       if (id === "RFWAG" || id === "GD") {
         let legendImg = document.createElement("img")
         let legendImgPromise = imgOnLoadPromise(legendImg)
         if (id === "RFWAG") {
-          legendImg.src = "legends/" + info.amrClassFilter + ".png";
+          if (amrClassFilter === "Fluoroquinolones (CipI/R)") {
+            legendImg.src = "legends/Fluoroquinolones (CipI-R).png";
+          } else {
+            legendImg.src = "legends/" + info.amrClassFilter + ".png";
+          }
+
         } else {
           legendImg.src = "legends/GD2.png";
         }
         await legendImgPromise;
-        ctx.drawImage(legendImg, graphImg.width, logoHeight + subtitleHeight + 17 + cHeight);
+
+        if (id === "DRT" && dimensions.width >= desktop) {
+          ctx.drawImage(legendImg, graphImg.width, logoHeight + subtitleHeight + 12 + cHeight - DRTHeight);
+        } else {
+          ctx.drawImage(legendImg, graphImg.width, logoHeight + subtitleHeight + 12 + cHeight);
+        }
       }
 
       let typhinetLogo = document.createElement("img");
       let typhinetLogoPromise = imgOnLoadPromise(typhinetLogo);
-      typhinetLogo.src = typhinetLogoImg;
+      typhinetLogo.src = typhinetLogoImg2;
       await typhinetLogoPromise;
       ctx.drawImage(typhinetLogo, 0, 0, 120, 50);
 
@@ -1851,7 +2024,7 @@ const DashboardPage = () => {
 
           let typhinetLogo = document.createElement("img");
           let typhinetLogoPromise = imgOnLoadPromise(typhinetLogo);
-          typhinetLogo.src = typhinetLogoImg;
+          typhinetLogo.src = typhinetLogoImg2;
           await typhinetLogoPromise;
           ctx.drawImage(typhinetLogo, 0, 0, 600, 252);
 
@@ -1917,8 +2090,8 @@ const DashboardPage = () => {
 
     switch (mapView) {
       case 'No. Samples':
-        let legends = ['1 - 9', '10 - 19', '20 - 99', '100 - 299', '> 300']
-        let aux = [1, 11, 21, 101, 301]
+        let legends = ['1 - 9', '10 - 19', '20 - 99', '100 - 299', '>= 300']
+        let aux = [1, 10, 20, 100, 300]
         return (
           <>
             <div className="samples-info">
@@ -1951,6 +2124,23 @@ const DashboardPage = () => {
       //       })}
       //     </div>
       //   )
+      case 'Sensitive to all drugs':
+        return (
+          <>
+            <div className="samples-info">
+              <div className="color" style={{ backgroundColor: "#F5F4F6" }} />
+              <span>0%</span>
+            </div>
+            {percentageSteps.map((n) => {
+              return (
+                <div key={n} className="samples-info">
+                  <div className="color" style={{ backgroundColor: mapRedColorScale(n) }} />
+                  <span>{n}%</span>
+                </div>
+              )
+            })}
+          </>
+        )
       case 'Dominant Genotype':
         return (
           <div style={{ maxHeight: 300, display: "flex", flexDirection: "column", overflowY: "scroll" }}>
@@ -2084,7 +2274,7 @@ const DashboardPage = () => {
           </>
         )
       // case 'Resistance to Drug':
-      //   let drugs = ["Ampicillin", "Azithromycin", "Chloramphenicol", "Co-trimoxazole", "ESBL", "Fluoroquinolones (CipI-R)", "Sulphonamides", "Tetracyclines", "Trimethoprim"]
+      //   let drugs = ["Ampicillin", "Azithromycin", "Chloramphenicol", "Co-trimoxazole", "ESBL", "Fluoroquinolones (CipI/R)", "Sulphonamides", "Tetracyclines", "Trimethoprim"]
       //   return (
       //     <div style={{ maxHeight: 300, display: "flex", flexDirection: "column", overflowY: "scroll" }}>
       //       {drugs.map((d, n) => {
@@ -2148,6 +2338,9 @@ const DashboardPage = () => {
             <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'H58 / Non-H58'}>
               H58 genotype
             </MenuItem>
+            <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'Sensitive to all drugs'}>
+              Sensitive to all drugs
+            </MenuItem>
             <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'No. Samples'}>
               No. Samples
             </MenuItem>
@@ -2186,7 +2379,28 @@ const DashboardPage = () => {
             </>
           )}
           <div className="card">
-            <span>Total Genomes</span>
+            <span>
+              Total Genomes
+              <FontAwesomeIcon icon={faInfoCircle} onClick={handleClickOpen2} className="icon-info" />
+              <Dialog
+                open={open2}
+                onClose={handleClose2}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+              >
+                <DialogTitle id="alert-dialog-title">{"Information"}</DialogTitle>
+                <DialogContent>
+                  <DialogContentText id="alert-dialog-description">
+                    155 genome samples absent from TyphiNET DB
+                  </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={handleClose2} color="primary">
+                    Close
+                  </Button>
+                </DialogActions>
+              </Dialog>
+            </span>
             {totalGenomes.length === actualGenomes.length ? (
               <span className="value">{totalGenomes.length}</span>
             ) : (
@@ -2257,10 +2471,12 @@ const DashboardPage = () => {
                     {({ geographies }) =>
                       geographies.map((geo) => {
                         const sample = worldMapSamplesData.find(s => s.displayName === geo.properties.NAME)
+
                         const d = worldMapComplementaryData[geo.properties.NAME]; /* .NAME || .NAME_LONG */
                         let country
 
                         let fill = "lightgrey"
+                        let darkGray = "#727272"
 
                         switch (mapView) {
                           case 'No. Samples':
@@ -2270,100 +2486,147 @@ const DashboardPage = () => {
                               fill = '#F5F4F6'
                             }
                             break;
-                          case 'AMR Profiles':
-                            country = worldMapAmrProfilesData.find(s => s.displayName === geo.properties.NAME)
-                            if (country !== undefined && country.amrProfiles.length > 0)
-                              fill = getColorForAMR(country.amrProfiles[0].name);
-                            break;
+                          // case 'AMR Profiles':
+                          //   country = worldMapAmrProfilesData.find(s => s.displayName === geo.properties.NAME)
+                          //   if (country !== undefined)
+                          //     if (country.amrProfiles.length > 0)
+                          //       fill = getColorForAMR(country.amrProfiles[0].name);
+                          //   break;
                           case 'Dominant Genotype':
                             country = worldMapGenotypesData.find(s => s.displayName === geo.properties.NAME)
                             if (country !== undefined) {
                               const temp = country.genotypes
                               temp.sort((a, b) => a.count <= b.count ? 1 : -1)
-                              fill = getColorForGenotype(temp[0].lineage)
+                              if (sample && sample.count >= 20) {
+                                fill = getColorForGenotype(temp[0].lineage)
+                              } else {
+                                fill = darkGray
+                              }
                             }
                             break;
                           case 'H58 / Non-H58':
                             country = worldMapH58Data.find(s => s.displayName === geo.properties.NAME)
                             if (country !== undefined && country.genotypes[0]) {
                               const temp = country.genotypes.find(g => g.type === 'H58')
-                              switch (temp === undefined) {
-                                case false:
-                                  fill = mapRedColorScale(temp.percentage)
-                                  break;
-                                case 'Non-H58':
-                                  fill = '#F5F4F6'
-                                  break;
-                                default:
-                                  fill = '#F5F4F6'
-                                  break;
+
+                              if (temp === undefined || (temp !== undefined && temp.count < 20)) {
+                                fill = darkGray
+                              } else if (temp !== undefined && temp.count >= 20) {
+                                fill = mapRedColorScale(temp.percentage)
+                              } else {
+                                fill = '#F5F4F6'
                               }
+
+                              // switch (temp === undefined) {
+                              //   case false:
+                              //     fill = mapRedColorScale(temp.percentage)
+                              //     break;
+                              //   // case 'Non-H58':
+                              //   //   fill = '#F5F4F6'
+                              //   //   break;
+                              //   default:
+                              //     fill = '#F5F4F6'
+                              //     break;
+                              // }
                             }
                             break;
                           case 'MDR':
                             country = worldMapMDRData.find(s => s.displayName === geo.properties.NAME)
-                            if (country !== undefined && country.percentage) {
-                              fill = mapRedColorScale(country.percentage);
+                            if (country !== undefined) {
+                              if (country.count >= 20) {
+                                fill = mapRedColorScale(country.percentage);
+                              } else {
+                                fill = darkGray
+                              }
+
                             } else if (country !== undefined) {
+                              fill = '#F5F4F6'
+                            }
+                            break;
+                          case 'Sensitive to all drugs':
+                            country = worldMapSTADData.find(s => s.displayName === geo.properties.NAME)
+                            if (country !== undefined) {
+                              if (country.count >= 20) {
+                                fill = mapRedColorScale(country.percentage);
+                              } else {
+                                fill = darkGray
+                              }
+                            } else {
                               fill = '#F5F4F6'
                             }
                             break;
                           case 'XDR':
                             country = worldMapXDRData.find(s => s.displayName === geo.properties.NAME)
-                            if (country !== undefined && country.percentage) {
-                              fill = mapRedColorScale(country.percentage);
-                            } else if (country !== undefined) {
+                            if (country !== undefined) {
+                              if (country.count >= 20) {
+                                fill = mapRedColorScale(country.percentage);
+                              } else {
+                                fill = darkGray
+                              }
+                            } else {
                               fill = '#F5F4F6'
                             }
                             break;
-                          case 'DCS':
-                            country = worldMapDCSData.find(s => s.displayName === geo.properties.NAME)
-                            if (country !== undefined && country.percentage) {
-                              fill = mapRedColorScale(country.percentage);
-                            } else if (country !== undefined) {
-                              fill = '#F5F4F6'
-                            }
-                            break;
+                          // case 'DCS':
+                          //   country = worldMapDCSData.find(s => s.displayName === geo.properties.NAME)
+                          //   if (country !== undefined && country.percentage) {
+                          //     fill = mapRedColorScale(country.percentage);
+                          //   } else if (country !== undefined) {
+                          //     fill = '#F5F4F6'
+                          //   }
+                          //   break;
                           case 'Azith':
                             country = worldMapAZITHData.find(s => s.displayName === geo.properties.NAME)
-                            if (country !== undefined && country.percentage) {
-                              fill = mapRedColorScale(country.percentage);
-                            } else if (country !== undefined) {
+                            if (country !== undefined) {
+                              if (country.count >= 20) {
+                                fill = mapRedColorScale(country.percentage);
+                              } else {
+                                fill = darkGray
+                              }
+                            } else {
                               fill = '#F5F4F6'
                             }
                             break;
                           case 'CipI':
                             country = worldMapCIPIData.find(s => s.displayName === geo.properties.NAME)
-                            if (country !== undefined && country.percentage) {
-                              fill = mapRedColorScale(country.percentage);
-                            } else if (country !== undefined) {
+                            if (country !== undefined) {
+                              if (country.count >= 20) {
+                                fill = mapRedColorScale(country.percentage);
+                              } else {
+                                fill = darkGray
+                              }
+                            } else {
                               fill = '#F5F4F6'
                             }
                             break;
                           case 'CipR':
                             country = worldMapCIPRData.find(s => s.displayName === geo.properties.NAME)
-                            if (country !== undefined && country.percentage) {
-                              fill = mapRedColorScale(country.percentage);
-                            } else if (country !== undefined) {
+                            if (country !== undefined) {
+                              if (country.count >= 20) {
+                                fill = mapRedColorScale(country.percentage);
+                              } else {
+                                fill = darkGray
+                              }
+                            } else {
                               fill = '#F5F4F6'
                             }
                             break;
-                          case 'Resistance to Drug':
-                            country = worldMapDrugsData.find(s => s.displayName === geo.properties.NAME)
-                            if (country !== undefined && country.drugs.length > 0) {
-                              fill = getColorForDrug(country.drugs[0].name);
-                            } else if (country !== undefined) {
-                              fill = '#F5F4F6'
-                            }
-                            break;
-                          case 'Plasmid Incompatibility Type':
-                            country = worldMapPlasmidIncompatibilityTypeData.find(s => s.displayName === geo.properties.NAME)
-                            if (country !== undefined && country.incTypes.length > 0) {
-                              fill = getColorForIncType(country.incTypes[0].type);
-                            } else if (country !== undefined) {
-                              fill = '#F5F4F6'
-                            }
-                            break;
+                          // case 'Resistance to Drug':
+                          //   country = worldMapDrugsData.find(s => s.displayName === geo.properties.NAME)
+                          //   if (country !== undefined && country.drugs.length > 0) {
+                          //     fill = getColorForDrug(country.drugs[0].name);
+                          //   } else if (country !== undefined) {
+                          //     fill = '#F5F4F6'
+                          //   }
+                          //   break;
+                          // case 'Plasmid Incompatibility Type':
+                          //   country = worldMapPlasmidIncompatibilityTypeData.find(s => s.displayName === geo.properties.NAME)
+                          //   if (country !== undefined && country.incTypes.length > 0) {
+                          //     fill = getColorForIncType(country.incTypes[0].type);
+                          //   } else if (country !== undefined) {
+                          //     fill = '#F5F4F6'
+                          //   }
+                          //   break;
                           default:
                             break;
                         }
@@ -2393,7 +2656,8 @@ const DashboardPage = () => {
                                         DCS: Math.round(d.DCS) !== d.DCS ? d.DCS.toFixed(2) : d.DCS,
                                         CipI: Math.round(d.CipI) !== d.CipI ? d.CipI.toFixed(2) : d.CipI,
                                         CipR: Math.round(d.CipR) !== d.CipR ? d.CipR.toFixed(2) : d.CipR,
-                                        AzithR: Math.round(d.AzithR) !== d.AzithR ? d.AzithR.toFixed(2) : d.AzithR
+                                        AzithR: Math.round(d.AzithR) !== d.AzithR ? d.AzithR.toFixed(2) : d.AzithR,
+                                        STAD: Math.round(d.STAD) !== d.STAD ? d.STAD.toFixed(2) : d.STAD
                                       }
                                     });
                                   } else {
@@ -2402,26 +2666,31 @@ const DashboardPage = () => {
                                     })
                                   }
                                   break;
-                                case 'AMR Profiles':
-                                  if (country !== undefined) {
-                                    setTooltipContent({
-                                      name: NAME,
-                                      amrProfilesInfo: country.amrProfiles
-                                    });
-                                  } else {
-                                    setTooltipContent({
-                                      name: NAME
-                                    })
-                                  }
-                                  break;
+                                // case 'AMR Profiles':
+                                //   if (country !== undefined) {
+                                //     setTooltipContent({
+                                //       name: NAME,
+                                //       amrProfilesInfo: country.amrProfiles
+                                //     });
+                                //   } else {
+                                //     setTooltipContent({
+                                //       name: NAME
+                                //     })
+                                //   }
+                                //   break;
                                 case 'Dominant Genotype':
-                                  if (country !== undefined) {
+                                  if (country !== undefined && country.total >= 20) {
                                     let temp = country.genotypes
                                     temp.sort((a, b) => a.count <= b.count ? 1 : -1)
                                     setTooltipContent({
                                       name: NAME,
                                       genotypeInfo: temp
                                     });
+                                  } else if (country !== undefined && country.total < 20) {
+                                    setTooltipContent({
+                                      name: NAME,
+                                      smallerThan20: true
+                                    })
                                   } else {
                                     setTooltipContent({
                                       name: NAME
@@ -2430,10 +2699,18 @@ const DashboardPage = () => {
                                   break;
                                 case 'H58 / Non-H58':
                                   if (country !== undefined && country.genotypes.length > 0) {
-                                    setTooltipContent({
-                                      name: NAME,
-                                      simpleGenotypeInfo: country.genotypes
-                                    });
+                                    const isBiggerThan20 = country.genotypes.find(g => g.type === "H58" && g.count >= 20) !== undefined
+                                    if (isBiggerThan20) {
+                                      setTooltipContent({
+                                        name: NAME,
+                                        simpleGenotypeInfo: country.genotypes
+                                      });
+                                    } else {
+                                      setTooltipContent({
+                                        name: NAME,
+                                        smallerThan20: true
+                                      })
+                                    }
                                   } else {
                                     setTooltipContent({
                                       name: NAME
@@ -2442,13 +2719,42 @@ const DashboardPage = () => {
                                   break;
                                 case 'MDR':
                                   if (country !== undefined && country.MDRs.length > 0) {
+                                    if (country.count >= 20) {
+                                      setTooltipContent({
+                                        name: NAME,
+                                        mdrInfo: {
+                                          count: country.count,
+                                          percentage: country.percentage,
+                                        }
+                                      });
+                                    } else {
+                                      setTooltipContent({
+                                        name: NAME,
+                                        smallerThan20: true
+                                      })
+                                    }
+                                  } else {
                                     setTooltipContent({
-                                      name: NAME,
-                                      mdrInfo: {
-                                        count: country.count,
-                                        percentage: country.percentage,
-                                      }
-                                    });
+                                      name: NAME
+                                    })
+                                  }
+                                  break;
+                                case 'Sensitive to all drugs':
+                                  if (country !== undefined && country.STADs.length > 0) {
+                                    if (country.count >= 20) {
+                                      setTooltipContent({
+                                        name: NAME,
+                                        stadInfo: {
+                                          count: country.count,
+                                          percentage: country.percentage,
+                                        }
+                                      });
+                                    } else {
+                                      setTooltipContent({
+                                        name: NAME,
+                                        smallerThan20: true
+                                      })
+                                    }
                                   } else {
                                     setTooltipContent({
                                       name: NAME
@@ -2457,43 +2763,57 @@ const DashboardPage = () => {
                                   break;
                                 case 'XDR':
                                   if (country !== undefined && country.XDRs.length > 0) {
-                                    setTooltipContent({
-                                      name: NAME,
-                                      xdrInfo: {
-                                        count: country.count,
-                                        percentage: country.percentage,
-                                      }
-                                    });
+                                    if (country.count >= 20) {
+                                      setTooltipContent({
+                                        name: NAME,
+                                        xdrInfo: {
+                                          count: country.count,
+                                          percentage: country.percentage,
+                                        }
+                                      });
+                                    } else {
+                                      setTooltipContent({
+                                        name: NAME,
+                                        smallerThan20: true
+                                      })
+                                    }
                                   } else {
                                     setTooltipContent({
                                       name: NAME
                                     })
                                   }
                                   break;
-                                case 'DCS':
-                                  if (country !== undefined && country.DCSs.length > 0) {
-                                    setTooltipContent({
-                                      name: NAME,
-                                      dcsInfo: {
-                                        count: country.count,
-                                        percentage: country.percentage,
-                                      }
-                                    });
-                                  } else {
-                                    setTooltipContent({
-                                      name: NAME
-                                    })
-                                  }
-                                  break;
+                                // case 'DCS':
+                                //   if (country !== undefined && country.DCSs.length > 0) {
+                                //     setTooltipContent({
+                                //       name: NAME,
+                                //       dcsInfo: {
+                                //         count: country.count,
+                                //         percentage: country.percentage,
+                                //       }
+                                //     });
+                                //   } else {
+                                //     setTooltipContent({
+                                //       name: NAME
+                                //     })
+                                //   }
+                                //   break;
                                 case 'Azith':
                                   if (country !== undefined && country.AZs.length > 0) {
-                                    setTooltipContent({
-                                      name: NAME,
-                                      azInfo: {
-                                        count: country.count,
-                                        percentage: country.percentage,
-                                      }
-                                    });
+                                    if (country.count >= 20) {
+                                      setTooltipContent({
+                                        name: NAME,
+                                        azInfo: {
+                                          count: country.count,
+                                          percentage: country.percentage,
+                                        }
+                                      });
+                                    } else {
+                                      setTooltipContent({
+                                        name: NAME,
+                                        smallerThan20: true
+                                      })
+                                    }
                                   } else {
                                     setTooltipContent({
                                       name: NAME
@@ -2502,13 +2822,20 @@ const DashboardPage = () => {
                                   break;
                                 case 'CipI':
                                   if (country !== undefined && country.CipIs.length > 0) {
-                                    setTooltipContent({
-                                      name: NAME,
-                                      cipIInfo: {
-                                        count: country.count,
-                                        percentage: country.percentage,
-                                      }
-                                    });
+                                    if (country.count >= 20) {
+                                      setTooltipContent({
+                                        name: NAME,
+                                        cipIInfo: {
+                                          count: country.count,
+                                          percentage: country.percentage,
+                                        }
+                                      });
+                                    } else {
+                                      setTooltipContent({
+                                        name: NAME,
+                                        smallerThan20: true
+                                      })
+                                    }
                                   } else {
                                     setTooltipContent({
                                       name: NAME
@@ -2517,43 +2844,50 @@ const DashboardPage = () => {
                                   break;
                                 case 'CipR':
                                   if (country !== undefined && country.CipRs.length > 0) {
-                                    setTooltipContent({
-                                      name: NAME,
-                                      cipRInfo: {
-                                        count: country.count,
-                                        percentage: country.percentage,
-                                      }
-                                    });
+                                    if (country.count >= 20) {
+                                      setTooltipContent({
+                                        name: NAME,
+                                        cipRInfo: {
+                                          count: country.count,
+                                          percentage: country.percentage,
+                                        }
+                                      });
+                                    } else {
+                                      setTooltipContent({
+                                        name: NAME,
+                                        smallerThan20: true
+                                      })
+                                    }
                                   } else {
                                     setTooltipContent({
                                       name: NAME
                                     })
                                   }
                                   break;
-                                case 'Resistance to Drug':
-                                  if (country !== undefined && country.drugs.length > 0) {
-                                    setTooltipContent({
-                                      name: NAME,
-                                      drugsInfo: country.drugs
-                                    });
-                                  } else {
-                                    setTooltipContent({
-                                      name: NAME
-                                    })
-                                  }
-                                  break;
-                                case 'Plasmid Incompatibility Type':
-                                  if (country !== undefined && country.incTypes.length > 0) {
-                                    setTooltipContent({
-                                      name: NAME,
-                                      incTypesInfo: country.incTypes
-                                    });
-                                  } else {
-                                    setTooltipContent({
-                                      name: NAME
-                                    })
-                                  }
-                                  break;
+                                // case 'Resistance to Drug':
+                                //   if (country !== undefined && country.drugs.length > 0) {
+                                //     setTooltipContent({
+                                //       name: NAME,
+                                //       drugsInfo: country.drugs
+                                //     });
+                                //   } else {
+                                //     setTooltipContent({
+                                //       name: NAME
+                                //     })
+                                //   }
+                                //   break;
+                                // case 'Plasmid Incompatibility Type':
+                                //   if (country !== undefined && country.incTypes.length > 0) {
+                                //     setTooltipContent({
+                                //       name: NAME,
+                                //       incTypesInfo: country.incTypes
+                                //     });
+                                //   } else {
+                                //     setTooltipContent({
+                                //       name: NAME
+                                //     })
+                                //   }
+                                //   break;
                                 default:
                                   break;
                               }
@@ -2712,6 +3046,7 @@ const DashboardPage = () => {
                       <span>AzithR: {tooltipContent.additionalInfo.AzithR}%</span>
                       <span>CipI: {tooltipContent.additionalInfo.CipI}%</span>
                       <span>CipR: {tooltipContent.additionalInfo.CipR}%</span>
+                      <span>Susceptible: {tooltipContent.additionalInfo.STAD}%</span>
                     </div>
                   )}
                   {tooltipContent.genotypeInfo && (
@@ -2743,6 +3078,11 @@ const DashboardPage = () => {
                   {tooltipContent.mdrInfo && (
                     <div className="additional-info">
                       <span>MDR: {tooltipContent.mdrInfo.count} ({tooltipContent.mdrInfo.percentage}%)</span>
+                    </div>
+                  )}
+                  {tooltipContent.stadInfo && (
+                    <div className="additional-info">
+                      <span>Susceptible: {tooltipContent.stadInfo.count} ({tooltipContent.stadInfo.percentage}%)</span>
                     </div>
                   )}
                   {tooltipContent.xdrInfo && (
@@ -2815,9 +3155,9 @@ const DashboardPage = () => {
                       })}
                     </div>
                   )}
-                  {(!tooltipContent.incTypesInfo && !tooltipContent.amrProfilesInfo && !tooltipContent.drugsInfo && !tooltipContent.xdrInfo && !tooltipContent.mdrInfo && !tooltipContent.dcsInfo && !tooltipContent.azInfo && !tooltipContent.cipIInfo && !tooltipContent.cipRInfo && !tooltipContent.simpleGenotypeInfo && !tooltipContent.genotypeInfo && !tooltipContent.additionalInfo) && (
+                  {(!tooltipContent.incTypesInfo && !tooltipContent.amrProfilesInfo && !tooltipContent.drugsInfo && !tooltipContent.xdrInfo && !tooltipContent.mdrInfo && !tooltipContent.stadInfo && !tooltipContent.dcsInfo && !tooltipContent.azInfo && !tooltipContent.cipIInfo && !tooltipContent.cipRInfo && !tooltipContent.simpleGenotypeInfo && !tooltipContent.genotypeInfo && !tooltipContent.additionalInfo) && (
                     <div className="additional-info">
-                      <span>{!allCountries.includes(tooltipContent.name) || dataset === 'full' ? 'No reported data' : dataset === 'local' ? 'No travel reported' : 'No travel information'}</span>
+                      <span>{tooltipContent.smallerThan20 ? "Not known" : !allCountries.includes(tooltipContent.name) || dataset === 'full' ? 'No reported data' : dataset === 'local' ? 'No travel reported' : 'No travel information'}</span>
                     </div>
                   )}
                 </div>
@@ -2846,8 +3186,8 @@ const DashboardPage = () => {
           </FormControl>
           <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
             <div style={{ display: "flex", flexDirection: dimensions.width > desktop ? "row" : "column", marginTop: 16, paddingBottom: 20 }}>
-              <div style={{ display: "flex", flexDirection: "column", flex: 0.5, paddingRight: dimensions.width < mobile ? 0 : 10 }}>
-                <div style={{ height: 717, width: "100%", display: "flex", flexDirection: "column" }}>
+              <div style={{ alignItems: 'center', display: "flex", flexDirection: "column", flex: 0.5, paddingRight: dimensions.width < mobile ? 0 : 10 }}>
+                <div style={{ height: 717, width: '100%', maxWidth: 920, display: "flex", flexDirection: "column" }}>
                   <div style={{ width: "100%", flexDirection: "row", textAlign: "center", display: "flex", justifyContent: "center" }}>
                     <span style={{ paddingRight: 32, marginRight: -22, paddingLeft: 35 }} className="chart-title">Resistance frequencies within genotypes</span>
                     <div style={{ display: "inline-block", position: "relative" }}>
@@ -2891,11 +3231,11 @@ const DashboardPage = () => {
                     </FormControl>
                   </div>
                   <div id="RFWG" style={{ height: 687, display: "flex", flexDirection: "row", alignItems: "center" }}>
-                    <span className="y-axis-label-vertical" style={{ paddingRight: 8, marginBottom: /*dimensions.width > desktop ? 80 : 90*/ 100 }}>{RFWGFilter === 1 ? 'Number of genomes' : 'Percentage within genotype (%)'}</span>
+                    {/* <span className="y-axis-label-vertical" style={{ paddingRight: 8, marginBottom: 100 }}>{RFWGFilter === 1 ? 'Number of genomes' : 'Percentage within genotype (%)'}</span> */}
                     {plotDrugsAndGenotypesChart}
                   </div>
                 </div>
-                <div style={{ width: "100%", display: "flex", flexDirection: "column", paddingTop: 50 }}>
+                <div style={{ width: "100%", maxWidth: 920, display: "flex", flexDirection: "column", paddingTop: 50 }}>
                   <div style={{ width: "100%", flexDirection: "row", textAlign: "center", display: "flex", justifyContent: "center" }}>
                     <span className="chart-title" style={{ paddingLeft: 50, marginRight: -22, paddingRight: 32 }}>Resistance determinants within all genotypes</span>
                     <div style={{ display: "inline-block", position: "relative" }}>
@@ -2938,15 +3278,31 @@ const DashboardPage = () => {
                         })}
                       </Select>
                     </FormControl>
+                    <FormControl fullWidth className={classes.formControlSelect} style={{ marginTop: 0 }}>
+                      <InputLabel style={{ fontWeight: 500, fontFamily: "Montserrat" }}>Data view</InputLabel>
+                      <Select
+                        value={RDWAGDataviewFilter}
+                        onChange={evt => setRDWAGDataviewFilter(evt.target.value)}
+                        fullWidth
+                        style={{ fontWeight: 600, fontFamily: "Montserrat" }}
+                      >
+                        <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat" }} value={1}>
+                          Number of genomes
+                        </MenuItem>
+                        <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat" }} value={2}>
+                          Percentage per year
+                        </MenuItem>
+                      </Select>
+                    </FormControl>
                   </div>
                   <div id="RFWAG" style={{ height: 513, display: "flex", flexDirection: "row", alignItems: "center" }}>
-                    <span className="y-axis-label-vertical" style={{ paddingRight: 8, paddingTop: 190 }}>Number of occurrences</span>
+                    {/* <span className="y-axis-label-vertical" style={{ paddingRight: 8, paddingTop: 190 }}>Number of occurrences</span> */}
                     {plotAmrClassChart}
                   </div>
                 </div>
               </div>
-              <div style={{ display: "flex", flexDirection: "column", flex: 0.5, paddingLeft: dimensions.width < mobile ? 0 : 10, marginTop: dimensions.width < mobile ? 25 : 0 }}>
-                <div style={{ width: "100%", display: "flex", flexDirection: "column", paddingTop: dimensions.width < desktop ? 50 : dimensions.width < 930 ? 0 : 0 }}>
+              <div style={{ alignItems: 'center', display: "flex", flexDirection: "column", flex: 0.5, paddingLeft: dimensions.width < mobile ? 0 : 10, marginTop: dimensions.width < mobile ? 25 : 0 }}>
+                <div style={{ width: "100%", maxWidth: 920, display: "flex", flexDirection: "column", paddingTop: dimensions.width < desktop ? 50 : dimensions.width < 930 ? 0 : 0 }}>
                   <div style={{ width: "100%", flexDirection: "row", textAlign: "center", display: "flex", justifyContent: "center", paddingBottom: dimensions.width < desktop ? 0 : dimensions.width < 1010 ? 24 : 8 }}>
                     <span className="chart-title" style={{ paddingRight: 32, marginRight: -22 }}>Drug resistance trends</span>
                     <div style={{ display: "inline-block", position: "relative" }}>
@@ -2971,11 +3327,11 @@ const DashboardPage = () => {
                     </div>
                   </div>
                   <div id="DRT" style={{ paddingTop: dimensions.width < desktop ? '10px' : '76px', height: 600, display: "flex", flexDirection: "row", alignItems: "center" }}>
-                    <span className="y-axis-label-vertical" style={{ paddingTop: /*dimensions.width > desktop ? 0 : 0*/ 80 }}>Resistant (%)</span>
+                    {/* <span className="y-axis-label-vertical" style={{ paddingTop: 80 }}>Resistant (%)</span> */}
                     {plotDrugTrendsChart}
                   </div>
                 </div>
-                <div style={{ width: "100%", display: "flex", flexDirection: "column", paddingTop: dimensions.width < desktop ? 50 : dimensions.width < 1010 ? 29 : 45 }}>
+                <div style={{ width: "100%", maxWidth: 920, display: "flex", flexDirection: "column", paddingTop: dimensions.width < desktop ? 50 : dimensions.width < 1010 ? 29 : 45 }}>
                   <div style={{ width: "100%", flexDirection: "row", textAlign: "center", display: "flex", justifyContent: "center" }}>
                     <span className="chart-title" style={{ marginRight: -22, paddingRight: 32 }}>Genotype distribution</span>
                     <div style={{ display: "inline-block", position: "relative" }}>
@@ -2999,7 +3355,7 @@ const DashboardPage = () => {
                       )}
                     </div>
                   </div>
-                  <div style={{ paddingTop: dimensions.width < desktop ? '0px' : dimensions.width > 1120 ? '8px' : '29px', height: dimensions.width > 1120 ? '78px' : '74px', width: dimensions.width > desktop ? "60%" : "90%", alignSelf: "center", paddingBottom: -8 }}>
+                  <div style={{ paddingTop: dimensions.width < desktop ? '0px' : dimensions.width > 1120 ? '65px' : '86px', height: dimensions.width > 1120 ? '78px' : '74px', width: dimensions.width > desktop ? "60%" : "90%", alignSelf: "center", paddingBottom: -8 }}>
                     <FormControl fullWidth className={classes.formControlSelect} style={{ marginBottom: 5, marginTop: 23 }}>
                       <InputLabel style={{ fontWeight: 500, fontFamily: "Montserrat" }}>Data view</InputLabel>
                       <Select
@@ -3019,7 +3375,7 @@ const DashboardPage = () => {
                   </div>
                   <div id="GD" style={{ width: '100%', height: 511, display: "flex", flexDirection: /*populationStructureFilter === 1 ? "row" : "column-reverse"*/"row", alignItems: "center" }}>
                     {/* {getPopulationStructureChartLabel()} */}
-                    <span className="y-axis-label-vertical" style={{ paddingTop: 190 }}>{populationStructureFilter === 1 ? 'Number of genomes' : '% Genomes per year'}</span>
+                    {/* <span className="y-axis-label-vertical" style={{ paddingTop: 190 }}>{populationStructureFilter === 1 ? 'Number of genomes' : '% Genomes per year'}</span> */}
                     {plotPopulationStructureChart}
                   </div>
                 </div>
@@ -3096,6 +3452,9 @@ const DashboardPage = () => {
                 setActualCountry('All');
                 setPopulationStructureFilter(1);
                 setAmrClassFilter(amrClassesForFilter[5]);
+                setRDWAGDataviewFilter(1)
+                setRFWGFilter(1)
+
               }}
             >
               <FontAwesomeIcon icon={faUndoAlt} size="lg" color="white" />

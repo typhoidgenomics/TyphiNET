@@ -232,7 +232,7 @@ router.get('/create', function(req, res) {
                     if (data["ereA"] == "1") {
                         obj_parser["azith_pred_pheno"] = "AzithR"
                     }
-                    if (data["blaCTX-M-15_23"] == "1" || data["blaOXA-7"] == "1" || data["blaSHV-12"] == "1") {
+                    if (data["blaCTX-M-15_23"] == "1" || data["blaOXA-7"] == "1" || data["blaSHV-12"] == "1" || data["blaCTX-M-55"] == "1") {
                         obj_parser["ESBL_category"] = "ESBL"
                     } else {
                         obj_parser["ESBL_category"] = "Non-ESBL"
@@ -286,7 +286,7 @@ router.get('/create', function(req, res) {
                     }
                     obj_parser["num_acrb"] = data["acrB_R717Q"]
                     if (obj_parser["azith_pred_pheno"] == undefined) {
-                        if (parseInt(data["acrB_R717Q"]) > 0) {
+                        if (parseInt(data["acrB_R717Q"]) > 0 || parseInt(data["acrB_R717L"])) {
                             obj_parser["azith_pred_pheno"] = "AzithR"
                         } else {
                             obj_parser["azith_pred_pheno"] = "AzithS"
