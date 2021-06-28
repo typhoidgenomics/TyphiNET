@@ -1,4 +1,4 @@
-Genome ID,NAME,Version,Organism Name,Organism ID,Species Name,Species ID,Genus Name,Genus ID,Reference ID,Matching Hashes,p-Value,Mash Distance
+Genome ID,Genome Name,Version,Organism Name,Organism ID,Species Name,Species ID,Genus Name,Genus ID,Reference ID,Matching Hashes,p-Value,Mash Distance
 59a81b951691f900014af340,46,v3.0.1,Salmonella enterica subsp. enterica serovar Typhi,90370,Salmonella enterica,28901,Salmonella,590,Salmonella_enterica/0001.fna.gz,943/1000,0,0.00141786
 59a81b965f409b000112cbd0,31,v3.0.1,Salmonella enterica subsp. enterica serovar Typhi,90370,Salmonella enterica,28901,Salmonella,590,Salmonella_enterica/0001.fna.gz,942/1000,0,0.00144387
 59a81b965f409b000112cbd1,42,v3.0.1,Salmonella enterica subsp. enterica serovar Typhi,90370,Salmonella enterica,28901,Salmonella,590,Salmonella_enterica/0001.fna.gz,943/1000,0,0.00141786

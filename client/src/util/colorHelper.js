@@ -102,8 +102,8 @@ export const getColorForGenotype = (genotype) => {
     case '4.2.2':
     case '4.2.3':
       return "#ff6347";
-    case '4.3':
-    case '4.3.0':
+    // case '4.3':
+    // case '4.3.0':
     case '4.3.1':
       return "#ff0000";
     case '4.3.1.1':

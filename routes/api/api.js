@@ -10,6 +10,7 @@ router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel', function (req,
     let read_file = Tools.path_clean_db || Tools.path_clean;
 
     fs.createReadStream(read_file)
+        .on('error', (_) => { return res.json([{}, [{}], [{}]]) })
         .pipe(csv())
         .on('data', (data_full) => resultsJson.push(data_full))
         .on('end', () => {
@@ -18,6 +19,10 @@ router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel', function (req,
             let data_travel = false
             let allDrugs = {}
 
+            // let count = 0
+            let allCountryDrugs = {}
+            let genotypeList = []
+
             let noAMRGenomes = {}
             for (let data of resultsJson) {
 
@@ -25,7 +30,7 @@ router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel', function (req,
                     data_travel = true
                 } else {
                     if (travel == "global") {
-                        if (/*data["TRAVEL"] == "unknown" || */data["TRAVEL"] == "local") {
+                        if (data["TRAVEL"] == "travel" || data["TRAVEL"] == "local") {
                             data_travel = true
                         } else {
                             data_travel = false
@@ -47,6 +52,20 @@ router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel', function (req,
                 if (checkCountry && checkDate && data["DATE"] >= params.minYear && data["DATE"] <= params.maxYear && data_travel) {
                     let drugs = []
 
+                    if (params.country !== "all" && params.country === data["COUNTRY_ONLY"]) {
+                        // count += 1
+                        if (!(data["GENOTYPE"] in allCountryDrugs)) {
+                            allCountryDrugs[data["GENOTYPE"]] = {total: 0, totalS: 0}
+                            allCountryDrugs[data["GENOTYPE"]].total = 1
+                            allCountryDrugs[data["GENOTYPE"]].totalS = 1
+                        } else {
+                            if (data["amr_category"] != "No AMR detected") {
+                                allCountryDrugs[data["GENOTYPE"]].total += 1
+                            }
+                            allCountryDrugs[data["GENOTYPE"]].totalS += 1
+                        }
+                    }
+
                     if (params.country === "all" || (params.country === data["COUNTRY_ONLY"])) {
                         if (!(data["DATE"] in allDrugs)) {
                             allDrugs[data["DATE"]] = 1
@@ -54,6 +73,7 @@ router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel', function (req,
                             allDrugs[data["DATE"]] += 1
                         }
                     }
+
 
                     if (data["azith_pred_pheno"] == "AzithR") {
                         drugs.push("Azithromycin")
@@ -100,6 +120,7 @@ router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel', function (req,
                     }
                 }
             }
+
             let response = []
             rawTrendArray.forEach(entry => {
                 entry.DRUGS.forEach(drug => {
@@ -112,7 +133,7 @@ router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel', function (req,
                 })
             })
             response.push([allDrugs])
-            response.push([noAMRGenomes])
+            response.push([allCountryDrugs])
             res.json(response);
         })
 })
@@ -126,6 +147,7 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
     let read_file = Tools.path_clean_db || Tools.path_clean
 
     fs.createReadStream(read_file)
+        .on('error', (_) => { return res.json([]) })
         .pipe(csv())
         .on('data', (data_full) => results_json.push(data_full))
         .on('end', () => {
@@ -140,7 +162,7 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
                     data_travel = true
                 } else {
                     if (travel == "global") {
-                        if (/*data["TRAVEL"] == "unknown" || */data["TRAVEL"] == "local") {
+                        if (data["TRAVEL"] == "travel" || data["TRAVEL"] == "local") {
                             data_travel = true
                         } else {
                             data_travel = false
@@ -427,7 +449,17 @@ router.get('/getYearLimits', function (req, res, next) {
     let allGenotypes = {}
     let totalGenotypes = []
     let read_file = Tools.path_clean_db || Tools.path_clean
+
     fs.createReadStream(read_file)
+        .on('error', (_) => {
+            return res.json({
+                min: 0,
+                max: 0,
+                countries: [],
+                allGenotypes: {},
+                totalGenotypes: []
+            })
+        })
         .pipe(csv())
         .on('data', (data) => results.push(data))
         .on('end', () => {
@@ -474,6 +506,7 @@ router.get('/:filter1/:country/:min_year/:max_year/:travel', function (req, res,
     let read_file = Tools.path_clean_db || Tools.path_clean
 
     fs.createReadStream(read_file)
+        .on('error', (_) => { return res.json([]) })
         .pipe(csv())
         .on('data', (data) => results_json.push(data))
         .on('end', () => {
@@ -485,7 +518,7 @@ router.get('/:filter1/:country/:min_year/:max_year/:travel', function (req, res,
                     data_travel = true
                 } else {
                     if (travel == "global") {
-                        if (/*data["TRAVEL"] == "unknown" || */data["TRAVEL"] == "local") {
+                        if (data["TRAVEL"] == "travel" || data["TRAVEL"] == "local") {
                             data_travel = true
                         } else {
                             data_travel = false
@@ -616,6 +649,7 @@ router.get('/:country/:min_year/:max_year/:travel', function (req, res, next) {
     let results = []
     let read_file = Tools.path_clean_db || Tools.path_clean
     fs.createReadStream(read_file)
+        .on('error', (_) => { return res.json({}) })
         .pipe(csv())
         .on('data', (data_) => results.push(data_))
         .on('end', () => {
@@ -626,8 +660,7 @@ router.get('/:country/:min_year/:max_year/:travel', function (req, res, next) {
                     data_travel = true
                 } else {
                     if (travel == "global") {
-                        // if (data["TRAVEL"] == "unknown") {
-                        if (data["TRAVEL"] == "local") {
+                        if (data["TRAVEL"] == "travel" || data["TRAVEL"] == "local") {
                             data_travel = true
                         } else {
                             data_travel = false
@@ -654,6 +687,7 @@ router.get('/:country/:min_year/:max_year/:travel', function (req, res, next) {
                                 },
                                 "H58": 0,
                                 "MDR": 0,
+                                "XDR": 0,
                                 "DCS": 0,
                                 "AzithR": 0,
                                 "STAD": 0,
@@ -671,6 +705,9 @@ router.get('/:country/:min_year/:max_year/:travel', function (req, res, next) {
                             }
                             if (data["MDR"] == "MDR") {
                                 country_unique_genotype[params.country]["MDR"]++
+                            }
+                            if (data["XDR"] == "XDR") {
+                                country_unique_genotype[params.country]["XDR"]++
                             }
                             if (data["dcs_category"] == "DCS") {
                                 country_unique_genotype[params.country]["DCS"]++
@@ -691,6 +728,7 @@ router.get('/:country/:min_year/:max_year/:travel', function (req, res, next) {
                                 },
                                 "H58": 0,
                                 "MDR": 0,
+                                "XDR": 0,
                                 "DCS": 0,
                                 "AzithR": 0,
                                 "CipI": 0,
@@ -711,6 +749,9 @@ router.get('/:country/:min_year/:max_year/:travel', function (req, res, next) {
                             }
                             if (data["MDR"] == "MDR") {
                                 country_unique_genotype[data["COUNTRY_ONLY"]]["MDR"]++
+                            }
+                            if (data["XDR"] == "XDR") {
+                                country_unique_genotype[data["COUNTRY_ONLY"]]["XDR"]++
                             }
                             if (data["dcs_category"] == "DCS") {
                                 country_unique_genotype[data["COUNTRY_ONLY"]]["DCS"]++
@@ -736,6 +777,7 @@ router.get('/:country/:min_year/:max_year/:travel', function (req, res, next) {
             for (let data in country_unique_genotype) {
                 country_unique_genotype[data]["H58"] = (country_unique_genotype[data]["H58"] / country_unique_genotype[data]["TOTAL_OCCURRENCE"]) * 100
                 country_unique_genotype[data]["MDR"] = (country_unique_genotype[data]["MDR"] / country_unique_genotype[data]["TOTAL_OCCURRENCE"]) * 100
+                country_unique_genotype[data]["XDR"] = (country_unique_genotype[data]["XDR"] / country_unique_genotype[data]["TOTAL_OCCURRENCE"]) * 100
                 country_unique_genotype[data]["DCS"] = (country_unique_genotype[data]["DCS"] / country_unique_genotype[data]["TOTAL_OCCURRENCE"]) * 100
                 country_unique_genotype[data]["AzithR"] = (country_unique_genotype[data]["AzithR"] / country_unique_genotype[data]["TOTAL_OCCURRENCE"]) * 100
                 country_unique_genotype[data]["CipI"] = (country_unique_genotype[data]["CipI"] / country_unique_genotype[data]["TOTAL_OCCURRENCE"]) * 100

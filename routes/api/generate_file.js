@@ -42,7 +42,13 @@ router.get('/create', function(req, res) {
             .on('data', (data) => {
 
                 let column_names = Object.keys(data)
-                let data_name = data["NAME"].toString()
+                let data_name
+
+                if (file === "pw_species-prediction.csv") {
+                    data_name = data["Genome Name"].toString()
+                } else {
+                    data_name = data["NAME"].toString()
+                }
                 data_name = data_name.trim()
                 obj_parser = data_to_write.filter((x) => { if (x.NAME == data_name) return x })
 

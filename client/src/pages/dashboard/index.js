@@ -17,10 +17,10 @@ import Zoom from '@material-ui/core/Zoom';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import ReactTooltip from "react-tooltip";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Brush, LineChart, Line, Legend } from 'recharts';
+import { BarChart, Bar, XAxis, Label, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Brush, LineChart, Line, Legend } from 'recharts';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus, faMinus, faCrosshairs, faCamera, faTable, faFilePdf, faInfoCircle, faUndoAlt, faVirusSlash } from '@fortawesome/free-solid-svg-icons'
+import { faPlus, faMinus, faCrosshairs, faCamera, faTable, faFilePdf, faInfoCircle, faUndoAlt } from '@fortawesome/free-solid-svg-icons'
 import download from 'downloadjs';
 import { svgAsPngUri } from 'save-svg-as-png';
 import typhinetLogoImg from '../../assets/img/logo-typhinet.png';
@@ -128,6 +128,7 @@ const DashboardPage = () => {
   const [captureControlChartDRTInProgress, setCaptureControlChartDRTInProgress] = useState(false)
   const [captureControlChartGDInProgress, setCaptureControlChartGDInProgress] = useState(false)
   const [captureControlChartRFWAGInProgress, setCaptureControlChartRFWAGInProgress] = useState(false)
+  const [captureReportInProgress, setCaptureReportInProgress] = useState(false)
   const [tooltipContent, setTooltipContent] = useState(null);
 
   const [allCountries, setAllCountries] = useState([]);
@@ -236,7 +237,7 @@ const DashboardPage = () => {
   })
 
   const [genotypes] = useState([
-    '0', '0.0.1', '0.0.2', '0.0.3', '0.1.0', '0.1',
+    '0','0.0.1', '0.0.2', '0.0.3', '0.1.0', '0.1',
     '0.1.1', '0.1.2', '0.1.3', '1.1', '1.1.1',
     '1.1.2', '1.1.3', '1.1.4', '1.2', '1.2.1',
     '2', '2.0.0', '2.0.1', '2.0.2', '2.1.0', '2.1',
@@ -251,7 +252,7 @@ const DashboardPage = () => {
     '3.3.2', '3.3.2.Bd1', '3.3.2.Bd2', '3.4',
     '3.5', '3.5.1', '3.5.2', '3.5.3',
     '3.5.4', '4', '4.1.0', '4.1', '4.1.1', '4.2', '4.2.1',
-    '4.2.2', '4.2.3', '4.3', '4.3.0', '4.3.1', '4.3.1.1',
+    '4.2.2', '4.2.3', /*'4.3', '4.3.0', */'4.3.1', '4.3.1.1',
     '4.3.1.1.P1', '4.3.1.1.EA1', '4.3.1.2', '4.3.1.2.EA2',
     '4.3.1.2.EA3', '4.3.1.3', '4.3.1.3.Bdq'].sort((a, b) => a.localeCompare(b)));
 
@@ -769,12 +770,23 @@ const DashboardPage = () => {
             }
 
           }
-          if (entry[0] === "genotype") {
-            data.total2 = allGenotypes[entry[1].toString()];
-          }
         })
         data.total = sum;
       })
+
+      finalChartData.forEach((data) => {
+        Object.entries(data).forEach((entry) => {
+          if (entry[0] === "genotype") {
+            if (actualCountry === "All") {
+              data.total2 = allGenotypes[entry[1].toString()];
+            } else {
+              let noneCount = 'None' in data ? data['None'] : 0
+              data.total2 = data.total + noneCount
+            }
+          }
+        })
+      })
+
       finalChartData = finalChartData.filter(g => g.genotype !== undefined && g.genotype !== "0")
       let top10 = []
       finalChartData.forEach(element => {
@@ -804,6 +816,7 @@ const DashboardPage = () => {
       })
 
       top10.push({ maxSum: top10.length === 0 ? 0 : Math.ceil(top10[0].total2 / 50) * 50, totalSum: totalSum })
+
       if (amrClassFilter !== "Co-trimoxazole") {
         if (!arraysEqual(amrClassChartData, top10))
           setAmrClassChartData(top10)
@@ -817,7 +830,7 @@ const DashboardPage = () => {
       let finalDrugTrendsChartData = []
       let finalDrugsAndGenotypesChartData = []
       let totalSum = {}
-      // let noAMRGenomes = data[data.length - 1][0]
+      let totalCountryCount = data[data.length - 1][0]
       let allDrugs = data[data.length - 2][0]
       data = data.slice(0, data.length - 2)
 
@@ -879,10 +892,14 @@ const DashboardPage = () => {
         data.higherPercentage = Math.round((maxValue * 100) / data.total)
         data.drugsPercentage = drugsPercentage
       })
-
+      
       finalDrugsAndGenotypesChartData.forEach((data) => {
         Object.entries(data).forEach((entry) => {
-          if (entry[0] === "name")
+          if (actualCountry !== "All" && entry[0] === "name") {
+            data.total = totalCountryCount[entry[1]].total
+            data.totalS = totalCountryCount[entry[1]].totalS
+          }
+          else if (entry[0] === "name")
             data.total = allGenotypes[entry[1]]
         })
       })
@@ -890,11 +907,11 @@ const DashboardPage = () => {
       finalDrugTrendsChartData = finalDrugTrendsChartData.filter(item => item.total === 10 || item.total > 10)
 
       finalDrugTrendsChartData.sort((a, b) => a.name.localeCompare(b.name))
-      finalDrugTrendsChartData.push({ totalSum: allDrugs })
+      finalDrugTrendsChartData.push({ totalSum: allDrugs})
 
       finalDrugsAndGenotypesChartData.sort((a, b) => b.total - a.total)
       finalDrugsAndGenotypesChartData = finalDrugsAndGenotypesChartData.slice(0, finalDrugsAndGenotypesChartData.length >= 5 ? 5 : finalDrugsAndGenotypesChartData.length)
-      finalDrugsAndGenotypesChartData.push({ totalSum: totalSum })
+      finalDrugsAndGenotypesChartData.push({ totalSum: totalSum})
 
       if (!arraysEqual(finalDrugTrendsChartData, drugTrendsChartData))
         setDrugTrendsChartData(finalDrugTrendsChartData)
@@ -982,13 +999,21 @@ const DashboardPage = () => {
             if (active) {
               return (
                 <div style={{ backgroundColor: "rgba(255,255,255,1)", border: "solid rgba(0,0,0,0.25) 1px", padding: 16, display: "flex", flexDirection: "column" }}>
-                  <span style={{ fontFamily: "Montserrat", fontWeight: 600, fontSize: 24 }}>{label}</span>
+                  <div style={{display: "flex", flexDirection: "row", alignItems: 'center'}}>
+                    <span style={{ fontFamily: "Montserrat", fontWeight: 600, fontSize: 24 }}>{label}</span>
+                    {chart === 0 && (<span style={{ fontFamily: "Montserrat", fontSize: 16, paddingLeft: 10 }}>{"N = " + (actualCountry !== "All" ? payload[0].payload.totalS : payload[0].payload.total)}</span>)}
+                    {chart === 4 && (<span style={{ fontFamily: "Montserrat", fontSize: 16, paddingLeft: 10 }}>{"N = " + (actualCountry !== "All" ? payload[0].payload.quantities.totalS : payload[0].payload.total)}</span>)}
+                    {chart === 1 && (<span style={{ fontFamily: "Montserrat", fontSize: 16, paddingLeft: 10 }}>{"N = " + payload[0].payload.total}</span>)}
+                  </div>
                   <div style={{ height: 14 }} />
                   <div style={{ display: "flex", flexWrap: "wrap", width: width1, flexDirection: "" }}>
                     {payload.reverse().map((item, index) => {
                       let percentage = ((item.value / item.payload.total) * 100)
                       if (chart === 1) {
                         percentage = ((item.payload.drugsPercentage[item.dataKey] / item.payload.total) * 100)
+                      }
+                      if (chart === 0 && actualCountry !== "All") {
+                        percentage = ((item.value / item.payload.totalS) * 100)
                       }
                       percentage = Math.round(percentage * 100) / 100
                       if ((populationStructureFilter === 2 && chart === 3) || (RFWGFilter === 2 && chart === 4)) {
@@ -1014,7 +1039,7 @@ const DashboardPage = () => {
         }}
       />
     )
-  }, [dimensions, mobile, populationStructureFilter, RFWGFilter, hoverColor])
+  }, [dimensions, mobile, populationStructureFilter, RFWGFilter, hoverColor, actualCountry])
 
   useEffect(() => {
     const plotPopulationStructureChart = () => {
@@ -1037,17 +1062,20 @@ const DashboardPage = () => {
               }}
             >
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" interval="preserveStartEnd" tick={{ fontSize: 14 }} />
-              <YAxis domain={[0, maxH]} allowDecimals={false} label={{ value: "Number of genomes", angle: -90, position: "insideBottomLeft", offset: 13 }} width={70} />
-
-              <Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} />
+              <XAxis padding={{ left: 5, right: 5 }} dataKey="name" interval="preserveStartEnd" tick={{ fontSize: 14 }} />
+              <YAxis domain={[0, maxH]} allowDataOverflow={true} allowDecimals={false} width={70}>
+                <Label angle={-90} position='insideLeft' style={{ textAnchor: 'middle', fontSize: '' }} offset={6}>
+                  Number of genomes
+                </Label>
+              </YAxis>
+              {populationStructureChartData.length > 0 && (<Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} />)}
 
               <Legend
                 content={(props) => {
                   const { payload } = props;
                   return (
                     <div style={{ display: "flex", flexDirection: "column", height: 180 }}>
-                      <div style={{ display: "flex", flexDirection: "column", flexWrap: "wrap", overflowX: 'scroll', height: 180, marginLeft: 55, justifyContent: "space-between", marginTop: 10 }}>
+                      <div style={{ display: "flex", flexDirection: "column", flexWrap: "wrap", overflowX: 'scroll', height: 180, marginLeft: 68, justifyContent: "space-between", marginTop: 10 }}>
                         {payload.map((entry, index) => {
                           const { dataKey, color } = entry
                           return (
@@ -1095,16 +1123,20 @@ const DashboardPage = () => {
               barCategoryGap={'10%'}
             >
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" interval="preserveStartEnd" tick={{ fontSize: 14 }} />
-              <YAxis domain={[0, maxH]} allowDataOverflow={true} allowDecimals={false} label={{ value: "% Genomes per year", angle: -90, position: "insideBottomLeft", offset: 13 }} width={70} />
-              <Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} />
+              <XAxis padding={{ left: 5, right: 5 }} dataKey="name" interval="preserveStartEnd" tick={{ fontSize: 14 }} />
+              <YAxis domain={[0, maxH]} allowDataOverflow={true} allowDecimals={false} width={70}>
+                <Label angle={-90} position='insideLeft' style={{ textAnchor: 'middle' }} offset={6}>
+                  % Genomes per year
+                </Label>
+              </YAxis>
+              {teste.length > 0 && (<Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} />)}
 
               <Legend
                 content={(props) => {
                   const { payload } = props;
                   return (
                     <div style={{ display: "flex", flexDirection: "column", height: 180 }}>
-                      <div style={{ display: "flex", flexDirection: "column", flexWrap: "wrap", overflowX: 'scroll', height: 180, marginLeft: 55, justifyContent: "space-between", marginTop: 10 }}>
+                      <div style={{ display: "flex", flexDirection: "column", flexWrap: "wrap", overflowX: 'scroll', height: 180, marginLeft: 68, justifyContent: "space-between", marginTop: 10 }}>
                         {payload.map((entry, index) => {
                           const { dataKey, color } = entry
                           return (
@@ -1197,16 +1229,20 @@ const DashboardPage = () => {
               layout="horizontal"
             >
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="genotype" type={"category"} interval={dimensions.width < middle ? 1 : 0} tick={{ fontSize: 14 }} />
-              <YAxis domain={[0, maxSum]} type={"number"} allowDecimals={false} label={{ value: "Number of occurrences", angle: -90, position: "insideBottomLeft", offset: 13 }} width={70} />
-              <Brush dataKey="genotype" height={20} stroke={"rgb(31, 187, 211)"} />
-
+              <XAxis padding={{ left: 5, right: 5 }} dataKey="genotype" type={"category"} interval={dimensions.width < middle ? 1 : 0} tick={{ fontSize: 14 }} />
+              <YAxis domain={[0, maxSum]} type={"number"} allowDecimals={false} width={70}>
+                <Label angle={-90} position='insideLeft' style={{ textAnchor: 'middle' }} offset={6}>
+                  Number of occurrences
+                </Label>
+              </YAxis>
+              {dataAMR.length > 0 && (<Brush dataKey="genotype" height={20} stroke={"rgb(31, 187, 211)"} />)}
+  
               <Legend
                 content={(props) => {
                   const { payload } = props;
                   return (
                     <div style={{ display: "flex", flexDirection: "column", height: 180 }}>
-                      <div style={{ display: "flex", flexDirection: "column", flexWrap: "wrap", overflowX: 'scroll', height: 180, marginLeft: 55, justifyContent: amrClassFilter === "Ampicillin" ? "" : "space-between", marginTop: 10 }}>
+                      <div style={{ display: "flex", flexDirection: "column", flexWrap: "wrap", overflowX: 'scroll', height: 180, marginLeft: 68, justifyContent: amrClassFilter === "Ampicillin" ? "" : "space-between", marginTop: 10 }}>
                         {payload.map((entry, index) => {
                           const { dataKey, color } = entry
                           return (
@@ -1221,7 +1257,7 @@ const DashboardPage = () => {
                   );
                 }}
               />
-
+  
               {amrClassChartTooltip()}
               {info.bars.map((item) => {
                 return (
@@ -1231,7 +1267,7 @@ const DashboardPage = () => {
             </BarChart>
           </ResponsiveContainer>
         )
-      } else if (RDWAGDataviewFilter === 2) {
+      } else if (RDWAGDataviewFilter === 2){
         let temp = JSON.parse(JSON.stringify(dataAMR))
 
         temp.forEach(element => {
@@ -1256,16 +1292,20 @@ const DashboardPage = () => {
               layout="horizontal"
             >
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="genotype" type={"category"} interval={dimensions.width < middle ? 1 : 0} tick={{ fontSize: 14 }} />
-              <YAxis domain={[0, 100]} type={"number"} allowDecimals={false} label={{ value: "% Genomes", angle: -90, position: "insideBottomLeft", offset: 13 }} width={70} />
-              <Brush dataKey="genotype" height={20} stroke={"rgb(31, 187, 211)"} />
-
+              <XAxis padding={{ left: 5, right: 5 }} dataKey="genotype" type={"category"} interval={dimensions.width < middle ? 1 : 0} tick={{ fontSize: 14 }} />
+              <YAxis domain={[0, 100]} type={"number"} allowDecimals={false} width={70}>
+                <Label angle={-90} position='insideLeft' style={{ textAnchor: 'middle' }} offset={6}>
+                  % Genomes
+                </Label>
+              </YAxis>
+              {temp.length > 0 && (<Brush dataKey="genotype" height={20} stroke={"rgb(31, 187, 211)"} />)}
+              
               <Legend
                 content={(props) => {
                   const { payload } = props;
                   return (
                     <div style={{ display: "flex", flexDirection: "column", height: 180 }}>
-                      <div style={{ display: "flex", flexDirection: "column", flexWrap: "wrap", overflowX: 'scroll', height: 180, marginLeft: 55, justifyContent: amrClassFilter === "Ampicillin" ? "" : "space-between", marginTop: 10 }}>
+                      <div style={{ display: "flex", flexDirection: "column", flexWrap: "wrap", overflowX: 'scroll', height: 180, marginLeft: 68, justifyContent: amrClassFilter === "Ampicillin" ? "" : "space-between", marginTop: 10 }}>
                         {payload.map((entry, index) => {
                           const { dataKey, color } = entry
                           return (
@@ -1280,7 +1320,7 @@ const DashboardPage = () => {
                   );
                 }}
               />
-
+  
               {amrClassChartTooltip()}
               {info.bars.map((item) => {
                 return (
@@ -1456,6 +1496,7 @@ const DashboardPage = () => {
     // };
 
     const plotDrugTrendsChart = () => {
+      // console.log(drugTrendsChartData.slice(0, drugTrendsChartData.length - 1));
       return (
         <ResponsiveContainer width="90%">
           <LineChart
@@ -1467,21 +1508,25 @@ const DashboardPage = () => {
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis padding={{ left: 20, right: 20 }} dataKey="name" interval={"preserveStartEnd"} tick={{ fontSize: 14 }} />
-            <YAxis allowDecimals={false} label={{ value: "Resistant (%)", angle: -90, position: "left", offset: -13 }} width={70} />
-            <Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} />
+            <YAxis allowDecimals={false} width={70}>
+              <Label angle={-90} position='insideLeft' style={{ textAnchor: 'middle' }} offset={12}>
+                Resistant (%)
+              </Label>
+            </YAxis>
+            {drugTrendsChartData.slice(0, drugTrendsChartData.length - 1).length > 0 && (<Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} />)}
 
             <Legend
               content={(props) => {
                 const { payload } = props;
                 return (
                   <div style={{ display: "flex", flexDirection: "row", justifyContent: 'flex-end' }}>
-                    <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", justifyContent: dimensions.width < 1585 ? "space-between" : "", paddingLeft: 55, marginTop: 10 }}>
+                    <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", justifyContent: dimensions.width < 1585 ? "space-between" : "", paddingLeft: 68, marginTop: 10 }}>
                       {payload.map((entry, index) => {
                         const { dataKey, color } = entry
                         return (
-                          <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "start", width: dimensions.width < 1585 ? 120 : '19%', marginBottom: 4, marginLeft: 3, marginRight: 3 }}>
+                          <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "start", width: dimensions.width < 1585 ? 120: '19%', marginBottom: 4, marginLeft: 3, marginRight: 3 }}>
                             <div style={{ height: 8, width: 8, borderRadius: 4, marginTop: 3, backgroundColor: color, flexShrink: 0 }} />
-                            <span style={{ fontSize: 12, paddingLeft: 4 }}>{dataKey}</span>
+                            <span style={{ fontSize: 12, paddingLeft: 4, fontFamily: 'Montserrat' }}>{dataKey}</span>
                           </div>
                         )
                       })}
@@ -1512,20 +1557,24 @@ const DashboardPage = () => {
               }}
             >
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" interval={dimensions.width < mobile ? 1 : 0} tick={{ fontSize: 14 }} />
-              <YAxis allowDecimals={false} label={{ value: "Number of genomes", angle: -90, position: "left", offset: -13 }} width={75} />
-              <Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} />
+              <XAxis padding={{ left: 5, right: 5 }} dataKey="name" interval={dimensions.width < mobile ? 1 : 0} tick={{ fontSize: 14 }} />
+              <YAxis allowDecimals={false} width={75}>
+                <Label angle={-90} position='insideLeft' style={{ textAnchor: 'middle' }} offset={12}>
+                  Number of genomes
+                </Label>
+              </YAxis>
+              {drugsAndGenotypesChartData.slice(0, drugsAndGenotypesChartData.length - 1).length > 0 && (<Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} />)}
 
               <Legend
                 content={(props) => {
                   const { payload } = props;
                   return (
                     <div style={{ display: "flex", flexDirection: "row", justifyContent: 'flex-end' }}>
-                      <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", paddingLeft: 55, marginTop: 10, justifyContent: dimensions.width < 1585 ? "space-between" : "" }}>
+                      <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", paddingLeft: 73, marginTop: 10, justifyContent: dimensions.width < 1585 ? "space-between" : "" }}>
                         {payload.map((entry, index) => {
                           const { dataKey, color } = entry
                           return (
-                            <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "start", width: dimensions.width < 1585 ? 120 : '19%', marginBottom: 4, marginLeft: 3, marginRight: 3 }}>
+                            <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "start", width: dimensions.width < 1585 ? 120: '19%', marginBottom: 4, marginLeft: 3, marginRight: 3 }}>
                               <div style={{ height: 8, width: 8, borderRadius: 4, marginTop: 3, backgroundColor: color, flexShrink: 0 }} />
                               <span style={{ fontSize: 12, paddingLeft: 4 }}>{dataKey}</span>
                             </div>
@@ -1550,7 +1599,7 @@ const DashboardPage = () => {
             if (keys[key] !== 'name' && keys[key] !== 'total' && keys[key] !== 'quantities') {
               let aux = keys[key]
               element.quantities[aux] = element[aux]
-              element[aux] = (element[aux] * 100) / element.total
+              element[aux] = (element[aux] * 100) / element.totalS
             }
           }
         });
@@ -1565,20 +1614,24 @@ const DashboardPage = () => {
               }}
             >
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" interval={dimensions.width < mobile ? 1 : 0} tick={{ fontSize: 14 }} />
-              <YAxis domain={[0, 100]} allowDecimals={false} label={{ value: "Percentage within genotype (%)", angle: -90, position: "insideBottomLeft", offset: 18 }} width={70} />
-              <Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} />
+              <XAxis padding={{ left: 5, right: 5 }} dataKey="name" interval={dimensions.width < mobile ? 1 : 0} tick={{ fontSize: 14 }} />
+              <YAxis domain={[0, 100]} allowDecimals={false} width={70}>
+                <Label angle={-90} position='insideLeft' style={{ textAnchor: 'middle' }} offset={12}>
+                  Percentage within genotype (%)
+                </Label>
+              </YAxis>
+              {teste.length > 0 && (<Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} />)}
 
               <Legend
                 content={(props) => {
                   const { payload } = props;
                   return (
                     <div style={{ display: "flex", flexDirection: "row", justifyContent: 'flex-end' }}>
-                      <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", paddingLeft: 55, justifyContent: dimensions.width < 1585 ? "space-between" : "", marginTop: 10 }}>
+                      <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", paddingLeft: 68, justifyContent: dimensions.width < 1585 ? "space-between" : "", marginTop: 10 }}>
                         {payload.map((entry, index) => {
                           const { dataKey, color } = entry
                           return (
-                            <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "start", width: dimensions.width < 1585 ? 120 : '19%', marginBottom: 4, marginLeft: 3, marginRight: 3 }}>
+                            <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "start", width: dimensions.width < 1585 ? 120: '19%', marginBottom: 4, marginLeft: 3, marginRight: 3 }}>
                               <div style={{ height: 8, width: 8, borderRadius: 4, marginTop: 3, backgroundColor: color, flexShrink: 0 }} />
                               <span style={{ fontSize: 12, paddingLeft: 4 }}>{dataKey}</span>
                             </div>
@@ -1623,7 +1676,7 @@ const DashboardPage = () => {
     }
   })
 
-  const [capturePicture] = useState(() => async (id, index, info = {}) => {
+  const [capturePicture] = useState(() => async (id, index, info={}) => {
     switch (index) {
       case 0:
         setCaptureControlMapInProgress(true)
@@ -1648,13 +1701,13 @@ const DashboardPage = () => {
       info.dataset = "Local"
     }
 
-    const names = ["Resistance Frequencies Within Genotypes", "Drug Resistance Trends", "Genotype Distribution", "Resistance determinants within all genotypes"]
-    const brokenNames = [["Resistance Frequencies", "Within Genotypes"], ["Resistance determinants", "within all genotypes"]]
-
+    const names = ["Resistance frequencies within genotypes", "Drug resistance trends", "Genotype distribution", "Resistance determinants within all genotypes"]
+    const brokenNames = [["Resistance frequencies", "within genotypes"], ["Resistance determinants", "within all genotypes"]]
+    
     if (index === 5) {
       let ids = ["RFWG", "RFWAG", "DRT", "GD"]
 
-      var doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'l' });
+      var doc = new jsPDF({unit: 'mm', format: 'a4', orientation: 'l'});
 
       let typhinetLogo = new Image();
       typhinetLogo.src = typhinetLogoImg2;
@@ -1662,14 +1715,14 @@ const DashboardPage = () => {
       doc.setFontSize(16);
       const paragraph1 = "Nunc ultrices blandit urna mollis porttitor. Vivamus viverra imperdiet justo, vitae fermentum elit accumsan placerat. Maecenas malesuada tincidunt rhoncus. Sed quam mauris, lacinia ac nisi consectetur, tincidunt pulvinar mauris. Proin ultricies quam sit amet dolor faucibus, at aliquam leo porttitor. Morbi at molestie nulla. Mauris porta lacus at augue facilisis volutpat. Suspendisse justo odio, congue nec diam ut, pretium blandit arcu. Duis vel leo euismod, pretium ante sit amet, viverra nibh."
       const paragraph2 = "Quisque in tortor dignissim, mollis augue ac, sollicitudin ex. Quisque quis accumsan erat. Suspendisse sed nulla id ante fringilla sodales. Etiam sed pulvinar ex. Integer rutrum dolor a lobortis semper. Praesent fermentum feugiat justo ultrices facilisis. Etiam non sem ac ante rhoncus pretium eget eget dui. Duis non mollis nisl. Nullam id elementum augue, eget feugiat felis. Integer posuere nec sapien quis scelerisque. Etiam ut tortor dignissim, bibendum metus a, varius lectus. Nunc sollicitudin fringilla enim nec auctor. In vel rhoncus arcu. Morbi sed blandit libero."
-      doc.text(paragraph1, 10, 50, { align: 'justify', maxWidth: 130 })
-      doc.text(paragraph2, 155, 50, { align: 'justify', maxWidth: 130 })
+      doc.text(paragraph1, 10, 50, {align: 'justify', maxWidth: 130})
+      doc.text(paragraph2, 155, 50, {align: 'justify', maxWidth: 130})
 
       doc.addPage('a4', 'l')
       doc.setFontSize(25);
       doc.text("Global overview Salmonella Typhi", 80, 15);
-
-      await svgAsPngUri(document.getElementById('control-map'), { scale: 4, backgroundColor: "white", width: 1200, left: -200 })
+      
+      await svgAsPngUri(document.getElementById('control-map'), { scale: 4, backgroundColor: "white", width: 1200, left: -200} )
         .then(async (uri) => {
           let canvas = document.createElement("canvas")
           let ctx = canvas.getContext('2d');
@@ -1685,7 +1738,7 @@ const DashboardPage = () => {
           var img = canvas.toDataURL("image/png")
           doc.addImage(img, "PNG", 0, 18, 298, 155);
         })
-
+      
       let actualMapView = info.mapView
       switch (actualMapView) {
         case "MDR":
@@ -1709,13 +1762,13 @@ const DashboardPage = () => {
         default:
           break;
       }
-
+      
       doc.setFontSize(14);
       doc.text("Map view: " + actualMapView, 10, 180);
       doc.text("Dataset: " + info.dataset, 10, 187);
       doc.text("Time period: " + info.actualTimePeriodRange[0] + " to " + info.actualTimePeriodRange[1], 10, 194);
       doc.text("Country: " + info.country, 10, 201);
-
+      
       if (info.mapView === 'Dominant Genotype') {
         var img = new Image()
         img.src = "legends/MV_DG.png"
@@ -1729,9 +1782,9 @@ const DashboardPage = () => {
         img3.src = "legends/MV_outros.png"
         doc.addImage(img3, 'PNG', 260, 155, 30, 50)
       }
-
+      
       doc.addPage('a4', 'l')
-      const names2 = ["Resistance Frequencies Within Genotypes", "Resistance determinants within all genotypes", "Drug Resistance Trends", "Genotype Distribution"]
+      const names2 = ["Resistance frequencies within genotypes", "Resistance determinants within all genotypes", "Drug resistance trends", "Genotype distribution"]
       for (let index = 0; index < ids.length; index++) {
         let legend
         let brush
@@ -1741,7 +1794,9 @@ const DashboardPage = () => {
           legend.style.display = 'none'
         }
         brush = graph.getElementsByClassName('recharts-brush')[0];
-        brush.style.display = 'none'
+        if (brush !== undefined) {
+          brush.style.display = 'none'
+        }
 
         let url
         await domtoimage.toPng(document.getElementById(ids[index]), { quality: 1, bgcolor: "white" })
@@ -1752,7 +1807,9 @@ const DashboardPage = () => {
         if (index === 1 || index === 3) {
           legend.style.display = 'block'
         }
-        brush.style.display = 'block'
+        if (brush !== undefined) {
+          brush.style.display = 'block'
+        }
 
         let subtitleH = 0
         if (index === 0) {
@@ -1781,7 +1838,7 @@ const DashboardPage = () => {
         if (dimensions.width < 1750) {
           spaceBetween = 13
         }
-        doc.text(texts[index], imgWidth + spaceBetween, 23 + subtitleH, { align: 'justify', maxWidth: 50 })
+        doc.text(texts[index], imgWidth + spaceBetween, 23 + subtitleH, {align: 'justify', maxWidth: 50})
 
 
         doc.setFontSize(14)
@@ -1813,7 +1870,8 @@ const DashboardPage = () => {
         }
       }
 
-      doc.save("Global Overview Salmonella Typhi - ALL INFO - TyphiNET.pdf");
+      doc.save("TyphiNET - Global Overview.pdf");
+      setCaptureReportInProgress(false);
 
     } else if (index !== 0) {
 
@@ -1825,7 +1883,7 @@ const DashboardPage = () => {
 
       var legend = graph.getElementsByClassName('recharts-legend-wrapper')[0];
       var brush = graph.getElementsByClassName('recharts-brush')[0];
-
+  
       if (id === "RFWAG" || id === "GD") {
         legend.style.display = 'none'
       }
@@ -1837,7 +1895,7 @@ const DashboardPage = () => {
           legend.style.display = 'block'
           brush.style.display = 'block'
         });
-
+      
       let cHeight = 20
       let logoHeight = 50
       let legendHeight = 0
@@ -1885,17 +1943,17 @@ const DashboardPage = () => {
       }
 
       if (id === "RFWG") {
-        ctx.fillText(brokenNames[0][0], canvas.width / 2, 10 + logoHeight)
-        ctx.fillText(brokenNames[0][1], canvas.width / 2, 30 + logoHeight)
+        ctx.fillText(brokenNames[0][0], canvas.width/2, 10 + logoHeight)
+        ctx.fillText(brokenNames[0][1], canvas.width/2, 30 + logoHeight)
         ctx.font = "12px Montserrat"
-        ctx.fillText("Top Genotypes (up to 5)", canvas.width / 2, 32 + logoHeight + subtitleHeight)
+        ctx.fillText("Top Genotypes (up to 5)", canvas.width/2, 32 + logoHeight + subtitleHeight)
       } else if (id === "RFWAG") {
-        ctx.fillText(brokenNames[1][0], canvas.width / 2, 10 + logoHeight)
-        ctx.fillText(brokenNames[1][1], canvas.width / 2, 30 + logoHeight)
+        ctx.fillText(brokenNames[1][0], canvas.width/2, 10 + logoHeight)
+        ctx.fillText(brokenNames[1][1], canvas.width/2, 30 + logoHeight)
         ctx.font = "12px Montserrat"
-        ctx.fillText("Top Genotypes (up to 10)", canvas.width / 2, 32 + logoHeight + subtitleHeight)
-      } else {
-        ctx.fillText(names[index - 1], canvas.width / 2, 10 + logoHeight)
+        ctx.fillText("Top Genotypes (up to 10)", canvas.width/2, 32 + logoHeight + subtitleHeight)
+      }else{
+        ctx.fillText(names[index - 1], canvas.width/2, 10 + logoHeight)
       }
 
       if (id === "RFWAG" || id === "GD") {
@@ -1907,7 +1965,7 @@ const DashboardPage = () => {
           } else {
             legendImg.src = "legends/" + info.amrClassFilter + ".png";
           }
-
+          
         } else {
           legendImg.src = "legends/GD2.png";
         }
@@ -1935,7 +1993,7 @@ const DashboardPage = () => {
 
       const base64 = canvas.toDataURL();
       stopLoading(index)
-      download(base64, names[index - 1] + " (Chart) - TiphyNET.png");
+      download(base64, "TiphyNET - " + names[index - 1] + ".png");
     } else {
       svgAsPngUri(document.getElementById(id), { scale: 4, backgroundColor: "white", width: 1200, left: -200 })
         .then(async (uri) => {
@@ -1965,7 +2023,7 @@ const DashboardPage = () => {
           ctx.font = "bolder 50px Montserrat"
           ctx.fillStyle = "black";
           ctx.textAlign = "center";
-          ctx.fillText("Global overview Salmonella Typhi", canvas.width / 2, 80)
+          ctx.fillText("Global overview Salmonella Typhi", canvas.width/2, 80)
           ctx.font = "35px Montserrat"
           ctx.textAlign = "center";
 
@@ -1993,9 +2051,9 @@ const DashboardPage = () => {
               break;
           }
 
-          ctx.fillText("Map view: " + actualMapView, canvas.width / 2, 140)
-          ctx.fillText("Dataset: " + info.dataset, canvas.width / 2, 190)
-          ctx.fillText("Time period: " + info.actualTimePeriodRange[0] + " to " + info.actualTimePeriodRange[1], canvas.width / 2, 240)
+          ctx.fillText("Map view: " + actualMapView, canvas.width/2, 140)
+          ctx.fillText("Dataset: " + info.dataset, canvas.width/2, 190)
+          ctx.fillText("Time period: " + info.actualTimePeriodRange[0] + " to " + info.actualTimePeriodRange[1], canvas.width/2, 240)
 
           ctx.drawImage(mapImg, 0, textHeight, canvas.width, cHeight);
 
@@ -2006,7 +2064,7 @@ const DashboardPage = () => {
           if (info.mapView === 'Dominant Genotype') {
             legendImg.src = "legends/MV_DG.png";
             await legendImgoPromise;
-            let centerWidth = (canvas.width - 1731) / 2
+            let centerWidth = (canvas.width - 1731)/2
             ctx.drawImage(legendImg, centerWidth, canvas.height - legendHeight, 1731, 400);
           } else if (info.mapView === 'No. Samples') {
             legendImg.src = "legends/MV_NS.png";
@@ -2030,7 +2088,7 @@ const DashboardPage = () => {
 
           const base64 = canvas.toDataURL();
           stopLoading(index)
-          download(base64, 'Global Overview Salmonella Typhi - TyphiNET.png');
+          download(base64, 'TyphiNET - Global Overview Salmonella Typhi.png');
         });
     }
 
@@ -2094,10 +2152,10 @@ const DashboardPage = () => {
         let aux = [1, 10, 20, 100, 300]
         return (
           <>
-            <div className="samples-info">
+            {/* <div className="samples-info">
               <div className="color" style={{ backgroundColor: "#F5F4F6" }} />
               <span>0</span>
-            </div>
+            </div> */}
             {[...Array(5).keys()].map((n) => {
               // const samplesLegend = n !== 0 ? n * (samplesQty / 5) : 1
               return (
@@ -2127,15 +2185,15 @@ const DashboardPage = () => {
       case 'Sensitive to all drugs':
         return (
           <>
-            <div className="samples-info">
+            {/* <div className="samples-info">
               <div className="color" style={{ backgroundColor: "#F5F4F6" }} />
               <span>0%</span>
-            </div>
+            </div> */}
             {percentageSteps.map((n) => {
               return (
                 <div key={n} className="samples-info">
                   <div className="color" style={{ backgroundColor: mapRedColorScale(n) }} />
-                  <span>{n}%</span>
+                  <span>{n === "1" ? '1 - 24' : n}%</span>
                 </div>
               )
             })}
@@ -2157,15 +2215,15 @@ const DashboardPage = () => {
       case 'H58 / Non-H58':
         return (
           <>
-            <div className="samples-info">
+            {/* <div className="samples-info">
               <div className="color" style={{ backgroundColor: "#F5F4F6" }} />
               <span>0%</span>
-            </div>
+            </div> */}
             {percentageSteps.map((g, n) => {
               return (
                 <div key={n} className="samples-info">
                   <div className="color" style={{ backgroundColor: mapRedColorScale(g) }} />
-                  <span>{g}%</span>
+                  <span>{g === "1" ? '1 - 24' : g}%</span>
                 </div>
               )
             })}
@@ -2174,15 +2232,15 @@ const DashboardPage = () => {
       case 'MDR':
         return (
           <>
-            <div className="samples-info">
+            {/* <div className="samples-info">
               <div className="color" style={{ backgroundColor: "#F5F4F6" }} />
               <span>0%</span>
-            </div>
+            </div> */}
             {percentageSteps.map((n) => {
               return (
                 <div key={n} className="samples-info">
                   <div className="color" style={{ backgroundColor: mapRedColorScale(n) }} />
-                  <span>{n}%</span>
+                  <span>{n === "1" ? '1 - 24' : n}%</span>
                 </div>
               )
             })}
@@ -2191,15 +2249,15 @@ const DashboardPage = () => {
       case 'XDR':
         return (
           <>
-            <div className="samples-info">
+            {/* <div className="samples-info">
               <div className="color" style={{ backgroundColor: "#F5F4F6" }} />
               <span>0%</span>
-            </div>
+            </div> */}
             {percentageSteps.map((n) => {
               return (
                 <div key={n} className="samples-info">
                   <div className="color" style={{ backgroundColor: mapRedColorScale(n) }} />
-                  <span>{n}%</span>
+                  <span>{n === "1" ? '1 - 24' : n}%</span>
                 </div>
               )
             })}
@@ -2208,15 +2266,15 @@ const DashboardPage = () => {
       case 'DCS':
         return (
           <>
-            <div className="samples-info">
+            {/* <div className="samples-info">
               <div className="color" style={{ backgroundColor: "#F5F4F6" }} />
               <span>0%</span>
-            </div>
+            </div> */}
             {percentageSteps.map((n) => {
               return (
                 <div key={n} className="samples-info">
                   <div className="color" style={{ backgroundColor: mapRedColorScale(n) }} />
-                  <span>{n}%</span>
+                  <span>{n === "1" ? '1 - 24' : n}%</span>
                 </div>
               )
             })}
@@ -2225,15 +2283,15 @@ const DashboardPage = () => {
       case 'Azith':
         return (
           <>
-            <div className="samples-info">
+            {/* <div className="samples-info">
               <div className="color" style={{ backgroundColor: "#F5F4F6" }} />
               <span>0%</span>
-            </div>
+            </div> */}
             {percentageSteps.map((n) => {
               return (
                 <div key={n} className="samples-info">
                   <div className="color" style={{ backgroundColor: mapRedColorScale(n) }} />
-                  <span>{n}%</span>
+                  <span>{n === "1" ? '1 - 24' : n}%</span>
                 </div>
               )
             })}
@@ -2242,15 +2300,15 @@ const DashboardPage = () => {
       case 'CipI':
         return (
           <>
-            <div className="samples-info">
+            {/* <div className="samples-info">
               <div className="color" style={{ backgroundColor: "#F5F4F6" }} />
               <span>0%</span>
-            </div>
+            </div> */}
             {percentageSteps.map((n) => {
               return (
                 <div key={n} className="samples-info">
                   <div className="color" style={{ backgroundColor: mapRedColorScale(n) }} />
-                  <span>{n}%</span>
+                  <span>{n === "1" ? '1 - 24' : n}%</span>
                 </div>
               )
             })}
@@ -2259,15 +2317,15 @@ const DashboardPage = () => {
       case 'CipR':
         return (
           <>
-            <div className="samples-info">
+            {/* <div className="samples-info">
               <div className="color" style={{ backgroundColor: "#F5F4F6" }} />
               <span>0%</span>
-            </div>
+            </div> */}
             {percentageSteps.map((n) => {
               return (
                 <div key={n} className="samples-info">
                   <div className="color" style={{ backgroundColor: mapRedColorScale(n) }} />
-                  <span>{n}%</span>
+                  <span>{n === "1" ? '1 - 24' : n}%</span>
                 </div>
               )
             })}
@@ -2471,7 +2529,7 @@ const DashboardPage = () => {
                     {({ geographies }) =>
                       geographies.map((geo) => {
                         const sample = worldMapSamplesData.find(s => s.displayName === geo.properties.NAME)
-
+                        
                         const d = worldMapComplementaryData[geo.properties.NAME]; /* .NAME || .NAME_LONG */
                         let country
 
@@ -2538,7 +2596,7 @@ const DashboardPage = () => {
                               } else {
                                 fill = darkGray
                               }
-
+                              
                             } else if (country !== undefined) {
                               fill = '#F5F4F6'
                             }
@@ -2653,6 +2711,7 @@ const DashboardPage = () => {
                                         genotypes: d.GENOTYPES.TOTAL,
                                         H58: Math.round(d.H58) !== d.H58 ? d.H58.toFixed(2) : d.H58,
                                         MDR: Math.round(d.MDR) !== d.MDR ? d.MDR.toFixed(2) : d.MDR,
+                                        XDR: Math.round(d.XDR) !== d.XDR ? d.XDR.toFixed(2) : d.XDR,
                                         DCS: Math.round(d.DCS) !== d.DCS ? d.DCS.toFixed(2) : d.DCS,
                                         CipI: Math.round(d.CipI) !== d.CipI ? d.CipI.toFixed(2) : d.CipI,
                                         CipR: Math.round(d.CipR) !== d.CipR ? d.CipR.toFixed(2) : d.CipR,
@@ -3013,7 +3072,7 @@ const DashboardPage = () => {
                     className={`button ${captureControlMapInProgress && "disabled"}`}
                     onClick={() => {
                       if (!captureControlMapInProgress)
-                        capturePicture('control-map', 0, { mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange })
+                      capturePicture('control-map', 0, {mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange})
                     }}
                   >
                     <FontAwesomeIcon icon={faCamera} />
@@ -3042,6 +3101,7 @@ const DashboardPage = () => {
                       <span>Genotypes: {tooltipContent.additionalInfo.genotypes}</span>
                       <span>H58: {tooltipContent.additionalInfo.H58}%</span>
                       <span>MDR: {tooltipContent.additionalInfo.MDR}%</span>
+                      <span>XDR: {tooltipContent.additionalInfo.XDR}%</span>
                       <span>DCS: {tooltipContent.additionalInfo.DCS}%</span>
                       <span>AzithR: {tooltipContent.additionalInfo.AzithR}%</span>
                       <span>CipI: {tooltipContent.additionalInfo.CipI}%</span>
@@ -3197,7 +3257,7 @@ const DashboardPage = () => {
                           className={`button ${captureControlChartRFWGInProgress && "disabled"}`}
                           onClick={() => {
                             if (!captureControlChartRFWGInProgress)
-                              capturePicture('RFWG', 1, { mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry })
+                            capturePicture('RFWG', 1, {mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry})
                           }}
                         >
                           <FontAwesomeIcon icon={faCamera} size="sm" />
@@ -3245,7 +3305,7 @@ const DashboardPage = () => {
                           className={`button ${captureControlChartRFWAGInProgress && "disabled"}`}
                           onClick={() => {
                             if (!captureControlChartRFWAGInProgress)
-                              capturePicture('RFWAG', 4, { mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry, amrClassFilter: amrClassFilter })
+                            capturePicture('RFWAG', 4, {mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry, amrClassFilter: amrClassFilter})
                           }}
                         >
                           <FontAwesomeIcon icon={faCamera} size="sm" />
@@ -3285,7 +3345,7 @@ const DashboardPage = () => {
                         onChange={evt => setRDWAGDataviewFilter(evt.target.value)}
                         fullWidth
                         style={{ fontWeight: 600, fontFamily: "Montserrat" }}
-                      >
+                      > 
                         <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat" }} value={1}>
                           Number of genomes
                         </MenuItem>
@@ -3312,7 +3372,7 @@ const DashboardPage = () => {
                           className={`button ${captureControlChartDRTInProgress && "disabled"}`}
                           onClick={() => {
                             if (!captureControlChartDRTInProgress)
-                              capturePicture('DRT', 2, { mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry })
+                            capturePicture('DRT', 2, {mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry})
                           }}
                         >
                           <FontAwesomeIcon icon={faCamera} size="sm" />
@@ -3341,7 +3401,7 @@ const DashboardPage = () => {
                           className={`button ${captureControlChartGDInProgress && "disabled"}`}
                           onClick={() => {
                             if (!captureControlChartGDInProgress)
-                              capturePicture('GD', 3, { mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry })
+                            capturePicture('GD', 3, {mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry})
                           }}
                         >
                           <FontAwesomeIcon icon={faCamera} size="sm" />
@@ -3386,10 +3446,21 @@ const DashboardPage = () => {
                 <FontAwesomeIcon icon={faTable} style={{ marginRight: 8 }} />
                 <span>Download database</span>
               </div>
-              {/* <div style={{ marginTop: dimensions.width > desktop ? 0 : 20, marginLeft: dimensions.width > desktop ? 20 : 0 }} className="download-sheet-button" onClick={() => capturePicture('', 5, { mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry, amrClassFilter: amrClassFilter })}>
+              <div style={{ marginTop: dimensions.width > desktop ? 0 : 20, marginLeft: dimensions.width > desktop ? 20 : 0}} className={`download-sheet-button`} onClick={() => {
+                if (!captureReportInProgress) {
+                  setCaptureReportInProgress(true);
+                  capturePicture('', 5, {mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry, amrClassFilter: amrClassFilter});
+                }
+              }}>
                 <FontAwesomeIcon icon={faFilePdf} style={{ marginRight: 8 }} />
                 <span>Download report from current view</span>
-              </div> */}
+                {captureReportInProgress && (<div style={{position: 'absolute', paddingBottom: 32, paddingRight: 20 }}>
+                  <CustomCircularProgress
+                    size={44}
+                    thickness={4}
+                    style={{ position: "absolute", top: -5, left: -6, color: "white" }} />
+                </div>)}
+              </div>
             </div>
           </div>
         </div>
