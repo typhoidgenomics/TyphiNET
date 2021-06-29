@@ -21,9 +21,6 @@ router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel', function (req,
 
             // let count = 0
             let allCountryDrugs = {}
-            let genotypeList = []
-
-            let noAMRGenomes = {}
             for (let data of resultsJson) {
 
                 if (travel == "full") {
@@ -56,7 +53,8 @@ router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel', function (req,
                         // count += 1
                         if (!(data["GENOTYPE"] in allCountryDrugs)) {
                             allCountryDrugs[data["GENOTYPE"]] = {total: 0, totalS: 0}
-                            allCountryDrugs[data["GENOTYPE"]].total = 1
+                            const isAMR = data["amr_category"] != "No AMR detected"
+                            allCountryDrugs[data["GENOTYPE"]].total = isAMR ? 1 : 0
                             allCountryDrugs[data["GENOTYPE"]].totalS = 1
                         } else {
                             if (data["amr_category"] != "No AMR detected") {

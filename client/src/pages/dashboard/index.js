@@ -161,6 +161,11 @@ const DashboardPage = () => {
 
   const [allGenotypes, setAllGenotypes] = useState({})
 
+  const [brushRFWG, setBrushRFWG] = useState([])
+  const [brushDRT, setBrushDRT] = useState([])
+  const [brushRDWAG, setBrushRDWAG] = useState([])
+  const [brushGD, setBrushGD] = useState([])
+
   // const [contactModalVisible, setContactModalVisible] = useState(false)
 
   const [open, setOpen] = React.useState(false);
@@ -357,8 +362,10 @@ const DashboardPage = () => {
         data.total = sum;
       })
 
-      if (!arraysEqual(finalPopulationStructureChartData, populationStructureChartData))
+      if (!arraysEqual(finalPopulationStructureChartData, populationStructureChartData)){
         setPopulationStructureChartData(finalPopulationStructureChartData)
+        setBrushGD([finalPopulationStructureChartData[0].name, finalPopulationStructureChartData[finalPopulationStructureChartData.length - 1].name])
+      }
 
       let populationStructureChartSums = []
       finalPopulationStructureChartData.forEach((year) => {
@@ -817,12 +824,16 @@ const DashboardPage = () => {
 
       top10.push({ maxSum: top10.length === 0 ? 0 : Math.ceil(top10[0].total2 / 50) * 50, totalSum: totalSum })
 
-      if (amrClassFilter !== "Co-trimoxazole") {
-        if (!arraysEqual(amrClassChartData, top10))
-          setAmrClassChartData(top10)
-      } else {
-        if (!arraysEqual(amrClassChartData, top10))
-          setAmrClassChartData(top10)
+      // if (amrClassFilter !== "Co-trimoxazole") {
+      //   if (!arraysEqual(amrClassChartData, top10))
+      //     setAmrClassChartData(top10)
+      // } else {
+      //   if (!arraysEqual(amrClassChartData, top10))
+      //     setAmrClassChartData(top10)
+      // }
+      if (!arraysEqual(amrClassChartData, top10)){
+        setAmrClassChartData(top10)
+        setBrushRDWAG([top10[0].genotype, top10[top10.length - 2].genotype])
       }
     }
 
@@ -913,10 +924,13 @@ const DashboardPage = () => {
       finalDrugsAndGenotypesChartData = finalDrugsAndGenotypesChartData.slice(0, finalDrugsAndGenotypesChartData.length >= 5 ? 5 : finalDrugsAndGenotypesChartData.length)
       finalDrugsAndGenotypesChartData.push({ totalSum: totalSum})
 
-      if (!arraysEqual(finalDrugTrendsChartData, drugTrendsChartData))
+      if (!arraysEqual(finalDrugTrendsChartData, drugTrendsChartData)){
         setDrugTrendsChartData(finalDrugTrendsChartData)
+        setBrushDRT([finalDrugTrendsChartData[0].name, finalDrugTrendsChartData[finalDrugTrendsChartData.length - 2].name])
+      }
       if (!arraysEqual(finalDrugsAndGenotypesChartData, drugsAndGenotypesChartData)) {
         setDrugsAndGenotypesChartData(finalDrugsAndGenotypesChartData)
+        setBrushRFWG([finalDrugsAndGenotypesChartData[0].name, finalDrugsAndGenotypesChartData[finalDrugsAndGenotypesChartData.length - 2].name])
       }
     }
 
@@ -992,6 +1006,10 @@ const DashboardPage = () => {
         cursor={{ fill: hoverColor }}
         content={({ active, payload, label }) => {
           if (payload !== null) {
+            if (payload[0]?.payload.name === "") {
+              return null;
+            }
+
             if (sort) {
               payload.sort((a, b) => b.value - a.value)
               payload = payload.reverse()
@@ -1068,7 +1086,14 @@ const DashboardPage = () => {
                   Number of genomes
                 </Label>
               </YAxis>
-              {populationStructureChartData.length > 0 && (<Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} />)}
+              {populationStructureChartData.length > 0 && (<Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} onChange={
+                (value) => {
+                  setBrushGD([
+                    populationStructureChartData[value.startIndex].name,
+                    populationStructureChartData[value.endIndex].name
+                  ])
+                }
+              } />)}
 
               <Legend
                 content={(props) => {
@@ -1091,7 +1116,7 @@ const DashboardPage = () => {
                 }}
               />
 
-              {tooltip(300, dimensions.width < 620 ? 250 : 530, dimensions.width > 620 ? "20%" : "50%", false, { zIndex: 100, top: 20, right: -20 }, false)}
+              {tooltip(280, dimensions.width < 620 ? 250 : 530, dimensions.width > 620 ? "20%" : "50%", false, { zIndex: 100, top: 20, right: -20 }, false)}
               {genotypes.map((item) => <Bar dataKey={item} stackId={0} fill={getColorForGenotype(item)} />)}
             </BarChart>
           </ResponsiveContainer>
@@ -1129,7 +1154,14 @@ const DashboardPage = () => {
                   % Genomes per year
                 </Label>
               </YAxis>
-              {teste.length > 0 && (<Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} />)}
+              {teste.length > 0 && (<Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} onChange={
+                (value) => {
+                  setBrushGD([
+                    teste[value.startIndex].name,
+                    teste[value.endIndex].name
+                  ])
+                }
+              } />)}
 
               <Legend
                 content={(props) => {
@@ -1152,7 +1184,7 @@ const DashboardPage = () => {
                 }}
               />
 
-              {tooltip(300, dimensions.width < 620 ? 250 : 530, dimensions.width > 620 ? "20%" : "50%", false, { zIndex: 100, top: 20, right: -20 }, false, 3)}
+              {tooltip(280, dimensions.width < 620 ? 250 : 530, dimensions.width > 620 ? "20%" : "50%", false, { zIndex: 100, top: 20, right: -20 }, false, 3)}
               {genotypes.map((item) => <Bar dataKey={item} stackId="a" fill={getColorForGenotype(item)} />)}
             </BarChart>
           </ResponsiveContainer>
@@ -1166,7 +1198,7 @@ const DashboardPage = () => {
     const amrClassChartTooltip = () => {
       return (
         <Tooltip
-          position={{ x: 0 }}
+          position={{ x: 0, y: 250 }}
           wrapperStyle={{ zIndex: 100, top: 50 }}
           allowEscapeViewBox={{ x: true, y: true }}
           cursor={{ fill: hoverColor }}
@@ -1235,7 +1267,14 @@ const DashboardPage = () => {
                   Number of occurrences
                 </Label>
               </YAxis>
-              {dataAMR.length > 0 && (<Brush dataKey="genotype" height={20} stroke={"rgb(31, 187, 211)"} />)}
+              {dataAMR.length > 0 && (<Brush dataKey="genotype" height={20} stroke={"rgb(31, 187, 211)"} onChange={
+                (value) => {
+                  setBrushRDWAG([
+                    dataAMR[value.startIndex].genotype,
+                    dataAMR[value.endIndex].genotype
+                  ])
+                }
+              } />)}
   
               <Legend
                 content={(props) => {
@@ -1298,7 +1337,14 @@ const DashboardPage = () => {
                   % Genomes
                 </Label>
               </YAxis>
-              {temp.length > 0 && (<Brush dataKey="genotype" height={20} stroke={"rgb(31, 187, 211)"} />)}
+              {temp.length > 0 && (<Brush dataKey="genotype" height={20} stroke={"rgb(31, 187, 211)"} onChange={
+                (value) => {
+                  setBrushRDWAG([
+                    temp[value.startIndex].genotype,
+                    temp[value.endIndex].genotype
+                  ])
+                }
+              } />)}
               
               <Legend
                 content={(props) => {
@@ -1496,24 +1542,33 @@ const DashboardPage = () => {
     // };
 
     const plotDrugTrendsChart = () => {
-      // console.log(drugTrendsChartData.slice(0, drugTrendsChartData.length - 1));
+      let dataDRT = drugTrendsChartData.slice(0, drugTrendsChartData.length - 1)
+
       return (
         <ResponsiveContainer width="90%">
           <LineChart
             height={500}
-            data={drugTrendsChartData.slice(0, drugTrendsChartData.length - 1)}
+            data={dataDRT}
             margin={{
               top: 20, bottom: 5, right: 0, left: -5
             }}
           >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis padding={{ left: 20, right: 20 }} dataKey="name" interval={"preserveStartEnd"} tick={{ fontSize: 14 }} />
+            <XAxis padding={{ left: 20, right: 20 }} dataKey="name" interval={"preserveStartEnd"} tick={{fontSize: 14}} />
             <YAxis allowDecimals={false} width={70}>
               <Label angle={-90} position='insideLeft' style={{ textAnchor: 'middle' }} offset={12}>
                 Resistant (%)
               </Label>
             </YAxis>
-            {drugTrendsChartData.slice(0, drugTrendsChartData.length - 1).length > 0 && (<Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} />)}
+            {drugTrendsChartData.slice(0, drugTrendsChartData.length - 1).length > 0 && (
+              <Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} onChange={(value)=>{
+                console.log(value);
+                setBrushDRT([
+                  drugTrendsChartData[value.startIndex].name,
+                  drugTrendsChartData[value.endIndex].name
+                ])
+              }}/>
+            )}
 
             <Legend
               content={(props) => {
@@ -1535,12 +1590,13 @@ const DashboardPage = () => {
                 );
               }}
             />
-            {tooltip(310, dimensions.width < mobile ? 250 : 325, "50%", true, { zIndex: 100, top: 175, right: 0 }, true, 1)}
-            {drtClassesForFilter.slice(1).map((item) => (<Line dot={true} dataKey={item} strokeWidth={2} stroke={getColorForDrug(item)} connectNulls type="monotone" />))}
+            {tooltip(275, dimensions.width < mobile ? 250 : 325, "50%", true, { zIndex: 100, top: 175, right: 0 }, true, 1)}
+            {drtClassesForFilter.slice(1).map((item) => (<Line dataKey={item} strokeWidth={2} stroke={getColorForDrug(item)} connectNulls type="monotone" />))}
           </LineChart>
         </ResponsiveContainer>
       )
     }
+
     setPlotDrugTrendsChart(plotDrugTrendsChart)
   }, [drtClassesForFilter, dimensions, drugTrendsChartData, tooltip, mobile])
 
@@ -1563,7 +1619,16 @@ const DashboardPage = () => {
                   Number of genomes
                 </Label>
               </YAxis>
-              {drugsAndGenotypesChartData.slice(0, drugsAndGenotypesChartData.length - 1).length > 0 && (<Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} />)}
+              {drugsAndGenotypesChartData.slice(0, drugsAndGenotypesChartData.length - 1).length > 0 && (
+                <Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} onChange={
+                  (value) => {
+                    setBrushRFWG([
+                      drugsAndGenotypesChartData[value.startIndex].name,
+                      drugsAndGenotypesChartData[value.endIndex].name
+                    ])
+                  }
+                }/>
+              )}
 
               <Legend
                 content={(props) => {
@@ -1585,7 +1650,7 @@ const DashboardPage = () => {
                   );
                 }}
               />
-              {tooltip(350, dimensions.width < mobile ? 250 : 325, "50%", false, { zIndex: 100, top: 160 }, false, 0)}
+              {tooltip(285, dimensions.width < mobile ? 250 : 325, "50%", false, { zIndex: 100, top: 160 }, false, 0)}
               {drtClassesForFilter.slice(1).map((item) => (<Bar dataKey={item} fill={getColorForDrug(item)} />))}
             </BarChart>
           </ResponsiveContainer>
@@ -1599,7 +1664,11 @@ const DashboardPage = () => {
             if (keys[key] !== 'name' && keys[key] !== 'total' && keys[key] !== 'quantities') {
               let aux = keys[key]
               element.quantities[aux] = element[aux]
-              element[aux] = (element[aux] * 100) / element.totalS
+              if (actualCountry === "All") {
+                element[aux] = (element[aux] * 100) / element.total
+              } else {
+                element[aux] = (element[aux] * 100) / element.totalS
+              }
             }
           }
         });
@@ -1620,7 +1689,14 @@ const DashboardPage = () => {
                   Percentage within genotype (%)
                 </Label>
               </YAxis>
-              {teste.length > 0 && (<Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} />)}
+              {teste.length > 0 && (<Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} onChange={
+                (value) => {
+                  setBrushRFWG([
+                    teste[value.startIndex].name,
+                    teste[value.endIndex].name
+                  ])
+                }
+              } />)}
 
               <Legend
                 content={(props) => {
@@ -1642,7 +1718,7 @@ const DashboardPage = () => {
                   );
                 }}
               />
-              {tooltip(150, dimensions.width < mobile ? 250 : 325, "50%", false, { zIndex: 100, top: 160 }, false, 4)}
+              {tooltip(285, dimensions.width < mobile ? 250 : 325, "50%", false, { zIndex: 100, top: 160 }, false, 4)}
               {drtClassesForFilter.slice(1).map((item) => (<Bar dataKey={item} fill={getColorForDrug(item)} />))}
             </BarChart>
           </ResponsiveContainer>
@@ -1650,7 +1726,7 @@ const DashboardPage = () => {
       }
     }
     setPlotDrugsAndGenotypesChart(plotDrugsAndGenotypesChart)
-  }, [drtClassesForFilter, dimensions, drugsAndGenotypesChartData, tooltip, mobile, RFWGFilter])
+  }, [actualCountry, drtClassesForFilter, dimensions, drugsAndGenotypesChartData, tooltip, mobile, RFWGFilter])
 
   function imgOnLoadPromise(obj) {
     return new Promise((resolve, reject) => {
@@ -1780,23 +1856,23 @@ const DashboardPage = () => {
       } else {
         var img3 = new Image()
         img3.src = "legends/MV_outros.png"
-        doc.addImage(img3, 'PNG', 260, 155, 30, 50)
+        doc.addImage(img3, 'PNG', 260, 165, 30, 40)
       }
       
       doc.addPage('a4', 'l')
       const names2 = ["Resistance frequencies within genotypes", "Resistance determinants within all genotypes", "Drug resistance trends", "Genotype distribution"]
       for (let index = 0; index < ids.length; index++) {
         let legend
-        let brush
+        // let brush
         const graph = document.getElementById(ids[index])
         if (index === 1 || index === 3) {
           legend = graph.getElementsByClassName('recharts-legend-wrapper')[0];
           legend.style.display = 'none'
         }
-        brush = graph.getElementsByClassName('recharts-brush')[0];
-        if (brush !== undefined) {
-          brush.style.display = 'none'
-        }
+        // brush = graph.getElementsByClassName('recharts-brush')[0];
+        // if (brush !== undefined) {
+        //   brush.style.display = 'none'
+        // }
 
         let url
         await domtoimage.toPng(document.getElementById(ids[index]), { quality: 1, bgcolor: "white" })
@@ -1807,17 +1883,16 @@ const DashboardPage = () => {
         if (index === 1 || index === 3) {
           legend.style.display = 'block'
         }
-        if (brush !== undefined) {
-          brush.style.display = 'block'
-        }
+        // if (brush !== undefined) {
+        //   brush.style.display = 'block'
+        // }
 
         let subtitleH = 0
-        if (index === 0) {
+        if (index === 0 || index === 3) {
           subtitleH = 3
         }
-        if (index === 3) {
-          subtitleH = 3
-        }
+        subtitleH += 3
+
 
         if (index === 2 && dimensions.width >= desktop) {
           doc.addImage(url, "PNG", 5, 15 + subtitleH - 21);
@@ -1842,14 +1917,22 @@ const DashboardPage = () => {
 
 
         doc.setFontSize(14)
-        doc.text(names2[index], 27, 10)
+        doc.text(names2[index], 23, 10)
         doc.setFontSize(9)
 
         if (index === 0) {
-          doc.text("Top Genotypes (up to 5)", 27, 15)
+          doc.text("Top Genotypes (up to 5)", 23, 15)
         }
         if (index === 3) {
-          doc.text("Top Genotypes (up to 10)", 27, 15)
+          doc.text("Top Genotypes (up to 10)", 23, 15)
+        }
+
+        const brushInterval = info.brush[index]
+
+        if (index === 1 || index === 2) {
+          doc.text("Interval: " + brushInterval[0] + " to " + brushInterval[1], 23, 15)
+        } else {
+          doc.text("Interval: " + brushInterval[0] + " to " + brushInterval[1], 23, 20)
         }
 
         if (index === 1) {
@@ -1859,11 +1942,11 @@ const DashboardPage = () => {
           } else {
             img4.src = "legends/" + info.amrClassFilter + ".png"
           }
-          doc.addImage(img4, 'PNG', 26, 105 + subtitleH)
+          doc.addImage(img4, 'PNG', 22, 105 + subtitleH)
         } else if (index === 3) {
           var img5 = new Image()
           img5.src = "legends/GD.png"
-          doc.addImage(img5, 'PNG', 26, 105 + subtitleH)
+          doc.addImage(img5, 'PNG', 22, 105 + subtitleH)
         }
         if (index < ids.length - 1) {
           doc.addPage('a4', 'l')
@@ -1882,18 +1965,18 @@ const DashboardPage = () => {
       let graphImgPromise = imgOnLoadPromise(graphImg);
 
       var legend = graph.getElementsByClassName('recharts-legend-wrapper')[0];
-      var brush = graph.getElementsByClassName('recharts-brush')[0];
+      // var brush = graph.getElementsByClassName('recharts-brush')[0];
   
       if (id === "RFWAG" || id === "GD") {
         legend.style.display = 'none'
       }
-      brush.style.display = 'none'
+      // brush.style.display = 'none'
 
       await domtoimage.toPng(graph, { quality: 0.1, bgcolor: "white" })
         .then(function (dataUrl) {
           graphImg.src = dataUrl;
           legend.style.display = 'block'
-          brush.style.display = 'block'
+          // brush.style.display = 'block'
         });
       
       let cHeight = 20
@@ -1929,7 +2012,7 @@ const DashboardPage = () => {
       if (id === "DRT" && dimensions.width >= desktop) {
         DRTHeight = 76
       }
-      canvas.height = imgHeight + cHeight + logoHeight + legendHeight + filterHeight + subtitleHeight + 20 - DRTHeight;
+      canvas.height = imgHeight + cHeight + logoHeight + legendHeight + filterHeight + subtitleHeight + 40 - DRTHeight;
       ctx.fillStyle = "white";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.font = "18px Montserrat"
@@ -1987,9 +2070,10 @@ const DashboardPage = () => {
       ctx.fillStyle = "black"
       ctx.font = "14px Montserrat"
       ctx.textAlign = "start"
-      ctx.fillText("Dataset: " + info.dataset, 10, canvas.height - 70)
-      ctx.fillText("Time period: " + info.actualTimePeriodRange[0] + " to " + info.actualTimePeriodRange[1], 10, canvas.height - 50)
-      ctx.fillText("Country: " + info.country, 10, canvas.height - 30)
+      ctx.fillText("Dataset: " + info.dataset, 10, canvas.height - 90)
+      ctx.fillText("Time period: " + info.actualTimePeriodRange[0] + " to " + info.actualTimePeriodRange[1], 10, canvas.height - 68)
+      ctx.fillText("Country: " + info.country, 10, canvas.height - 46)
+      ctx.fillText("Interval: " + info.interval[0] + " to " + info.interval[1], 10, canvas.height - 24)
 
       const base64 = canvas.toDataURL();
       stopLoading(index)
@@ -2071,13 +2155,13 @@ const DashboardPage = () => {
             await legendImgoPromise;
             h = 350
             w = 300
-            ctx.drawImage(legendImg, canvas.width - w, canvas.height - h, w, h);
+            ctx.drawImage(legendImg, canvas.width - w - 10, canvas.height - h - 10, w, h);
           } else {
             legendImg.src = "legends/MV_outros.png";
             await legendImgoPromise;
             h = 350
             w = 230
-            ctx.drawImage(legendImg, canvas.width - w, canvas.height - h, w, h);
+            ctx.drawImage(legendImg, canvas.width - w - 20, canvas.height - h - 20, w, h);
           }
 
           let typhinetLogo = document.createElement("img");
@@ -3257,7 +3341,7 @@ const DashboardPage = () => {
                           className={`button ${captureControlChartRFWGInProgress && "disabled"}`}
                           onClick={() => {
                             if (!captureControlChartRFWGInProgress)
-                            capturePicture('RFWG', 1, {mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry})
+                            capturePicture('RFWG', 1, {mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry, interval: brushRFWG})
                           }}
                         >
                           <FontAwesomeIcon icon={faCamera} size="sm" />
@@ -3277,7 +3361,10 @@ const DashboardPage = () => {
                       <InputLabel style={{ fontWeight: 500, fontFamily: "Montserrat" }}>Data view</InputLabel>
                       <Select
                         value={RFWGFilter}
-                        onChange={evt => setRFWGFilter(evt.target.value)}
+                        onChange={evt => {
+                          setRFWGFilter(evt.target.value)
+                          setBrushRFWG([drugsAndGenotypesChartData[0].name, drugsAndGenotypesChartData[drugsAndGenotypesChartData.length - 2].name])
+                        }}
                         fullWidth
                         style={{ fontWeight: 600, fontFamily: "Montserrat" }}
                       >
@@ -3294,6 +3381,10 @@ const DashboardPage = () => {
                     {/* <span className="y-axis-label-vertical" style={{ paddingRight: 8, marginBottom: 100 }}>{RFWGFilter === 1 ? 'Number of genomes' : 'Percentage within genotype (%)'}</span> */}
                     {plotDrugsAndGenotypesChart}
                   </div>
+                  {/* {brushRFWG}<br/>
+                  {brushDRT}<br/>
+                  {brushRDWAG}<br/>
+                  {brushGD} */}
                 </div>
                 <div style={{ width: "100%", maxWidth: 920, display: "flex", flexDirection: "column", paddingTop: 50 }}>
                   <div style={{ width: "100%", flexDirection: "row", textAlign: "center", display: "flex", justifyContent: "center" }}>
@@ -3305,7 +3396,7 @@ const DashboardPage = () => {
                           className={`button ${captureControlChartRFWAGInProgress && "disabled"}`}
                           onClick={() => {
                             if (!captureControlChartRFWAGInProgress)
-                            capturePicture('RFWAG', 4, {mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry, amrClassFilter: amrClassFilter})
+                            capturePicture('RFWAG', 4, {mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry, amrClassFilter: amrClassFilter, interval: brushRDWAG})
                           }}
                         >
                           <FontAwesomeIcon icon={faCamera} size="sm" />
@@ -3325,7 +3416,9 @@ const DashboardPage = () => {
                       <InputLabel style={{ fontWeight: 500, fontFamily: "Montserrat" }}>Select Drug Class</InputLabel>
                       <Select
                         value={amrClassFilter}
-                        onChange={evt => setAmrClassFilter(evt.target.value)}
+                        onChange={evt => {
+                          setAmrClassFilter(evt.target.value)
+                        }}
                         fullWidth
                         style={{ fontWeight: 600, fontFamily: "Montserrat" }}
                       >
@@ -3342,7 +3435,10 @@ const DashboardPage = () => {
                       <InputLabel style={{ fontWeight: 500, fontFamily: "Montserrat" }}>Data view</InputLabel>
                       <Select
                         value={RDWAGDataviewFilter}
-                        onChange={evt => setRDWAGDataviewFilter(evt.target.value)}
+                        onChange={evt => {
+                          setRDWAGDataviewFilter(evt.target.value)
+                          setBrushRDWAG([amrClassChartData[0].genotype, amrClassChartData[amrClassChartData.length - 2].genotype])
+                        }}
                         fullWidth
                         style={{ fontWeight: 600, fontFamily: "Montserrat" }}
                       > 
@@ -3372,7 +3468,7 @@ const DashboardPage = () => {
                           className={`button ${captureControlChartDRTInProgress && "disabled"}`}
                           onClick={() => {
                             if (!captureControlChartDRTInProgress)
-                            capturePicture('DRT', 2, {mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry})
+                            capturePicture('DRT', 2, {mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry, interval: brushDRT})
                           }}
                         >
                           <FontAwesomeIcon icon={faCamera} size="sm" />
@@ -3401,7 +3497,7 @@ const DashboardPage = () => {
                           className={`button ${captureControlChartGDInProgress && "disabled"}`}
                           onClick={() => {
                             if (!captureControlChartGDInProgress)
-                            capturePicture('GD', 3, {mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry})
+                            capturePicture('GD', 3, {mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry, interval: brushGD})
                           }}
                         >
                           <FontAwesomeIcon icon={faCamera} size="sm" />
@@ -3420,7 +3516,10 @@ const DashboardPage = () => {
                       <InputLabel style={{ fontWeight: 500, fontFamily: "Montserrat" }}>Data view</InputLabel>
                       <Select
                         value={populationStructureFilter}
-                        onChange={evt => setPopulationStructureFilter(evt.target.value)}
+                        onChange={evt => {
+                          setPopulationStructureFilter(evt.target.value)
+                          setBrushGD([populationStructureChartData[0].name, populationStructureChartData[populationStructureChartData.length - 1].name])
+                        }}
                         fullWidth
                         style={{ fontWeight: 600, fontFamily: "Montserrat" }}
                       >
@@ -3449,7 +3548,7 @@ const DashboardPage = () => {
               <div style={{ marginTop: dimensions.width > desktop ? 0 : 20, marginLeft: dimensions.width > desktop ? 20 : 0}} className={`download-sheet-button`} onClick={() => {
                 if (!captureReportInProgress) {
                   setCaptureReportInProgress(true);
-                  capturePicture('', 5, {mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry, amrClassFilter: amrClassFilter});
+                  capturePicture('', 5, {mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry, amrClassFilter: amrClassFilter, brush: [brushRFWG, brushRDWAG, brushDRT, brushGD]});
                 }
               }}>
                 <FontAwesomeIcon icon={faFilePdf} style={{ marginRight: 8 }} />
