@@ -42,7 +42,13 @@ router.get('/create', function(req, res) {
             .on('data', (data) => {
 
                 let column_names = Object.keys(data)
-                let data_name = data["NAME"].toString()
+                let data_name
+
+                if (file === "pw_species-prediction.csv") {
+                    data_name = data["Genome Name"].toString()
+                } else {
+                    data_name = data["NAME"].toString()
+                }
                 data_name = data_name.trim()
                 obj_parser = data_to_write.filter((x) => { if (x.NAME == data_name) return x })
 
@@ -232,7 +238,7 @@ router.get('/create', function(req, res) {
                     if (data["ereA"] == "1") {
                         obj_parser["azith_pred_pheno"] = "AzithR"
                     }
-                    if (data["blaCTX-M-15_23"] == "1" || data["blaOXA-7"] == "1" || data["blaSHV-12"] == "1") {
+                    if (data["blaCTX-M-15_23"] == "1" || data["blaOXA-7"] == "1" || data["blaSHV-12"] == "1" || data["blaCTX-M-55"] == "1") {
                         obj_parser["ESBL_category"] = "ESBL"
                     } else {
                         obj_parser["ESBL_category"] = "Non-ESBL"
@@ -286,7 +292,7 @@ router.get('/create', function(req, res) {
                     }
                     obj_parser["num_acrb"] = data["acrB_R717Q"]
                     if (obj_parser["azith_pred_pheno"] == undefined) {
-                        if (parseInt(data["acrB_R717Q"]) > 0) {
+                        if (parseInt(data["acrB_R717Q"]) > 0 || parseInt(data["acrB_R717L"])) {
                             obj_parser["azith_pred_pheno"] = "AzithR"
                         } else {
                             obj_parser["azith_pred_pheno"] = "AzithS"

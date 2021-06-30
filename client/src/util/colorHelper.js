@@ -102,8 +102,8 @@ export const getColorForGenotype = (genotype) => {
     case '4.2.2':
     case '4.2.3':
       return "#ff6347";
-    case '4.3':
-    case '4.3.0':
+    // case '4.3':
+    // case '4.3.0':
     case '4.3.1':
       return "#ff0000";
     case '4.3.1.1':
@@ -164,10 +164,10 @@ export const getColorForDrug = (drug) => {
   switch (drug) {
     case 'Azithromycin':
       return "rgb(144,211,199)";
-    case 'Fluoroquinolones (CipI-R)':
+    case 'Fluoroquinolones (CipI/R)':
       return "rgb(255,236,120)";
     case 'ESBL':
-      return "rgb(190,186,217)";
+      return "#DB90F0";
     case 'Chloramphenicol':
       return "rgb(249,129,117)";
     case 'Ampicillin':
@@ -180,6 +180,8 @@ export const getColorForDrug = (drug) => {
       return "rgb(102,102,255)";
     case 'Tetracyclines':
       return "rgb(251,207,229)";
+    case 'Susceptible':
+      return "lightGray";
     default:
       return "#F5F4F6";
   }

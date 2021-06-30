@@ -43,7 +43,6 @@ router.get('/download', (req, res) => {
 })
 
 router.get('/upload', (req, res) => {
-
     let data_to_send = []
     fs.createReadStream(Tools.path_clean, { start: 0 })
         .pipe(csv())
@@ -51,10 +50,17 @@ router.get('/upload', (req, res) => {
             data_to_send.push(data)
         })
         .on('end', () => {
-
-            CombinedModel.insertMany(data_to_send, (error) => {
-                if (error) return res.json({ "Status": `Error! ${error}` });
-                console.log("Sucess ! Combined data sent to MongoDB!");
+            CombinedModel.countDocuments(function (err, count) {
+                if (err) {
+                    return res.json({ "Status": `Error! ${err}` });
+                }
+                if (count > 0) {
+                    CombinedModel.collection.drop();
+                }
+                CombinedModel.insertMany(data_to_send, (error) => {
+                    if (error) return res.json({ "Status": `Error! ${error}` });
+                    console.log("Success ! Combined data sent to MongoDB!");
+                });
             });
             res.json({ "Status": "Sent!" })
         })
