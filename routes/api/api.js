@@ -27,11 +27,7 @@ router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel', function (req,
                     data_travel = true
                 } else {
                     if (travel == "global") {
-<<<<<<< HEAD
                         if (data["TRAVEL"] == "local") {
-=======
-                        if (data["TRAVEL"] == "travel" || data["TRAVEL"] == "local") {
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
                             data_travel = true
                         } else {
                             data_travel = false
@@ -164,11 +160,7 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
                     data_travel = true
                 } else {
                     if (travel == "global") {
-<<<<<<< HEAD
                         if (data["TRAVEL"] == "local") {
-=======
-                        if (data["TRAVEL"] == "travel" || data["TRAVEL"] == "local") {
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
                             data_travel = true
                         } else {
                             data_travel = false
@@ -524,11 +516,7 @@ router.get('/:filter1/:country/:min_year/:max_year/:travel', function (req, res,
                     data_travel = true
                 } else {
                     if (travel == "global") {
-<<<<<<< HEAD
                         if (data["TRAVEL"] == "local") {
-=======
-                        if (data["TRAVEL"] == "travel" || data["TRAVEL"] == "local") {
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
                             data_travel = true
                         } else {
                             data_travel = false
@@ -670,11 +658,7 @@ router.get('/:country/:min_year/:max_year/:travel', function (req, res, next) {
                     data_travel = true
                 } else {
                     if (travel == "global") {
-<<<<<<< HEAD
                         if (data["TRAVEL"] == "local") {
-=======
-                        if (data["TRAVEL"] == "travel" || data["TRAVEL"] == "local") {
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
                             data_travel = true
                         } else {
                             data_travel = false

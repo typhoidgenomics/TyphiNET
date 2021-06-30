@@ -175,11 +175,8 @@ const DashboardPage = () => {
   const [RFWGFilter, setRFWGFilter] = React.useState(1);
   const [amrClassesForFilter] = useState([/*"AMR Profiles", */"Ampicillin", "Azithromycin", "Chloramphenicol", "Co-trimoxazole", "ESBL", "Fluoroquinolones (CipI/R)", "Sulphonamides", "Tetracyclines", "Trimethoprim"])
   const [drtClassesForFilter] = useState(["Ampicillin", "Azithromycin", "Chloramphenicol", "Co-trimoxazole", "ESBL", "Fluoroquinolones (CipI/R)", "Susceptible", "Sulphonamides", "Tetracyclines", "Trimethoprim"])
-<<<<<<< HEAD
   const [trendClassesForFilter] = useState(["Ampicillin", "Azithromycin", "Chloramphenicol", "Co-trimoxazole", "ESBL", "Fluoroquinolones (CipI/R)", "Susceptible", "Sulphonamides", "Tetracyclines", "Trimethoprim"])
   const [trendDropdownOptions] = useState([{value: "Ampicillin", id: 0}, {value: "Azithromycin", id: 1}, {value: "Chloramphenicol", id: 2}, {value: "Co-trimoxazole", id: 3}, {value: "ESBL", id: 4}, {value: "Fluoroquinolones (CipI/R)", id: 5}, {value: "Susceptible", id: 6}, {value: "Sulphonamides", id: 7}, {value: "Tetracyclines", id: 8}, {value: "Trimethoprim", id: 9}])
-=======
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
   const [amrClassFilter, setAmrClassFilter] = React.useState(amrClassesForFilter[5])
   const [RDWAGDataviewFilter, setRDWAGDataviewFilter] = React.useState(1)
 
@@ -404,15 +401,11 @@ const DashboardPage = () => {
 
       if (!arraysEqual(finalPopulationStructureChartData, populationStructureChartData)){
         setPopulationStructureChartData(finalPopulationStructureChartData)
-<<<<<<< HEAD
         if (finalPopulationStructureChartData.length > 0) {
           setBrushGD([finalPopulationStructureChartData[0].name, finalPopulationStructureChartData[finalPopulationStructureChartData.length - 1].name])
         } else {
           setBrushGD(['Undefined', 'Undefined'])
         }
-=======
-        setBrushGD([finalPopulationStructureChartData[0].name, finalPopulationStructureChartData[finalPopulationStructureChartData.length - 1].name])
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
       }
 
       let populationStructureChartSums = []
@@ -881,15 +874,11 @@ const DashboardPage = () => {
       // }
       if (!arraysEqual(amrClassChartData, top10)){
         setAmrClassChartData(top10)
-<<<<<<< HEAD
         if (top10.length > 1) {
           setBrushRDWAG([top10[0].genotype, top10[top10.length - 2].genotype])
         } else {
           setBrushRDWAG(['Undefined', 'Undefined'])
         }
-=======
-        setBrushRDWAG([top10[0].genotype, top10[top10.length - 2].genotype])
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
       }
     }
 
@@ -982,7 +971,6 @@ const DashboardPage = () => {
 
       if (!arraysEqual(finalDrugTrendsChartData, drugTrendsChartData)){
         setDrugTrendsChartData(finalDrugTrendsChartData)
-<<<<<<< HEAD
         setDrugTrendsChartDataBackup(finalDrugTrendsChartData)
         if (finalDrugTrendsChartData.length > 1) {
           setBrushDRT([finalDrugTrendsChartData[0].name, finalDrugTrendsChartData[finalDrugTrendsChartData.length - 2].name])
@@ -998,13 +986,6 @@ const DashboardPage = () => {
         } else {
           setBrushRFWG(['Undefined', 'Undefined'])
         }
-=======
-        setBrushDRT([finalDrugTrendsChartData[0].name, finalDrugTrendsChartData[finalDrugTrendsChartData.length - 2].name])
-      }
-      if (!arraysEqual(finalDrugsAndGenotypesChartData, drugsAndGenotypesChartData)) {
-        setDrugsAndGenotypesChartData(finalDrugsAndGenotypesChartData)
-        setBrushRFWG([finalDrugsAndGenotypesChartData[0].name, finalDrugsAndGenotypesChartData[finalDrugsAndGenotypesChartData.length - 2].name])
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
       }
     }
 
@@ -1620,7 +1601,6 @@ const DashboardPage = () => {
 
     const plotDrugTrendsChart = () => {
       let dataDRT = drugTrendsChartData.slice(0, drugTrendsChartData.length - 1)
-<<<<<<< HEAD
       for (const index in dataDRT) {
         for (const i in trendClassesForFilter) {
           if (!((trendClassesForFilter[i].toString()) in dataDRT[index])) {
@@ -1629,8 +1609,6 @@ const DashboardPage = () => {
           }
         }
       }
-=======
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
 
       return (
         <ResponsiveContainer width="90%">
@@ -1643,21 +1621,13 @@ const DashboardPage = () => {
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis padding={{ left: 20, right: 20 }} dataKey="name" interval={"preserveStartEnd"} tick={{fontSize: 14}} />
-<<<<<<< HEAD
             <YAxis tickCount={6} padding={{ top: 20, bottom: 20 }} allowDecimals={false} width={70}>
-=======
-            <YAxis allowDecimals={false} width={70}>
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
               <Label angle={-90} position='insideLeft' style={{ textAnchor: 'middle' }} offset={12}>
                 Resistant (%)
               </Label>
             </YAxis>
             {drugTrendsChartData.slice(0, drugTrendsChartData.length - 1).length > 0 && (
               <Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} onChange={(value)=>{
-<<<<<<< HEAD
-=======
-                console.log(value);
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
                 setBrushDRT([
                   drugTrendsChartData[value.startIndex].name,
                   drugTrendsChartData[value.endIndex].name
@@ -1685,25 +1655,16 @@ const DashboardPage = () => {
                 );
               }}
             />
-<<<<<<< HEAD
             {tooltip(310, dimensions.width < mobile ? 250 : 325, "50%", true, { zIndex: 100, top: 175, right: 0 }, true, 1)}
             {/* {trendClassesForFilter.slice(1).map((item) => (<Line dataKey={item} strokeWidth={2} stroke={getColorForDrug(item)} connectNulls type="monotone" />))} */}
             {trendClassesForFilter.map((item) => (<Line dataKey={item} strokeWidth={2} stroke={getColorForDrug(item)} connectNulls type="monotone" />))}
-=======
-            {tooltip(275, dimensions.width < mobile ? 250 : 325, "50%", true, { zIndex: 100, top: 175, right: 0 }, true, 1)}
-            {drtClassesForFilter.slice(1).map((item) => (<Line dataKey={item} strokeWidth={2} stroke={getColorForDrug(item)} connectNulls type="monotone" />))}
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
           </LineChart>
         </ResponsiveContainer>
       )
     }
 
     setPlotDrugTrendsChart(plotDrugTrendsChart)
-<<<<<<< HEAD
   }, [trendClassesForFilter, dimensions, drugTrendsChartData, tooltip, mobile])
-=======
-  }, [drtClassesForFilter, dimensions, drugTrendsChartData, tooltip, mobile])
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
 
   useEffect(() => {
     const plotDrugsAndGenotypesChart = () => {
@@ -1755,14 +1716,9 @@ const DashboardPage = () => {
                   );
                 }}
               />
-<<<<<<< HEAD
               {tooltip(325, dimensions.width < mobile ? 250 : 325, "50%", false, { zIndex: 100, top: 160 }, false, 0)}
               {/* {drtClassesForFilter.slice(1).map((item) => (<Bar dataKey={item} fill={getColorForDrug(item)} />))} */}
               {drtClassesForFilter.map((item) => (<Bar dataKey={item} fill={getColorForDrug(item)} />))}
-=======
-              {tooltip(285, dimensions.width < mobile ? 250 : 325, "50%", false, { zIndex: 100, top: 160 }, false, 0)}
-              {drtClassesForFilter.slice(1).map((item) => (<Bar dataKey={item} fill={getColorForDrug(item)} />))}
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
             </BarChart>
           </ResponsiveContainer>
         )
@@ -1829,14 +1785,9 @@ const DashboardPage = () => {
                   );
                 }}
               />
-<<<<<<< HEAD
               {tooltip(325, dimensions.width < mobile ? 250 : 325, "50%", false, { zIndex: 100, top: 160 }, false, 4)}
               {/* {drtClassesForFilter.slice(1).map((item) => (<Bar dataKey={item} fill={getColorForDrug(item)} />))} */}
               {drtClassesForFilter.map((item) => (<Bar dataKey={item} fill={getColorForDrug(item)} />))}
-=======
-              {tooltip(285, dimensions.width < mobile ? 250 : 325, "50%", false, { zIndex: 100, top: 160 }, false, 4)}
-              {drtClassesForFilter.slice(1).map((item) => (<Bar dataKey={item} fill={getColorForDrug(item)} />))}
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
             </BarChart>
           </ResponsiveContainer>
         )
@@ -2380,17 +2331,10 @@ const DashboardPage = () => {
         let aux = [1, 10, 20, 100, 300]
         return (
           <>
-<<<<<<< HEAD
             <div className="samples-info">
               <div className="color" style={{ backgroundColor: "lightgrey" }} />
               <span>Insufficient data</span>
             </div>
-=======
-            {/* <div className="samples-info">
-              <div className="color" style={{ backgroundColor: "#F5F4F6" }} />
-              <span>0</span>
-            </div> */}
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
             {[...Array(5).keys()].map((n) => {
               return (
                 <div key={n} className="samples-info">
@@ -2401,41 +2345,6 @@ const DashboardPage = () => {
             })}
           </>
         )
-<<<<<<< HEAD
-=======
-      // case 'AMR Profiles':
-      //   let amrProfiles = ['MDR_DCS', 'MDR', 'DCS', 'AzithR_MDR', 'AzithR_DCS', 'AzithR_DCS_MDR', 'XDR', 'AMR', 'AMR_DCS'].sort((a, b) => a.localeCompare(b));
-      //   amrProfiles.push('No AMR detected')
-      //   return (
-      //     <div style={{ maxHeight: 300, display: "flex", flexDirection: "column", overflowY: "scroll" }}>
-      //       {amrProfiles.map((a, n) => {
-      //         return (
-      //           <div key={n} className="samples-info">
-      //             <div className="color" style={{ backgroundColor: getColorForAMR(a) }} />
-      //             <span>{a}</span>
-      //           </div>
-      //         )
-      //       })}
-      //     </div>
-      //   )
-      case 'Sensitive to all drugs':
-        return (
-          <>
-            {/* <div className="samples-info">
-              <div className="color" style={{ backgroundColor: "#F5F4F6" }} />
-              <span>0%</span>
-            </div> */}
-            {percentageSteps.map((n) => {
-              return (
-                <div key={n} className="samples-info">
-                  <div className="color" style={{ backgroundColor: mapRedColorScale(n) }} />
-                  <span>{n === "1" ? '1 - 24' : n}%</span>
-                </div>
-              )
-            })}
-          </>
-        )
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
       case 'Dominant Genotype':
         return (
           <div style={{ maxHeight: 300, display: "flex", flexDirection: "column", overflowY: "scroll" }}>
@@ -2456,7 +2365,6 @@ const DashboardPage = () => {
       case 'H58 / Non-H58':
         return (
           <>
-<<<<<<< HEAD
             <div className="samples-info">
               <div className="color" style={{ backgroundColor: "lightgrey" }} />
               <span>Insufficient data</span>
@@ -2473,155 +2381,11 @@ const DashboardPage = () => {
                   {g === "25" && (<span>{'26 - 50'}%</span>)}
                   {g === "50" && (<span>{'51 - 75'}%</span>)}
                   {g === "75" && (<span>{'76 - 100'}%</span>)}
-=======
-            {/* <div className="samples-info">
-              <div className="color" style={{ backgroundColor: "#F5F4F6" }} />
-              <span>0%</span>
-            </div> */}
-            {percentageSteps.map((g, n) => {
-              return (
-                <div key={n} className="samples-info">
-                  <div className="color" style={{ backgroundColor: mapRedColorScale(g) }} />
-                  <span>{g === "1" ? '1 - 24' : g}%</span>
                 </div>
               )
             })}
           </>
         )
-      case 'MDR':
-        return (
-          <>
-            {/* <div className="samples-info">
-              <div className="color" style={{ backgroundColor: "#F5F4F6" }} />
-              <span>0%</span>
-            </div> */}
-            {percentageSteps.map((n) => {
-              return (
-                <div key={n} className="samples-info">
-                  <div className="color" style={{ backgroundColor: mapRedColorScale(n) }} />
-                  <span>{n === "1" ? '1 - 24' : n}%</span>
-                </div>
-              )
-            })}
-          </>
-        )
-      case 'XDR':
-        return (
-          <>
-            {/* <div className="samples-info">
-              <div className="color" style={{ backgroundColor: "#F5F4F6" }} />
-              <span>0%</span>
-            </div> */}
-            {percentageSteps.map((n) => {
-              return (
-                <div key={n} className="samples-info">
-                  <div className="color" style={{ backgroundColor: mapRedColorScale(n) }} />
-                  <span>{n === "1" ? '1 - 24' : n}%</span>
-                </div>
-              )
-            })}
-          </>
-        )
-      case 'DCS':
-        return (
-          <>
-            {/* <div className="samples-info">
-              <div className="color" style={{ backgroundColor: "#F5F4F6" }} />
-              <span>0%</span>
-            </div> */}
-            {percentageSteps.map((n) => {
-              return (
-                <div key={n} className="samples-info">
-                  <div className="color" style={{ backgroundColor: mapRedColorScale(n) }} />
-                  <span>{n === "1" ? '1 - 24' : n}%</span>
-                </div>
-              )
-            })}
-          </>
-        )
-      case 'Azith':
-        return (
-          <>
-            {/* <div className="samples-info">
-              <div className="color" style={{ backgroundColor: "#F5F4F6" }} />
-              <span>0%</span>
-            </div> */}
-            {percentageSteps.map((n) => {
-              return (
-                <div key={n} className="samples-info">
-                  <div className="color" style={{ backgroundColor: mapRedColorScale(n) }} />
-                  <span>{n === "1" ? '1 - 24' : n}%</span>
-                </div>
-              )
-            })}
-          </>
-        )
-      case 'CipI':
-        return (
-          <>
-            {/* <div className="samples-info">
-              <div className="color" style={{ backgroundColor: "#F5F4F6" }} />
-              <span>0%</span>
-            </div> */}
-            {percentageSteps.map((n) => {
-              return (
-                <div key={n} className="samples-info">
-                  <div className="color" style={{ backgroundColor: mapRedColorScale(n) }} />
-                  <span>{n === "1" ? '1 - 24' : n}%</span>
-                </div>
-              )
-            })}
-          </>
-        )
-      case 'CipR':
-        return (
-          <>
-            {/* <div className="samples-info">
-              <div className="color" style={{ backgroundColor: "#F5F4F6" }} />
-              <span>0%</span>
-            </div> */}
-            {percentageSteps.map((n) => {
-              return (
-                <div key={n} className="samples-info">
-                  <div className="color" style={{ backgroundColor: mapRedColorScale(n) }} />
-                  <span>{n === "1" ? '1 - 24' : n}%</span>
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
-                </div>
-              )
-            })}
-          </>
-        )
-<<<<<<< HEAD
-=======
-      // case 'Resistance to Drug':
-      //   let drugs = ["Ampicillin", "Azithromycin", "Chloramphenicol", "Co-trimoxazole", "ESBL", "Fluoroquinolones (CipI/R)", "Sulphonamides", "Tetracyclines", "Trimethoprim"]
-      //   return (
-      //     <div style={{ maxHeight: 300, display: "flex", flexDirection: "column", overflowY: "scroll" }}>
-      //       {drugs.map((d, n) => {
-      //         return (
-      //           <div key={n} className="samples-info">
-      //             <div className="color" style={{ backgroundColor: getColorForDrug(d) }} />
-      //             <span>{d}</span>
-      //           </div>
-      //         )
-      //       })}
-      //     </div>
-      //   )
-      // case 'Plasmid Incompatibility Type':
-      //   let incTypes = ["IncX1", "IncFIA(HI1)", "IncFIB(pHCM2)", "IncA/C2", "IncP1", "IncFIA(HI1)/IncHI1A/IncHI1B(R27)", "Col(BS512)", "IncHI1A/IncHI1B(R27)", "IncN", "IncHI1B(R27)", "p0111", "IncHI1A", "IncI1", "IncY", "IncFIB(AP001918)", "IncFIB(K)", "IncHI2/IncHI2A", "Col440I", "Col440I", "Col156", "Col440II/Col440II", "IncFIA(HI1)/IncHI1A", "ColRNAI", "ColpVC", "IncX3"].sort((a, b) => a.localeCompare(b));
-      //   return (
-      //     <div style={{ maxHeight: 300, display: "flex", flexDirection: "column", overflowY: "scroll" }}>
-      //       {incTypes.map((d, n) => {
-      //         return (
-      //           <div key={n} className="samples-info">
-      //             <div className="color" style={{ backgroundColor: getColorForIncType(d) }} />
-      //             <span>{d}</span>
-      //           </div>
-      //         )
-      //       })}
-      //     </div>
-      //   )
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
       default:
         return null
     }
@@ -2818,21 +2582,13 @@ const DashboardPage = () => {
                             if (country !== undefined) {
                               const temp = country.genotypes
                               temp.sort((a, b) => a.count <= b.count ? 1 : -1)
-<<<<<<< HEAD
                               if (sample) {
                                 fill = getColorForGenotype(temp[0].lineage)
-=======
-                              if (sample && sample.count >= 20) {
-                                fill = getColorForGenotype(temp[0].lineage)
-                              } else {
-                                fill = darkGray
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
                               }
                             }
                             break;
                           case 'H58 / Non-H58':
                             country = worldMapH58Data.find(s => s.displayName === geo.properties.NAME)
-<<<<<<< HEAD
                             if (country !== undefined) {
                               let countH58 = 0
                               const isH58 = country.genotypes.find(g => g.type === 'H58')
@@ -2842,30 +2598,7 @@ const DashboardPage = () => {
                                 fill = mapRedColorScale(isH58.percentage);
                               } else if (country.total >= 20) {
                                 fill = darkGray
-=======
-                            if (country !== undefined && country.genotypes[0]) {
-                              const temp = country.genotypes.find(g => g.type === 'H58')
-
-                              if (temp === undefined || (temp !== undefined && temp.count < 20)) {
-                                fill = darkGray
-                              } else if (temp !== undefined && temp.count >= 20) {
-                                fill = mapRedColorScale(temp.percentage)
-                              } else {
-                                fill = '#F5F4F6'
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
                               }
-
-                              // switch (temp === undefined) {
-                              //   case false:
-                              //     fill = mapRedColorScale(temp.percentage)
-                              //     break;
-                              //   // case 'Non-H58':
-                              //   //   fill = '#F5F4F6'
-                              //   //   break;
-                              //   default:
-                              //     fill = '#F5F4F6'
-                              //     break;
-                              // }
                             }
 
                             // if (country !== undefined) {
@@ -2893,22 +2626,11 @@ const DashboardPage = () => {
                           case 'MDR':
                             country = worldMapMDRData.find(s => s.displayName === geo.properties.NAME)
                             if (country !== undefined) {
-<<<<<<< HEAD
                               if (country.total >= 20 && country.count > 0) {
                                 fill = mapRedColorScale(country.percentage);
                               } else if (country.total >= 20) {
                                 fill = darkGray
                               }
-=======
-                              if (country.count >= 20) {
-                                fill = mapRedColorScale(country.percentage);
-                              } else {
-                                fill = darkGray
-                              }
-                              
-                            } else if (country !== undefined) {
-                              fill = '#F5F4F6'
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
                             }
                             // else {
                             //   fill = '#F5F4F6'
@@ -2917,21 +2639,11 @@ const DashboardPage = () => {
                           case 'Sensitive to all drugs':
                             country = worldMapSTADData.find(s => s.displayName === geo.properties.NAME)
                             if (country !== undefined) {
-<<<<<<< HEAD
                               if (country.total >= 20 && country.count > 0) {
                                 fill = mapRedColorScale(country.percentage);
                               } else if (country.total >= 20) {
                                 fill = darkGray
                               }
-=======
-                              if (country.count >= 20) {
-                                fill = mapRedColorScale(country.percentage);
-                              } else {
-                                fill = darkGray
-                              }
-                            } else {
-                              fill = '#F5F4F6'
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
                             }
                             // else {
                             //   fill = '#F5F4F6'
@@ -2940,21 +2652,11 @@ const DashboardPage = () => {
                           case 'XDR':
                             country = worldMapXDRData.find(s => s.displayName === geo.properties.NAME)
                             if (country !== undefined) {
-<<<<<<< HEAD
                               if (country.total >= 20 && country.count > 0) {
                                 fill = mapRedColorScale(country.percentage);
                               } else if (country.total >= 20) {
                                 fill = darkGray
                               }
-=======
-                              if (country.count >= 20) {
-                                fill = mapRedColorScale(country.percentage);
-                              } else {
-                                fill = darkGray
-                              }
-                            } else {
-                              fill = '#F5F4F6'
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
                             }
                             // else {
                             //   fill = '#F5F4F6'
@@ -2971,21 +2673,11 @@ const DashboardPage = () => {
                           case 'Azith':
                             country = worldMapAZITHData.find(s => s.displayName === geo.properties.NAME)
                             if (country !== undefined) {
-<<<<<<< HEAD
                               if (country.total >= 20 && country.count > 0) {
                                 fill = mapRedColorScale(country.percentage);
                               } else if (country.total >= 20) {
                                 fill = darkGray
                               }
-=======
-                              if (country.count >= 20) {
-                                fill = mapRedColorScale(country.percentage);
-                              } else {
-                                fill = darkGray
-                              }
-                            } else {
-                              fill = '#F5F4F6'
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
                             }
                             // else {
                             //   fill = '#F5F4F6'
@@ -2994,21 +2686,11 @@ const DashboardPage = () => {
                           case 'CipI':
                             country = worldMapCIPIData.find(s => s.displayName === geo.properties.NAME)
                             if (country !== undefined) {
-<<<<<<< HEAD
                               if (country.total >= 20 && country.count > 0) {
                                 fill = mapRedColorScale(country.percentage);
                               } else if (country.total >= 20) {
                                 fill = darkGray
                               }
-=======
-                              if (country.count >= 20) {
-                                fill = mapRedColorScale(country.percentage);
-                              } else {
-                                fill = darkGray
-                              }
-                            } else {
-                              fill = '#F5F4F6'
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
                             }
                             // else {
                             //   fill = '#F5F4F6'
@@ -3017,21 +2699,11 @@ const DashboardPage = () => {
                           case 'CipR':
                             country = worldMapCIPRData.find(s => s.displayName === geo.properties.NAME)
                             if (country !== undefined) {
-<<<<<<< HEAD
                               if (country.total >= 20 && country.count > 0) {
                                 fill = mapRedColorScale(country.percentage);
                               } else if (country.total >= 20) {
                                 fill = darkGray
                               }
-=======
-                              if (country.count >= 20) {
-                                fill = mapRedColorScale(country.percentage);
-                              } else {
-                                fill = darkGray
-                              }
-                            } else {
-                              fill = '#F5F4F6'
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
                             }
                             // else {
                             //   fill = '#F5F4F6'
@@ -3106,18 +2778,13 @@ const DashboardPage = () => {
                                 //   }
                                 //   break;
                                 case 'Dominant Genotype':
-                                  if (country !== undefined && country.total >= 20) {
+                                  if (country !== undefined) {
                                     let temp = country.genotypes
                                     temp.sort((a, b) => a.count <= b.count ? 1 : -1)
                                     setTooltipContent({
                                       name: NAME,
                                       genotypeInfo: temp
                                     });
-                                  } else if (country !== undefined && country.total < 20) {
-                                    setTooltipContent({
-                                      name: NAME,
-                                      smallerThan20: true
-                                    })
                                   } else {
                                     setTooltipContent({
                                       name: NAME
@@ -3126,36 +2793,24 @@ const DashboardPage = () => {
                                   break;
                                 case 'H58 / Non-H58':
                                   if (country !== undefined && country.genotypes.length > 0) {
-<<<<<<< HEAD
                                     let countH58 = 0
                                     const isH58 = country.genotypes.find(g => g.type === 'H58')
                                     if (isH58 !== undefined) {countH58 = isH58.count}
 
                                     if (country.total >= 20 && countH58 > 0) {
-=======
-                                    const isBiggerThan20 = country.genotypes.find(g => g.type === "H58" && g.count >= 20) !== undefined
-                                    if (isBiggerThan20) {
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
                                       setTooltipContent({
                                         name: NAME,
                                         simpleGenotypeInfo: country.genotypes
                                       });
-<<<<<<< HEAD
                                     } else if (country.total >= 20) {
-=======
-                                    } else {
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
                                       setTooltipContent({
                                         name: NAME,
                                         smallerThan20: true
                                       })
-<<<<<<< HEAD
                                     } else {
                                       setTooltipContent({
                                         name: NAME
                                       })
-=======
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
                                     }
                                   } else {
                                     setTooltipContent({
@@ -3166,11 +2821,7 @@ const DashboardPage = () => {
                                   break;
                                 case 'MDR':
                                   if (country !== undefined && country.MDRs.length > 0) {
-<<<<<<< HEAD
                                     if (country.total >= 20 && country.count > 0) {
-=======
-                                    if (country.count >= 20) {
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
                                       setTooltipContent({
                                         name: NAME,
                                         mdrInfo: {
@@ -3178,22 +2829,15 @@ const DashboardPage = () => {
                                           percentage: country.percentage,
                                         }
                                       });
-<<<<<<< HEAD
                                     } else if (country.total >= 20) {
-=======
-                                    } else {
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
                                       setTooltipContent({
                                         name: NAME,
                                         smallerThan20: true
                                       })
-<<<<<<< HEAD
                                     } else {
                                       setTooltipContent({
                                         name: NAME
                                       })
-=======
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
                                     }
                                   } else {
                                     setTooltipContent({
@@ -3203,11 +2847,7 @@ const DashboardPage = () => {
                                   break;
                                 case 'Sensitive to all drugs':
                                   if (country !== undefined && country.STADs.length > 0) {
-<<<<<<< HEAD
                                     if (country.total >= 20 && country.count > 0) {
-=======
-                                    if (country.count >= 20) {
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
                                       setTooltipContent({
                                         name: NAME,
                                         stadInfo: {
@@ -3215,22 +2855,15 @@ const DashboardPage = () => {
                                           percentage: country.percentage,
                                         }
                                       });
-<<<<<<< HEAD
                                     } else if (country.total >= 20) {
-=======
-                                    } else {
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
                                       setTooltipContent({
                                         name: NAME,
                                         smallerThan20: true
                                       })
-<<<<<<< HEAD
                                     } else {
                                       setTooltipContent({
                                         name: NAME
                                       })
-=======
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
                                     }
                                   } else {
                                     setTooltipContent({
@@ -3240,11 +2873,7 @@ const DashboardPage = () => {
                                   break;
                                 case 'XDR':
                                   if (country !== undefined && country.XDRs.length > 0) {
-<<<<<<< HEAD
                                     if (country.total >= 20 && country.count > 0) {
-=======
-                                    if (country.count >= 20) {
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
                                       setTooltipContent({
                                         name: NAME,
                                         xdrInfo: {
@@ -3252,22 +2881,15 @@ const DashboardPage = () => {
                                           percentage: country.percentage,
                                         }
                                       });
-<<<<<<< HEAD
                                     } else if (country.total >= 20) {
-=======
-                                    } else {
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
                                       setTooltipContent({
                                         name: NAME,
                                         smallerThan20: true
                                       })
-<<<<<<< HEAD
                                     } else {
                                       setTooltipContent({
                                         name: NAME
                                       })
-=======
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
                                     }
                                   } else {
                                     setTooltipContent({
@@ -3292,11 +2914,7 @@ const DashboardPage = () => {
                                 //   break;
                                 case 'Azith':
                                   if (country !== undefined && country.AZs.length > 0) {
-<<<<<<< HEAD
                                     if (country.total >= 20 && country.count > 0) {
-=======
-                                    if (country.count >= 20) {
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
                                       setTooltipContent({
                                         name: NAME,
                                         azInfo: {
@@ -3304,22 +2922,15 @@ const DashboardPage = () => {
                                           percentage: country.percentage,
                                         }
                                       });
-<<<<<<< HEAD
                                     } else if (country.total >= 20) {
-=======
-                                    } else {
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
                                       setTooltipContent({
                                         name: NAME,
                                         smallerThan20: true
                                       })
-<<<<<<< HEAD
                                     } else {
                                       setTooltipContent({
                                         name: NAME
                                       })
-=======
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
                                     }
                                   } else {
                                     setTooltipContent({
@@ -3329,11 +2940,7 @@ const DashboardPage = () => {
                                   break;
                                 case 'CipI':
                                   if (country !== undefined && country.CipIs.length > 0) {
-<<<<<<< HEAD
                                     if (country.total >= 20 && country.count > 0) {
-=======
-                                    if (country.count >= 20) {
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
                                       setTooltipContent({
                                         name: NAME,
                                         cipIInfo: {
@@ -3341,22 +2948,15 @@ const DashboardPage = () => {
                                           percentage: country.percentage,
                                         }
                                       });
-<<<<<<< HEAD
                                     } else if (country.total >= 20) {
-=======
-                                    } else {
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
                                       setTooltipContent({
                                         name: NAME,
                                         smallerThan20: true
                                       })
-<<<<<<< HEAD
                                     } else {
                                       setTooltipContent({
                                         name: NAME
                                       })
-=======
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
                                     }
                                   } else {
                                     setTooltipContent({
@@ -3366,11 +2966,7 @@ const DashboardPage = () => {
                                   break;
                                 case 'CipR':
                                   if (country !== undefined && country.CipRs.length > 0) {
-<<<<<<< HEAD
                                     if (country.total >= 20 && country.count > 0) {
-=======
-                                    if (country.count >= 20) {
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
                                       setTooltipContent({
                                         name: NAME,
                                         cipRInfo: {
@@ -3378,22 +2974,15 @@ const DashboardPage = () => {
                                           percentage: country.percentage,
                                         }
                                       });
-<<<<<<< HEAD
                                     } else if (country.total >= 20) {
-=======
-                                    } else {
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
                                       setTooltipContent({
                                         name: NAME,
                                         smallerThan20: true
                                       })
-<<<<<<< HEAD
                                     } else {
                                       setTooltipContent({
                                         name: NAME
                                       })
-=======
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
                                     }
                                   } else {
                                     setTooltipContent({
@@ -3695,12 +3284,8 @@ const DashboardPage = () => {
                   )}
                   {(!tooltipContent.incTypesInfo && !tooltipContent.amrProfilesInfo && !tooltipContent.drugsInfo && !tooltipContent.xdrInfo && !tooltipContent.mdrInfo && !tooltipContent.stadInfo && !tooltipContent.dcsInfo && !tooltipContent.azInfo && !tooltipContent.cipIInfo && !tooltipContent.cipRInfo && !tooltipContent.simpleGenotypeInfo && !tooltipContent.genotypeInfo && !tooltipContent.additionalInfo) && (
                     <div className="additional-info">
-<<<<<<< HEAD
                       {/* <span>{tooltipContent.smallerThan20 ? "0%" : !allCountries.includes(tooltipContent.name) || dataset === 'full' ? 'Insufficient data' : dataset === 'local' ? 'No travel reported' : 'No travel information'}</span> */}
                       <span>{tooltipContent.smallerThan20 ? "0%" : 'Insufficient data'}</span>
-=======
-                      <span>{tooltipContent.smallerThan20 ? "Not known" : !allCountries.includes(tooltipContent.name) || dataset === 'full' ? 'No reported data' : dataset === 'local' ? 'No travel reported' : 'No travel information'}</span>
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
                     </div>
                   )}
                 </div>
@@ -3881,7 +3466,6 @@ const DashboardPage = () => {
                       )}
                     </div>
                   </div>
-<<<<<<< HEAD
                   <div style={{ paddingTop: '18px', height: '59px', width: dimensions.width > desktop ? "60%" : "90%", alignSelf: "center"}}>
                     <InputLabel style={{fontSize: 12, fontWeight: 500, fontFamily: "Montserrat" }}>Drugs view</InputLabel>
                     <FormControl fullWidth className={classes.formControlSelect}>
@@ -3954,9 +3538,6 @@ const DashboardPage = () => {
                     </FormControl>
                   </div>
                   <div id="DRT" style={{ paddingTop: dimensions.width < desktop ? '10px' : '0px', height: 600, display: "flex", flexDirection: "row", alignItems: "center" }}>
-=======
-                  <div id="DRT" style={{ paddingTop: dimensions.width < desktop ? '10px' : '76px', height: 600, display: "flex", flexDirection: "row", alignItems: "center" }}>
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
                     {/* <span className="y-axis-label-vertical" style={{ paddingTop: 80 }}>Resistant (%)</span> */}
                     {plotDrugTrendsChart}
                   </div>
@@ -4098,13 +3679,9 @@ const DashboardPage = () => {
                 setAmrClassFilter(amrClassesForFilter[5]);
                 setRDWAGDataviewFilter(1)
                 setRFWGFilter(1)
-<<<<<<< HEAD
                 // const dds = document.getElementsByClassName('css-1038amu')
                 // // dds[0].click()
                 // console.log(dds);
-=======
-
->>>>>>> 9516e2ce92b684ae065220893106e2c1f279530e
               }}
             >
               <FontAwesomeIcon icon={faUndoAlt} size="lg" color="white" />
