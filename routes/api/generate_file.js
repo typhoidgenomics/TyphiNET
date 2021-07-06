@@ -176,7 +176,7 @@ router.get('/create', function(req, res) {
                     }
                 }
                 if (column_names.indexOf("GENOTYPHI GENOTYPE") != -1) {
-                    const h58_genotypes = ["4.3.1", "4.3.1.1", "4.3.1.1.P1", "4.3.1.2", "4.3.1.3"]
+                    const h58_genotypes = ["4.3.1", "4.3.1.1", "4.3.1.1.P1", "4.3.1.2", "4.3.1.3", "4.3.1.1.EA1"]
                     const curate_223 = ["9953_5_76_LaoLNT1480_2010",
                         "10060_6_13_LaoSV430_2009",
                         "10060_6_20_LaoUI10788_2007",

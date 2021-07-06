@@ -688,6 +688,8 @@ router.get('/:country/:min_year/:max_year/:travel', function (req, res, next) {
                                 "XDR": 0,
                                 "DCS": 0,
                                 "AzithR": 0,
+                                "CipI": 0,
+                                "CipR": 0,
                                 "STAD": 0,
                                 "TOTAL_OCCURRENCE": 0
                             }
