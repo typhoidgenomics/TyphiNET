@@ -170,10 +170,10 @@ const DashboardPage = () => {
   const [populationStructureFilter, setPopulationStructureFilter] = React.useState(1);
   const [populationStructureFilterOptions] = useState([{value: 'Number of genomes', id: 1}, {value: 'Percentage per year', id: 2}])
   const [RFWGFilterOptions] = useState([{value: 'Number of genomes', id: 1}, {value: 'Percentage within genotype', id: 2}])
-  const [amrClassFilterOptions] = useState([{value: 'Number of genomes', id: 1}, {value: 'Percentage per year', id: 2}])
+  const [amrClassFilterOptions] = useState([{value: 'Number of genomes', id: 1}, {value: 'Percentage per genotype', id: 2}])
   const [amrClassFilterforFilterOptions] = useState([{value: "Ampicillin", id: 0}, {value: "Azithromycin", id: 1}, {value: "Chloramphenicol", id: 2}, {value: "Co-trimoxazole", id: 3}, {value: "ESBL", id: 4}, {value: "Fluoroquinolones (CipI/R)", id: 5}, {value: "Sulphonamides", id: 6}, {value: "Tetracyclines", id: 7}, {value: "Trimethoprim", id: 8}])
   
-  const [RFWGFilter, setRFWGFilter] = React.useState(1);
+  const [RFWGFilter, setRFWGFilter] = React.useState(2);
   const [amrClassesForFilter] = useState(["Ampicillin", "Azithromycin", "Chloramphenicol", "Co-trimoxazole", "ESBL", "Fluoroquinolones (CipI/R)", "Sulphonamides", "Tetracyclines", "Trimethoprim"])
   const [drtClassesForFilter] = useState(["Ampicillin", "Azithromycin", "Chloramphenicol", "Co-trimoxazole", "ESBL", "Fluoroquinolones (CipI/R)", "Susceptible", "Sulphonamides", "Tetracyclines", "Trimethoprim"])
   const [trendClassesForFilter] = useState(["Ampicillin", "Azithromycin", "Chloramphenicol", "Co-trimoxazole", "ESBL", "Fluoroquinolones (CipI/R)", "Susceptible", "Sulphonamides", "Tetracyclines", "Trimethoprim"])
@@ -188,7 +188,7 @@ const DashboardPage = () => {
   const [amrClassChartData, setAmrClassChartData] = useState([])
 
   const [mapView, setMapView] = React.useState('CipI');
-  const [dataset, setDataset] = React.useState('full');
+  const [dataset, setDataset] = React.useState('All');
   const [totalGenomes, setTotalGenomes] = useState([])
   const [actualGenomes, setActualGenomes] = useState([])
   const [totalGenotypes, setTotalGenotypes] = useState([])
@@ -206,6 +206,8 @@ const DashboardPage = () => {
 
   const [open, setOpen] = React.useState(false);
   const [open2, setOpen2] = React.useState(false);
+  const [open3, setOpen3] = React.useState(false);
+  const [open4, setOpen4] = React.useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -221,6 +223,22 @@ const DashboardPage = () => {
 
   const handleClose2 = () => {
     setOpen2(false);
+  };
+
+  const handleClickOpen3 = () => {
+    setOpen3(true);
+  };
+
+  const handleClose3 = () => {
+    setOpen3(false);
+  };
+
+  const handleClickOpen4 = () => {
+    setOpen4(true);
+  };
+
+  const handleClose4 = () => {
+    setOpen4(false);
   };
 
   const [desktop] = useState(767)
@@ -899,15 +917,13 @@ const DashboardPage = () => {
         data.higherPercentage = Math.round((maxValue * 100) / data.total)
         data.drugsPercentage = drugsPercentage
       })
-      
+
       finalDrugsAndGenotypesChartData.forEach((data) => {
         Object.entries(data).forEach((entry) => {
-          if (actualCountry !== "All" && entry[0] === "name") {
+          if (entry[0] === "name") {
             data.total = totalCountryCount[entry[1]].total
             data.totalS = totalCountryCount[entry[1]].totalS
           }
-          else if (entry[0] === "name")
-            data.total = allGenotypes[entry[1]]
         })
       })
 
@@ -1016,8 +1032,8 @@ const DashboardPage = () => {
                 <div style={{ backgroundColor: "rgba(255,255,255,1)", border: "solid rgba(0,0,0,0.25) 1px", padding: 16, display: "flex", flexDirection: "column" }}>
                   <div style={{display: "flex", flexDirection: "row", alignItems: 'center'}}>
                     <span style={{ fontFamily: "Montserrat", fontWeight: 600, fontSize: 24 }}>{label}</span>
-                    {chart === 0 && (<span style={{ fontFamily: "Montserrat", fontSize: 16, paddingLeft: 10 }}>{"N = " + (actualCountry !== "All" ? payload[0].payload.totalS : payload[0].payload.total)}</span>)}
-                    {chart === 4 && (<span style={{ fontFamily: "Montserrat", fontSize: 16, paddingLeft: 10 }}>{"N = " + (actualCountry !== "All" ? payload[0].payload.quantities.totalS : payload[0].payload.total)}</span>)}
+                    {chart === 0 && (<span style={{ fontFamily: "Montserrat", fontSize: 16, paddingLeft: 10 }}>{"N = " + (payload[0].payload.totalS)}</span>)}
+                    {chart === 4 && (<span style={{ fontFamily: "Montserrat", fontSize: 16, paddingLeft: 10 }}>{"N = " + (payload[0].payload.quantities.totalS)}</span>)}
                     {chart === 1 && (<span style={{ fontFamily: "Montserrat", fontSize: 16, paddingLeft: 10 }}>{"N = " + payload[0].payload.total}</span>)}
                   </div>
                   <div style={{ height: 14 }} />
@@ -1027,7 +1043,7 @@ const DashboardPage = () => {
                       if (chart === 1) {
                         percentage = ((item.payload.drugsPercentage[item.dataKey] / item.payload.total) * 100)
                       }
-                      if (chart === 0 && actualCountry !== "All") {
+                      if (chart === 0) {
                         percentage = ((item.value / item.payload.totalS) * 100)
                       }
                       percentage = Math.round(percentage * 100) / 100
@@ -1057,7 +1073,7 @@ const DashboardPage = () => {
         }}
       />
     )
-  }, [desktop, dimensions, mobile, populationStructureFilter, RFWGFilter, hoverColor, actualCountry])
+  }, [desktop, dimensions, mobile, populationStructureFilter, RFWGFilter, hoverColor])
 
   useEffect(() => {
     const plotPopulationStructureChart = () => {
@@ -1430,13 +1446,14 @@ const DashboardPage = () => {
         case 'Trimethoprim':
           return (armClassFilterComponent({
             left: 3, fontsize: 14, strokeWidth: 0.5, width: 3, bars: [
-              ['dfrA7', "#FFEC78", "error-dfrA7"],
-              ['dfrA5', "#D7AEF7", "error-dfrA5"],
-              ['dfrA18', "#66c2a4", "error-dfrA18"],
-              ['dfrA17', "#FCB469", "error-dfrA17"],
-              ['dfrA15', "#FBCFE5", "error-dfrA15"],
-              ['dfrA14', "#6baed6", "error-dfrA14"],
               ['dfrA1', "#B4DD70", "error-dfrA1"],
+              ['dfrA5', "#D7AEF7", "error-dfrA5"],
+              ['dfrA7', "#FFEC78", "error-dfrA7"],
+              ['dfrA14', "#6baed6", "error-dfrA14"],
+              ['dfrA7-dfrA14', "#fd8d3c", "error-dfrA7-dfrA14"],
+              ['dfrA15', "#FBCFE5", "error-dfrA15"],
+              ['dfrA17', "#FCB469", "error-dfrA17"],
+              ['dfrA18', "#66c2a4", "error-dfrA18"],
               ['None', "#B9B9B9", "error-None"]]
           }))
         case 'Co-trimoxazole':
@@ -1451,6 +1468,7 @@ const DashboardPage = () => {
             bars.push([cotrim[index] + "-sul2", colors2[index], "error-" + cotrim[index] + "-sul2"])
             bars.push([cotrim[index] + "-sul1-sul2", colors3[index], "error-" + cotrim[index] + "-sul1-sul2"])
           }
+          bars.push(["dfrA7-dfrA14-sul1-sul2", "#F54CEB", "error-dfrA7-dfrA14-sul1-sul2"])
 
           return (armClassFilterComponent({
             left: 3, fontsize: 14, strokeWidth: 0.5, width: 3, bars: bars
@@ -1493,7 +1511,6 @@ const DashboardPage = () => {
   }, [hoverColor, RDWAGDataviewFilter, amrClassFilter, dimensions, amrClassChartData, desktop, middle])
 
   useEffect(() => {
-
     const plotDrugTrendsChart = () => {
       let dataDRT = drugTrendsChartData.slice(0, drugTrendsChartData.length - 1)
       for (const index in dataDRT) {
@@ -1539,7 +1556,7 @@ const DashboardPage = () => {
                       {payload.map((entry, index) => {
                         const { dataKey, color } = entry
                         return (
-                          <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "start", width: dimensions.width < 1585 ? 120: '19%', marginBottom: 4, marginLeft: 3, marginRight: 3 }}>
+                          <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "start", width: 180, marginBottom: 4, marginLeft: 3, marginRight: 3 }}>
                             <div style={{ height: 8, width: 8, borderRadius: 4, marginTop: 3, backgroundColor: color, flexShrink: 0 }} />
                             <span style={{ fontSize: 12, paddingLeft: 4, fontFamily: 'Montserrat' }}>{dataKey}</span>
                           </div>
@@ -1600,7 +1617,7 @@ const DashboardPage = () => {
                         {payload.map((entry, index) => {
                           const { dataKey, color } = entry
                           return (
-                            <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "start", width: dimensions.width < 1585 ? 120: '19%', marginBottom: 4, marginLeft: 3, marginRight: 3 }}>
+                            <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "start", width: 180, marginBottom: 4, marginLeft: 3, marginRight: 3 }}>
                               <div style={{ height: 8, width: 8, borderRadius: 4, marginTop: 3, backgroundColor: color, flexShrink: 0 }} />
                               <span style={{ fontSize: 12, paddingLeft: 4 }}>{dataKey}</span>
                             </div>
@@ -1626,11 +1643,7 @@ const DashboardPage = () => {
             if (keys[key] !== 'name' && keys[key] !== 'total' && keys[key] !== 'quantities') {
               let aux = keys[key]
               element.quantities[aux] = element[aux]
-              if (actualCountry === "All") {
-                element[aux] = (element[aux] * 100) / element.total
-              } else {
-                element[aux] = (element[aux] * 100) / element.totalS
-              }
+              element[aux] = (element[aux] * 100) / element.totalS
             }
           }
         });
@@ -1668,7 +1681,7 @@ const DashboardPage = () => {
                         {payload.map((entry, index) => {
                           const { dataKey, color } = entry
                           return (
-                            <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "start", width: dimensions.width < 1585 ? 120: '19%', marginBottom: 4, marginLeft: 3, marginRight: 3 }}>
+                            <div key={index} style={{ display: "flex", flexDirection: "row", alignItems: "start", width: 180, marginBottom: 4, marginLeft: 3, marginRight: 3 }}>
                               <div style={{ height: 8, width: 8, borderRadius: 4, marginTop: 3, backgroundColor: color, flexShrink: 0 }} />
                               <span style={{ fontSize: 12, paddingLeft: 4 }}>{dataKey}</span>
                             </div>
@@ -1730,13 +1743,6 @@ const DashboardPage = () => {
         break;
       default:
         break;
-    }
-    if (info.dataset === "full") {
-      info.dataset = "All"
-    } else if (info.dataset === "local") {
-      info.dataset = "Travel"
-    } else {
-      info.dataset = "Local"
     }
 
     const names = ["Resistance frequencies within genotypes", "Drug resistance trends", "Genotype distribution", "Resistance determinants within all genotypes"]
@@ -1810,11 +1816,11 @@ const DashboardPage = () => {
       if (info.mapView === 'Dominant Genotype') {
         var img = new Image()
         img.src = "legends/MV_DG.png"
-        doc.addImage(img, 'PNG', 90, 173, 150, 33)
+        doc.addImage(img, 'PNG', 90, 168.5, 150, 38)
       } else if (info.mapView === 'No. Samples') {
         var img2 = new Image()
         img2.src = "legends/MV_NS.png"
-        doc.addImage(img2, 'PNG', 260, 170, 28, 35)
+        doc.addImage(img2, 'PNG', 250, 165, 40, 40)
       } else {
         var img3 = new Image()
         img3.src = "legends/MV_outros.png"
@@ -1825,16 +1831,11 @@ const DashboardPage = () => {
       const names2 = ["Resistance frequencies within genotypes", "Resistance determinants within all genotypes", "Drug resistance trends", "Genotype distribution"]
       for (let index = 0; index < ids.length; index++) {
         let legend
-        // let brush
         const graph = document.getElementById(ids[index])
         if (index === 1 || index === 3) {
           legend = graph.getElementsByClassName('recharts-legend-wrapper')[0];
           legend.style.display = 'none'
         }
-        // brush = graph.getElementsByClassName('recharts-brush')[0];
-        // if (brush !== undefined) {
-        //   brush.style.display = 'none'
-        // }
 
         let url
         await domtoimage.toPng(document.getElementById(ids[index]), { quality: 1, bgcolor: "white" })
@@ -1845,9 +1846,6 @@ const DashboardPage = () => {
         if (index === 1 || index === 3) {
           legend.style.display = 'block'
         }
-        // if (brush !== undefined) {
-        //   brush.style.display = 'block'
-        // }
 
         let subtitleH = 0
         if (index === 0 || index === 3) {
@@ -1870,8 +1868,24 @@ const DashboardPage = () => {
         if (dimensions.width < 1750) {
           spaceBetween = 13
         }
-        doc.text(texts[index], imgWidth + spaceBetween, 23 + subtitleH, {align: 'justify', maxWidth: 50})
 
+        let drugs = []
+        for (let i = 0; i < info.drugs.length; i++) {
+          drugs.push(info.drugs[i].value)
+        }
+        if (drugs.length === 0) {
+          drugs.push('None')
+        }
+
+        doc.text(texts[index], imgWidth + spaceBetween, 23 + subtitleH, {align: 'justify', maxWidth: 50})
+        if (index === 2) {
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(11)
+          doc.text('Shown Drugs:', imgWidth + spaceBetween, 100 + subtitleH, {maxWidth: 50})
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(11)
+          doc.text(drugs.join(', '), imgWidth + spaceBetween, 105 + subtitleH, {align: 'justify', maxWidth: 50})
+        }
 
         doc.setFontSize(14)
         doc.text(names2[index], 23, 10)
@@ -1894,12 +1908,12 @@ const DashboardPage = () => {
 
         if (index === 1) {
           var img4 = new Image()
-          if (amrClassFilter === "Fluoroquinolones (CipI/R)") {
+          if (info.amrClassFilter === "Fluoroquinolones (CipI/R)") {
             img4.src = "legends/Fluoroquinolones (CipI-R).png"
           } else {
             img4.src = "legends/" + info.amrClassFilter + ".png"
           }
-          doc.addImage(img4, 'PNG', 22, 105 + subtitleH)
+          doc.addImage(img4, 'PNG', 22, 97 + subtitleH)
         } else if (index === 3) {
           var img5 = new Image()
           img5.src = "legends/GD.png"
@@ -1922,18 +1936,15 @@ const DashboardPage = () => {
       let graphImgPromise = imgOnLoadPromise(graphImg);
 
       var legend = graph.getElementsByClassName('recharts-legend-wrapper')[0];
-      // var brush = graph.getElementsByClassName('recharts-brush')[0];
   
       if (id === "RFWAG" || id === "GD") {
         legend.style.display = 'none'
       }
-      // brush.style.display = 'none'
 
       await domtoimage.toPng(graph, { quality: 0.1, bgcolor: "white" })
         .then(function (dataUrl) {
           graphImg.src = dataUrl;
           legend.style.display = 'block'
-          // brush.style.display = 'block'
         });
       
       let cHeight = 20
@@ -1954,14 +1965,18 @@ const DashboardPage = () => {
       if (id === "GD") legendHeight = 40
       if (id === "DRT"){
         drtShownLinesHeight = 50
-        if (info.drugs.length > 5) drtShownLinesHeight += 22
+        if (info.drugs.length > 4) drtShownLinesHeight += 22
+        if (info.drugs.length > 8) drtShownLinesHeight += 22
       }
 
       let imgWidth = graphImg.width
       if (id === "RFWAG") {
         imgWidth += 130
-        if (info.amrClassFilter === "Co-trimoxazole") {
-          imgWidth += 120
+        if (info.amrClassFilter === "Azithromycin") {
+          imgWidth += 90
+        }
+        else if (info.amrClassFilter === "Co-trimoxazole") {
+          imgWidth += 170
         }
       } else if (id === "GD") {
         imgWidth += 370
@@ -2000,6 +2015,9 @@ const DashboardPage = () => {
           if (info.amrClassFilter === "Fluoroquinolones (CipI/R)") {
             legendImg.src = "legends/Fluoroquinolones (CipI-R).png";
           } else {
+            if (info.amrClassFilter === "Trimethoprim" || info.amrClassFilter === "Co-trimoxazole") {
+              info.amrClassFilter += "2"
+            }
             legendImg.src = "legends/" + info.amrClassFilter + ".png";
           }
           
@@ -2027,11 +2045,14 @@ const DashboardPage = () => {
       if (id === "DRT"){
         let drugs = []
         let drugs2 = []
+        let drugs3 = []
         for (let i = 0; i < info.drugs.length; i++) {
-          if (i < 5) {
+          if (i < 4) {
             drugs.push(info.drugs[i].value)
-          } else {
+          } else if (i < 8){
             drugs2.push(info.drugs[i].value)
+          } else {
+            drugs3.push(info.drugs[i].value)
           }
         }
         if (drugs.length === 0) drugs = ['None']
@@ -2040,9 +2061,11 @@ const DashboardPage = () => {
         ctx.fillText("Shown Drugs:", 10, canvas.height + 8 - drtShownLinesHeight, 400)
         ctx.font = "14px Montserrat"
 
-        let aux = info.drugs.length > 5
-        ctx.fillText(drugs.join(", ") + (aux ? ',' : ''), 10, canvas.height - (aux ? 44 : 22), canvas.width - 20)
-        ctx.fillText(drugs2.join(", "), 10, canvas.height - 22, canvas.width - 20)
+        let aux = info.drugs.length > 4
+        let aux2 = info.drugs.length > 8
+        ctx.fillText(drugs.join(", ") + (aux ? ',' : ''), 10, canvas.height - (aux2 ? 64 : aux ? 42 : 20), canvas.width - 20)
+        ctx.fillText(drugs2.join(", ") + (aux2 ? ',' : ''), 10, canvas.height - (aux2 ? 42 : 20), canvas.width - 20)
+        ctx.fillText(drugs3.join(", "), 10, canvas.height - 20, canvas.width - 20)
       }
 
       const base64 = canvas.toDataURL();
@@ -2119,19 +2142,19 @@ const DashboardPage = () => {
             legendImg.src = "legends/MV_DG.png";
             await legendImgoPromise;
             let centerWidth = (canvas.width - 1731)/2
-            ctx.drawImage(legendImg, centerWidth, canvas.height - legendHeight, 1731, 400);
+            ctx.drawImage(legendImg, centerWidth, canvas.height - legendHeight - 20, 1731, 420);
           } else if (info.mapView === 'No. Samples') {
             legendImg.src = "legends/MV_NS.png";
             await legendImgoPromise;
             h = 350
-            w = 300
-            ctx.drawImage(legendImg, canvas.width - w - 10, canvas.height - h - 10, w, h);
+            w = 310
+            ctx.drawImage(legendImg, canvas.width - w - 15, canvas.height - h - 10, w, h);
           } else {
             legendImg.src = "legends/MV_outros.png";
             await legendImgoPromise;
             h = 350
-            w = 230
-            ctx.drawImage(legendImg, canvas.width - w - 20, canvas.height - h - 20, w, h);
+            w = 280
+            ctx.drawImage(legendImg, canvas.width - w - 25, canvas.height - h - 20, w, h);
           }
 
           let typhinetLogo = document.createElement("img");
@@ -2294,43 +2317,49 @@ const DashboardPage = () => {
   }
 
   const renderMapLegend = () => {
+    const mapLegends = [
+      ['MDR', 'Multidrug resistant (MDR)'],['XDR', 'Extremely drug resistant (XDR)'], ['Azith', 'Azithromycin resistant'],
+      ['CipI', 'Ciprofloxacin insusceptible (CipI)'],['CipR', 'Ciprofloxacin resistant (CipR)'], ['Dominant Genotype','Dominant Genotype'],
+      ['H58 / Non-H58', 'H58 genotype'], ['Sensitive to all drugs','Sensitive to all drugs'],['No. Samples','No. Samples']
+    ]
     return (
       <div className="map-legend">
         <FormControl fullWidth className={classes.formControlSelect} style={{ marginBottom: 12, marginTop: 2 }}>
-          <InputLabel style={{ fontWeight: 500, fontFamily: "Montserrat", whiteSpace: "nowrap" }}>Select map view</InputLabel>
+          <div style={{ display: 'flex', flexFlow: 'row', justifyItems: 'center'}}>
+            <div style={{ paddingTop: '0px', display: 'inline-block', fontSize: 12, fontWeight: 300, fontFamily: "Montserrat", whiteSpace: "nowrap" }}>Select map view</div>
+            <FontAwesomeIcon icon={faInfoCircle} onClick={handleClickOpen3} className="icon-info" />
+            <Dialog
+              open={open3}
+              onClose={handleClose3}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+            >
+              <DialogTitle id="alert-dialog-title">{"Information"}</DialogTitle>
+              <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                  {'Map view shows only countries with 20 samples or more. (n >= 20)'}
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleClose3} color="primary">
+                  Close
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </div>
           <Select
             value={mapView}
             onChange={evt => setMapView(evt.target.value)}
             fullWidth
             style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }}
           >
-            <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'MDR'}>
-              Multidrug resistant (MDR)
-            </MenuItem>
-            <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'XDR'}>
-              Extremely drug resistant (XDR)
-            </MenuItem>
-            <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'Azith'}>
-              Azithromycin resistant
-            </MenuItem>
-            <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'CipI'}>
-              Ciprofloxacin insusceptible (CipI)
-            </MenuItem>
-            <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'CipR'}>
-              Ciprofloxacin resistant (CipR)
-            </MenuItem>
-            <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'Dominant Genotype'}>
-              Dominant Genotype
-            </MenuItem>
-            <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'H58 / Non-H58'}>
-              H58 genotype
-            </MenuItem>
-            <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'Sensitive to all drugs'}>
-              Sensitive to all drugs
-            </MenuItem>
-            <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={'No. Samples'}>
-              No. Samples
-            </MenuItem>
+            {mapLegends.map((n)=>{
+              return (
+                <MenuItem style={{ fontWeight: 600, fontFamily: "Montserrat", fontSize: 14 }} value={n[0]}>
+                  {n[1]}
+                </MenuItem>
+              )
+            })}
           </Select>
         </FormControl>
         {generateMapLegendOptions()}
@@ -2558,6 +2587,9 @@ const DashboardPage = () => {
                             onClick={() => {
                               if (d !== undefined && sample !== undefined)
                                 setActualCountry(sample.name)
+                            }}
+                            onMouseLeave={()=>{
+                              setTooltipContent(null);
                             }}
                             onMouseEnter={() => {
                               const { NAME } = geo.properties;
@@ -2792,7 +2824,6 @@ const DashboardPage = () => {
                                 outline: "none",
                               },
                               hover: {
-                                fill: "#CFD8DC",
                                 stroke: "#607D8B",
                                 strokeWidth: 1,
                                 outline: "none",
@@ -2835,13 +2866,13 @@ const DashboardPage = () => {
                             setDataset(newDataset)
                         }}
                       >
-                        <CustomToggleButton value="full">
+                        <CustomToggleButton value="All">
                           All
                         </CustomToggleButton>
-                        <CustomToggleButton value="global">
+                        <CustomToggleButton value="Local">
                           Local
                         </CustomToggleButton>
-                        <CustomToggleButton value="local">
+                        <CustomToggleButton value="Travel">
                           Travel
                         </CustomToggleButton>
                       </ToggleButtonGroup>
@@ -3053,7 +3084,6 @@ const DashboardPage = () => {
                   )}
                   {(!tooltipContent.incTypesInfo && !tooltipContent.amrProfilesInfo && !tooltipContent.drugsInfo && !tooltipContent.xdrInfo && !tooltipContent.mdrInfo && !tooltipContent.stadInfo && !tooltipContent.dcsInfo && !tooltipContent.azInfo && !tooltipContent.cipIInfo && !tooltipContent.cipRInfo && !tooltipContent.simpleGenotypeInfo && !tooltipContent.genotypeInfo && !tooltipContent.additionalInfo) && (
                     <div className="additional-info">
-                      {/* <span>{tooltipContent.smallerThan20 ? "0%" : !allCountries.includes(tooltipContent.name) || dataset === 'full' ? 'Insufficient data' : dataset === 'local' ? 'No travel reported' : 'No travel information'}</span> */}
                       <span>{tooltipContent.smallerThan20 ? "0%" : 'Insufficient data'}</span>
                     </div>
                   )}
@@ -3063,7 +3093,7 @@ const DashboardPage = () => {
           </div>
         </div>
         <div className="chart-wrapper" style={{ flexDirection: 'column' }}>
-          <h2 style={{ textAlign: "center" }}>Now showing: {dataset === "full" ? "All" : dataset === "global" ? "Local" : "Travel"} data from {actualCountry === "All" ? "all countries" : actualCountry} from {actualTimePeriodRange.toString().substring(0, 4)} to {actualTimePeriodRange.toString().substring(5)}</h2>
+          <h2 style={{ textAlign: "center" }}>Now showing: {dataset} data from {actualCountry === "All" ? "all countries" : actualCountry} from {actualTimePeriodRange.toString().substring(0, 4)} to {actualTimePeriodRange.toString().substring(5)}</h2>
           <FormControl fullWidth className={classes.formControlSelect} style={{ marginBottom: 16, alignItems: "center", textAlign: "center" }}>
             <label style={{ fontWeight: 500, fontFamily: "Montserrat", whiteSpace: "nowrap", fontSize: 18 }}>Select country (or click map)</label>
             <Select
@@ -3116,7 +3146,7 @@ const DashboardPage = () => {
                         options={RFWGFilterOptions}
                         searchable={false}
                         labelField={"value"}
-                        values={[RFWGFilterOptions[0]]}
+                        values={[{value: RFWGFilterOptions[RFWGFilter - 1].value, id: RFWGFilter}]}
                         onChange={evt => {
                           setRFWGFilter(evt[0].id)
                           setBrushRFWG([drugsAndGenotypesChartData[0].name, drugsAndGenotypesChartData[drugsAndGenotypesChartData.length - 2].name])
@@ -3175,7 +3205,7 @@ const DashboardPage = () => {
                         options={amrClassFilterOptions}
                         searchable={false}
                         labelField={"value"}
-                        values={[amrClassFilterOptions[0]]}
+                        values={[{value: amrClassFilterOptions[RDWAGDataviewFilter - 1].value, id: RDWAGDataviewFilter}]}
                         onChange={evt => {
                           setRDWAGDataviewFilter(evt[0].id)
                           setBrushRDWAG([amrClassChartData[0].genotype, amrClassChartData[amrClassChartData.length - 2].genotype])
@@ -3192,7 +3222,7 @@ const DashboardPage = () => {
               </div>
               <div style={{ alignItems: 'center', display: "flex", flexDirection: "column", flex: 0.5, paddingLeft: dimensions.width < mobile ? 0 : 10, marginTop: dimensions.width < desktop ? 50 : 0 }}>
                 <div style={{ height: 700, width: "100%", maxWidth: 920, display: "flex", flexDirection: "column"}}>
-                  <div style={{ width: "100%", flexDirection: "row", textAlign: "center", display: "flex", justifyContent: "center"}}>
+                  <div id="DRT_DIV" style={{ width: "100%", flexDirection: "row", textAlign: "center", display: "flex", justifyContent: "center"}}>
                     <span className="chart-title" style={{ paddingRight: 15, paddingLeft: 35, height: '45px' }}>Drug resistance trends</span>
                     <div style={{ display: "inline-block", position: "relative" }}>
                       <TooltipMaterialUI title={<span style={{ fontFamily: "Montserrat" }}>Download Chart as PNG</span>} placement="right">
@@ -3215,9 +3245,31 @@ const DashboardPage = () => {
                       )}
                     </div>
                   </div>
-                  {dimensions.width > desktop && (<span className="chart-title" style={{ height: '14px', paddingBottom: '15px', paddingTop: '10px'}}></span>)}
+                  {dimensions.width > desktop && (<span className="chart-title" style={{ height: '10px', paddingBottom: '15px', paddingTop: '10px'}}></span>)}
                   <div style={{ height: '57px', width: dimensions.width > 790 ? "71%" : '260px', alignSelf: "center"}}>
-                    <InputLabel style={{fontSize: 12, fontWeight: 500, fontFamily: "Montserrat" }}>Drugs view</InputLabel>
+                    {/* <InputLabel style={{fontSize: 12, fontWeight: 500, fontFamily: "Montserrat" }}>Drugs view</InputLabel> */}
+                    <div style={{ display: 'flex', flexFlow: 'row', justifyItems: 'center'}}>
+                      <div style={{ paddingTop: '0px', display: 'inline-block', fontSize: 12, fontWeight: 300, fontFamily: "Montserrat", whiteSpace: "nowrap" }}>Drugs view</div>
+                      <FontAwesomeIcon icon={faInfoCircle} onClick={handleClickOpen4} className="icon-info" />
+                      <Dialog
+                        open={open4}
+                        onClose={handleClose4}
+                        aria-labelledby="alert-dialog-title"
+                        aria-describedby="alert-dialog-description"
+                      >
+                        <DialogTitle id="alert-dialog-title">{"Information"}</DialogTitle>
+                        <DialogContent>
+                          <DialogContentText id="alert-dialog-description">
+                            {'Only shows years with number of samples equal or bigger than 10. (n >= 10)'}
+                          </DialogContentText>
+                        </DialogContent>
+                        <DialogActions>
+                          <Button onClick={handleClose4} color="primary">
+                            Close
+                          </Button>
+                        </DialogActions>
+                      </Dialog>
+                    </div>
                     <FormControl id="DDS" fullWidth className={classes.formControlSelect}>
                       <DropDownSelect
                         options={trendDropdownOptions}
@@ -3248,11 +3300,11 @@ const DashboardPage = () => {
                             return (
                               <Buttons>
                                 {methods.areAllSelected() ? (
-                                  <ButtonClearSelect id="DSButton" className="clear" onClick={methods.clearAll}>
+                                  <ButtonClearSelect id="DSButton" className="clear" onClick={methods.clearAll} checked={false}>
                                     Clear all
                                   </ButtonClearSelect>
                                 ) : (
-                                  <ButtonClearSelect id="DSButton" onClick={methods.selectAll}>Select all</ButtonClearSelect>
+                                  <ButtonClearSelect id="DSButton" onClick={methods.selectAll} checked={true}>Select all</ButtonClearSelect>
                                 )}
                               </Buttons>
                             );
@@ -3307,7 +3359,7 @@ const DashboardPage = () => {
                         options={populationStructureFilterOptions}
                         searchable={false}
                         labelField={"value"}
-                        values={[populationStructureFilterOptions[0]]}
+                        values={[{value: populationStructureFilterOptions[populationStructureFilter - 1].value, id: populationStructureFilter}]}
                         onChange={evt => {
                           setPopulationStructureFilter(evt[0].id)
                           setBrushGD([populationStructureChartData[0].name, populationStructureChartData[populationStructureChartData.length - 1].name])
@@ -3332,7 +3384,7 @@ const DashboardPage = () => {
               <div style={{ marginTop: dimensions.width > desktop ? 0 : 20, marginLeft: dimensions.width > desktop ? 20 : 0}} className={`download-sheet-button`} onClick={() => {
                 if (!captureReportInProgress) {
                   setCaptureReportInProgress(true);
-                  capturePicture('', 5, {mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry, amrClassFilter: amrClassFilter, brush: [brushRFWG, brushRDWAG, brushDRT, brushGD]});
+                  capturePicture('', 5, {mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry, amrClassFilter: amrClassFilter, brush: [brushRFWG, brushRDWAG, brushDRT, brushGD], drugs: trendValues});
                 }
               }}>
                 <FontAwesomeIcon icon={faFilePdf} style={{ marginRight: 8 }} />
@@ -3350,7 +3402,7 @@ const DashboardPage = () => {
         <div className="about-wrapper" style={{ paddingBottom: '15px' }}>
           <h2 style={{ marginBottom: 0 }}>About TyphiNET</h2>
           <p>
-            The TyphiNET dashboard collates antimicrobial resistance (AMR) and genotype (lineage) information extracted from whole genome sequence (WGS) data from the bacterial pathogen <i>Salmonella</i> Typhi, the agent of typhoid fever. Data are sourced monthly from Typhoid <a href="https://pathogen.watch/" target="_blank" rel="noreferrer">Pathogenwatch</a>. Information on genotype definitions and population structure can be found in <a href="https://www.nature.com/articles/ncomms12827" target="_blank" rel="noreferrer">Wong et al, 2016</a>, and details of AMR determinants in <a href="https://www.nature.com/articles/s41467-021-23091-2" target="_blank" rel="noreferrer">Argimon et al, 2021</a>. (CipI-R = decreased ciprofloxacin susceptibility).
+            The TyphiNET dashboard collates antimicrobial resistance (AMR) and genotype (lineage) information extracted from whole genome sequence (WGS) data from the bacterial pathogen <i>Salmonella</i> Typhi, the agent of typhoid fever. Data are sourced monthly from Typhoid <a href="https://pathogen.watch/" target="_blank" rel="noreferrer">Pathogenwatch</a>. Information on genotype definitions and population structure can be found in <a href="https://www.nature.com/articles/ncomms12827" target="_blank" rel="noreferrer">Wong et al, 2016</a>, and details of AMR determinants in <a href="https://www.nature.com/articles/s41467-021-23091-2" target="_blank" rel="noreferrer">Argimon et al, 2021</a>. (CipI/R = decreased ciprofloxacin susceptibility).
           </p>
           <p>
             The TyphiNET dashboard is coordinated by Dr Zoe Dyson, Dr Louise Cerdeira &amp; Prof Kat Holt at the <a href="https://www.lshtm.ac.uk/" target="_blank" rel="noreferrer">London School of Hygiene and Tropical Medicine</a> &amp; <a href="https://www.monash.edu/" target="_blank" rel="noreferrer">Monash University</a>, supported by the Wellcome Trust (Open Research Fund, 219692/Z/19/Z) and the EU Horizon 2020 research and innovation programme (Marie Skłodowska-Curie grant #845681).
@@ -3400,14 +3452,14 @@ const DashboardPage = () => {
               size={dimensions.width < mobile ? 'medium' : 'large'}
               onClick={() => {
                 setMapView('CipI');
-                setDataset('full');
+                setDataset('All');
                 setActualTimePeriodRange(timePeriodRange);
                 setControlMapPosition({ coordinates: [0, 0], zoom: 1 });
                 setActualCountry('All');
                 setPopulationStructureFilter(1);
                 setAmrClassFilter(amrClassesForFilter[5]);
                 setRDWAGDataviewFilter(1)
-                setRFWGFilter(1)
+                setRFWGFilter(2)
                 const text = document.getElementById('DSButton')
                 if (text.innerText === "SELECT ALL") {
                   text.click()

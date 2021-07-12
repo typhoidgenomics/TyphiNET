@@ -23,17 +23,17 @@ router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel', function (req,
             let allCountryDrugs = {}
             for (let data of resultsJson) {
 
-                if (travel == "full") {
+                if (travel == "All") {
                     data_travel = true
                 } else {
-                    if (travel == "global") {
+                    if (travel == "Local") {
                         if (data["TRAVEL"] == "local") {
                             data_travel = true
                         } else {
                             data_travel = false
                         }
                     }
-                    if (travel == "local") {
+                    if (travel == "Travel") {
                         if (data["TRAVEL"] == "travel") {
                             data_travel = true
                         } else {
@@ -49,8 +49,8 @@ router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel', function (req,
                 if (checkCountry && checkDate && data["DATE"] >= params.minYear && data["DATE"] <= params.maxYear && data_travel) {
                     let drugs = []
 
-                    if (params.country !== "all" && params.country === data["COUNTRY_ONLY"]) {
-                        // count += 1
+
+                    if (params.country === "all" || (params.country === data["COUNTRY_ONLY"])) {
                         if (!(data["GENOTYPE"] in allCountryDrugs)) {
                             allCountryDrugs[data["GENOTYPE"]] = {total: 0, totalS: 0}
                             const isAMR = data["amr_category"] != "No AMR detected"
@@ -62,9 +62,7 @@ router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel', function (req,
                             }
                             allCountryDrugs[data["GENOTYPE"]].totalS += 1
                         }
-                    }
 
-                    if (params.country === "all" || (params.country === data["COUNTRY_ONLY"])) {
                         if (!(data["DATE"] in allDrugs)) {
                             allDrugs[data["DATE"]] = 1
                         } else {
@@ -156,17 +154,17 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
             let data_travel = false
 
             for (let data of results_json) {
-                if (travel == "full") {
+                if (travel == "All") {
                     data_travel = true
                 } else {
-                    if (travel == "global") {
+                    if (travel == "Local") {
                         if (data["TRAVEL"] == "local") {
                             data_travel = true
                         } else {
                             data_travel = false
                         }
                     }
-                    if (travel == "local") {
+                    if (travel == "Travel") {
                         if (data["TRAVEL"] == "travel") {
                             data_travel = true
                         } else {
@@ -315,25 +313,25 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
                         if (data["co_trim"] == "1") {
                             for (const index in cotrim) {
                                 if (data[cotrim[index]] == "1") {
-                                    if (data["sul1"] == "1" && data["sul2"] == "1") {
-                                        genes.push(cotrim[index] + "-sul1-sul2")
-                                    } else if (data["sul1"] == "1") {
-                                        genes.push(cotrim[index] + "-sul1")
-                                    } else if (data["sul2"] == "1") {
-                                        genes.push(cotrim[index] + "-sul2")
-                                    }
+                                    genes.push(cotrim[index])
                                 }
+                            }
+                            if (data["sul1"] == "1" && data["sul2"] == "1") {
+                                genes.push("sul1")
+                                genes.push("sul2")
+                            } else if (data["sul1"] == "1") {
+                                genes.push("sul1")
+                            } else if (data["sul2"] == "1") {
+                                genes.push("sul2")
                             }
                         } else if (data["co_trim"] == "0") {
                             genes.push("None")
                         }
 
-                        for (let gene of genes) {
-                            results.push({
-                                ...data_to_send,
-                                GENE: gene
-                            })
-                        }
+                        results.push({
+                            ...data_to_send,
+                            GENE: genes.join('-')
+                        })
                     }
 
                     if (params.amr_class == "Sulphonamides") {
@@ -362,26 +360,30 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
                         let genes = []
 
                         if (data["dfra_any"] == "1") {
-                            if (data["dfrA1"] == "1")
+                            if (data["dfrA7"] == "1" && data["dfrA14"] == "1") {
+                                genes.push("dfrA7-dfrA14")
+                            }
+                            else if (data["dfrA1"] == "1")
                                 genes.push("dfrA1")
 
-                            if (data["dfrA14"] == "1")
+                            else if (data["dfrA14"] == "1")
                                 genes.push("dfrA14")
 
-                            if (data["dfrA15"] == "1")
+                            else if (data["dfrA15"] == "1")
                                 genes.push("dfrA15")
 
-                            if (data["dfrA17"] == "1")
+                            else if (data["dfrA17"] == "1")
                                 genes.push("dfrA17")
 
-                            if (data["dfrA18"] == "1")
+                            else if (data["dfrA18"] == "1")
                                 genes.push("dfrA18")
 
-                            if (data["dfrA5"] == "1")
+                            else if (data["dfrA5"] == "1")
                                 genes.push("dfrA5")
 
-                            if (data["dfrA7"] == "1")
+                            else if (data["dfrA7"] == "1")
                                 genes.push("dfrA7")
+
                         } else if (data["dfra_any"] == "0") {
                             genes.push("None")
                         }
@@ -512,17 +514,17 @@ router.get('/:filter1/:country/:min_year/:max_year/:travel', function (req, res,
             let travel = params.travel
             let data_travel = false
             for (let data of results_json) {
-                if (travel == "full") {
+                if (travel == "All") {
                     data_travel = true
                 } else {
-                    if (travel == "global") {
+                    if (travel == "Local") {
                         if (data["TRAVEL"] == "local") {
                             data_travel = true
                         } else {
                             data_travel = false
                         }
                     }
-                    if (travel == "local") {
+                    if (travel == "Travel") {
                         if (data["TRAVEL"] == "travel") {
                             data_travel = true
                         } else {
@@ -654,17 +656,17 @@ router.get('/:country/:min_year/:max_year/:travel', function (req, res, next) {
             let travel = params.travel
             let data_travel = false
             for (let data of results) {
-                if (travel == "full") {
+                if (travel == "All") {
                     data_travel = true
                 } else {
-                    if (travel == "global") {
+                    if (travel == "Local") {
                         if (data["TRAVEL"] == "local") {
                             data_travel = true
                         } else {
                             data_travel = false
                         }
                     }
-                    if (travel == "local") {
+                    if (travel == "Travel") {
                         if (data["TRAVEL"] == "travel") {
                             data_travel = true
                         } else {

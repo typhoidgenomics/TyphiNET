@@ -1,4 +1,7 @@
 import mongoose from 'mongoose'
+import * as fs from 'fs';
+import { API_ENDPOINT } from '../constants.js';
+import axios from 'axios';
 
 const CombinedSchema = mongoose.Schema({
     "NAME": {
@@ -313,5 +316,40 @@ const CombinedSchema = mongoose.Schema({
 });
 
 const CombinedModel = mongoose.model('CombinedModel', CombinedSchema);
+const logPath = "./assets/log/mongooseChangeLog.txt"
+
+const text = fs.readFileSync(logPath, 'utf-8');
+const aux = JSON.parse(text)
+let hasChanged = aux[aux.length - 1].hasChanged
+
+const lastDate = new Date(Date.parse(aux[aux.length - 1].updatedAt));
+const currentDate = new Date();
+
+const Difference_In_Time = currentDate.getTime() - lastDate.getTime();
+const Difference_In_Days = Difference_In_Time / (1000 * 3600 * 24);
+
+if (hasChanged === "false") {
+    CombinedModel.watch().on('change', data => {
+        aux[aux.length - 1].hasChanged = "true"
+        fs.writeFileSync("./assets/log/mongooseChangeLog.txt", JSON.stringify(aux))
+        console.log('Changes have been made on MongoDB');
+    });
+}
+
+if (Difference_In_Days > 7 && aux[aux.length - 1].hasChanged === "true") {
+    // update clean_db
+    axios.get(`${API_ENDPOINT}mongo/download`)
+      .then((res) => {
+        aux.push({
+            updatedAt: currentDate.toISOString(),
+            hasChanged:"false"
+        })
+        fs.writeFileSync(logPath, JSON.stringify(aux))
+        console.log('Download Successfull!');
+      })
+      .catch((error) => {
+        console.log('Download Unsuccessfull!');
+      })
+}
 
 export default CombinedModel
