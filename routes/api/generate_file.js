@@ -40,7 +40,7 @@ router.get('/create', function(req, res) {
         fs.createReadStream(path.join(__dirname, `../../assets/webscrap/raw_data/${file}`), { start: 0 })
             .pipe(csv())
             .on('data', (data) => {
-
+                
                 let column_names = Object.keys(data)
                 let data_name
 
@@ -176,7 +176,7 @@ router.get('/create', function(req, res) {
                     }
                 }
                 if (column_names.indexOf("GENOTYPHI GENOTYPE") != -1) {
-                    const h58_genotypes = ["4.3.1", "4.3.1.1", "4.3.1.1.P1", "4.3.1.2", "4.3.1.3", "4.3.1.1.EA1"]
+                    const h58_genotypes = ["4.3.1", "4.3.1.1", "4.3.1.1.P1", "4.3.1.2", "4.3.1.3", "4.3.1.1.EA1", "4.3.1.2.EA2", "4.3.1.2.EA3", "4.3.1.3.Bdq"]
                     const curate_223 = ["9953_5_76_LaoLNT1480_2010",
                         "10060_6_13_LaoSV430_2009",
                         "10060_6_20_LaoUI10788_2007",
@@ -261,23 +261,33 @@ router.get('/create', function(req, res) {
                         obj_parser["cip_pheno_qrdr_gene"] = obj_parser["cip_pheno_qrdr_gene"] + data["qnrS"].toString() + data["qnrB"].toString()
                     }
                     if (obj_parser["dcs_mechanisms"] == undefined) {
-                        if (data["qnrS"] == "1") {
+                        if (data["qnrS"] == "1" && data["qnrB"] == "1") {
+                            obj_parser["dcs_mechanisms"] = `_QRDR + qnrS + qnrB`
+                        } else if (data["qnrS"] == "1") {
                             obj_parser["dcs_mechanisms"] = `_QRDR + qnrS`
+                        } else if (data["qnrB"] == "1"){
+                            obj_parser["dcs_mechanisms"] = `_QRDR + qnrB`
                         } else {
                             obj_parser["dcs_mechanisms"] = `_QRDR`
                         }
                     } else {
-                        if (data["qnrS"] == "1") {
+                        if (data["qnrS"] == "1" && data["qnrB"] == "1") {
+                            obj_parser["dcs_mechanisms"] = obj_parser["dcs_mechanisms"] + `_QRDR + qnrS + qnrB`
+                        } else if (data["qnrS"] == "1") {
                             obj_parser["dcs_mechanisms"] = obj_parser["dcs_mechanisms"] + `_QRDR + qnrS`
+                        } else if (data["qnrB"] == "1") {
+                            obj_parser["dcs_mechanisms"] = obj_parser["dcs_mechanisms"] + `_QRDR + qnrB`
                         } else {
                             obj_parser["dcs_mechanisms"] = obj_parser["dcs_mechanisms"] + `_QRDR`
                         }
                     }
                 }
                 if (column_names.indexOf("gyrA_S83F") != -1) {
+                    
                     for (let column of headers_amr_snps) {
                         obj_parser[column] = data[column]
                     }
+                    
                     const list_qrdr = ["gyrA_S83F", "gyrA_S83Y", "gyrA_D87A", "gyrA_D87G", "gyrA_D87N", "gyrA_D87V", "gyrA_D87Y", "gyrB_S464F", "gyrB_S464Y", "parC_S80I", "parC_E84G", "parC_E84K"]
                     obj_parser["num_qrdr"] = 0
                     for (let qrdr of list_qrdr) {
@@ -298,33 +308,45 @@ router.get('/create', function(req, res) {
                             obj_parser["azith_pred_pheno"] = "AzithS"
                         }
                     }
-                    if (obj_parser["num_qrdr"] == 3) {
+
+                    // if (obj_parser["num_qrdr"] === 0 && (obj_parser['qnrS'] === '1' || obj_parser['qnrB'] === '1')) {
+                    //     obj_parser["cip_pred_pheno"] = "CipI"
+                    // } else if (obj_parser["num_qrdr"] === 0){
+                    //     obj_parser["cip_pred_pheno"] = "CipS"
+                    // } else if (obj_parser["num_qrdr"] === 1 && (obj_parser['qnrS'] === '1' || obj_parser['qnrB'] === '1')) {
+                    //     obj_parser["cip_pred_pheno"] = "CipR"
+                    // } else if (obj_parser["num_qrdr"] === 1) {
+                    //     obj_parser["cip_pred_pheno"] = "CipI"
+                    // } else if (obj_parser["num_qrdr"] === 3 || obj_parser["num_qrdr"] === 2) {
+                    //     obj_parser["cip_pred_pheno"] = "CipR"
+                    // }
+
+                    if (obj_parser["num_qrdr"] === 3) {
                         obj_parser["cip_pred_pheno"] = "CipR"
                     }
-                    if (obj_parser["num_qrdr"] == 2) {
+                    if (obj_parser["num_qrdr"] === 2) {
+                        obj_parser["cip_pred_pheno"] = "CipR"
+                    }
+                    if (obj_parser["num_qrdr"] === 1) {
                         obj_parser["cip_pred_pheno"] = "CipI"
                     }
-                    if (obj_parser["num_qrdr"] == 1) {
-                        obj_parser["cip_pred_pheno"] = "CipI"
-                    }
-                    if (obj_parser["num_qrdr"] == 0) {
+                    if (obj_parser["num_qrdr"] === 0) {
                         obj_parser["cip_pred_pheno"] = "CipS"
                     }
+                    
                     if (obj_parser["cip_pheno_qrdr_gene"] != undefined) {
                         let cid_pred_pheno = obj_parser["cip_pred_pheno"].toString() + obj_parser["cip_pheno_qrdr_gene"].toString()
                         obj_parser["cip_pheno_qrdr_gene"] = cid_pred_pheno
-                        if (cid_pred_pheno == "CipS10") {
+                        if (cid_pred_pheno == "CipS10" || cid_pred_pheno == "CipS11" || cid_pred_pheno == "CipS01") {
                             obj_parser["cip_pred_pheno"] = "CipI"
                         }
-                        if (cid_pred_pheno == "CipI10") {
-                            obj_parser["cip_pred_pheno"] = "CipR"
-                        }
-                        if (cid_pred_pheno == "CipI01") {
+                        if (cid_pred_pheno == "CipI10" || cid_pred_pheno == "CipI11" || cid_pred_pheno == "CipI01") {
                             obj_parser["cip_pred_pheno"] = "CipR"
                         }
                     } else {
                         obj_parser["cip_pheno_qrdr_gene"] = obj_parser["cip_pred_pheno"].toString()
                     }
+                    // obj_parser["cip_pheno_qrdr_gene"] = obj_parser["cip_pred_pheno"].toString()
                     obj_parser["dcs_category"] = obj_parser["cip_pred_pheno"]
                     if (obj_parser["cip_pred_pheno"] == "CipI") {
                         obj_parser["dcs_category"] = "DCS"
@@ -444,6 +466,17 @@ router.get('/create', function(req, res) {
                 }
                 if (data_to_write[d]["TRAVEL"] === "unknown") {
                     data_to_write[d]["TRAVEL"] = "local"
+                }
+                if (data_to_write[d]["num_qrdr"] === 0 && (data_to_write[d]['qnrS'] === '1' || data_to_write[d]['qnrB'] === '1')) {
+                    data_to_write[d]["cip_pred_pheno"] = "CipI"
+                } else if (data_to_write[d]["num_qrdr"] === 0){
+                    data_to_write[d]["cip_pred_pheno"] = "CipS"
+                } else if (data_to_write[d]["num_qrdr"] === 1 && (data_to_write[d]['qnrS'] === '1' || data_to_write[d]['qnrB'] === '1')) {
+                    data_to_write[d]["cip_pred_pheno"] = "CipR"
+                } else if (data_to_write[d]["num_qrdr"] === 1) {
+                    data_to_write[d]["cip_pred_pheno"] = "CipI"
+                } else if (data_to_write[d]["num_qrdr"] === 3 || data_to_write[d]["num_qrdr"] === 2) {
+                    data_to_write[d]["cip_pred_pheno"] = "CipR"
                 }
                 temp.push(data_to_write[d])
             }

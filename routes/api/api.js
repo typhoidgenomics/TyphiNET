@@ -242,7 +242,7 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
 
                         if (data["ESBL_category"] == "ESBL") {
                             if (data["blaCTX-M-15_23"] == "1")
-                                genes.push("blaCTX-M-15_23")
+                                genes.push("blaCTX-M-15")
 
                             if (data["blaOXA-7"] == "1")
                                 genes.push("blaOXA-7")
