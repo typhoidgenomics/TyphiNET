@@ -321,31 +321,31 @@ router.get('/create', function(req, res) {
                     //     obj_parser["cip_pred_pheno"] = "CipR"
                     // }
 
-                    if (obj_parser["num_qrdr"] === 3) {
-                        obj_parser["cip_pred_pheno"] = "CipR"
-                    }
-                    if (obj_parser["num_qrdr"] === 2) {
-                        obj_parser["cip_pred_pheno"] = "CipR"
-                    }
-                    if (obj_parser["num_qrdr"] === 1) {
-                        obj_parser["cip_pred_pheno"] = "CipI"
-                    }
-                    if (obj_parser["num_qrdr"] === 0) {
-                        obj_parser["cip_pred_pheno"] = "CipS"
-                    }
+                    // if (obj_parser["num_qrdr"] === 3) {
+                    //     obj_parser["cip_pred_pheno"] = "CipR"
+                    // }
+                    // if (obj_parser["num_qrdr"] === 2) {
+                    //     obj_parser["cip_pred_pheno"] = "CipR"
+                    // }
+                    // if (obj_parser["num_qrdr"] === 1) {
+                    //     obj_parser["cip_pred_pheno"] = "CipI"
+                    // }
+                    // if (obj_parser["num_qrdr"] === 0) {
+                    //     obj_parser["cip_pred_pheno"] = "CipS"
+                    // }
                     
-                    if (obj_parser["cip_pheno_qrdr_gene"] != undefined) {
-                        let cid_pred_pheno = obj_parser["cip_pred_pheno"].toString() + obj_parser["cip_pheno_qrdr_gene"].toString()
-                        obj_parser["cip_pheno_qrdr_gene"] = cid_pred_pheno
-                        if (cid_pred_pheno == "CipS10" || cid_pred_pheno == "CipS11" || cid_pred_pheno == "CipS01") {
-                            obj_parser["cip_pred_pheno"] = "CipI"
-                        }
-                        if (cid_pred_pheno == "CipI10" || cid_pred_pheno == "CipI11" || cid_pred_pheno == "CipI01") {
-                            obj_parser["cip_pred_pheno"] = "CipR"
-                        }
-                    } else {
-                        obj_parser["cip_pheno_qrdr_gene"] = obj_parser["cip_pred_pheno"].toString()
-                    }
+                    // if (obj_parser["cip_pheno_qrdr_gene"] != undefined) {
+                    //     let cid_pred_pheno = obj_parser["cip_pred_pheno"].toString() + obj_parser["cip_pheno_qrdr_gene"].toString()
+                    //     obj_parser["cip_pheno_qrdr_gene"] = cid_pred_pheno
+                    //     if (cid_pred_pheno == "CipS10" || cid_pred_pheno == "CipS11" || cid_pred_pheno == "CipS01") {
+                    //         obj_parser["cip_pred_pheno"] = "CipI"
+                    //     }
+                    //     if (cid_pred_pheno == "CipI10" || cid_pred_pheno == "CipI11" || cid_pred_pheno == "CipI01") {
+                    //         obj_parser["cip_pred_pheno"] = "CipR"
+                    //     }
+                    // } else {
+                    //     obj_parser["cip_pheno_qrdr_gene"] = obj_parser["cip_pred_pheno"].toString()
+                    // }
                     // obj_parser["cip_pheno_qrdr_gene"] = obj_parser["cip_pred_pheno"].toString()
                     obj_parser["dcs_category"] = obj_parser["cip_pred_pheno"]
                     if (obj_parser["cip_pred_pheno"] == "CipI") {
@@ -473,9 +473,11 @@ router.get('/create', function(req, res) {
                     data_to_write[d]["cip_pred_pheno"] = "CipS"
                 } else if (data_to_write[d]["num_qrdr"] === 1 && (data_to_write[d]['qnrS'] === '1' || data_to_write[d]['qnrB'] === '1')) {
                     data_to_write[d]["cip_pred_pheno"] = "CipR"
-                } else if (data_to_write[d]["num_qrdr"] === 1) {
+                } else if (data_to_write[d]["num_qrdr"] === 2 && (data_to_write[d]['qnrS'] === '1' || data_to_write[d]['qnrB'] === '1')) {
+                    data_to_write[d]["cip_pred_pheno"] = "CipR"
+                } else if (data_to_write[d]["num_qrdr"] === 1 || data_to_write[d]["num_qrdr"] === 2) {
                     data_to_write[d]["cip_pred_pheno"] = "CipI"
-                } else if (data_to_write[d]["num_qrdr"] === 3 || data_to_write[d]["num_qrdr"] === 2) {
+                } else {
                     data_to_write[d]["cip_pred_pheno"] = "CipR"
                 }
                 temp.push(data_to_write[d])
