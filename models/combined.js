@@ -2,6 +2,7 @@ import mongoose from 'mongoose'
 import * as fs from 'fs';
 import { API_ENDPOINT } from '../constants.js';
 import axios from 'axios';
+import { diff } from 'deep-object-diff';
 
 const CombinedSchema = mongoose.Schema({
     "NAME": {
@@ -316,40 +317,36 @@ const CombinedSchema = mongoose.Schema({
 });
 
 const CombinedModel = mongoose.model('CombinedModel', CombinedSchema);
-const logPath = "./assets/log/mongooseChangeLog.txt"
 
-const text = fs.readFileSync(logPath, 'utf-8');
-const aux = JSON.parse(text)
-let hasChanged = aux[aux.length - 1].hasChanged
+const path = "./assets/old/previousDatabases.txt";
+axios.get(`${API_ENDPOINT}mongo/download`)
+    .then((res) => {
+        const text = fs.readFileSync(path, 'utf-8');
+        const aux = JSON.parse(text);
+        const collection = aux[aux.length - 1].data
 
-const lastDate = new Date(Date.parse(aux[aux.length - 1].updatedAt));
-const currentDate = new Date();
+        const data = {}
+        for (const i in res.data) {
+            data[res.data[i].NAME.toString()] = res.data[i]
+        }
 
-const Difference_In_Time = currentDate.getTime() - lastDate.getTime();
-const Difference_In_Days = Difference_In_Time / (1000 * 3600 * 24);
+        const difference = diff(collection, data)
 
-if (hasChanged === "false") {
-    CombinedModel.watch().on('change', data => {
-        aux[aux.length - 1].hasChanged = "true"
-        fs.writeFileSync("./assets/log/mongooseChangeLog.txt", JSON.stringify(aux))
-        console.log('Changes have been made on MongoDB');
-    });
-}
-
-if (Difference_In_Days > 7 && aux[aux.length - 1].hasChanged === "true") {
-    // update clean_db
-    axios.get(`${API_ENDPOINT}mongo/download`)
-      .then((res) => {
-        aux.push({
-            updatedAt: currentDate.toISOString(),
-            hasChanged:"false"
-        })
-        fs.writeFileSync(logPath, JSON.stringify(aux))
-        console.log('Download Successfull!');
-      })
-      .catch((error) => {
-        console.log('Download Unsuccessfull!');
-      })
-}
+        if (Object.keys(difference).length > 0) {
+            const currentDate = new Date();
+            aux.splice(0, 0, {
+                updatedAt: currentDate.toISOString(),
+                changes: difference
+            })
+            aux[aux.length - 1].data = data
+            fs.writeFileSync(path, JSON.stringify(aux));
+            console.log('Changes: true');
+        } else {
+            console.log('Changes: false');
+        }
+    })
+    .catch((error) => {
+        console.log('Could not check for changes!');
+    })
 
 export default CombinedModel

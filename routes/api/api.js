@@ -49,7 +49,6 @@ router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel', function (req,
                 if (checkCountry && checkDate && data["DATE"] >= params.minYear && data["DATE"] <= params.maxYear && data_travel) {
                     let drugs = []
 
-
                     if (params.country === "all" || (params.country === data["COUNTRY_ONLY"])) {
                         if (!(data["GENOTYPE"] in allCountryDrugs)) {
                             allCountryDrugs[data["GENOTYPE"]] = {total: 0, totalS: 0}
@@ -101,6 +100,14 @@ router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel', function (req,
                     
                     if (data["amr_category"] == "No AMR detected") {
                         drugs.push("Susceptible")
+                    }
+
+                    if (data["cip_pred_pheno"] == "CipI") {
+                        drugs.push("Fluoroquinolone (CipI)")
+                    }
+
+                    if (data["cip_pred_pheno"] == "CipR") {
+                        drugs.push("Fluoroquinolone (CipR)")
                     }
 
                     const rawTrendObject = {
@@ -448,6 +455,7 @@ router.get('/getYearLimits', function (req, res, next) {
     let countries = []
     let allGenotypes = {}
     let totalGenotypes = []
+    let years = []
     let read_file = Tools.path_clean_db || Tools.path_clean
 
     fs.createReadStream(read_file)
@@ -487,14 +495,19 @@ router.get('/getYearLimits', function (req, res, next) {
                     } else {
                         allGenotypes[data["GENOTYPE"]] += 1
                     }
+                    if (!years.includes(parseInt(data.DATE))) {
+                        years.push(parseInt(data.DATE))
+                    }
                 }
             }
+            years.sort()
             return res.json({
                 min: parseInt(min),
                 max: parseInt(max),
                 countries: countries,
                 allGenotypes: allGenotypes,
-                totalGenotypes: totalGenotypes
+                totalGenotypes: totalGenotypes,
+                years: years
             });
         })
 })

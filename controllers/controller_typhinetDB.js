@@ -4,6 +4,7 @@ import * as Tools from '../services/services.js';
 import express from 'express';
 import csv from 'csv-parser';
 import fs from 'fs';
+
 const router = express.Router()
 
 //getData function to get all fields
@@ -65,4 +66,5 @@ router.get('/upload', (req, res) => {
             res.json({ "Status": "Sent!" })
         })
 });
+
 export default router;
