@@ -1663,7 +1663,7 @@ const DashboardPage = () => {
         break;
     }
 
-    const names = ["Resistance frequencies within genotypes", "Drug resistance trends", "Genotype distribution", "Resistance determinants within all genotypes"]
+    const names = ["Resistance frequencies within genotypes", "Drug resistance trends", "Genotype distribution", "Resistance determinants within genotypes"]
     const brokenNames = [["Resistance frequencies", "within genotypes"], ["Resistance determinants", "within all genotypes"]]
     
     if (index === 5) {
@@ -1746,7 +1746,7 @@ const DashboardPage = () => {
       }
       
       doc.addPage('a4', 'l')
-      const names2 = ["Resistance frequencies within genotypes", "Resistance determinants within all genotypes", "Drug resistance trends", "Genotype distribution"]
+      const names2 = ["Resistance frequencies within genotypes", "Resistance determinants within genotypes", "Drug resistance trends", "Genotype distribution"]
       for (let index = 0; index < ids.length; index++) {
         let legend
         const graph = document.getElementById(ids[index])
@@ -2280,7 +2280,7 @@ const DashboardPage = () => {
               <DialogTitle id="alert-dialog-title">{"Information"}</DialogTitle>
               <DialogContent>
                 <DialogContentText id="alert-dialog-description">
-                  {'Map view shows only countries with 20 samples or more. (n >= 20)'}
+                  {'Percentage frequency data is shown only for countries with N≥20 genomes'}
                 </DialogContentText>
               </DialogContent>
               <DialogActions>
@@ -3135,7 +3135,7 @@ const DashboardPage = () => {
                 </div>
                 <div className="chart-wrapper-RDWAG">
                   <div className="chart-wrapper-RDWAG-div">
-                    <span className="chart-title chart-wrapper-RDWAG-title">Resistance determinants within all genotypes</span>
+                    <span className="chart-title chart-wrapper-RDWAG-title">Resistance determinants within genotypes</span>
                     <div className="chart-wrapper-RDWAG-download">
                       <TooltipMaterialUI title={<span className="my-font">Download Chart as PNG</span>} placement="right">
                         <div
@@ -3229,7 +3229,7 @@ const DashboardPage = () => {
                         <DialogTitle id="alert-dialog-title">{"Information"}</DialogTitle>
                         <DialogContent>
                           <DialogContentText id="alert-dialog-description">
-                            {'Only shows years with number of samples equal or bigger than 10. (n >= 10)'}
+                            {'Data is shown only for years with N≥10 genomes'}
                           </DialogContentText>
                         </DialogContent>
                         <DialogActions>
@@ -3369,7 +3369,7 @@ const DashboardPage = () => {
         <div className="about-wrapper">
           <h2>About TyphiNET</h2>
           <p>
-            The TyphiNET dashboard collates antimicrobial resistance (AMR) and genotype (lineage) information extracted from whole genome sequence (WGS) data from the bacterial pathogen <i>Salmonella</i> Typhi, the agent of typhoid fever. Data are sourced monthly from Typhoid <a href="https://pathogen.watch/" target="_blank" rel="noreferrer">Pathogenwatch</a>. Information on genotype definitions and population structure can be found in <a href="https://www.nature.com/articles/ncomms12827" target="_blank" rel="noreferrer">Wong et al, 2016</a>, and details of AMR determinants in <a href="https://www.nature.com/articles/s41467-021-23091-2" target="_blank" rel="noreferrer">Argimon et al, 2021</a>. (CipI/R = decreased ciprofloxacin susceptibility).
+          The TyphiNET dashboard collates antimicrobial resistance (AMR) and genotype (lineage) information extracted from whole genome sequence (WGS) data from the bacterial pathogen <i>Salmonella</i> Typhi, the agent of typhoid fever. Data are sourced monthly from Typhoid <a href="https://pathogen.watch/" target="_blank" rel="noreferrer">Pathogenwatch</a>. Information on genotype definitions and population structure can be found in <a href="https://www.nature.com/articles/ncomms12827" target="_blank" rel="noreferrer">Wong et al, 2016</a>, and details of AMR determinants in <a href="https://www.nature.com/articles/s41467-021-23091-2" target="_blank" rel="noreferrer">Argimon et al, 2021</a>. (CipI/R = decreased ciprofloxacin susceptibility).
           </p>
           <p>
             The TyphiNET dashboard is coordinated by Dr Zoe Dyson, Dr Louise Cerdeira &amp; Prof Kat Holt at the <a href="https://www.lshtm.ac.uk/" target="_blank" rel="noreferrer">London School of Hygiene and Tropical Medicine</a> &amp; <a href="https://www.monash.edu/" target="_blank" rel="noreferrer">Monash University</a>, supported by the Wellcome Trust (Open Research Fund, 219692/Z/19/Z) and the EU Horizon 2020 research and innovation programme (Marie Skłodowska-Curie grant #845681).
