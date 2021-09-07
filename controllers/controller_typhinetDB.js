@@ -67,4 +67,25 @@ router.get('/upload', (req, res) => {
         })
 });
 
+router.get('/genomes/:name', (req, res) => {
+
+    CombinedModel.findOne({NAME: req.params.name}, function(err, result) {
+        if (err) {
+            return res.json({ success: false, message: "Something went wrong" });
+        }
+    
+        if (result) {
+            return res.json({
+                success: true,
+                data: result
+            });
+        } else {
+            return res.json({
+                success: true,
+                data: 'no data'
+            });
+        }
+    });
+});
+
 export default router;

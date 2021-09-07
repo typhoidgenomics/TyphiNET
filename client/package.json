@@ -25,6 +25,7 @@
         "recharts": "^1.8.5",
         "rodal": "^1.8.1",
         "save-svg-as-png": "^1.4.17",
+        "swagger-ui-react": "^4.0.0-beta.4",
         "web-vitals": "^0.2.4"
     },
     "scripts": {

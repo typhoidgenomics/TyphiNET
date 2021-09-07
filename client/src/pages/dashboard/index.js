@@ -71,11 +71,11 @@ const DashboardPage = () => {
   const [captureReportInProgress, setCaptureReportInProgress] = useState(false)
   const [tooltipContent, setTooltipContent] = useState(null);
 
-  const [timePeriodRange, setTimePeriodRange] = React.useState([1905, 2019]);
-  const [actualTimePeriodRange, setActualTimePeriodRange] = React.useState([1905, 2019]);
+  const [timePeriodRange, setTimePeriodRange] = React.useState([1905, 2020]);
+  const [actualTimePeriodRange, setActualTimePeriodRange] = React.useState([1905, 2020]);
   const [countriesForFilter, setCountriesForFilter] = React.useState(['All']);
   const [actualCountry, setActualCountry] = useState("All");
-  const [years, setYears] = useState([1905, 2019])
+  const [years, setYears] = useState([1905, 2020])
 
   const [actualContinent, setActualContinent] = useState("All")
   const [continentOptions] = useState(['All', 'Africa', 'Asia', 'Central America', 'Europe', 'North America', 'Oceania', 'South America'])
@@ -89,8 +89,8 @@ const DashboardPage = () => {
   const [RFWGFilter, setRFWGFilter] = React.useState(2);
   const [amrClassesForFilter] = useState(["Ampicillin", "Azithromycin", "Chloramphenicol", "Co-trimoxazole", "ESBL", "Fluoroquinolones (CipI/R)", "Sulphonamides", "Tetracyclines", "Trimethoprim"])
   const [drtClassesForFilter] = useState(["Ampicillin", "Azithromycin", "Chloramphenicol", "Co-trimoxazole", "ESBL", "Fluoroquinolones (CipI/R)", "Susceptible", "Sulphonamides", "Tetracyclines", "Trimethoprim"])
-  const [trendClassesForFilter] = useState(["Ampicillin", "Azithromycin", "Chloramphenicol", "Fluoroquinolone (CipI)", "Fluoroquinolone (CipR)", "Co-trimoxazole", "ESBL", "Fluoroquinolones (CipI/R)", "Susceptible", "Sulphonamides", "Tetracyclines", "Trimethoprim"])
-  const [trendDropdownOptions] = useState([{value: "Ampicillin", id: 0}, {value: "Azithromycin", id: 1}, {value: "Chloramphenicol", id: 2}, {value: "Fluoroquinolone (CipI)", id: 3}, {value: "Fluoroquinolone (CipR)", id: 4}, {value: "Co-trimoxazole", id: 5}, {value: "ESBL", id: 6}, {value: "Fluoroquinolones (CipI/R)", id: 7}, {value: "Susceptible", id: 8}, {value: "Sulphonamides", id: 9}, {value: "Tetracyclines", id: 10}, {value: "Trimethoprim", id: 11}])
+  const [trendClassesForFilter] = useState(["Ampicillin", "Azithromycin", "Chloramphenicol", /*"Fluoroquinolone (CipI)",*/ "Fluoroquinolones (CipR)", "Co-trimoxazole", "ESBL", "Fluoroquinolones (CipI/R)", "Susceptible", "Sulphonamides", "Tetracyclines", "Trimethoprim"])
+  const [trendDropdownOptions] = useState([{value: "Ampicillin", id: 0}, {value: "Azithromycin", id: 1}, {value: "Chloramphenicol", id: 2}, /*{value: "Fluoroquinolone (CipI)", id: 3},*/ {value: "Fluoroquinolones (CipR)", id: 3}, {value: "Co-trimoxazole", id: 4}, {value: "ESBL", id: 5}, {value: "Fluoroquinolones (CipI/R)", id: 6}, {value: "Susceptible", id: 7}, {value: "Sulphonamides", id: 8}, {value: "Tetracyclines", id: 9}, {value: "Trimethoprim", id: 10}])
   const [amrClassFilter, setAmrClassFilter] = React.useState(amrClassesForFilter[5])
   const [RDWAGDataviewFilter, setRDWAGDataviewFilter] = React.useState(2)
 
@@ -1189,7 +1189,7 @@ const DashboardPage = () => {
               layout="horizontal"
             >
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis padding={{ left: 5, right: 5 }} dataKey="genotype" type={"category"} interval={1} tick={{ fontSize: 14 }} />
+              <XAxis padding={{ left: 5, right: 5 }} dataKey="genotype" type={"category"} interval={dimensions.width < 1700 ? 1 : 0} tick={{ fontSize: 14 }} />
               <YAxis domain={[0, maxSum]} type={"number"} allowDecimals={false} width={70}>
                 <Label angle={-90} position='insideLeft' className="RDWAG-label" offset={6}>
                   Number of occurrences
@@ -1259,7 +1259,7 @@ const DashboardPage = () => {
               layout="horizontal"
             >
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis padding={{ left: 5, right: 5 }} dataKey="genotype" type={"category"} interval={1} tick={{ fontSize: 14 }} />
+              <XAxis padding={{ left: 5, right: 5 }} dataKey="genotype" type={"category"} interval={dimensions.width < 1700 ? 1 : 0} tick={{ fontSize: 14 }} />
               <YAxis domain={[0, 100]} type={"number"} allowDecimals={false} width={70} allowDataOverflow={true}>
                 <Label angle={-90} position='insideLeft' className="RDWAG-label" offset={6}>
                   % Genomes
@@ -1315,10 +1315,10 @@ const DashboardPage = () => {
               ['ereA', "#9e9ac8", "error-ereA"],
               ['acrB_R717Q', "#addd8e", "error-acrB_R717Q"],
               ['acrB_R717L', "#FBCFE5", "error-acrB_R717L"],
-              ['ereA-acrB_R717Q', "#FFEC78", "error-ereA-acrB_R717Q"],
-              ['ereA-acrB_R717L', "#66c2a4", "error-ereA-acrB_R717L"],
-              ['acrB_R717Q-acrB_R717L', "#fd8d3c", "error-acrB_R717Q-acrB_R717L"],
-              ['ereA-acrB_R717Q-acrB_R717L', "#6baed6", "error-ereA-acrB_R717Q-acrB_R717L"],
+              ['ereA + acrB_R717Q', "#FFEC78", "error-ereA-acrB_R717Q"],
+              ['ereA + acrB_R717L', "#66c2a4", "error-ereA-acrB_R717L"],
+              ['acrB_R717Q + acrB_R717L', "#fd8d3c", "error-acrB_R717Q-acrB_R717L"],
+              ['ereA + acrB_R717Q + acrB_R717L', "#6baed6", "error-ereA-acrB_R717Q-acrB_R717L"],
               ['None', "#B9B9B9", "error-None"]
             ]
           }))
@@ -1343,7 +1343,7 @@ const DashboardPage = () => {
             left: 3, fontsize: 14, strokeWidth: 1, width: null, bars: [
               ['cmlA', "#addd8e", "error-cmlA"],
               ['catA1', "#9e9ac8", "error-catA1"],
-              ["catA1-cmlA", "#FFEC78", "error-catA1-cmlA"],
+              ["catA1 + cmlA", "#FFEC78", "error-catA1-cmlA"],
               ['None', "#B9B9B9", "error-None"]
             ]
           }))
@@ -1358,7 +1358,7 @@ const DashboardPage = () => {
             left: 3, fontsize: 14, strokeWidth: 1, width: null, bars: [
               ['sul2', "#ffeda0", "error-sul2"],
               ['sul1', "#fd8d3c", "error-sul1"],
-              ['sul1-sul2', "#B4DD70", "error-sul1-sul2"],
+              ['sul1 + sul2', "#B4DD70", "error-sul1-sul2"],
               ['None', "#B9B9B9", "error-None"]]
           }))
         case 'Trimethoprim':
@@ -1368,7 +1368,7 @@ const DashboardPage = () => {
               ['dfrA5', "#D7AEF7", "error-dfrA5"],
               ['dfrA7', "#FFEC78", "error-dfrA7"],
               ['dfrA14', "#6baed6", "error-dfrA14"],
-              ['dfrA7-dfrA14', "#fd8d3c", "error-dfrA7-dfrA14"],
+              ['dfrA7 + dfrA14', "#fd8d3c", "error-dfrA7-dfrA14"],
               ['dfrA15', "#FBCFE5", "error-dfrA15"],
               ['dfrA17', "#FCB469", "error-dfrA17"],
               ['dfrA18', "#66c2a4", "error-dfrA18"],
@@ -1382,11 +1382,11 @@ const DashboardPage = () => {
           let bars = [['None', "#B9B9B9", "error-None"]]
 
           for (const index in cotrim) {
-            bars.push([cotrim[index] + "-sul1", colors1[index], "error-" + cotrim[index] + "-sul1"])
-            bars.push([cotrim[index] + "-sul2", colors2[index], "error-" + cotrim[index] + "-sul2"])
-            bars.push([cotrim[index] + "-sul1-sul2", colors3[index], "error-" + cotrim[index] + "-sul1-sul2"])
+            bars.push([cotrim[index] + " + sul1", colors1[index], "error-" + cotrim[index] + "-sul1"])
+            bars.push([cotrim[index] + " + sul2", colors2[index], "error-" + cotrim[index] + "-sul2"])
+            bars.push([cotrim[index] + " + sul1 + sul2", colors3[index], "error-" + cotrim[index] + "-sul1-sul2"])
           }
-          bars.push(["dfrA7-dfrA14-sul1-sul2", "#F54CEB", "error-dfrA7-dfrA14-sul1-sul2"])
+          bars.push(["dfrA7 + dfrA14 + sul1 + sul2", "#F54CEB", "error-dfrA7-dfrA14-sul1-sul2"])
 
           return (armClassFilterComponent({
             left: 3, fontsize: 14, strokeWidth: 0.5, width: 3, bars: bars
@@ -1816,13 +1816,13 @@ const DashboardPage = () => {
           doc.text("Top Genotypes (up to 10)", 23, 15)
         }
 
-        const brushInterval = info.brush[index]
+        // const brushInterval = info.brush[index]
 
-        if (index === 1 || index === 2) {
-          doc.text("Interval: " + brushInterval[0] + " to " + brushInterval[1], 23, 15)
-        } else {
-          doc.text("Interval: " + brushInterval[0] + " to " + brushInterval[1], 23, 20)
-        }
+        // if (index === 1 || index === 2) {
+        //   doc.text("Interval: " + brushInterval[0] + " to " + brushInterval[1], 23, 15)
+        // } else {
+        //   doc.text("Interval: " + brushInterval[0] + " to " + brushInterval[1], 23, 20)
+        // }
 
         if (index === 1) {
           var img4 = new Image()
@@ -1891,10 +1891,10 @@ const DashboardPage = () => {
       if (id === "RFWAG") {
         imgWidth += 130
         if (info.amrClassFilter === "Azithromycin") {
-          imgWidth += 90
+          imgWidth += 100
         }
         else if (info.amrClassFilter === "Co-trimoxazole") {
-          imgWidth += 170
+          imgWidth += 195
         }
         else if (info.amrClassFilter === "Fluoroquinolones (CipI/R)") {
           imgWidth += 200
@@ -1962,7 +1962,7 @@ const DashboardPage = () => {
       ctx.fillText("Dataset: " + info.dataset, 10, canvas.height - 90 - drtShownLinesHeight)
       ctx.fillText("Time period: " + info.actualTimePeriodRange[0] + " to " + info.actualTimePeriodRange[1], 10, canvas.height - 68 - drtShownLinesHeight)
       ctx.fillText("Country: " + info.country, 10, canvas.height - 46 - drtShownLinesHeight)
-      ctx.fillText("Interval: " + info.interval[0] + " to " + info.interval[1], 10, canvas.height - 24 - drtShownLinesHeight)
+      // ctx.fillText("Interval: " + info.interval[0] + " to " + info.interval[1], 10, canvas.height - 24 - drtShownLinesHeight)
       if (id === "DRT"){
         let drugs = []
         let drugs2 = []
@@ -2248,7 +2248,7 @@ const DashboardPage = () => {
     ]
     return (
       <div className="map-legend">
-        <FormControl fullWidth className={classes.formControlSelect}>
+        {/* <FormControl fullWidth className={classes.formControlSelect}>
           <div className="map-legend-formcontrol-div">
             <div className="map-legend-formcontrol-label">Select continent</div>
           </div>
@@ -2266,7 +2266,7 @@ const DashboardPage = () => {
               )
             })}
           </Select>
-        </FormControl>
+        </FormControl> */}
         <FormControl fullWidth className={classes.formControlSelect}>
           <div className="map-legend-formcontrol-div map-legend-formcontrol-div-pad">
             <div className="map-legend-formcontrol-label">Select map view</div>
@@ -2280,7 +2280,7 @@ const DashboardPage = () => {
               <DialogTitle id="alert-dialog-title">{"Information"}</DialogTitle>
               <DialogContent>
                 <DialogContentText id="alert-dialog-description">
-                  {'Percentage frequency data is shown only for countries with N≥20 genomes'}
+                  {'Map view shows only countries with 20 samples or more. (n >= 20)'}
                 </DialogContentText>
               </DialogContent>
               <DialogActions>
@@ -2789,7 +2789,7 @@ const DashboardPage = () => {
                   {renderMapLegend()}
                 </div>
               )}
-              {(
+              {(dimensions.width > desktop) && (
                 <div className="map-upper-left-buttons ">
                   <div className="map-filters" style={{ width: dimensions.width > desktop ? 200 : "-webkit-fill-available" }}>
                     <span className="map-filters-label" style={{ marginBottom: dimensions.width > desktop ? 20 : 10 }}>Filters</span>
@@ -2819,7 +2819,7 @@ const DashboardPage = () => {
                       </ToggleButtonGroup>
                     </div>
                     <div className="margin-div">
-                      <Typography gutterBottom className={classes.typography}>
+                      {/* <Typography gutterBottom className={classes.typography}>
                         Select time period
                       </Typography>
                       <CustomSlider
@@ -2831,41 +2831,48 @@ const DashboardPage = () => {
                           setActualTimePeriodRange(value)
                         }}
                         valueLabelDisplay="auto"
-                      />
-                      <Typography gutterBottom className={classes.typography}>
-                        Start year
-                      </Typography>
-                      <Select
-                        value={actualTimePeriodRange[0]}
-                        onChange={(evt, value) => setActualTimePeriodRange([value.props.value, actualTimePeriodRange[1]])}
-                        className={classes.select}
-                        fullWidth
-                      >
-                        {years.map((n)=>{
-                          return (
-                            <MenuItem className={classes.select} value={n}>
-                              {n}
-                            </MenuItem>
-                          )
-                        })}
-                      </Select>
-                      <Typography gutterBottom className={classes.typographyEndYear}>
-                        End year
-                      </Typography>
-                      <Select
-                        value={actualTimePeriodRange[1]}
-                        onChange={(evt, value) => setActualTimePeriodRange([actualTimePeriodRange[0], value.props.value])}
-                        className={classes.select}
-                        fullWidth
-                      >
-                        {years.map((n)=>{
-                          return (
-                            <MenuItem className={classes.select} value={n}>
-                              {n}
-                            </MenuItem>
-                          )
-                        })}
-                      </Select>
+                      /> */}
+                      <div className="my-year-range">
+                        <div>
+                          <Typography gutterBottom className={classes.typography}>
+                            Start year
+                          </Typography>
+                          <Select
+                            value={actualTimePeriodRange[0]}
+                            onChange={(evt, value) => setActualTimePeriodRange([value.props.value, actualTimePeriodRange[1]])}
+                            className={classes.selectYear}
+                            fullWidth
+                          >
+                            {years.map((n)=>{
+                              return (
+                                <MenuItem className={classes.select} value={n}>
+                                  {n}
+                                </MenuItem>
+                              )
+                            })}
+                          </Select>
+                        </div>
+                        <div className="my-divider"></div>
+                        <div className="my-year-range-row">
+                          <Typography gutterBottom className={classes.typographyEndYear}>
+                            End year
+                          </Typography>
+                          <Select
+                            value={actualTimePeriodRange[1]}
+                            onChange={(evt, value) => setActualTimePeriodRange([actualTimePeriodRange[0], value.props.value])}
+                            className={classes.selectYear}
+                            fullWidth
+                          >
+                            {years.map((n)=>{
+                              return (
+                                <MenuItem className={classes.select} value={n}>
+                                  {n}
+                                </MenuItem>
+                              )
+                            })}
+                          </Select>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -2931,7 +2938,94 @@ const DashboardPage = () => {
             {!(dimensions.width > desktop) && (
               <div className="wrapper-map-legend">
                 {renderMapLegend()}
+                <div>
+                  <div className="map-filters-mobile" style={{ width: dimensions.width > desktop ? 200 : "-webkit-fill-available" }}>
+                    <span className="map-filters-label" style={{ marginBottom: dimensions.width > desktop ? 20 : 10 }}>Filters</span>
+                    <div style={{ marginBottom: dimensions.width > desktop ? 16 : 8 }}>
+                      <Typography className={classes.typography}>
+                        Select dataset
+                      </Typography>
+                      <ToggleButtonGroup
+                        value={dataset}
+                        exclusive
+                        size="small"
+                        className={classes.tbg}
+                        onChange={(evt, newDataset) => {
+                          if (newDataset !== null)
+                            setDataset(newDataset)
+                        }}
+                      >
+                        <CustomToggleButton value="All">
+                          All
+                        </CustomToggleButton>
+                        <CustomToggleButton value="Local">
+                          Local
+                        </CustomToggleButton>
+                        <CustomToggleButton value="Travel">
+                          Travel
+                        </CustomToggleButton>
+                      </ToggleButtonGroup>
+                    </div>
+                    <div className="margin-div">
+                      {/* <Typography gutterBottom className={classes.typography}>
+                        Select time period
+                      </Typography>
+                      <CustomSlider
+                        style={{ marginTop: dimensions.width > desktop ? '' : -5, marginBottom: dimensions.width > desktop ? '' : -5 }}
+                        value={actualTimePeriodRange}
+                        min={timePeriodRange[0]}
+                        max={timePeriodRange[1]}
+                        onChange={(evt, value) => {
+                          setActualTimePeriodRange(value)
+                        }}
+                        valueLabelDisplay="auto"
+                      /> */}
+                      <div className="my-year-range">
+                        <div className="my-year-range-row">
+                          <Typography gutterBottom className={classes.typography}>
+                            Start year
+                          </Typography>
+                          <Select
+                            value={actualTimePeriodRange[0]}
+                            onChange={(evt, value) => setActualTimePeriodRange([value.props.value, actualTimePeriodRange[1]])}
+                            className={classes.select}
+                            fullWidth
+                          >
+                            {years.map((n)=>{
+                              return (
+                                <MenuItem className={classes.select} value={n}>
+                                  {n}
+                                </MenuItem>
+                              )
+                            })}
+                          </Select>
+                        </div>
+                        <div className="my-divider"></div>
+                        <div className="my-year-range-row">
+                          <Typography gutterBottom className={classes.typographyEndYear}>
+                            End year
+                          </Typography>
+                          <Select
+                            value={actualTimePeriodRange[1]}
+                            onChange={(evt, value) => setActualTimePeriodRange([actualTimePeriodRange[0], value.props.value])}
+                            className={classes.select}
+                            fullWidth
+                          >
+                            {years.map((n)=>{
+                              return (
+                                <MenuItem className={classes.select} value={n}>
+                                  {n}
+                                </MenuItem>
+                              )
+                            })}
+                          </Select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
+              
             )}
             <ReactTooltip>
               {tooltipContent && (
@@ -3369,7 +3463,7 @@ const DashboardPage = () => {
         <div className="about-wrapper">
           <h2>About TyphiNET</h2>
           <p>
-          The TyphiNET dashboard collates antimicrobial resistance (AMR) and genotype (lineage) information extracted from whole genome sequence (WGS) data from the bacterial pathogen <i>Salmonella</i> Typhi, the agent of typhoid fever. Data are sourced monthly from Typhoid <a href="https://pathogen.watch/" target="_blank" rel="noreferrer">Pathogenwatch</a>. Information on genotype definitions and population structure can be found in <a href="https://www.nature.com/articles/ncomms12827" target="_blank" rel="noreferrer">Wong et al, 2016</a>, and details of AMR determinants in <a href="https://www.nature.com/articles/s41467-021-23091-2" target="_blank" rel="noreferrer">Argimon et al, 2021</a>. (CipI/R = decreased ciprofloxacin susceptibility).
+            The TyphiNET dashboard collates antimicrobial resistance (AMR) and genotype (lineage) information extracted from whole genome sequence (WGS) data from the bacterial pathogen <i>Salmonella</i> Typhi, the agent of typhoid fever. Data are sourced monthly from Typhoid <a href="https://pathogen.watch/" target="_blank" rel="noreferrer">Pathogenwatch</a>. Information on genotype definitions and population structure can be found in <a href="https://www.nature.com/articles/ncomms12827" target="_blank" rel="noreferrer">Wong et al, 2016</a>, and details of AMR determinants in <a href="https://www.nature.com/articles/s41467-021-23091-2" target="_blank" rel="noreferrer">Argimon et al, 2021</a>. (CipI/R = decreased ciprofloxacin susceptibility).
           </p>
           <p>
             The TyphiNET dashboard is coordinated by Dr Zoe Dyson, Dr Louise Cerdeira &amp; Prof Kat Holt at the <a href="https://www.lshtm.ac.uk/" target="_blank" rel="noreferrer">London School of Hygiene and Tropical Medicine</a> &amp; <a href="https://www.monash.edu/" target="_blank" rel="noreferrer">Monash University</a>, supported by the Wellcome Trust (Open Research Fund, 219692/Z/19/Z) and the EU Horizon 2020 research and innovation programme (Marie Skłodowska-Curie grant #845681).
@@ -3411,7 +3505,7 @@ const DashboardPage = () => {
         <div className="footer">
           <span>Data obtained from: <a href="https://pathogen.watch" rel="noreferrer" target="_blank">pathogen watch project</a> on 15/06/2021. <a href="https://holtlab.net" rel="noreferrer" target="_blank">Holt Lab</a></span>
         </div>
-        <div className="fab-button">
+        <div className="fab-button" style={{width: dimensions.width < mobile ? '48px' : '56px'}}>
           <TooltipMaterialUI title={<span className="my-font">Reset Configurations</span>} placement="left">
             <Fab
               color="primary"

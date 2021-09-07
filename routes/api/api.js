@@ -102,12 +102,12 @@ router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel', function (req,
                         drugs.push("Susceptible")
                     }
 
-                    if (data["cip_pred_pheno"] == "CipI") {
-                        drugs.push("Fluoroquinolone (CipI)")
-                    }
+                    // if (data["cip_pred_pheno"] == "CipI") {
+                    //     drugs.push("Fluoroquinolones (CipI)")
+                    // }
 
                     if (data["cip_pred_pheno"] == "CipR") {
-                        drugs.push("Fluoroquinolone (CipR)")
+                        drugs.push("Fluoroquinolones (CipR)")
                     }
 
                     const rawTrendObject = {
@@ -207,14 +207,14 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
 
                         if (data["azith_pred_pheno"] == "AzithR") {
                             if (data["ereA"] == "1" && data["acrB_R717Q"] == "1" && data["acrB_R717L" == "1"]) {
-                                genes.push("ereA-acrB_R717Q-acrB_R717L")
+                                genes.push("ereA + acrB_R717Q + acrB_R717L")
                             } else {
                                 if (data["ereA"] == "1" && data["acrB_R717Q"] == "1") {
-                                    genes.push("ereA-acrB_R717Q")
+                                    genes.push("ereA + acrB_R717Q")
                                 } else if (data["ereA"] == "1" && data["acrB_R717L"] == "1") {
-                                    genes.push("ereA-acrB_R717L")
+                                    genes.push("ereA + acrB_R717L")
                                 } else if (data["acrB_R717Q"] == "1" && data["acrB_R717L"] == "1") {
-                                    genes.push("acrB_R717Q-acrB_R717L")
+                                    genes.push("acrB_R717Q + acrB_R717L")
                                 } else if (data["ereA"] == "1") {
                                     genes.push("ereA")
                                 } else if (data["acrB_R717Q"] == "1") {
@@ -277,7 +277,7 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
 
                         if (data["chloramphenicol_category"] == "ChlR") {
                             if (data["catA1"] == "1" && data["cmlA"] == "1") {
-                                genes.push("catA1-cmlA")
+                                genes.push("catA1 + cmlA")
                             } else {
                                 if (data["catA1"] == "1")
                                     genes.push("catA1")
@@ -337,7 +337,7 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
 
                         results.push({
                             ...data_to_send,
-                            GENE: genes.join('-')
+                            GENE: genes.join(' + ')
                         })
                     }
 
@@ -346,7 +346,7 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
 
                         if (data["sul_any"] == "1") {
                             if (data["sul1"] === "1" && data["sul2"] === "1")
-                                genes.push("sul1-sul2")
+                                genes.push("sul1 + sul2")
                             else if (data["sul1"] === "1")
                                 genes.push("sul1")
                             else if (data["sul2"] === "1")
@@ -368,7 +368,7 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
 
                         if (data["dfra_any"] == "1") {
                             if (data["dfrA7"] == "1" && data["dfrA14"] == "1") {
-                                genes.push("dfrA7-dfrA14")
+                                genes.push("dfrA7 + dfrA14")
                             }
                             else if (data["dfrA1"] == "1")
                                 genes.push("dfrA1")

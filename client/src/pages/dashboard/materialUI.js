@@ -6,8 +6,6 @@ import styled from "@emotion/styled";
 
 const useStyles = makeStyles((theme) => ({
     formControlSelect: {
-        marginTop: theme.spacing(1),
-        marginBottom: theme.spacing(1),
         marginBottom: 12,
         marginTop: 2,
         minWidth: 120,
@@ -27,6 +25,15 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 600,
         fontFamily: "Montserrat",
         fontSize: 14
+    },
+    selectYear: {
+        fontWeight: 600,
+        fontFamily: "Montserrat",
+        fontSize: 14,
+        width: '85px',
+        '&:before': {
+            borderColor: 'rgba(0, 0, 0, 0.12)',
+        }
     },
     selectCountry: {
         fontWeight: 600,
@@ -48,8 +55,7 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 500,
         fontFamily: "Montserrat",
         color: "rgb(117,117,117)",
-        fontSize: 12,
-        marginTop: 16
+        fontSize: 12
     },
     tbg: {
         marginTop: 5

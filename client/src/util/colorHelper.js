@@ -182,9 +182,9 @@ export const getColorForDrug = (drug) => {
       return "rgb(251,207,229)";
     case 'Susceptible':
       return "lightGray";
-    case 'Fluoroquinolone (CipI)':
+    case 'Fluoroquinolones (CipI)':
       return "#98fb98";
-    case 'Fluoroquinolone (CipR)':
+    case 'Fluoroquinolones (CipR)':
       return "#9e9ac8";
     default:
       return "#F5F4F6";

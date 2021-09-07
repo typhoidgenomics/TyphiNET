@@ -24,10 +24,8 @@
 .fab-button {
   position: sticky;
   bottom: 0;
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
   padding: 16px;
+  left: 100%;
 }
 
 .menu-bar-mobile svg {
@@ -205,6 +203,18 @@
   padding: 18px 18px 12px 18px;
   display: flex;
   flex-direction: column;
+}
+
+.map-filters-mobile {
+  border-radius: 6px;
+  background-color: white;
+  -webkit-box-shadow: 3px 0px 10px 0px rgba(0, 0, 0, 0.25);
+  -moz-box-shadow: 3px 0px 10px 0px rgba(0, 0, 0, 0.25);
+  box-shadow: 3px 0px 10px 0px rgba(0, 0, 0, 0.25);
+  padding: 18px 18px 12px 18px;
+  display: flex;
+  flex-direction: column;
+  margin: 12px 0px 0px 0px;
 }
 
 .map-legend .title {
@@ -889,4 +899,15 @@
 
 .my-loader {
   padding-left: 10px;
+}
+
+.my-year-range {
+  display: flex;
+  flex-direction: row;
+}
+
+.my-divider {
+  width: 1px;
+  background-color: rgba(0, 0, 0, 0.12);
+  margin: 0px 4px 0px 4px;
 }
