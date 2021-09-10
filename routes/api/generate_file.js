@@ -499,4 +499,11 @@ router.get('/download', function(req, res, next) {
     res.download(path_file);
 });
 
+router.get('/databaseLog', function(req, res, next) {
+    const path = "./database/log/previousDatabases.txt";
+    const text = fs.readFileSync(path, 'utf-8');
+    const aux = JSON.parse(text);
+    return res.json(aux)
+});
+
 export default router

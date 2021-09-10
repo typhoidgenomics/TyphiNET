@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 import './App.css';
 import DashboardPage from './pages/dashboard'
-import SwaggerPage from './pages/swagger'
+import AdminPage from './pages/admin'
 // import typhinetLogoImg from './assets/img/logo-typhinet.png';
 
 function App() {
@@ -16,12 +16,12 @@ function App() {
       <div className="App">
         <nav>
           <Link to="/"></Link>
-          <Link to="/swagger"></Link>
+          <Link to="/admin"></Link>
         </nav>
         <Switch>
-          <Route path="/swagger">
+          <Route path="/admin">
             <div>
-              <SwaggerPage/>
+              <AdminPage/>
             </div>
           </Route>
           <Route path="/">

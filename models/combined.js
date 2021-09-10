@@ -318,7 +318,7 @@ const CombinedSchema = mongoose.Schema({
 
 const CombinedModel = mongoose.model('CombinedModel', CombinedSchema);
 
-const path = "./assets/old/previousDatabases.txt";
+const path = "./database/log/previousDatabases.txt";
 axios.get(`${API_ENDPOINT}mongo/download`)
     .then((res) => {
         const text = fs.readFileSync(path, 'utf-8');
@@ -339,6 +339,7 @@ axios.get(`${API_ENDPOINT}mongo/download`)
                 changes: difference
             })
             aux[aux.length - 1].data = data
+            aux[aux.length - 1].updatedAt = currentDate.toISOString()
             fs.writeFileSync(path, JSON.stringify(aux));
             console.log('Changes: true');
         } else {
