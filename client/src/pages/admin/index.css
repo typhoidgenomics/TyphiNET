@@ -1,0 +1,54 @@
+.actions {
+    border: 1px solid white;
+    padding: 2px 6px;
+}
+
+.mainDiv {
+    background-color: #E5E5E5;
+    width: 100vw;
+    height: 100vh;
+    overflow: scroll;
+}
+
+.mainDiv-padding {
+    padding: 32px
+}
+
+.titleActions {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-bottom: 16px;
+    justify-content: space-between;
+}
+
+.title {
+    margin: 0px
+}
+
+.addButton {
+    text-align: end;
+    width: 100%;
+}
+
+.currentData {
+    background-color: black;
+    color: white;
+    padding-top: 16px;
+    padding-left: 16px;
+    width: 120px;
+}
+
+.tableActions {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.editIcon {
+    color: #1FBBD3;
+}
+
+.trashIcon {
+    color: red;
+}

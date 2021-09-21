@@ -1,11 +1,9 @@
 export const getColorForGenotype = (genotype) => {
   switch (genotype) {
     case '0':
-      return "#000000";
     case '0.0.1':
     case '0.0.2':
     case '0.0.3':
-      return "#000000";
     case '0.1.0':
     case '0.1':
     case '0.1.1':
@@ -108,8 +106,9 @@ export const getColorForGenotype = (genotype) => {
       return "#ff0000";
     case '4.3.1.1':
     case '4.3.1.1.EA1':
+      return '#f1b6da';
     case '4.3.1.1.P1':
-      return "#f1b6da";
+      return "black";
     case '4.3.1.2':
     case '4.3.1.2.EA2':
     case '4.3.1.2.EA3':

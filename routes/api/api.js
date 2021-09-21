@@ -4,7 +4,7 @@ import csv from 'csv-parser';
 import fs from 'fs';
 import * as Tools from '../../services/services.js';
 
-router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel', function (req, res, next) {
+router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel/:region', function (req, res, next) {
     let params = req.params;
     let resultsJson = [];
     let read_file = Tools.path_clean_db || Tools.path_clean;
@@ -141,13 +141,16 @@ router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel', function (req,
         })
 })
 
-router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', function (req, res, next) {
+router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel/:region', function (req, res, next) {
     let params = req.params
     let results_json = [];
     let results = [];
     let cotrim = ["dfrA1", "dfrA5", "dfrA7", "dfrA14", "dfrA15", "dfrA17", "dfrA18"];
     let numberGenotypes = {};
     let read_file = Tools.path_clean_db || Tools.path_clean
+
+    let fluoroR = ['3_QRDR + qnrS', '3_QRDR + qnrB', '3_QRDR', '2_QRDR + qnrS', '2_QRDR + qnrB', '1_QRDR + qnrS', '1_QRDR + qnrB']
+    let fluoroI = ['2_QRDR', '1_QRDR', '0_QRDR + qnrS', '0_QRDR + qnrB']
 
     fs.createReadStream(read_file)
         .on('error', (_) => { return res.json([]) })
@@ -237,9 +240,11 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel', fun
 
                     if (params.amr_class == "Fluoroquinolones (CipI-R)") {
                         if (data["dcs_mechanisms"] === "0_QRDR") {
-                            data_to_send["GENE"] = "None"
-                        } else {
-                            data_to_send["GENE"] = data["dcs_mechanisms"]
+                            data_to_send["GENE"] = "None (CipS)"
+                        } else if (fluoroR.includes(data["dcs_mechanisms"])){
+                            data_to_send["GENE"] = data["dcs_mechanisms"] + " (CipR)"
+                        } else if (fluoroI.includes(data["dcs_mechanisms"])) {
+                            data_to_send["GENE"] = data["dcs_mechanisms"] + " (CipI)"
                         }
                         results.push(data_to_send)
                     }
@@ -512,7 +517,7 @@ router.get('/getYearLimits', function (req, res, next) {
         })
 })
 
-router.get('/:filter1/:country/:min_year/:max_year/:travel', function (req, res, next) {
+router.get('/:filter1/:country/:min_year/:max_year/:travel/:region', function (req, res, next) {
     let params = req.params
     let results_json = [];
     let results = [];
@@ -603,6 +608,9 @@ router.get('/:filter1/:country/:min_year/:max_year/:travel', function (req, res,
                 if (data["COUNTRY_ONLY"] !== "-" && data["DATE"] !== "-") {
 
                     if ((data["COUNTRY_ONLY"] == params.country) && (data["DATE"] >= params.min_year && data["DATE"] <= params.max_year) && data_travel) {
+
+                        filter_value["REGION_IN_COUNTRY"] = data["REGION_IN_COUNTRY"]
+
                         if (params.filter1 == "1") {
                             filter_value["blaCTX-M-15_23"] = data["blaCTX-M-15_23"]
                             results.push(filter_value)
@@ -621,6 +629,9 @@ router.get('/:filter1/:country/:min_year/:max_year/:travel', function (req, res,
                             results.push(filter_value)
                         }
                     } else if ((params.country == "all") && (params.min_year <= data["DATE"] && data["DATE"] <= params.max_year) && data_travel == true) {
+
+                        filter_value["REGION_IN_COUNTRY"] = data["REGION_IN_COUNTRY"]
+
                         if (params.filter1 == "1") {
                             filter_value["blaCTX-M-15_23"] = data["blaCTX-M-15_23"]
                             results.push(filter_value)
@@ -656,7 +667,7 @@ router.get('/:filter1/:country/:min_year/:max_year/:travel', function (req, res,
         });
 });
 
-router.get('/:country/:min_year/:max_year/:travel', function (req, res, next) {
+router.get('/:country/:min_year/:max_year/:travel/:region', function (req, res, next) {
     let params = req.params
     let country_unique_genotype = {}
     let results = []

@@ -20,7 +20,7 @@ import { faPlus, faMinus, faCrosshairs, faCamera, faTable, faFilePdf, faInfoCirc
 import download from 'downloadjs';
 import { svgAsPngUri } from 'save-svg-as-png';
 import typhinetLogoImg from '../../assets/img/logo-typhinet.png';
-import typhinetLogoImg2 from '../../assets/img/logo-typhinet-prod.png';
+import typhinetLogoImg2 from '../../assets/img/logo-typhinet.png';
 import geography from '../../assets/world-110m.json'
 import { API_ENDPOINT } from '../../constants';
 import { getColorForGenotype, getColorForAMR, getColorForDrug, getColorForIncType, getColorForTetracyclines } from '../../util/colorHelper';
@@ -74,7 +74,9 @@ const DashboardPage = () => {
   const [timePeriodRange, setTimePeriodRange] = React.useState([1905, 2020]);
   const [actualTimePeriodRange, setActualTimePeriodRange] = React.useState([1905, 2020]);
   const [countriesForFilter, setCountriesForFilter] = React.useState(['All']);
+  const [regionsForFilter, setRegionsForFilter] = React.useState(['All']);
   const [actualCountry, setActualCountry] = useState("All");
+  const [actualRegion, setActualRegion] = useState("All");
   const [years, setYears] = useState([1905, 2020])
 
   const [actualContinent, setActualContinent] = useState("All")
@@ -236,7 +238,7 @@ const DashboardPage = () => {
 
   useEffect(() => {
     const timeOutId = setTimeout(() => {
-      axios.get(`${API_ENDPOINT}filters/all/${actualTimePeriodRange[0]}/${actualTimePeriodRange[1]}/${dataset}`)
+      axios.get(`${API_ENDPOINT}filters/all/${actualTimePeriodRange[0]}/${actualTimePeriodRange[1]}/${dataset}/all`)
         .then((res) => {
           var response = res.data
 
@@ -257,12 +259,16 @@ const DashboardPage = () => {
 
   useEffect(() => {
     const parseDataForGenotypeChart = (data) => {
+      let finalRegions = [];
       var finalPopulationStructureChartData = [];
 
       var genomes = data;
       var genotypes = [];
 
       data.forEach((entry) => {
+        if (!finalRegions.some(e => e === entry['REGION_IN_COUNTRY']) && entry['REGION_IN_COUNTRY'] !== "-" && entry['REGION_IN_COUNTRY'] !== "")
+          finalRegions.push(entry['REGION_IN_COUNTRY'])
+
         if (!genotypes.some(g => g === entry.GENOTYPE)) {
           genotypes.push(entry.GENOTYPE)
         }
@@ -285,6 +291,10 @@ const DashboardPage = () => {
           finalPopulationStructureChartData[yearIndex] = year;
         }
       })
+
+      finalRegions.sort((a, b) => a.localeCompare(b));
+      finalRegions.unshift("All");
+      setRegionsForFilter(finalRegions)
 
       if (totalGenomes.length === 0)
         setTotalGenomes(genomes)
@@ -875,25 +885,24 @@ const DashboardPage = () => {
 
       filter = 2
 
-      let genotypeChartResponse = await axios.get(`${API_ENDPOINT}filters/${filter}/${actualCountry === "All" ? "all" : actualCountry}/${actualTimePeriodRange[0]}/${actualTimePeriodRange[1]}/${dataset}`)
+      let genotypeChartResponse = await axios.get(`${API_ENDPOINT}filters/${filter}/${actualCountry === "All" ? "all" : actualCountry}/${actualTimePeriodRange[0]}/${actualTimePeriodRange[1]}/${dataset}/${actualRegion === "All" ? "all" : actualRegion}`)
       parseDataForGenotypeChart(genotypeChartResponse.data)
 
       if (actualCountry === "All") {
         parseDataForCountryMap(genotypeChartResponse.data)
-      }
-      else {
-        let response = await axios.get(`${API_ENDPOINT}filters/${filter}/all/${actualTimePeriodRange[0]}/${actualTimePeriodRange[1]}/${dataset}`)
+      } else {
+        let response = await axios.get(`${API_ENDPOINT}filters/${filter}/all/${actualTimePeriodRange[0]}/${actualTimePeriodRange[1]}/${dataset}/all`)
         parseDataForCountryMap(response.data)
       }
 
-      let drugTrendsChartResponse = await axios.get(`${API_ENDPOINT}filters/drugTrendsChart/${actualCountry === "All" ? "all" : actualCountry}/${actualTimePeriodRange[0]}/${actualTimePeriodRange[1]}/${dataset}`)
+      let drugTrendsChartResponse = await axios.get(`${API_ENDPOINT}filters/drugTrendsChart/${actualCountry === "All" ? "all" : actualCountry}/${actualTimePeriodRange[0]}/${actualTimePeriodRange[1]}/${dataset}/${actualRegion === "All" ? "all" : actualRegion}`)
       parseDataForDrugTrendsChart(drugTrendsChartResponse.data)
 
       let classChartResponse
       if (amrClassFilter === "Fluoroquinolones (CipI/R)") {
-        classChartResponse = await axios.get(`${API_ENDPOINT}filters/amrClassChart/${actualCountry === "All" ? "all" : actualCountry}/${actualTimePeriodRange[0]}/${actualTimePeriodRange[1]}/${"Fluoroquinolones (CipI-R)"}/${dataset}`)
+        classChartResponse = await axios.get(`${API_ENDPOINT}filters/amrClassChart/${actualCountry === "All" ? "all" : actualCountry}/${actualTimePeriodRange[0]}/${actualTimePeriodRange[1]}/${"Fluoroquinolones (CipI-R)"}/${dataset}/${actualRegion === "All" ? "all" : actualRegion}`)
       } else {
-        classChartResponse = await axios.get(`${API_ENDPOINT}filters/amrClassChart/${actualCountry === "All" ? "all" : actualCountry}/${actualTimePeriodRange[0]}/${actualTimePeriodRange[1]}/${amrClassFilter}/${dataset}`)
+        classChartResponse = await axios.get(`${API_ENDPOINT}filters/amrClassChart/${actualCountry === "All" ? "all" : actualCountry}/${actualTimePeriodRange[0]}/${actualTimePeriodRange[1]}/${amrClassFilter}/${dataset}/${actualRegion === "All" ? "all" : actualRegion}`)
       }
       parseDataForAmrClassChart(classChartResponse.data)
 
@@ -1325,18 +1334,18 @@ const DashboardPage = () => {
         case 'Fluoroquinolones (CipI/R)':
           return (armClassFilterComponent({
             left: 10, fontsize: 14, strokeWidth: 0.5, width: 3, bars: [
-              ['3_QRDR + qnrS', "#6b8e23", "error-3_QRDR + qnrS"],
-              ['3_QRDR + qnrB', "#addd8e", "error-3_QRDR + qnrB"],
-              ['3_QRDR', "#6baed6", "error-3_QRDR"],
-              ['2_QRDR + qnrS', "#4682b4", "error-2_QRDR + qnrS"],
-              ['2_QRDR + qnrB', "#9e9ac8", "error-2_QRDR + qnrB"],
-              ['2_QRDR', "#FFEC78", "error-2_QRDR"],
-              ['1_QRDR + qnrS', "#66c2a4", "error-1_QRDR + qnrS"],
-              ['1_QRDR + qnrB', "#fd8d3c", "error-1_QRDR + qnrB"],
-              ['1_QRDR', "#FBCFE5", "error-1_QRDR"],
-              ['0_QRDR + qnrS', "#8D8D8D", "error-0_QRDR + qnrS"],
-              ['0_QRDR + qnrB', "#4b0082", "error-0_QRDR + qnrB"],
-              ['None', "#B9B9B9", "error-None"]]
+              ['3_QRDR + qnrS (CipR)', "black", "error-3_QRDR + qnrS"],
+              ['3_QRDR + qnrB (CipR)', "#660000", "error-3_QRDR + qnrB"],
+              ['3_QRDR (CipR)', "#cc0000", "error-3_QRDR"],
+              ['2_QRDR + qnrS (CipR)', "#ff6666", "error-2_QRDR + qnrS"],
+              ['2_QRDR + qnrB (CipR)', "#ffcccc", "error-2_QRDR + qnrB"],
+              ['2_QRDR (CipI)', "#ff6600", "error-2_QRDR"],
+              ['1_QRDR + qnrS (CipR)', "#660066", "error-1_QRDR + qnrS"],
+              ['1_QRDR + qnrB (CipR)', "#993399", "error-1_QRDR + qnrB"],
+              ['1_QRDR (CipI)', "#ffcc00", "error-1_QRDR"],
+              ['0_QRDR + qnrS (CipI)', "#009999", "error-0_QRDR + qnrS"],
+              ['0_QRDR + qnrB (CipI)', "#0066cc", "error-0_QRDR + qnrB"],
+              ['None (CipS)', "#B9B9B9", "error-None"]]
           }))
         case 'Chloramphenicol':
           return (armClassFilterComponent({
@@ -1673,12 +1682,12 @@ const DashboardPage = () => {
 
       let typhinetLogo = new Image();
       typhinetLogo.src = typhinetLogoImg2;
-      doc.addImage(typhinetLogo, 'PNG', 115, 0, 80, 34)
+      doc.addImage(typhinetLogo, 'PNG', 115, 10, 80, 34)
       doc.setFontSize(16);
       const paragraph1 = "Nunc ultrices blandit urna mollis porttitor. Vivamus viverra imperdiet justo, vitae fermentum elit accumsan placerat. Maecenas malesuada tincidunt rhoncus. Sed quam mauris, lacinia ac nisi consectetur, tincidunt pulvinar mauris. Proin ultricies quam sit amet dolor faucibus, at aliquam leo porttitor. Morbi at molestie nulla. Mauris porta lacus at augue facilisis volutpat. Suspendisse justo odio, congue nec diam ut, pretium blandit arcu. Duis vel leo euismod, pretium ante sit amet, viverra nibh."
       const paragraph2 = "Quisque in tortor dignissim, mollis augue ac, sollicitudin ex. Quisque quis accumsan erat. Suspendisse sed nulla id ante fringilla sodales. Etiam sed pulvinar ex. Integer rutrum dolor a lobortis semper. Praesent fermentum feugiat justo ultrices facilisis. Etiam non sem ac ante rhoncus pretium eget eget dui. Duis non mollis nisl. Nullam id elementum augue, eget feugiat felis. Integer posuere nec sapien quis scelerisque. Etiam ut tortor dignissim, bibendum metus a, varius lectus. Nunc sollicitudin fringilla enim nec auctor. In vel rhoncus arcu. Morbi sed blandit libero."
-      doc.text(paragraph1, 10, 50, { align: 'justify', maxWidth: 130 })
-      doc.text(paragraph2, 155, 50, { align: 'justify', maxWidth: 130 })
+      doc.text(paragraph1, 10, 60, { align: 'justify', maxWidth: 130 })
+      doc.text(paragraph2, 155, 60, { align: 'justify', maxWidth: 130 })
 
       doc.addPage('a4', 'l')
       doc.setFontSize(25);
@@ -1707,7 +1716,7 @@ const DashboardPage = () => {
           actualMapView = "Multidrug resistant (MDR)"
           break;
         case "XDR":
-          actualMapView = "Extremely drug resistant (XDR)"
+          actualMapView = "Extensively drug resistant (XDR)"
           break;
         case "Azith":
           actualMapView = "Azithromycin resistant"
@@ -1767,7 +1776,7 @@ const DashboardPage = () => {
         }
 
         let subtitleH = 0
-        if (index === 0 || index === 3) {
+        if (index === 0 || index === 1) {
           subtitleH = 3
         }
         subtitleH += 3
@@ -1797,14 +1806,14 @@ const DashboardPage = () => {
         }
 
         doc.text(texts[index], imgWidth + spaceBetween, 23 + subtitleH, { align: 'justify', maxWidth: 50 })
-        if (index === 2) {
-          doc.setFont('helvetica', 'bold');
-          doc.setFontSize(11)
-          doc.text('Shown Drugs:', imgWidth + spaceBetween, 100 + subtitleH, { maxWidth: 50 })
-          doc.setFont('helvetica', 'normal');
-          doc.setFontSize(11)
-          doc.text(drugs.join(', '), imgWidth + spaceBetween, 105 + subtitleH, { align: 'justify', maxWidth: 50 })
-        }
+        // if (index === 2) {
+        //   doc.setFont('helvetica', 'bold');
+        //   doc.setFontSize(11)
+        //   doc.text('Shown Drugs:', imgWidth + spaceBetween, 100 + subtitleH, { maxWidth: 50 })
+        //   doc.setFont('helvetica', 'normal');
+        //   doc.setFontSize(11)
+        //   doc.text(drugs.join(', '), imgWidth + spaceBetween, 105 + subtitleH, { align: 'justify', maxWidth: 50 })
+        // }
 
         doc.setFontSize(14)
         doc.text(names2[index], 23, 10)
@@ -1813,7 +1822,7 @@ const DashboardPage = () => {
         if (index === 0) {
           doc.text("Top Genotypes (up to 5)", 23, 15)
         }
-        if (index === 3) {
+        if (index === 1) {
           doc.text("Top Genotypes (up to 10)", 23, 15)
         }
 
@@ -1955,7 +1964,7 @@ const DashboardPage = () => {
       let typhinetLogoPromise = imgOnLoadPromise(typhinetLogo);
       typhinetLogo.src = typhinetLogoImg2;
       await typhinetLogoPromise;
-      ctx.drawImage(typhinetLogo, 0, 0, 120, 50);
+      ctx.drawImage(typhinetLogo, 10, 10, 120, 50);
 
       ctx.fillStyle = "black"
       ctx.font = "14px Montserrat"
@@ -2022,7 +2031,7 @@ const DashboardPage = () => {
           ctx.font = "bolder 50px Montserrat"
           ctx.fillStyle = "black";
           ctx.textAlign = "center";
-          ctx.fillText("Global Overview of <i>Salmonella</i> Typhi", canvas.width / 2, 80)
+          ctx.fillText("Global Overview of Salmonella Typhi", canvas.width / 2, 80)
           ctx.font = "35px Montserrat"
           ctx.textAlign = "center";
 
@@ -2032,7 +2041,7 @@ const DashboardPage = () => {
               actualMapView = "Multidrug resistant (MDR)"
               break;
             case "XDR":
-              actualMapView = "Extremely drug resistant (XDR)"
+              actualMapView = "Extensively drug resistant (XDR)"
               break;
             case "Azith":
               actualMapView = "Azithromycin resistant"
@@ -2083,7 +2092,7 @@ const DashboardPage = () => {
           let typhinetLogoPromise = imgOnLoadPromise(typhinetLogo);
           typhinetLogo.src = typhinetLogoImg2;
           await typhinetLogoPromise;
-          ctx.drawImage(typhinetLogo, 0, 0, 600, 252);
+          ctx.drawImage(typhinetLogo, 25, 25, 500, 200);
 
           const base64 = canvas.toDataURL();
           stopLoading(index)
@@ -2243,9 +2252,9 @@ const DashboardPage = () => {
 
   const renderMapLegend = () => {
     const mapLegends = [
-      ['MDR', 'Multidrug resistant (MDR)'], ['XDR', 'Extremely drug resistant (XDR)'], ['Azith', 'Azithromycin resistant'],
-      ['CipI', 'Ciprofloxacin insusceptible (CipI)'], ['CipR', 'Ciprofloxacin resistant (CipR)'], ['Dominant Genotype', 'Dominant Genotype'],
-      ['H58 / Non-H58', 'H58 genotype'], ['Sensitive to all drugs', 'Sensitive to all drugs'], ['No. Samples', 'No. Samples']
+      ['MDR', 'Multidrug resistant (MDR)'], ['XDR', 'Extensively drug resistant (XDR)'], ['Azith', 'Azithromycin resistant'],
+      ['CipI', 'Ciprofloxacin insusceptible (CipI)'], ['CipR', 'Ciprofloxacin resistant (CipR)'], ['Sensitive to all drugs', 'Sensitive to all drugs'], 
+      ['Dominant Genotype', 'Dominant Genotype'], ['H58 / Non-H58', 'H58 genotype'], ['No. Samples', 'No. Samples']
     ]
     return (
       <div className="map-legend">
@@ -3164,23 +3173,43 @@ const DashboardPage = () => {
         </div>
         <div className="chart-wrapper">
           <h2 className="showing-data">Now showing: {dataset} data from {actualCountry === "All" ? "all countries" : actualCountry} from {actualTimePeriodRange.toString().substring(0, 4)} to {actualTimePeriodRange.toString().substring(5)}</h2>
-          <FormControl fullWidth className={classes.formControlSelect, classes.formControlSelectCountry}>
-            <label className="select-country-label">Select country (or click map)</label>
-            <Select
-              value={actualCountry}
-              onChange={evt => setActualCountry(evt.target.value)}
-              fullWidth
-              className={classes.selectCountry}
-            >
-              {countriesForFilter.map((country, index) => {
-                return (
-                  <MenuItem key={index} className={classes.selectCountryValues} value={country}>
-                    {country}
-                  </MenuItem>
-                )
-              })}
-            </Select>
-          </FormControl>
+          <div className="country-region-div" style={{flexDirection: dimensions.width > 560 ? 'row' : 'column'}}>
+            <FormControl className={classes.formControlSelect, dimensions.width <= 560 ? classes.formControlSelectCountryRegionH : classes.formControlSelectCountryRegionV}>
+              <label className="select-country-label">Select country (or click map)</label>
+              <Select
+                value={actualCountry}
+                onChange={evt => setActualCountry(evt.target.value)}
+                fullWidth
+                className={classes.selectCountry}
+              >
+                {countriesForFilter.map((country, index) => {
+                  return (
+                    <MenuItem key={index} className={classes.selectCountryValues} value={country}>
+                      {country}
+                    </MenuItem>
+                  )
+                })}
+              </Select>
+            </FormControl>
+            {/* {dimensions.width > 560 && <div className="country-region-spacer"></div>}
+            <FormControl className={classes.formControlSelect, dimensions.width <= 560 ? classes.formControlSelectCountryRegionH : classes.formControlSelectCountryRegionV}>
+              <label className="select-country-label">Select region</label>
+              <Select
+                value={actualRegion}
+                onChange={evt => setActualRegion(evt.target.value)}
+                fullWidth
+                className={classes.selectCountry}
+              >
+                {regionsForFilter.map((region, index) => {
+                  return (
+                    <MenuItem key={index} className={classes.selectCountryValues} value={region}>
+                      {region}
+                    </MenuItem>
+                  )
+                })}
+              </Select>
+            </FormControl> */}
+          </div>
           <div className="chart-wrapper-div">
             <div className="chart-wrapper-div2" style={{ flexDirection: dimensions.width > desktop ? "row" : "column", paddingBottom: dimensions.width > desktop ? 20 : 0 }}>
               <div className="chart-wrapper-div3" style={{ paddingRight: dimensions.width < mobile ? 0 : 10 }}>
@@ -3443,7 +3472,7 @@ const DashboardPage = () => {
                 <FontAwesomeIcon icon={faTable} style={{ marginRight: 8 }} />
                 <span>Download database</span>
               </div>
-              <div style={{ marginTop: dimensions.width > desktop ? 0 : 20, marginLeft: dimensions.width > desktop ? 20 : 0 }} className={`download-sheet-button`} onClick={() => {
+              {/* <div style={{ marginTop: dimensions.width > desktop ? 0 : 20, marginLeft: dimensions.width > desktop ? 20 : 0 }} className={`download-sheet-button`} onClick={() => {
                 if (!captureReportInProgress) {
                   setCaptureReportInProgress(true);
                   capturePicture('', 5, { mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry, amrClassFilter: amrClassFilter, brush: [brushRFWG, brushRDWAG, brushDRT, brushGD], drugs: trendValues });
@@ -3457,7 +3486,7 @@ const DashboardPage = () => {
                     thickness={4}
                     style={{ position: "absolute", top: -5, left: -6, color: "white" }} />
                 </div>)}
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

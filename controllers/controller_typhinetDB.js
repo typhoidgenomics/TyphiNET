@@ -4,6 +4,11 @@ import * as Tools from '../services/services.js';
 import express from 'express';
 import csv from 'csv-parser';
 import fs from 'fs';
+import { dirname } from 'path'
+import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 const router = express.Router()
 
@@ -65,6 +70,34 @@ router.get('/upload', (req, res) => {
             });
             res.json({ "Status": "Sent!" })
         })
+});
+
+router.post('/upload/admin', (req, res) => {
+    console.log('aaa');
+    // const pathLastClean = path.join(__dirname, "../database/report/lastClean.txt")
+    // const text = fs.readFileSync(pathLastClean, 'utf-8');
+    // const aux = JSON.parse(text);
+    // console.log(aux);
+    // fs.createReadStream(Tools.path_clean, { start: 0 })
+    //     .pipe(csv())
+    //     .on('data', (data) => {
+    //         data_to_send.push(data)
+    //     })
+    //     .on('end', () => {
+    //         CombinedModel.countDocuments(function (err, count) {
+    //             if (err) {
+    //                 return res.json({ "Status": `Error! ${err}` });
+    //             }
+    //             if (count > 0) {
+    //                 CombinedModel.collection.drop();
+    //             }
+    //             CombinedModel.insertMany(data_to_send, (error) => {
+    //                 if (error) return res.json({ "Status": `Error! ${error}` });
+    //                 console.log("Success ! Combined data sent to MongoDB!");
+    //             });
+    //         });
+    //         res.json({ "Status": "Sent!" })
+    //     })
 });
 
 router.get('/genomes/:name', (req, res) => {

@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 import * as fs from 'fs';
 import { API_ENDPOINT } from '../constants.js';
 import axios from 'axios';
-import { diff } from 'deep-object-diff';
+import { detailedDiff, diff } from 'deep-object-diff';
 
 const CombinedSchema = mongoose.Schema({
     "NAME": {
@@ -330,9 +330,20 @@ axios.get(`${API_ENDPOINT}mongo/download`)
             data[res.data[i].NAME.toString()] = res.data[i]
         }
 
-        const difference = diff(collection, data)
+        const difference = detailedDiff(collection, data)
+        Object.keys(difference.updated).forEach(element => {
+            for (const key in difference.updated[element]) {
+                difference.updated[element][key] = {
+                    new: difference.updated[element][key],
+                    old: collection[element][key]
+                }
+            }
+        });
+        Object.keys(difference.deleted).forEach(element => {
+            difference.deleted[element] = collection[element]
+        });
 
-        if (Object.keys(difference).length > 0) {
+        if (Object.keys(difference).filter(x => Object.keys(difference[x]).length > 0).length > 0) {
             const currentDate = new Date();
             aux.splice(0, 0, {
                 updatedAt: currentDate.toISOString(),

@@ -1992,7 +1992,7 @@ const DashboardPage = () => {
 
       const base64 = canvas.toDataURL();
       stopLoading(index)
-      download(base64, "TiphyNET - " + names[index - 1] + ".png");
+      download(base64, "TyphiNET - " + names[index - 1] + ".png");
     } else {
       svgAsPngUri(document.getElementById(id), { scale: 4, backgroundColor: "white", width: 1200, left: -200 })
         .then(async (uri) => {

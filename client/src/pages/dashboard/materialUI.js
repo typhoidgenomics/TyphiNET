@@ -16,10 +16,13 @@ const useStyles = makeStyles((theme) => ({
             borderBottomColor: "rgb(31, 187, 211)",
         }
     },
-    formControlSelectCountry: {
+    formControlSelectCountryRegionH: {
+        marginBottom: 16,
+        alignItems: "center"
+    },
+    formControlSelectCountryRegionV: {
         marginBottom: 16,
         alignItems: "center",
-        textAlign: "center"
     },
     select: {
         fontWeight: 600,

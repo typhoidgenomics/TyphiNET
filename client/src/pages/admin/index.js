@@ -1,5 +1,5 @@
+import './index.css';
 import React, { useEffect, useState } from 'react';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -8,96 +8,14 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TablePagination from '@material-ui/core/TablePagination';
 import Paper from '@material-ui/core/Paper';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Button from '@material-ui/core/Button';
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrashAlt, faEdit } from '@fortawesome/free-solid-svg-icons'
+import { useStyles, ColorButton, ColorButton3, ColorButton4, StyledHeaderCell, CustomTableContainer, CustomTableSortLabel } from './materialUI'
 import { API_ENDPOINT } from '../../constants';
 import axios from 'axios';
-
-const useStyles = makeStyles({
-    cellON: {
-        backgroundColor: '#e9f9fc'
-    },
-    off: {},
-    tableID : {
-        position: 'sticky',
-        right: 0
-    },
-    tablePadding: {
-        marginTop: '32px'
-    },
-    stickyCell: {
-        position: 'sticky',
-        right: 0,
-        borderLeft: '1px solid rgba(224, 224, 224, 1)',
-        backgroundColor: 'white'
-    },
-    stickyHeaderCell: {
-        position: 'sticky',
-        right: 0,
-        backgroundColor: 'black',
-        color: 'white',
-        borderLeft: '1px solid rgba(224, 224, 224, 1)'
-    },
-    changesTable: {
-        maxHeight: '400px'
-    },
-  });
-
-const ColorButton = withStyles((theme) => ({
-    root: {
-      backgroundColor: 'grey',
-      color: 'white',
-      '&:hover': {
-        color: 'black',
-      },
-      marginRight: '16px'
-    },
-}))(Button);
-
-const ColorButton2 = withStyles((theme) => ({
-    root: {
-      backgroundColor: '#1FBBD3',
-      color: 'white',
-      '&:hover': {
-        color: 'black',
-      },
-    },
-}))(Button);
-
-const StyledHeaderCell = withStyles((theme) => ({
-    head: {
-      backgroundColor: theme.palette.common.black,
-      color: theme.palette.common.white,
-    },
-    body: {
-      fontSize: 14,
-    },
-  }))(TableCell);
-
-const CustomTableContainer = withStyles((theme) => ({
-    root: {
-        maxHeight: '600px'
-    }
-}))(TableContainer);
-
-const CustomTableSortLabel = withStyles((theme) => ({
-    root: {
-        color: 'white',
-        "&:hover": {
-        color: 'white',
-      },
-      '&$active': {
-        color: 'white',
-      },
-    },
-    active: {},
-    icon: {
-        color: 'inherit !important'
-    },
-}))(TableSortLabel);
 
 function createData(id, date, changes) {
   return { id, date, changes };
@@ -109,12 +27,17 @@ const AdminPage = () => {
 
     const [rows, setRows] = useState([])
     const [data, setData] = useState([])
+    const [originalData, setOriginalData] = useState([])
     const [currentData, setCurrentData] = useState(0)
     const [tableKeys, setTableKeys] = useState([])
     const [page, setPage] = useState(0)
     const [rowsPerPage, setRowsPerPage] = React.useState(50);
     const [order, setOrder] = React.useState('asc');
     const [orderBy, setOrderBy] = React.useState('NAME');
+    const [currentRow, setCurrentRow] = useState({})
+    const [open, setOpen] = React.useState(false);
+    const [open2, setOpen2] = React.useState(false);
+    const [open3, setOpen3] = React.useState(false);
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -156,7 +79,108 @@ const AdminPage = () => {
             : (a, b) => -descendingComparator(a, b, orderBy);
     }
 
-    //STYLES----------------------------------------------------------------------
+    function changeView (id) {
+        setData(originalData)
+        const aux = JSON.parse(JSON.stringify(data))
+        if (id > 0) {
+            for (let index = 0; index < id; index++) {
+                Object.keys(rows[index].changes.added).forEach(element => {
+                    const genome = rows[index].changes.added[element]
+                    const gIndex = aux.findIndex(x => x.NAME === genome.NAME)
+                    aux.splice(gIndex, 1)
+                });
+
+                Object.keys(rows[index].changes.deleted).forEach(element => {
+                    const genome = rows[index].changes.deleted[element]
+                    aux.push(genome)
+                    aux.sort((a, b) => a.NAME < b.NAME ? -1 : 1)
+                });
+
+                Object.keys(rows[index].changes.updated).forEach(element => {
+                    const keys = rows[index].changes.updated[element]
+                    for (const key in keys) {
+                        const genome = aux.filter(x => x.NAME === element)
+                        if (genome.length > 0) {
+                            genome[0][key] = keys[key].old
+                        }
+                    }
+                });
+            }
+            setData(aux)
+        }
+        setCurrentData(id)
+    }
+
+    function betterChanges (changes) {
+        const aux = JSON.parse(JSON.stringify(changes))
+        const added = Object.keys(aux.added).length > 0 ? "[ " + Object.keys(aux.added) + " ]" : ""
+        const deleted = (Object.keys(aux.deleted).length > 0 ? ('[ ' + Object.keys(aux.deleted) + " ]") : "")
+        const updated = (Object.keys(aux.updated).length > 0 ? (JSON.stringify(aux.updated).replaceAll('\"','').replaceAll(',', ', ').replaceAll(':', ': ').replaceAll('{', '{ ').replaceAll('}', ' }')) : "")
+        const text = []
+        if (added !== "") text.push(["ADDED: ", added])
+        if (deleted !== "") text.push(["DELETED: ", deleted])
+        if (updated !== "") text.push(["UPDATED: ", updated])
+        return text
+    }
+
+    function handleDelete (row) {
+        setCurrentRow(row)
+        setOpen(true)
+    }
+
+    function handleEdit (row) {
+        setCurrentRow(row)
+        setOpen2(true)
+    }
+
+    function deleteRow () {
+        const index = data.findIndex(x => x.NAME === currentRow.NAME)
+        data.splice(index, 1)
+        setOpen(false)
+    }
+
+    function editRow () {
+        const row = {}
+        const aux = JSON.parse(JSON.stringify(data))
+
+        const rowIndex = aux.findIndex(x => x.NAME === currentRow.NAME)
+
+        const inputs = document.getElementsByClassName('MuiOutlinedInput-input')
+        Object.values(inputs).forEach(input => {
+            row[input.id] = input.value
+        });
+        
+        aux[rowIndex] = row
+        setData(aux)
+        setOpen2(false)
+    }
+
+    function addRow () {
+        const row = {}
+        const aux = JSON.parse(JSON.stringify(data))
+
+        const inputs = document.getElementsByClassName('MuiOutlinedInput-input')
+        Object.values(inputs).forEach(input => {
+            row[input.id] = input.value
+        });
+        
+        aux.push(row)
+        aux.sort((a, b) => a.NAME < b.NAME ? -1 : 1)
+        setData(aux)
+        setOpen3(false)
+    }
+
+    function resetChanges () {
+        setCurrentData(0)
+        setData(originalData)
+    }
+
+    function uploadChanges () {
+        axios.post(`${API_ENDPOINT}mongo/upload/admin`, {data: JSON.stringify(data)})
+          .then((res) => {
+          })
+    }
+
 
     useEffect(() => {
         axios.get(`${API_ENDPOINT}file/databaseLog`)
@@ -173,6 +197,7 @@ const AdminPage = () => {
             
             let aux2 = Object.values(data[data.length - 1].data)
             setData(aux2)
+            setOriginalData(JSON.parse(JSON.stringify(aux2)))
             setTableKeys(Object.keys(aux2[0]))
           })
       }, [])
@@ -202,7 +227,7 @@ const AdminPage = () => {
                 </StyledHeaderCell>
                 ))}
                 <TableCell className={classes.stickyHeaderCell}>
-                    <div style={{border: '1px solid white', padding: '2px 6px'}}>ACTIONS</div>
+                    <div className="actions">ACTIONS</div>
                 </TableCell>
             </TableRow>
             </TableHead>
@@ -210,9 +235,14 @@ const AdminPage = () => {
     }
 
     return (
-        <div style={{backgroundColor: '#E5E5E5', width: '100vw', height: '100vh', overflow: 'scroll'}}>
-            <div style={{padding: '32px'}}>
-                <h2 style={{margin: '0px', paddingBottom: '16px'}}>MongoDB Admin Page</h2>
+        <div className="mainDiv">
+            <div className="mainDiv-padding">
+                <div className="titleActions">
+                    <h2 className="title">MongoDB Admin Page</h2>
+                    <div>
+                        <ColorButton4 onClick={() => {uploadChanges()}} variant="outlined" size="small" className={classes.uploadButton} >Submit changes</ColorButton4>
+                    </div>
+                </div>
                 <TableContainer component={Paper} className={classes.changesTable}>
                     <Table size="small" aria-label="a dense table">
                         <TableHead>
@@ -228,30 +258,28 @@ const AdminPage = () => {
                                 <TableRow key={row.id + 'changes'} className={row.id === currentData ? classes.cellON : classes.off}>
                                     <TableCell align="left">{row.id}</TableCell>
                                     <TableCell align="left">{row.date}</TableCell>
-                                    <TableCell align="left">{JSON.stringify(row.changes)}</TableCell>
+                                    <TableCell align="left">{betterChanges(row.changes).map((text) => (
+                                        <div key={text[1] + 'change'}>
+                                            {text[0]}
+                                            {text[1]}
+                                        </div>
+                                    ))}</TableCell>
                                     <TableCell align="left">
-                                        <ColorButton variant="outlined" size="small">View</ColorButton>
-                                        <ColorButton2 variant="outlined" size="small">Update</ColorButton2>
+                                        <ColorButton onClick={() => changeView(row.id)} variant="outlined" size="small" className={classes.viewButton} >View</ColorButton>
                                     </TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
                     </Table>
                 </TableContainer>
+                <div className="addButton">
+                    <ColorButton3 onClick={() => {resetChanges()}} variant="outlined" size="small" className={classes.resetButton} >Reset changes</ColorButton3>
+                    <ColorButton3 onClick={() => {setOpen3(true)}} variant="outlined" size="small" className={classes.uploadButton} >Add new entry</ColorButton3>
+                </div>
                 <Paper className={classes.tablePadding}>
-                    <div style={{backgroundColor: 'black', color: 'white', paddingTop: '16px', paddingLeft: '16px', width: '120px'}}><b>DATA ID:</b> {currentData}</div>
+                    <div className="currentData"><b>DATA ID:</b> {currentData}</div>
                     <CustomTableContainer>
                         <Table stickyHeader size="small" aria-label="a dense table">
-                            {/* <TableHead onRequestSort={handleRequestSort}>
-                                <TableRow>
-                                    {tableKeys.map((key) => (
-                                        <StyledHeaderCell key={key + 'key'}>{key}</StyledHeaderCell>
-                                    ))}
-                                    <TableCell className={classes.stickyHeaderCell}>
-                                        <div style={{border: '1px solid white', padding: '2px 6px'}}>ACTIONS</div>
-                                    </TableCell>
-                                </TableRow>
-                            </TableHead> */}
                             <EnhancedTableHead
                                 classes={classes}
                                 order={order}
@@ -262,15 +290,15 @@ const AdminPage = () => {
                                 {stableSort(data, getComparator(order, orderBy)).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
                                     <TableRow key={row.NAME} className={classes.dataRow}>
                                         {Object.values(row).map((cell) => (
-                                            <TableCell align="center">{cell}</TableCell>
+                                            <TableCell key={Math.random() + 'cell'} align="center">{cell}</TableCell>
                                         ))}
                                         <TableCell align="center" className={classes.stickyCell}>
-                                            <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-around'}}>
-                                                <IconButton aria-label="edit" size="small">
-                                                    <FontAwesomeIcon icon={faEdit} style={{color: '#1FBBD3'}} />
+                                            <div className="tableActions">
+                                                <IconButton aria-label="edit" size="small" onClick={() => handleEdit(JSON.parse(JSON.stringify(row)))}>
+                                                    <FontAwesomeIcon icon={faEdit} className="editIcon" />
                                                 </IconButton>
-                                                <IconButton aria-label="delete" size="small">
-                                                    <FontAwesomeIcon icon={faTrashAlt} style={{color: 'red'}}/>
+                                                <IconButton aria-label="delete" size="small" onClick={() => handleDelete(JSON.parse(JSON.stringify(row)))}>
+                                                    <FontAwesomeIcon icon={faTrashAlt} className="trashIcon"/>
                                                 </IconButton>
                                             </div>
                                         </TableCell>
@@ -291,6 +319,69 @@ const AdminPage = () => {
                 </Paper>
             
             </div>
+            <Dialog
+                open={open}
+                onClose={() => setOpen(false)}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                {"Delete"}
+                </DialogTitle>
+                <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                    Are you sure you want to delete {currentRow.NAME} ?
+                </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                <Button onClick={() => setOpen(false)}>Cancel</Button>
+                <Button onClick={() => deleteRow()} autoFocus>
+                    Ok
+                </Button>
+                </DialogActions>
+            </Dialog>
+            <Dialog
+                open={open2}
+                onClose={() => setOpen2(false)}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                    {"Edit"}
+                </DialogTitle>
+                <DialogContent className={classes.dialog}>
+                    {Object.entries(currentRow).map(item => (
+                        <TextField key={item[0] + 'input'} id={item[0]} className={classes.input} label={item[0]} variant="outlined" defaultValue={item[1]} />
+                    ))}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpen2(false)}>Cancel</Button>
+                    <Button onClick={() => editRow()} autoFocus>
+                        Ok
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <Dialog
+                open={open3}
+                onClose={() => setOpen3(false)}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                    {"Add"}
+                </DialogTitle>
+                <DialogContent className={classes.dialog}>
+                    {data.length > 0 && Object.keys(data[0]).map(item => (
+                        <TextField key={item + 'input2'} id={item} className={classes.input2} label={item} variant="outlined" />
+                    ))}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpen3(false)}>Cancel</Button>
+                    <Button onClick={() => addRow()} autoFocus>
+                        Ok
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </div>
     )
 }
