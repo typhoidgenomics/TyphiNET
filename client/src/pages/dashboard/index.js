@@ -577,28 +577,6 @@ const DashboardPage = () => {
       if (!arraysEqual(azithData, worldMapAZITHData))
         setWorldMapAZITHData(azithData)
 
-      cipIData = countData(data, "CipI", "CipIs", "type")
-      cipIData.forEach(country => {
-        country.CipIs.forEach((cipIs, index) => {
-          if (cipIs.type === "CipI") {
-            let percentage = ((cipIs.count / country.total) * 100)
-            if (Math.round(percentage) !== percentage)
-              percentage = percentage.toFixed(2)
-            percentage = parseFloat(percentage);
-            country.percentage = percentage;
-            country.count = cipIs.count;
-          }
-          if (country.percentage === undefined) {
-            country.percentage = parseFloat(0)
-          }
-          if (country.count === undefined) {
-            country.count = 0
-          }
-        })
-      })
-      if (!arraysEqual(cipIData, worldMapCIPIData))
-        setWorldMapCIPIData(cipIData)
-
       cipRData = countData(data, "CipR", "CipRs", "type")
       cipRData.forEach(country => {
         country.CipRs.forEach((cipRs, index) => {
@@ -620,6 +598,55 @@ const DashboardPage = () => {
       })
       if (!arraysEqual(cipRData, worldMapCIPRData))
         setWorldMapCIPRData(cipRData)
+      
+      cipIData = countData(data, "CipI", "CipIs", "type")
+      cipIData.forEach(country => {
+        let aux = country.CipIs.filter(x => x.type === 'CipI')
+        let aux2 = country.CipIs.filter(x => x.type === 'CipR')
+        if (aux.length) {
+          aux[0].percentage = (aux[0].count / country.total) * 100
+          aux = aux[0].count
+        } else {
+          aux = 0
+        }
+        if (aux2.length) {
+          aux2[0].percentage = (aux2[0].count / country.total) * 100
+          aux2 = aux2[0].count
+        } else {
+          aux2 = 0
+        }
+
+        let percentage = ((aux + aux2) / country.total) * 100
+        if (Math.round(percentage) !== percentage)
+          percentage = percentage.toFixed(2)
+        percentage = parseFloat(percentage);
+        country.percentage = percentage;
+        country.count = aux + aux2;
+        if (country.percentage === undefined) {
+          country.percentage = parseFloat(0)
+        }
+        if (country.count === undefined) {
+          country.count = 0
+        }
+        // country.CipIs.forEach((cipIs, index) => {
+        //   if (cipIs.type === "CipI") {
+        //     let percentage = ((cipIs.count / country.total) * 100)
+        //     if (Math.round(percentage) !== percentage)
+        //       percentage = percentage.toFixed(2)
+        //     percentage = parseFloat(percentage);
+        //     country.percentage = percentage;
+        //     country.count = cipIs.count;
+        //   }
+        //   if (country.percentage === undefined) {
+        //     country.percentage = parseFloat(0)
+        //   }
+        //   if (country.count === undefined) {
+        //     country.count = 0
+        //   }
+        // })
+      })
+      if (!arraysEqual(cipIData, worldMapCIPIData))
+        setWorldMapCIPIData(cipIData)
 
       let dataForCountingDrugs = []
       data.forEach(entry => {
@@ -684,6 +711,8 @@ const DashboardPage = () => {
       finalChartData.forEach(element => {
         let keys = Object.keys(element).slice(1)
         let filteredData = keys.filter((key) => { return !(key.includes('No')) && !(key.includes('0_')) })
+        filteredData.push('None')
+        filteredData.push('None (CipS)')
         if (filteredData.length === 0) {
           genotypes.push(element.genotype)
         }
@@ -725,12 +754,17 @@ const DashboardPage = () => {
       finalChartData.forEach((data) => {
         Object.entries(data).forEach((entry) => {
           if (entry[0] === "genotype") {
-            if (actualCountry === "All") {
-              data.total2 = allGenotypes[entry[1].toString()];
+            // if (actualCountry === "All") {
+            //   data.total2 = allGenotypes[entry[1].toString()];
+            // } else {
+            let noneCount = 0
+            if (amrClassFilter === "Fluoroquinolones (CipI/R)") {
+              noneCount = 'None (CipS)' in data ? data['None (CipS)'] : 0
             } else {
-              let noneCount = 'None' in data ? data['None'] : 0
-              data.total2 = data.total + noneCount
+              noneCount = 'None' in data ? data['None'] : 0
             }
+            data.total2 = data.total + noneCount
+            // }
           }
         })
       })
@@ -1722,7 +1756,7 @@ const DashboardPage = () => {
           actualMapView = "Azithromycin resistant"
           break;
         case "CipI":
-          actualMapView = "Ciprofloxacin insusceptible (CipI)"
+          actualMapView = "Ciprofloxacin insusceptible and resistant (CipI/R)"
           break;
         case "CipR":
           actualMapView = "Ciprofloxacin resistant (CipR)"
@@ -1776,7 +1810,7 @@ const DashboardPage = () => {
         }
 
         let subtitleH = 0
-        if (index === 0 || index === 1) {
+        if (index === 0 || index === 1 || index === 2) {
           subtitleH = 3
         }
         subtitleH += 3
@@ -1824,6 +1858,9 @@ const DashboardPage = () => {
         }
         if (index === 1) {
           doc.text("Top Genotypes (up to 10)", 23, 15)
+        }
+        if (index === 2) {
+          doc.text("Data are plotted for years with N ≥ 10 genomes", 23, 15)
         }
 
         // const brushInterval = info.brush[index]
@@ -1881,7 +1918,7 @@ const DashboardPage = () => {
       let filterHeight = 80
       let subtitleHeight = 0
       let drtShownLinesHeight = 0
-      if (id === "RFWG" || id === "RFWAG") {
+      if (id === "RFWG" || id === "RFWAG" || id === "DRT") {
         cHeight += 20
         subtitleHeight = 20
       }
@@ -1935,6 +1972,10 @@ const DashboardPage = () => {
         ctx.fillText(brokenNames[1][1], canvas.width / 2, 30 + logoHeight)
         ctx.font = "12px Montserrat"
         ctx.fillText("Top Genotypes (up to 10)", canvas.width / 2, 32 + logoHeight + subtitleHeight)
+      } else if (id === "DRT") {
+        ctx.fillText(names[index - 1], canvas.width / 2, 10 + logoHeight)
+        ctx.font = "12px Montserrat"
+        ctx.fillText("Data are plotted for years with N ≥ 10 genomes", canvas.width / 2, 32 + logoHeight + subtitleHeight)
       } else {
         ctx.fillText(names[index - 1], canvas.width / 2, 10 + logoHeight)
       }
@@ -2047,7 +2088,7 @@ const DashboardPage = () => {
               actualMapView = "Azithromycin resistant"
               break;
             case "CipI":
-              actualMapView = "Ciprofloxacin insusceptible (CipI)"
+              actualMapView = "Ciprofloxacin insusceptible and resistant (CipI/R)"
               break;
             case "CipR":
               actualMapView = "Ciprofloxacin resistant (CipR)"
@@ -2253,7 +2294,7 @@ const DashboardPage = () => {
   const renderMapLegend = () => {
     const mapLegends = [
       ['MDR', 'Multidrug resistant (MDR)'], ['XDR', 'Extensively drug resistant (XDR)'], ['Azith', 'Azithromycin resistant'],
-      ['CipI', 'Ciprofloxacin insusceptible (CipI)'], ['CipR', 'Ciprofloxacin resistant (CipR)'], ['Sensitive to all drugs', 'Sensitive to all drugs'], 
+      ['CipI', 'Ciprofloxacin insusceptible and resistant (CipI/R)'], ['CipR', 'Ciprofloxacin resistant (CipR)'], ['Sensitive to all drugs', 'Sensitive to all drugs'], 
       ['Dominant Genotype', 'Dominant Genotype'], ['H58 / Non-H58', 'H58 genotype'], ['No. Samples', 'No. Samples']
     ]
     return (
@@ -2717,9 +2758,41 @@ const DashboardPage = () => {
                                 case 'CipI':
                                   if (country !== undefined && country.CipIs.length > 0) {
                                     if (country.total >= 20 && country.count > 0) {
+                                      let cipI = country.CipIs.filter(x => x.type === 'CipI')
+                                      if (cipI.length) {
+                                        cipI = cipI[0]
+                                        if (Math.round(cipI.percentage) !== cipI.percentage)
+                                          cipI.percentage = cipI.percentage.toFixed(2)
+                                        cipI.percentage = parseFloat(cipI.percentage);
+                                      } else {
+                                        cipI = {
+                                          count: 0,
+                                          percentage: 0
+                                        }
+                                      }
+                                      let cipR = country.CipIs.filter(x => x.type === 'CipR')
+                                      if (cipR.length) {
+                                        cipR = cipR[0]
+                                        if (Math.round(cipR.percentage) !== cipR.percentage)
+                                          cipR.percentage = cipR.percentage.toFixed(2)
+                                        cipR.percentage = parseFloat(cipR.percentage);
+                                      } else {
+                                        cipR = {
+                                          count: 0,
+                                          percentage: 0
+                                        }
+                                      }
                                       setTooltipContent({
                                         name: NAME,
                                         cipIInfo: {
+                                          count: cipI.count,
+                                          percentage: cipI.percentage,
+                                        },
+                                        cipRInfo2: {
+                                          count: cipR.count,
+                                          percentage: cipR.percentage,
+                                        },
+                                        cipIRInfo: {
                                           count: country.count,
                                           percentage: country.percentage,
                                         }
@@ -3109,6 +3182,8 @@ const DashboardPage = () => {
                   {tooltipContent.cipIInfo && (
                     <div className="additional-info">
                       <span>CipI: {tooltipContent.cipIInfo.count} ({tooltipContent.cipIInfo.percentage}%)</span>
+                      <span>CipR: {tooltipContent.cipRInfo2.count} ({tooltipContent.cipRInfo2.percentage}%)</span>
+                      <span>CipI/R: {tooltipContent.cipIRInfo.count} ({tooltipContent.cipIRInfo.percentage}%)</span>
                     </div>
                   )}
                   {tooltipContent.cipRInfo && (
@@ -3338,7 +3413,8 @@ const DashboardPage = () => {
                       )}
                     </div>
                   </div>
-                  {dimensions.width > desktop && (<span className="chart-title chart-wrapper-DRT-space" ></span>)}
+                  <span className="chart-title chart-wrapper-RFWA-top">Data are plotted for years with N ≥ 10 genomes</span>
+                  {dimensions.width > desktop && (<span className="chart-title" ></span>)}
                   <div className="chart-wrapper-DRT-view" style={{ width: dimensions.width > 790 ? "71%" : '260px' }}>
                     {/* <InputLabel style={{fontSize: 12, fontWeight: 500, fontFamily: "Montserrat" }}>Drugs view</InputLabel> */}
                     <div className="chart-wrapper-DRT-view-drugs">
