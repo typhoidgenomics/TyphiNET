@@ -45,8 +45,9 @@ router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel/:region', functi
                 //Check if country and date are not empty
                 const checkCountry = data["COUNTRY_ONLY"] !== "-"
                 const checkDate = data["DATE"] !== "-"
+                const checkRegion = params.region === "all" ? true : data["REGION_IN_COUNTRY"] === params.region ? true : false
 
-                if (checkCountry && checkDate && data["DATE"] >= params.minYear && data["DATE"] <= params.maxYear && data_travel) {
+                if (checkCountry && checkDate && data["DATE"] >= params.minYear && data["DATE"] <= params.maxYear && data_travel && checkRegion) {
                     let drugs = []
 
                     if (params.country === "all" || (params.country === data["COUNTRY_ONLY"])) {
@@ -188,8 +189,9 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel/:regi
                 //Check if country and date are not empty
                 const checkCountry = data["COUNTRY_ONLY"] !== "-"
                 const checkDate = data["DATE"] !== "-"
+                const checkRegion = params.region === "all" ? true : data["REGION_IN_COUNTRY"] === params.region ? true : false
 
-                if (checkCountry && checkDate && (data["COUNTRY_ONLY"] == country) && (params.min_year <= data["DATE"] && data["DATE"] <= params.max_year) && data_travel) {
+                if (checkCountry && checkDate && (data["COUNTRY_ONLY"] == country) && (params.min_year <= data["DATE"] && data["DATE"] <= params.max_year) && data_travel && checkRegion) {
                     data_to_send = {
                         "GENOTYPE": data["GENOTYPE"]
                     }
@@ -568,6 +570,8 @@ router.get('/:filter1/:country/:min_year/:max_year/:travel/:region', function (r
                 filter_value["CipI"] = data["cip_pred_pheno"]
                 filter_value["STAD"] = data["amr_category"]
 
+                const checkRegion = params.region === "all" ? true : data["REGION_IN_COUNTRY"] === params.region ? true : false
+
                 /* DRUGS */
                 let drugs = []
 
@@ -607,7 +611,7 @@ router.get('/:filter1/:country/:min_year/:max_year/:travel/:region', function (r
                 //Check if country and date are not empty
                 if (data["COUNTRY_ONLY"] !== "-" && data["DATE"] !== "-") {
 
-                    if ((data["COUNTRY_ONLY"] == params.country) && (data["DATE"] >= params.min_year && data["DATE"] <= params.max_year) && data_travel) {
+                    if ((data["COUNTRY_ONLY"] == params.country) && (data["DATE"] >= params.min_year && data["DATE"] <= params.max_year) && data_travel && checkRegion) {
 
                         filter_value["REGION_IN_COUNTRY"] = data["REGION_IN_COUNTRY"]
 
@@ -628,7 +632,7 @@ router.get('/:filter1/:country/:min_year/:max_year/:travel/:region', function (r
                         } else {
                             results.push(filter_value)
                         }
-                    } else if ((params.country == "all") && (params.min_year <= data["DATE"] && data["DATE"] <= params.max_year) && data_travel == true) {
+                    } else if ((params.country == "all") && (params.min_year <= data["DATE"] && data["DATE"] <= params.max_year) && data_travel == true && checkRegion) {
 
                         filter_value["REGION_IN_COUNTRY"] = data["REGION_IN_COUNTRY"]
 
@@ -699,6 +703,8 @@ router.get('/:country/:min_year/:max_year/:travel/:region', function (req, res, 
                     }
                 }
 
+                const checkRegion = params.region === "all" ? true : data["REGION_IN_COUNTRY"] === params.region ? true : false
+
                 //Check if country and date are not empty
                 if (data["COUNTRY_ONLY"] !== "-" && data["DATE"] !== "-") {
 
@@ -716,12 +722,13 @@ router.get('/:country/:min_year/:max_year/:travel/:region', function (req, res, 
                                 "AzithR": 0,
                                 "CipI": 0,
                                 "CipR": 0,
+                                "CipI_R": 0,
                                 "STAD": 0,
                                 "TOTAL_OCCURRENCE": 0
                             }
                         }
 
-                        if ((data["COUNTRY_ONLY"] == params.country) && (params.min_year <= data["DATE"] && data["DATE"] <= params.max_year) && data_travel) {
+                        if ((data["COUNTRY_ONLY"] == params.country) && (params.min_year <= data["DATE"] && data["DATE"] <= params.max_year) && data_travel && checkRegion) {
                             if (country_unique_genotype[params.country]["GENOTYPES"]["GENOTYPES_LIST"].indexOf(data["GENOTYPE"]) == -1) {
                                 country_unique_genotype[params.country]["GENOTYPES"]["GENOTYPES_LIST"].push(data["GENOTYPE"])
                             }
@@ -759,12 +766,13 @@ router.get('/:country/:min_year/:max_year/:travel/:region', function (req, res, 
                                 "AzithR": 0,
                                 "CipI": 0,
                                 "CipR": 0,
+                                "CipI_R": 0,
                                 "STAD": 0,
                                 "TOTAL_OCCURRENCE": 0
                             }
                         }
 
-                        if ((data["DATE"] >= params.min_year && data["DATE"] <= params.max_year) && data_travel) {
+                        if ((data["DATE"] >= params.min_year && data["DATE"] <= params.max_year) && data_travel && checkRegion) {
                             country_unique_genotype[data["COUNTRY_ONLY"]]["TOTAL_OCCURRENCE"]++
                             if (country_unique_genotype[data["COUNTRY_ONLY"]]["GENOTYPES"]["GENOTYPES_LIST"].indexOf(data["GENOTYPE"]) == -1) {
                                 country_unique_genotype[data["COUNTRY_ONLY"]]["GENOTYPES"]["GENOTYPES_LIST"].push(data["GENOTYPE"])
@@ -787,9 +795,11 @@ router.get('/:country/:min_year/:max_year/:travel/:region', function (req, res, 
                             }
                             if (data["cip_pred_pheno"] == "CipI") {
                                 country_unique_genotype[data["COUNTRY_ONLY"]]["CipI"]++
+                                country_unique_genotype[data["COUNTRY_ONLY"]]["CipI_R"]++
                             }
                             if (data["cip_pred_pheno"] == "CipR") {
                                 country_unique_genotype[data["COUNTRY_ONLY"]]["CipR"]++
+                                country_unique_genotype[data["COUNTRY_ONLY"]]["CipI_R"]++
                             }
                             if (data["amr_category"] == "No AMR detected") {
                                 country_unique_genotype[data["COUNTRY_ONLY"]]["STAD"]++
@@ -808,6 +818,7 @@ router.get('/:country/:min_year/:max_year/:travel/:region', function (req, res, 
                 country_unique_genotype[data]["AzithR"] = (country_unique_genotype[data]["AzithR"] / country_unique_genotype[data]["TOTAL_OCCURRENCE"]) * 100
                 country_unique_genotype[data]["CipI"] = (country_unique_genotype[data]["CipI"] / country_unique_genotype[data]["TOTAL_OCCURRENCE"]) * 100
                 country_unique_genotype[data]["CipR"] = (country_unique_genotype[data]["CipR"] / country_unique_genotype[data]["TOTAL_OCCURRENCE"]) * 100
+                country_unique_genotype[data]["CipI_R"] = (country_unique_genotype[data]["CipI_R"] / country_unique_genotype[data]["TOTAL_OCCURRENCE"]) * 100
                 country_unique_genotype[data]["STAD"] = (country_unique_genotype[data]["STAD"] / country_unique_genotype[data]["TOTAL_OCCURRENCE"]) * 100
                 delete country_unique_genotype[data].TOTAL_OCCURRENCE
             }

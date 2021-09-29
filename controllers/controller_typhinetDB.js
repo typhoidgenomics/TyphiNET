@@ -48,6 +48,31 @@ router.get('/download', (req, res) => {
     })
 })
 
+function lzw_decode(s) {
+    var dict = {};
+    var data = (s + "").split("");
+    var currChar = data[0];
+    var oldPhrase = currChar;
+    var out = [currChar];
+    var code = 256;
+    var phrase;
+    for (var i=1; i<data.length; i++) {
+        var currCode = data[i].charCodeAt(0);
+        if (currCode < 256) {
+            phrase = data[i];
+        }
+        else {
+           phrase = dict[currCode] ? dict[currCode] : (oldPhrase + currChar);
+        }
+        out.push(phrase);
+        currChar = phrase.charAt(0);
+        dict[code] = oldPhrase + currChar;
+        code++;
+        oldPhrase = phrase;
+    }
+    return out.join("");
+}
+
 router.get('/upload', (req, res) => {
     let data_to_send = []
     fs.createReadStream(Tools.path_clean, { start: 0 })
@@ -73,31 +98,23 @@ router.get('/upload', (req, res) => {
 });
 
 router.post('/upload/admin', (req, res) => {
-    console.log('aaa');
-    // const pathLastClean = path.join(__dirname, "../database/report/lastClean.txt")
-    // const text = fs.readFileSync(pathLastClean, 'utf-8');
-    // const aux = JSON.parse(text);
-    // console.log(aux);
-    // fs.createReadStream(Tools.path_clean, { start: 0 })
-    //     .pipe(csv())
-    //     .on('data', (data) => {
-    //         data_to_send.push(data)
-    //     })
-    //     .on('end', () => {
-    //         CombinedModel.countDocuments(function (err, count) {
-    //             if (err) {
-    //                 return res.json({ "Status": `Error! ${err}` });
-    //             }
-    //             if (count > 0) {
-    //                 CombinedModel.collection.drop();
-    //             }
-    //             CombinedModel.insertMany(data_to_send, (error) => {
-    //                 if (error) return res.json({ "Status": `Error! ${error}` });
-    //                 console.log("Success ! Combined data sent to MongoDB!");
-    //             });
-    //         });
-    //         res.json({ "Status": "Sent!" })
-    //     })
+
+    const path = "./database/report/lastClean.txt";
+
+    if (req.body.current === 1) {
+        console.log('Reset');
+        fs.writeFileSync(path, JSON.stringify({data: []}));
+    }
+    
+    const text = fs.readFileSync(path, 'utf-8');
+    const aux = JSON.parse(text);
+    console.log(aux);
+    aux.data.concat(lzw_decode(req.body.data));
+    fs.writeFileSync(path, JSON.stringify(aux));
+
+    // if (req.body.current === req.body.parts) {
+    //     console.log(aux);
+    // }
 });
 
 router.get('/genomes/:name', (req, res) => {

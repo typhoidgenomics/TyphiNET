@@ -24,6 +24,7 @@
         "@testing-library/react": "^12.0.0",
         "@testing-library/user-event": "^13.1.9",
         "axios": "^0.21.1",
+        "body-parser": "^1.19.0",
         "chokidar": "^3.5.2",
         "cookie-parser": "~1.4.5",
         "csv-parser": "^3.0.0",

@@ -19,8 +19,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faMinus, faCrosshairs, faCamera, faTable, faFilePdf, faInfoCircle, faUndoAlt } from '@fortawesome/free-solid-svg-icons'
 import download from 'downloadjs';
 import { svgAsPngUri } from 'save-svg-as-png';
-import typhinetLogoImg from '../../assets/img/logo-typhinet.png';
-import typhinetLogoImg2 from '../../assets/img/logo-typhinet.png';
+import typhinetLogoImg from '../../assets/img/logo-typhinet3.png';
+import typhinetLogoImg2 from '../../assets/img/logo-typhinet3.png';
 import geography from '../../assets/world-110m.json'
 import { API_ENDPOINT } from '../../constants';
 import { getColorForGenotype, getColorForAMR, getColorForDrug, getColorForIncType, getColorForTetracyclines } from '../../util/colorHelper';
@@ -944,7 +944,7 @@ const DashboardPage = () => {
 
     }, 500);
     return () => clearTimeout(timeOutId);
-  }, [populationStructureFilter, actualTimePeriodRange, actualCountry, dataset, amrClassFilter, allGenotypes]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [populationStructureFilter, actualTimePeriodRange, actualCountry, dataset, amrClassFilter, allGenotypes, actualRegion]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function arraysEqual(a1, a2) {
     return JSON.stringify(a1) === JSON.stringify(a2);
@@ -1662,7 +1662,7 @@ const DashboardPage = () => {
       }
     }
     setPlotDrugsAndGenotypesChart(plotDrugsAndGenotypesChart)
-  }, [actualCountry, drtClassesForFilter, dimensions, drugsAndGenotypesChartData, tooltip, mobile, RFWGFilter])
+  }, [actualCountry, drtClassesForFilter, dimensions, drugsAndGenotypesChartData, tooltip, mobile, RFWGFilter, actualRegion])
 
   function imgOnLoadPromise(obj) {
     return new Promise((resolve, reject) => {
@@ -1777,15 +1777,15 @@ const DashboardPage = () => {
 
       if (info.mapView === 'Dominant Genotype') {
         var img = new Image()
-        img.src = "legends/MV_DG.png"
+        img.src = "legends/MapView_DominantGenotype.png"
         doc.addImage(img, 'PNG', 90, 168.5, 150, 38)
       } else if (info.mapView === 'No. Samples') {
         var img2 = new Image()
-        img2.src = "legends/MV_NS.png"
+        img2.src = "legends/MapView_NoSamples.png"
         doc.addImage(img2, 'PNG', 250, 165, 40, 40)
       } else {
         var img3 = new Image()
-        img3.src = "legends/MV_outros.png"
+        img3.src = "legends/MapView_Others.png"
         doc.addImage(img3, 'PNG', 250, 165, 40, 40)
       }
 
@@ -1881,7 +1881,7 @@ const DashboardPage = () => {
           doc.addImage(img4, 'PNG', 22, 97 + subtitleH)
         } else if (index === 3) {
           var img5 = new Image()
-          img5.src = "legends/GD.png"
+          img5.src = "legends/Genotype_Distribution.png"
           doc.addImage(img5, 'PNG', 22, 105 + subtitleH)
         }
         if (index < ids.length - 1) {
@@ -1913,7 +1913,7 @@ const DashboardPage = () => {
         });
 
       let cHeight = 20
-      let logoHeight = 50
+      let logoHeight = 100
       let legendHeight = 0
       let filterHeight = 80
       let subtitleHeight = 0
@@ -1928,11 +1928,11 @@ const DashboardPage = () => {
       }
 
       if (id === "GD") legendHeight = 40
-      if (id === "DRT") {
-        drtShownLinesHeight = 50
-        if (info.drugs.length > 4) drtShownLinesHeight += 22
-        if (info.drugs.length > 8) drtShownLinesHeight += 22
-      }
+      // if (id === "DRT") {
+      //   drtShownLinesHeight = 50
+      //   if (info.drugs.length > 4) drtShownLinesHeight += 22
+      //   if (info.drugs.length > 8) drtShownLinesHeight += 22
+      // }
 
       let imgWidth = graphImg.width
       if (id === "RFWAG") {
@@ -1944,7 +1944,7 @@ const DashboardPage = () => {
           imgWidth += 195
         }
         else if (info.amrClassFilter === "Fluoroquinolones (CipI/R)") {
-          imgWidth += 200
+          imgWidth += 250
         }
       } else if (id === "GD") {
         imgWidth += 370
@@ -1994,7 +1994,7 @@ const DashboardPage = () => {
           }
 
         } else {
-          legendImg.src = "legends/GD2.png";
+          legendImg.src = "legends/Genotype_Distribution_2.png";
         }
         await legendImgPromise;
 
@@ -2005,44 +2005,44 @@ const DashboardPage = () => {
       let typhinetLogoPromise = imgOnLoadPromise(typhinetLogo);
       typhinetLogo.src = typhinetLogoImg2;
       await typhinetLogoPromise;
-      ctx.drawImage(typhinetLogo, 10, 10, 120, 50);
+      ctx.drawImage(typhinetLogo, 10, 10, 170, 55);
 
       ctx.fillStyle = "black"
       ctx.font = "14px Montserrat"
       ctx.textAlign = "start"
-      ctx.fillText("Dataset: " + info.dataset, 10, canvas.height - 90 - drtShownLinesHeight)
-      ctx.fillText("Time period: " + info.actualTimePeriodRange[0] + " to " + info.actualTimePeriodRange[1], 10, canvas.height - 68 - drtShownLinesHeight)
-      ctx.fillText("Country: " + info.country, 10, canvas.height - 46 - drtShownLinesHeight)
+      ctx.fillText("Dataset: " + info.dataset, 10, canvas.height - 65 - drtShownLinesHeight)
+      ctx.fillText("Time period: " + info.actualTimePeriodRange[0] + " to " + info.actualTimePeriodRange[1], 10, canvas.height - 43 - drtShownLinesHeight)
+      ctx.fillText("Country: " + info.country, 10, canvas.height - 21 - drtShownLinesHeight)
       // ctx.fillText("Interval: " + info.interval[0] + " to " + info.interval[1], 10, canvas.height - 24 - drtShownLinesHeight)
-      if (id === "DRT") {
-        let drugs = []
-        let drugs2 = []
-        let drugs3 = []
-        for (let i = 0; i < info.drugs.length; i++) {
-          if (i < 4) {
-            drugs.push(info.drugs[i].value)
-          } else if (i < 8) {
-            drugs2.push(info.drugs[i].value)
-          } else {
-            drugs3.push(info.drugs[i].value)
-          }
-        }
-        if (drugs.length === 0) drugs = ['None']
+      // if (id === "DRT") {
+      //   let drugs = []
+      //   let drugs2 = []
+      //   let drugs3 = []
+      //   for (let i = 0; i < info.drugs.length; i++) {
+      //     if (i < 4) {
+      //       drugs.push(info.drugs[i].value)
+      //     } else if (i < 8) {
+      //       drugs2.push(info.drugs[i].value)
+      //     } else {
+      //       drugs3.push(info.drugs[i].value)
+      //     }
+      //   }
+      //   if (drugs.length === 0) drugs = ['None']
 
-        ctx.font = "bold 14px Montserrat"
-        ctx.fillText("Shown Drugs:", 10, canvas.height + 8 - drtShownLinesHeight, 400)
-        ctx.font = "14px Montserrat"
+      //   ctx.font = "bold 14px Montserrat"
+      //   ctx.fillText("Shown Drugs:", 10, canvas.height + 8 - drtShownLinesHeight, 400)
+      //   ctx.font = "14px Montserrat"
 
-        let aux = info.drugs.length > 4
-        let aux2 = info.drugs.length > 8
-        ctx.fillText(drugs.join(", ") + (aux ? ',' : ''), 10, canvas.height - (aux2 ? 64 : aux ? 42 : 20), canvas.width - 20)
-        ctx.fillText(drugs2.join(", ") + (aux2 ? ',' : ''), 10, canvas.height - (aux2 ? 42 : 20), canvas.width - 20)
-        ctx.fillText(drugs3.join(", "), 10, canvas.height - 20, canvas.width - 20)
-      }
+      //   let aux = info.drugs.length > 4
+      //   let aux2 = info.drugs.length > 8
+      //   ctx.fillText(drugs.join(", ") + (aux ? ',' : ''), 10, canvas.height - (aux2 ? 64 : aux ? 42 : 20), canvas.width - 20)
+      //   ctx.fillText(drugs2.join(", ") + (aux2 ? ',' : ''), 10, canvas.height - (aux2 ? 42 : 20), canvas.width - 20)
+      //   ctx.fillText(drugs3.join(", "), 10, canvas.height - 20, canvas.width - 20)
+      // }
 
       const base64 = canvas.toDataURL();
       stopLoading(index)
-      download(base64, "TiphyNET - " + names[index - 1] + ".png");
+      download(base64, "TyphiNET - " + names[index - 1] + ".png");
     } else {
       svgAsPngUri(document.getElementById(id), { scale: 4, backgroundColor: "white", width: 1200, left: -200 })
         .then(async (uri) => {
@@ -2111,18 +2111,18 @@ const DashboardPage = () => {
           let h
           let w
           if (info.mapView === 'Dominant Genotype') {
-            legendImg.src = "legends/MV_DG.png";
+            legendImg.src = "legends/MapView_DominantGenotype.png";
             await legendImgoPromise;
             let centerWidth = (canvas.width - 1731) / 2
             ctx.drawImage(legendImg, centerWidth, canvas.height - legendHeight - 20, 1731, 420);
           } else if (info.mapView === 'No. Samples') {
-            legendImg.src = "legends/MV_NS.png";
+            legendImg.src = "legends/MapView_NoSamples.png";
             await legendImgoPromise;
             h = 350
             w = 310
             ctx.drawImage(legendImg, canvas.width - w - 15, canvas.height - h - 10, w, h);
           } else {
-            legendImg.src = "legends/MV_outros.png";
+            legendImg.src = "legends/MapView_Others.png";
             await legendImgoPromise;
             h = 350
             w = 280
@@ -2599,6 +2599,7 @@ const DashboardPage = () => {
                                         DCS: Math.round(d.DCS) !== d.DCS ? d.DCS.toFixed(2) : d.DCS,
                                         CipI: Math.round(d.CipI) !== d.CipI ? d.CipI.toFixed(2) : d.CipI,
                                         CipR: Math.round(d.CipR) !== d.CipR ? d.CipR.toFixed(2) : d.CipR,
+                                        CipI_R: Math.round(d.CipI_R) !== d.CipI_R ? d.CipI_R.toFixed(2) : d.CipI_R,
                                         AzithR: Math.round(d.AzithR) !== d.AzithR ? d.AzithR.toFixed(2) : d.AzithR,
                                         STAD: Math.round(d.STAD) !== d.STAD ? d.STAD.toFixed(2) : d.STAD
                                       }
@@ -2926,7 +2927,7 @@ const DashboardPage = () => {
                             className={classes.selectYear}
                             fullWidth
                           >
-                            {years.map((n) => {
+                            {years?.filter(x => x < actualTimePeriodRange[1]).map((n) => {
                               return (
                                 <MenuItem className={classes.select} value={n}>
                                   {n}
@@ -2946,7 +2947,7 @@ const DashboardPage = () => {
                             className={classes.selectYear}
                             fullWidth
                           >
-                            {years.map((n) => {
+                            {years?.filter(x => x > actualTimePeriodRange[0]).map((n) => {
                               return (
                                 <MenuItem className={classes.select} value={n}>
                                   {n}
@@ -3125,6 +3126,7 @@ const DashboardPage = () => {
                       <span>AzithR: {tooltipContent.additionalInfo.AzithR}%</span>
                       <span>CipI: {tooltipContent.additionalInfo.CipI}%</span>
                       <span>CipR: {tooltipContent.additionalInfo.CipR}%</span>
+                      <span>CipI/R: {tooltipContent.additionalInfo.CipI_R}%</span>
                       <span>Susceptible: {tooltipContent.additionalInfo.STAD}%</span>
                     </div>
                   )}
@@ -3181,8 +3183,8 @@ const DashboardPage = () => {
                   )}
                   {tooltipContent.cipIInfo && (
                     <div className="additional-info">
-                      <span>CipI: {tooltipContent.cipIInfo.count} ({tooltipContent.cipIInfo.percentage}%)</span>
-                      <span>CipR: {tooltipContent.cipRInfo2.count} ({tooltipContent.cipRInfo2.percentage}%)</span>
+                      {/* <span>CipI: {tooltipContent.cipIInfo.count} ({tooltipContent.cipIInfo.percentage}%)</span>
+                      <span>CipR: {tooltipContent.cipRInfo2.count} ({tooltipContent.cipRInfo2.percentage}%)</span> */}
                       <span>CipI/R: {tooltipContent.cipIRInfo.count} ({tooltipContent.cipIRInfo.percentage}%)</span>
                     </div>
                   )}
@@ -3623,6 +3625,7 @@ const DashboardPage = () => {
                 setActualTimePeriodRange(timePeriodRange);
                 setControlMapPosition({ coordinates: [0, 0], zoom: 1 });
                 setActualCountry('All');
+                setActualRegion('All');
                 setPopulationStructureFilter(1);
                 setAmrClassFilter(amrClassesForFilter[5]);
                 setRDWAGDataviewFilter(2)

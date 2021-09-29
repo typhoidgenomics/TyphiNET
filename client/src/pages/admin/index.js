@@ -175,10 +175,57 @@ const AdminPage = () => {
         setData(originalData)
     }
 
+    function lzw_encode(s) {
+        var dict = {};
+        var data = (s + "").split("");
+        var out = [];
+        var currChar;
+        var phrase = data[0];
+        var code = 256;
+        for (var i=1; i<data.length; i++) {
+            currChar=data[i];
+            if (dict[phrase + currChar] != null) {
+                phrase += currChar;
+            }
+            else {
+                out.push(phrase.length > 1 ? dict[phrase] : phrase.charCodeAt(0));
+                dict[phrase + currChar] = code;
+                code++;
+                phrase=currChar;
+            }
+        }
+        out.push(phrase.length > 1 ? dict[phrase] : phrase.charCodeAt(0));
+        for (var i=0; i<out.length; i++) {
+            out[i] = String.fromCharCode(out[i]);
+        }
+        return out.join("");
+    }
+
     function uploadChanges () {
-        axios.post(`${API_ENDPOINT}mongo/upload/admin`, {data: JSON.stringify(data)})
-          .then((res) => {
-          })
+        const times = Math.ceil(data.length / 1000)
+        const parts = []
+        for (let index = 0; index < times; index++) {
+            if (times === 0) {
+                break
+            }
+            if (times === index - 1) {
+                if (times === 1) {
+                    parts.push([data])
+                } else {
+                    parts.push([data.slice((times - 1) * 1000)])
+                }
+            } else {
+                parts.push([data.slice(index * 1000, (index * 1000) + 1000)])
+            }
+            axios.post(`${API_ENDPOINT}mongo/upload/admin`, {
+                data: lzw_encode(JSON.stringify(parts[parts.length - 1])),
+                parts: times,
+                current: index + 1
+            })
+              .then((res) => {
+              })
+        }
+        
     }
 
 

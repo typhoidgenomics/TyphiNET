@@ -8,6 +8,7 @@ import emailRouter from './routes/api/email.js'
 import path, { dirname } from 'path'
 import cookieParser from 'cookie-parser';
 import { fileURLToPath } from 'url'
+import bodyParser from 'body-parser'
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -18,6 +19,7 @@ dotenv.config()
 connectDB()
 
 const app = express();
+app.use(bodyParser.json({limit: '500kb'}))
 
 const PORT = process.env.PORT || 8080;
 
