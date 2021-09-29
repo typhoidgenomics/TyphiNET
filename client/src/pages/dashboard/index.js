@@ -3268,7 +3268,7 @@ const DashboardPage = () => {
                 })}
               </Select>
             </FormControl>
-            {/* {dimensions.width > 560 && <div className="country-region-spacer"></div>}
+            {dimensions.width > 560 && <div className="country-region-spacer"></div>}
             <FormControl className={classes.formControlSelect, dimensions.width <= 560 ? classes.formControlSelectCountryRegionH : classes.formControlSelectCountryRegionV}>
               <label className="select-country-label">Select region</label>
               <Select
@@ -3285,7 +3285,7 @@ const DashboardPage = () => {
                   )
                 })}
               </Select>
-            </FormControl> */}
+            </FormControl>
           </div>
           <div className="chart-wrapper-div">
             <div className="chart-wrapper-div2" style={{ flexDirection: dimensions.width > desktop ? "row" : "column", paddingBottom: dimensions.width > desktop ? 20 : 0 }}>
@@ -3550,7 +3550,7 @@ const DashboardPage = () => {
                 <FontAwesomeIcon icon={faTable} style={{ marginRight: 8 }} />
                 <span>Download database</span>
               </div>
-              {/* <div style={{ marginTop: dimensions.width > desktop ? 0 : 20, marginLeft: dimensions.width > desktop ? 20 : 0 }} className={`download-sheet-button`} onClick={() => {
+              <div style={{ marginTop: dimensions.width > desktop ? 0 : 20, marginLeft: dimensions.width > desktop ? 20 : 0 }} className={`download-sheet-button`} onClick={() => {
                 if (!captureReportInProgress) {
                   setCaptureReportInProgress(true);
                   capturePicture('', 5, { mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry, amrClassFilter: amrClassFilter, brush: [brushRFWG, brushRDWAG, brushDRT, brushGD], drugs: trendValues });
@@ -3564,7 +3564,7 @@ const DashboardPage = () => {
                     thickness={4}
                     style={{ position: "absolute", top: -5, left: -6, color: "white" }} />
                 </div>)}
-              </div> */}
+              </div>
             </div>
           </div>
         </div>
