@@ -4,10 +4,12 @@ import { scaleLinear } from "d3-scale";
 import Loader from "react-loader-spinner";
 import { ComposableMap, Geographies, Geography, Sphere, Graticule, ZoomableGroup } from "react-simple-maps";
 import InputLabel from '@material-ui/core/InputLabel';
+import {Tooltip as IconTooltip} from '@material-ui/core';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import Fab from '@material-ui/core/Fab';
+import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import TooltipMaterialUI from '@material-ui/core/Tooltip';
 import Zoom from '@material-ui/core/Zoom';
@@ -29,14 +31,8 @@ import { faGithub, faTwitter } from "@fortawesome/free-brands-svg-icons"
 import { Select as DropDownSelect } from "react-dropdown-select"
 import 'rodal/lib/rodal.css';
 import domtoimage from 'dom-to-image';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Button from '@material-ui/core/Button';
 import { jsPDF } from "jspdf";
-import { useStyles, CustomSlider, CustomCircularProgress, CustomToggleButton, Buttons, ButtonClearSelect } from './materialUI'
+import { useStyles, CustomCircularProgress, CustomToggleButton, Buttons, ButtonClearSelect } from './materialUI'
 
 const DashboardPage = () => {
   const classes = useStyles();
@@ -71,13 +67,16 @@ const DashboardPage = () => {
   const [captureReportInProgress, setCaptureReportInProgress] = useState(false)
   const [tooltipContent, setTooltipContent] = useState(null);
 
-  const [timePeriodRange, setTimePeriodRange] = React.useState([1905, 2020]);
-  const [actualTimePeriodRange, setActualTimePeriodRange] = React.useState([1905, 2020]);
+  const [timeInitial, setTimeInitial] = React.useState(0);
+  const [timeFinal, setTimeFinal] = React.useState(0);
+  const [actualTimeInitial, setActualTimeInitial] = React.useState(0);
+  const [actualTimeFinal, setActualTimeFinal] = React.useState(0);
+  const [years, setYears] = useState([0, 0])
+
   const [countriesForFilter, setCountriesForFilter] = React.useState(['All']);
   const [regionsForFilter, setRegionsForFilter] = React.useState(['All']);
   const [actualCountry, setActualCountry] = useState("All");
   const [actualRegion, setActualRegion] = useState("All");
-  const [years, setYears] = useState([1905, 2020])
 
   const [actualContinent, setActualContinent] = useState("All")
   const [continentOptions] = useState(['All', 'Africa', 'Asia', 'Central America', 'Europe', 'North America', 'Oceania', 'South America'])
@@ -93,6 +92,7 @@ const DashboardPage = () => {
   const [drtClassesForFilter] = useState(["Ampicillin", "Azithromycin", "Chloramphenicol", "Co-trimoxazole", "ESBL", "Fluoroquinolones (CipI/R)", "Susceptible", "Sulphonamides", "Tetracyclines", "Trimethoprim"])
   const [trendClassesForFilter] = useState(["Ampicillin", "Azithromycin", "Chloramphenicol", /*"Fluoroquinolone (CipI)",*/ "Fluoroquinolones (CipR)", "Co-trimoxazole", "ESBL", "Fluoroquinolones (CipI/R)", "Susceptible", "Sulphonamides", "Tetracyclines", "Trimethoprim"])
   const [trendDropdownOptions] = useState([{ value: "Ampicillin", id: 0 }, { value: "Azithromycin", id: 1 }, { value: "Chloramphenicol", id: 2 }, /*{value: "Fluoroquinolone (CipI)", id: 3},*/ { value: "Fluoroquinolones (CipR)", id: 3 }, { value: "Co-trimoxazole", id: 4 }, { value: "ESBL", id: 5 }, { value: "Fluoroquinolones (CipI/R)", id: 6 }, { value: "Susceptible", id: 7 }, { value: "Sulphonamides", id: 8 }, { value: "Tetracyclines", id: 9 }, { value: "Trimethoprim", id: 10 }])
+  const [RFWGDropdownOptions, setRFWGDropdownOptions] = useState([])
   const [amrClassFilter, setAmrClassFilter] = React.useState(amrClassesForFilter[5])
   const [RDWAGDataviewFilter, setRDWAGDataviewFilter] = React.useState(2)
 
@@ -109,52 +109,13 @@ const DashboardPage = () => {
   const [totalGenotypes, setTotalGenotypes] = useState([])
   const [actualGenotypes, setActualGenotypes] = useState([])
   const [appLoading, setAppLoading] = useState(0)
+  const [lastUpdated, setLastUpdated] = useState("")
+  const [countryPMID, setCountryPMID] = useState([])
 
   const [allGenotypes, setAllGenotypes] = useState({})
 
-  const [brushRFWG, setBrushRFWG] = useState([])
-  const [brushDRT, setBrushDRT] = useState([])
-  const [brushRDWAG, setBrushRDWAG] = useState([])
-  const [brushGD, setBrushGD] = useState([])
-
   const [trendValues, setTrendValues] = React.useState(trendDropdownOptions)
-
-  const [open, setOpen] = React.useState(false);
-  const [open2, setOpen2] = React.useState(false);
-  const [open3, setOpen3] = React.useState(false);
-  const [open4, setOpen4] = React.useState(false);
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleClickOpen2 = () => {
-    setOpen2(true);
-  };
-
-  const handleClose2 = () => {
-    setOpen2(false);
-  };
-
-  const handleClickOpen3 = () => {
-    setOpen3(true);
-  };
-
-  const handleClose3 = () => {
-    setOpen3(false);
-  };
-
-  const handleClickOpen4 = () => {
-    setOpen4(true);
-  };
-
-  const handleClose4 = () => {
-    setOpen4(false);
-  };
+  const [RFWGValues, setRFWGValues] = React.useState([])
 
   const [desktop] = useState(767)
   const [mobile] = useState(500)
@@ -226,8 +187,10 @@ const DashboardPage = () => {
     axios.get(`${API_ENDPOINT}filters/getYearLimits`)
       .then((res) => {
         let limits = res.data
-        setTimePeriodRange([limits.min, limits.max])
-        setActualTimePeriodRange([limits.min, limits.max])
+        setTimeInitial(limits.min)
+        setTimeFinal(limits.max)
+        setActualTimeInitial(limits.min)
+        setActualTimeFinal(limits.max)
         // setAllCountries(limits.countries)
         setAllGenotypes(limits.allGenotypes)
         setTotalGenotypes(limits.totalGenotypes)
@@ -237,8 +200,15 @@ const DashboardPage = () => {
   }, [])
 
   useEffect(() => {
+    axios.get(`${API_ENDPOINT}mongo/lastUpdated`)
+      .then((res) => {
+        setLastUpdated(new Date(res.data))
+      })
+  }, [])
+
+  useEffect(() => {
     const timeOutId = setTimeout(() => {
-      axios.get(`${API_ENDPOINT}filters/all/${actualTimePeriodRange[0]}/${actualTimePeriodRange[1]}/${dataset}/all`)
+      axios.get(`${API_ENDPOINT}filters/all/${actualTimeInitial}/${actualTimeFinal}/${dataset}/all`)
         .then((res) => {
           var response = res.data
 
@@ -255,7 +225,7 @@ const DashboardPage = () => {
         })
     }, 500)
     return () => clearTimeout(timeOutId);
-  }, [actualTimePeriodRange, dataset])
+  }, [actualTimeInitial, actualTimeFinal, dataset])
 
   useEffect(() => {
     const parseDataForGenotypeChart = (data) => {
@@ -313,11 +283,6 @@ const DashboardPage = () => {
 
       if (!arraysEqual(finalPopulationStructureChartData, populationStructureChartData)) {
         setPopulationStructureChartData(finalPopulationStructureChartData)
-        if (finalPopulationStructureChartData.length > 0) {
-          setBrushGD([finalPopulationStructureChartData[0].name, finalPopulationStructureChartData[finalPopulationStructureChartData.length - 1].name])
-        } else {
-          setBrushGD(['Undefined', 'Undefined'])
-        }
       }
 
       let populationStructureChartSums = []
@@ -628,22 +593,6 @@ const DashboardPage = () => {
         if (country.count === undefined) {
           country.count = 0
         }
-        // country.CipIs.forEach((cipIs, index) => {
-        //   if (cipIs.type === "CipI") {
-        //     let percentage = ((cipIs.count / country.total) * 100)
-        //     if (Math.round(percentage) !== percentage)
-        //       percentage = percentage.toFixed(2)
-        //     percentage = parseFloat(percentage);
-        //     country.percentage = percentage;
-        //     country.count = cipIs.count;
-        //   }
-        //   if (country.percentage === undefined) {
-        //     country.percentage = parseFloat(0)
-        //   }
-        //   if (country.count === undefined) {
-        //     country.count = 0
-        //   }
-        // })
       })
       if (!arraysEqual(cipIData, worldMapCIPIData))
         setWorldMapCIPIData(cipIData)
@@ -754,9 +703,6 @@ const DashboardPage = () => {
       finalChartData.forEach((data) => {
         Object.entries(data).forEach((entry) => {
           if (entry[0] === "genotype") {
-            // if (actualCountry === "All") {
-            //   data.total2 = allGenotypes[entry[1].toString()];
-            // } else {
             let noneCount = 0
             if (amrClassFilter === "Fluoroquinolones (CipI/R)") {
               noneCount = 'None (CipS)' in data ? data['None (CipS)'] : 0
@@ -764,7 +710,6 @@ const DashboardPage = () => {
               noneCount = 'None' in data ? data['None'] : 0
             }
             data.total2 = data.total + noneCount
-            // }
           }
         })
       })
@@ -801,11 +746,6 @@ const DashboardPage = () => {
 
       if (!arraysEqual(amrClassChartData, top10)) {
         setAmrClassChartData(top10)
-        if (top10.length > 1) {
-          setBrushRDWAG([top10[0].genotype, top10[top10.length - 2].genotype])
-        } else {
-          setBrushRDWAG(['Undefined', 'Undefined'])
-        }
       }
     }
 
@@ -815,6 +755,7 @@ const DashboardPage = () => {
       let totalSum = {}
       let totalCountryCount = data[data.length - 1][0]
       let allDrugs = data[data.length - 2][0]
+      setCountryPMID(data[data.length - 2][1])
       data = data.slice(0, data.length - 2)
 
       data.forEach((entry) => {
@@ -891,26 +832,14 @@ const DashboardPage = () => {
       finalDrugTrendsChartData.push({ totalSum: allDrugs })
 
       finalDrugsAndGenotypesChartData.sort((a, b) => b.total - a.total)
-      finalDrugsAndGenotypesChartData = finalDrugsAndGenotypesChartData.slice(0, finalDrugsAndGenotypesChartData.length >= 5 ? 5 : finalDrugsAndGenotypesChartData.length)
       finalDrugsAndGenotypesChartData.push({ totalSum: totalSum })
 
       if (!arraysEqual(finalDrugTrendsChartData, drugTrendsChartData)) {
         setDrugTrendsChartData(finalDrugTrendsChartData)
-        // setDrugTrendsChartDataBackup(finalDrugTrendsChartData)
-        if (finalDrugTrendsChartData.length > 1) {
-          setBrushDRT([finalDrugTrendsChartData[0].name, finalDrugTrendsChartData[finalDrugTrendsChartData.length - 2].name])
-        } else {
-          setBrushDRT(['Undefined', 'Undefined'])
-        }
 
       }
       if (!arraysEqual(finalDrugsAndGenotypesChartData, drugsAndGenotypesChartData)) {
         setDrugsAndGenotypesChartData(finalDrugsAndGenotypesChartData)
-        if (finalDrugsAndGenotypesChartData.length > 1) {
-          setBrushRFWG([finalDrugsAndGenotypesChartData[0].name, finalDrugsAndGenotypesChartData[finalDrugsAndGenotypesChartData.length - 2].name])
-        } else {
-          setBrushRFWG(['Undefined', 'Undefined'])
-        }
       }
     }
 
@@ -919,24 +848,24 @@ const DashboardPage = () => {
 
       filter = 2
 
-      let genotypeChartResponse = await axios.get(`${API_ENDPOINT}filters/${filter}/${actualCountry === "All" ? "all" : actualCountry}/${actualTimePeriodRange[0]}/${actualTimePeriodRange[1]}/${dataset}/${actualRegion === "All" ? "all" : actualRegion}`)
+      let genotypeChartResponse = await axios.get(`${API_ENDPOINT}filters/${filter}/${actualCountry === "All" ? "all" : actualCountry}/${actualTimeInitial}/${actualTimeFinal}/${dataset}/${actualRegion === "All" ? "all" : actualRegion}`)
       parseDataForGenotypeChart(genotypeChartResponse.data)
 
       if (actualCountry === "All") {
         parseDataForCountryMap(genotypeChartResponse.data)
       } else {
-        let response = await axios.get(`${API_ENDPOINT}filters/${filter}/all/${actualTimePeriodRange[0]}/${actualTimePeriodRange[1]}/${dataset}/all`)
+        let response = await axios.get(`${API_ENDPOINT}filters/${filter}/all/${actualTimeInitial}/${actualTimeFinal}/${dataset}/all`)
         parseDataForCountryMap(response.data)
       }
 
-      let drugTrendsChartResponse = await axios.get(`${API_ENDPOINT}filters/drugTrendsChart/${actualCountry === "All" ? "all" : actualCountry}/${actualTimePeriodRange[0]}/${actualTimePeriodRange[1]}/${dataset}/${actualRegion === "All" ? "all" : actualRegion}`)
+      let drugTrendsChartResponse = await axios.get(`${API_ENDPOINT}filters/drugTrendsChart/${actualCountry === "All" ? "all" : actualCountry}/${actualTimeInitial}/${actualTimeFinal}/${dataset}/${actualRegion === "All" ? "all" : actualRegion}`)
       parseDataForDrugTrendsChart(drugTrendsChartResponse.data)
 
       let classChartResponse
       if (amrClassFilter === "Fluoroquinolones (CipI/R)") {
-        classChartResponse = await axios.get(`${API_ENDPOINT}filters/amrClassChart/${actualCountry === "All" ? "all" : actualCountry}/${actualTimePeriodRange[0]}/${actualTimePeriodRange[1]}/${"Fluoroquinolones (CipI-R)"}/${dataset}/${actualRegion === "All" ? "all" : actualRegion}`)
+        classChartResponse = await axios.get(`${API_ENDPOINT}filters/amrClassChart/${actualCountry === "All" ? "all" : actualCountry}/${actualTimeInitial}/${actualTimeFinal}/${"Fluoroquinolones (CipI-R)"}/${dataset}/${actualRegion === "All" ? "all" : actualRegion}`)
       } else {
-        classChartResponse = await axios.get(`${API_ENDPOINT}filters/amrClassChart/${actualCountry === "All" ? "all" : actualCountry}/${actualTimePeriodRange[0]}/${actualTimePeriodRange[1]}/${amrClassFilter}/${dataset}/${actualRegion === "All" ? "all" : actualRegion}`)
+        classChartResponse = await axios.get(`${API_ENDPOINT}filters/amrClassChart/${actualCountry === "All" ? "all" : actualCountry}/${actualTimeInitial}/${actualTimeFinal}/${amrClassFilter}/${dataset}/${actualRegion === "All" ? "all" : actualRegion}`)
       }
       parseDataForAmrClassChart(classChartResponse.data)
 
@@ -944,7 +873,7 @@ const DashboardPage = () => {
 
     }, 500);
     return () => clearTimeout(timeOutId);
-  }, [populationStructureFilter, actualTimePeriodRange, actualCountry, dataset, amrClassFilter, allGenotypes, actualRegion]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [populationStructureFilter, actualTimeInitial, actualTimeFinal, actualCountry, dataset, amrClassFilter, allGenotypes, actualRegion]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function arraysEqual(a1, a2) {
     return JSON.stringify(a1) === JSON.stringify(a2);
@@ -1050,6 +979,7 @@ const DashboardPage = () => {
               margin={{
                 top: 20, bottom: 5, right: 0
               }}
+              maxBarSize={62}
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis padding={{ left: 5, right: 5 }} dataKey="name" interval="preserveStartEnd" tick={{ fontSize: 14 }} />
@@ -1058,14 +988,7 @@ const DashboardPage = () => {
                   Number of genomes
                 </Label>
               </YAxis>
-              {populationStructureChartData.length > 0 && (<Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} onChange={
-                (value) => {
-                  setBrushGD([
-                    populationStructureChartData[value.startIndex].name,
-                    populationStructureChartData[value.endIndex].name
-                  ])
-                }
-              } />)}
+              {populationStructureChartData.length > 0 && (<Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} />)}
 
               <Legend
                 content={(props) => {
@@ -1076,7 +999,7 @@ const DashboardPage = () => {
                         {payload.map((entry, index) => {
                           const { dataKey, color } = entry
                           return (
-                            <div key={index} className="PSC-legend-info">
+                            <div key={index + "PSC_2"} className="PSC-legend-info">
                               <div className="PSC-legend-info-circle" style={{ backgroundColor: color }} />
                               <span className="PSC-legend-info-name">{dataKey}</span>
                             </div>
@@ -1089,7 +1012,7 @@ const DashboardPage = () => {
               />
 
               {tooltip([290, 290, 260], dimensions.width < 620 ? 250 : 530, dimensions.width > 620 ? "20%" : "50%", false, { zIndex: 100, top: 20, right: -20 }, false)}
-              {genotypes.map((item) => <Bar dataKey={item} stackId={0} fill={getColorForGenotype(item)} />)}
+              {genotypes.map((item, i) => <Bar key={i+"PSC_Q"} dataKey={item} stackId={0} fill={getColorForGenotype(item)} />)}
             </BarChart>
           </ResponsiveContainer>
         )
@@ -1117,6 +1040,7 @@ const DashboardPage = () => {
               margin={{
                 top: 20, bottom: 5, right: 0
               }}
+              maxBarSize={62}
               barCategoryGap={'10%'}
             >
               <CartesianGrid strokeDasharray="3 3" />
@@ -1126,14 +1050,7 @@ const DashboardPage = () => {
                   % Genomes per year
                 </Label>
               </YAxis>
-              {teste.length > 0 && (<Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} onChange={
-                (value) => {
-                  setBrushGD([
-                    teste[value.startIndex].name,
-                    teste[value.endIndex].name
-                  ])
-                }
-              } />)}
+              {teste.length > 0 && (<Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} />)}
 
               <Legend
                 content={(props) => {
@@ -1144,7 +1061,7 @@ const DashboardPage = () => {
                         {payload.map((entry, index) => {
                           const { dataKey, color } = entry
                           return (
-                            <div key={index} className="PSC-legend-info">
+                            <div key={index + "PSC"} className="PSC-legend-info">
                               <div className="PSC-legend-info-circle" style={{ backgroundColor: color }} />
                               <span className="PSC-legend-info-name" >{dataKey}</span>
                             </div>
@@ -1157,7 +1074,7 @@ const DashboardPage = () => {
               />
 
               {tooltip([290, 290, 260], dimensions.width < 620 ? 250 : 530, dimensions.width > 620 ? "20%" : "50%", false, { zIndex: 100, top: 20, right: -20 }, false, 3)}
-              {genotypes.map((item) => <Bar dataKey={item} stackId="a" fill={getColorForGenotype(item)} />)}
+              {genotypes.map((item, i) => <Bar key={i+"PSC_P"} dataKey={item} stackId="a" fill={getColorForGenotype(item)} />)}
             </BarChart>
           </ResponsiveContainer>
         )
@@ -1190,7 +1107,7 @@ const DashboardPage = () => {
                         }
                         percentage = Math.round(percentage * 100) / 100
                         return (
-                          <div key={index} className="amr-tooltip-content-individual">
+                          <div key={index+"tooltip"} className="amr-tooltip-content-individual">
                             <div className="my-tooltip-content-square" style={{ backgroundColor: item.fill }} />
                             <div className="amr-tooltip-content-info">
                               <span className="amr-tooltip-content-name">{item.name}</span>
@@ -1238,14 +1155,7 @@ const DashboardPage = () => {
                   Number of occurrences
                 </Label>
               </YAxis>
-              {dataAMR.length > 0 && (<Brush dataKey="genotype" height={20} stroke={"rgb(31, 187, 211)"} onChange={
-                (value) => {
-                  setBrushRDWAG([
-                    dataAMR[value.startIndex].genotype,
-                    dataAMR[value.endIndex].genotype
-                  ])
-                }
-              } />)}
+              {dataAMR.length > 0 && (<Brush dataKey="genotype" height={20} stroke={"rgb(31, 187, 211)"} />)}
 
               <Legend
                 content={(props) => {
@@ -1256,7 +1166,7 @@ const DashboardPage = () => {
                         {payload.map((entry, index) => {
                           const { dataKey, color } = entry
                           return (
-                            <div key={index} className="RDWAG-legend-info">
+                            <div key={index+"RDWAG-legend"} className="RDWAG-legend-info">
                               <div className="RDWAG-legend-info-circle" style={{ backgroundColor: color }} />
                               <span className="RDWAG-legend-info-name">{dataKey}</span>
                             </div>
@@ -1269,9 +1179,9 @@ const DashboardPage = () => {
               />
 
               {amrClassChartTooltip()}
-              {info.bars.map((item) => {
+              {info.bars.map((item, i) => {
                 return (
-                  <Bar dataKey={item[0]} fill={item[1]} stackId="a" barSize={30} />
+                  <Bar key={i+"RDWAG_Q"} dataKey={item[0]} fill={item[1]} stackId="a" barSize={30} />
                 )
               })}
             </BarChart>
@@ -1308,14 +1218,7 @@ const DashboardPage = () => {
                   % Genomes
                 </Label>
               </YAxis>
-              {temp.length > 0 && (<Brush dataKey="genotype" height={20} stroke={"rgb(31, 187, 211)"} onChange={
-                (value) => {
-                  setBrushRDWAG([
-                    temp[value.startIndex].genotype,
-                    temp[value.endIndex].genotype
-                  ])
-                }
-              } />)}
+              {temp.length > 0 && (<Brush dataKey="genotype" height={20} stroke={"rgb(31, 187, 211)"} />)}
 
               <Legend
                 content={(props) => {
@@ -1326,7 +1229,7 @@ const DashboardPage = () => {
                         {payload.map((entry, index) => {
                           const { dataKey, color } = entry
                           return (
-                            <div key={index} className="RDWAG-legend-info">
+                            <div key={index + "RDWAG-legend-2"} className="RDWAG-legend-info">
                               <div className="RDWAG-legend-info-circle" style={{ backgroundColor: color }} />
                               <span className="RDWAG-legend-info-name">{dataKey}</span>
                             </div>
@@ -1339,9 +1242,9 @@ const DashboardPage = () => {
               />
 
               {amrClassChartTooltip()}
-              {info.bars.map((item) => {
+              {info.bars.map((item, i) => {
                 return (
-                  <Bar dataKey={item[0]} fill={item[1]} stackId="a" barSize={30} />
+                  <Bar key={i+"RDWAG_P"} dataKey={item[0]} fill={item[1]} stackId="a" barSize={30} />
                 )
               })}
             </BarChart>
@@ -1443,17 +1346,6 @@ const DashboardPage = () => {
               ['tetA(A)', getColorForTetracyclines('tetA(A)'), "error-tetA(A)"],
               ['None', "#B9B9B9", "error-None"]
             ]
-            // ['tetA(AB)', getColorForTetracyclines('tetA(AB)'), "error-tetA(AB)"],
-            // ['tetA(ABC)', getColorForTetracyclines('tetA(ABC)'), "error-tetA(ABC)"],
-            // ['tetA(ABCD)', getColorForTetracyclines('tetA(ABCD)'), "error-tetA(ABCD)"],
-            // ['tetA(ABD)', getColorForTetracyclines('tetA(ABD)'), "error-tetA(ABD)"],
-            // ['tetA(AC)', getColorForTetracyclines('tetA(AC)'), "error-tetA(AC)"],
-            // ['tetA(AD)', getColorForTetracyclines('tetA(AD)'), "error-tetA(AD)"],
-            // ['tetA(ACD)', getColorForTetracyclines('tetA(ACD)'), "error-tetA(ACD)"],
-            // ['tetA(BC)', getColorForTetracyclines('tetA(BC)'), "error-tetA(BC)"],
-            // ['tetA(BD)', getColorForTetracyclines('tetA(BD)'), "error-tetA(BD)"],
-            // ['tetA(BCD)', getColorForTetracyclines('tetA(BCD)'), "error-tetA(BCD)"],
-            // ['tetA(CD)', getColorForTetracyclines('tetA(CD)'), "error-tetA(CD)"]]
           }))
         case 'ESBL':
           return (armClassFilterComponent({
@@ -1500,12 +1392,7 @@ const DashboardPage = () => {
               </Label>
             </YAxis>
             {drugTrendsChartData.slice(0, drugTrendsChartData.length - 1).length > 0 && (
-              <Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} onChange={(value) => {
-                setBrushDRT([
-                  drugTrendsChartData[value.startIndex].name,
-                  drugTrendsChartData[value.endIndex].name
-                ])
-              }} />
+              <Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} />
             )}
 
             <Legend
@@ -1517,7 +1404,7 @@ const DashboardPage = () => {
                       {payload.map((entry, index) => {
                         const { dataKey, color } = entry
                         return (
-                          <div key={index} className="DRT-legend-info">
+                          <div key={index + "DRT-legend"} className="DRT-legend-info">
                             <div className="DRT-legend-info-circle" style={{ backgroundColor: color }} />
                             <span className="DRT-legend-info-name">{dataKey}</span>
                           </div>
@@ -1529,23 +1416,34 @@ const DashboardPage = () => {
               }}
             />
             {tooltip([160, 275, 255], dimensions.width < mobile ? 250 : 325, "50%", true, { zIndex: 100, top: 175, right: 0 }, true, 1)}
-            {/* {trendClassesForFilter.slice(1).map((item) => (<Line dataKey={item} strokeWidth={2} stroke={getColorForDrug(item)} connectNulls type="monotone" />))} */}
-            {trendClassesForFilter.map((item) => (<Line dataKey={item} strokeWidth={2} stroke={getColorForDrug(item)} connectNulls type="monotone" activeDot={timePeriodRange[0] === timePeriodRange[1] ? true : false} />))}
+            {trendClassesForFilter.map((item, i) => (<Line key={i + "DRTLine"} dataKey={item} strokeWidth={2} stroke={getColorForDrug(item)} connectNulls type="monotone" activeDot={timeInitial === timeFinal ? true : false} />))}
           </LineChart>
         </ResponsiveContainer>
       )
     }
 
     setPlotDrugTrendsChart(plotDrugTrendsChart)
-  }, [trendClassesForFilter, dimensions, drugTrendsChartData, tooltip, mobile, timePeriodRange])
+  }, [trendClassesForFilter, dimensions, drugTrendsChartData, tooltip, mobile, timeInitial, timeFinal])
 
   useEffect(() => {
     const plotDrugsAndGenotypesChart = () => {
+      let aux = JSON.parse(JSON.stringify(drugsAndGenotypesChartData.slice(0, drugsAndGenotypesChartData.length - 1)))
+      
+      const aux2 = []
+      for (let index = 0; index < aux.length; index++) {
+        const percentage = (aux[index].total / aux[index].totalS) * 100
+        aux2.push({value: aux[index].name, label: aux[index].name + ` (total N=${aux[index].totalS}, ${Math.round(percentage * 100) / 100}% resistant)`, id: index})
+      }
+      setRFWGDropdownOptions(aux2)
+
+      const values = RFWGValues.map(x => x.value)
+      aux = aux.filter(x => values.includes(x.name))
+
       if (RFWGFilter === 1) {
         return (
           <ResponsiveContainer width="90%">
             <BarChart
-              data={drugsAndGenotypesChartData.slice(0, drugsAndGenotypesChartData.length - 1)}
+              data={aux}
               margin={{
                 top: 20, left: -5, bottom: 5, right: 0
               }}
@@ -1559,14 +1457,7 @@ const DashboardPage = () => {
                 </Label>
               </YAxis>
               {drugsAndGenotypesChartData.slice(0, drugsAndGenotypesChartData.length - 1).length > 0 && (
-                <Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} onChange={
-                  (value) => {
-                    setBrushRFWG([
-                      drugsAndGenotypesChartData[value.startIndex].name,
-                      drugsAndGenotypesChartData[value.endIndex].name
-                    ])
-                  }
-                } />
+                <Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} />
               )}
 
               <Legend
@@ -1578,7 +1469,7 @@ const DashboardPage = () => {
                         {payload.map((entry, index) => {
                           const { dataKey, color } = entry
                           return (
-                            <div key={index} className="RFWG-legend-info">
+                            <div key={index + "RFWG-legend"} className="RFWG-legend-info">
                               <div className="RFWG-legend-info-circle" style={{ backgroundColor: color }} />
                               <span className="RFWG-legend-info-name">{dataKey}</span>
                             </div>
@@ -1590,13 +1481,12 @@ const DashboardPage = () => {
                 }}
               />
               {tooltip([155, 270, 270], dimensions.width < mobile ? 250 : 325, "50%", false, { zIndex: 100, top: 160 }, false, 0)}
-              {/* {drtClassesForFilter.slice(1).map((item) => (<Bar dataKey={item} fill={getColorForDrug(item)} />))} */}
-              {drtClassesForFilter.map((item) => (<Bar dataKey={item} fill={getColorForDrug(item)} />))}
+              {drtClassesForFilter.map((item, i) => (<Bar key={i+"DRT_Q"} dataKey={item} fill={getColorForDrug(item)} />))}
             </BarChart>
           </ResponsiveContainer>
         )
       } else {
-        let teste = JSON.parse(JSON.stringify(drugsAndGenotypesChartData.slice(0, drugsAndGenotypesChartData.length - 1)))
+        const teste = JSON.parse(JSON.stringify(aux))
         teste.forEach(element => {
           element["quantities"] = {}
           const keys = Object.keys(element);
@@ -1624,14 +1514,7 @@ const DashboardPage = () => {
                   Percentage within genotype (%)
                 </Label>
               </YAxis>
-              {teste.length > 0 && (<Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} onChange={
-                (value) => {
-                  setBrushRFWG([
-                    teste[value.startIndex].name,
-                    teste[value.endIndex].name
-                  ])
-                }
-              } />)}
+              {teste.length > 0 && (<Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} />)}
 
               <Legend
                 content={(props) => {
@@ -1642,7 +1525,7 @@ const DashboardPage = () => {
                         {payload.map((entry, index) => {
                           const { dataKey, color } = entry
                           return (
-                            <div key={index} className="RFWG-legend-info">
+                            <div key={index + "RFWG-legend-2"} className="RFWG-legend-info">
                               <div className="RFWG-legend-info-circle" style={{ backgroundColor: color }} />
                               <span className="RFWG-legend-info-name">{dataKey}</span>
                             </div>
@@ -1654,15 +1537,14 @@ const DashboardPage = () => {
                 }}
               />
               {tooltip([155, 270, 270], dimensions.width < mobile ? 250 : 325, "50%", false, { zIndex: 100, top: 160 }, false, 4)}
-              {/* {drtClassesForFilter.slice(1).map((item) => (<Bar dataKey={item} fill={getColorForDrug(item)} />))} */}
-              {drtClassesForFilter.map((item) => (<Bar dataKey={item} fill={getColorForDrug(item)} />))}
+              {drtClassesForFilter.map((item, i) => (<Bar key={i+"DRT_P"} dataKey={item} fill={getColorForDrug(item)} />))}
             </BarChart>
           </ResponsiveContainer>
         )
       }
     }
     setPlotDrugsAndGenotypesChart(plotDrugsAndGenotypesChart)
-  }, [actualCountry, drtClassesForFilter, dimensions, drugsAndGenotypesChartData, tooltip, mobile, RFWGFilter, actualRegion])
+  }, [actualCountry, drtClassesForFilter, dimensions, drugsAndGenotypesChartData, tooltip, mobile, RFWGFilter, actualRegion, RFWGValues])
 
   function imgOnLoadPromise(obj) {
     return new Promise((resolve, reject) => {
@@ -1714,18 +1596,69 @@ const DashboardPage = () => {
 
       var doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'l' });
 
+      const IPW = doc.internal.pageSize.getWidth() / 2;
+
       let typhinetLogo = new Image();
       typhinetLogo.src = typhinetLogoImg2;
-      doc.addImage(typhinetLogo, 'PNG', 115, 10, 80, 34)
-      doc.setFontSize(16);
-      const paragraph1 = "Nunc ultrices blandit urna mollis porttitor. Vivamus viverra imperdiet justo, vitae fermentum elit accumsan placerat. Maecenas malesuada tincidunt rhoncus. Sed quam mauris, lacinia ac nisi consectetur, tincidunt pulvinar mauris. Proin ultricies quam sit amet dolor faucibus, at aliquam leo porttitor. Morbi at molestie nulla. Mauris porta lacus at augue facilisis volutpat. Suspendisse justo odio, congue nec diam ut, pretium blandit arcu. Duis vel leo euismod, pretium ante sit amet, viverra nibh."
-      const paragraph2 = "Quisque in tortor dignissim, mollis augue ac, sollicitudin ex. Quisque quis accumsan erat. Suspendisse sed nulla id ante fringilla sodales. Etiam sed pulvinar ex. Integer rutrum dolor a lobortis semper. Praesent fermentum feugiat justo ultrices facilisis. Etiam non sem ac ante rhoncus pretium eget eget dui. Duis non mollis nisl. Nullam id elementum augue, eget feugiat felis. Integer posuere nec sapien quis scelerisque. Etiam ut tortor dignissim, bibendum metus a, varius lectus. Nunc sollicitudin fringilla enim nec auctor. In vel rhoncus arcu. Morbi sed blandit libero."
-      doc.text(paragraph1, 10, 60, { align: 'justify', maxWidth: 130 })
-      doc.text(paragraph2, 155, 60, { align: 'justify', maxWidth: 130 })
+      doc.addImage(typhinetLogo, 'PNG', 110, 8, 80, 26)
+
+      let date = new Date()
+      date = date.toString().replace(/ *\([^)]*\) */g, "")
+
+      let introURL
+
+      let reportIntro = document.getElementById("report-info");
+      reportIntro.style.visibility = 'visible'
+
+      await domtoimage.toPng(reportIntro, { quality: 1, bgcolor: "white" })
+        .then(function (dataUrl) {
+          introURL = dataUrl;
+          reportIntro.style.visibility = 'hidden'
+        });
+
+      doc.addImage(introURL, "PNG", 20 , 35);
+
+      const h = 3.5
+      const w = 1
+
+      doc.setFontSize(12);
+      doc.setTextColor(77,77,77);
+      doc.setFillColor(255, 255, 255);
+      doc.rect(105, 55, 31.5, 5, 'F');
+      doc.textWithLink('(http://typhi.net)', 105 + w, 55 + h, {url: 'http://typhi.net'})
+      doc.setFillColor(255, 255, 255);
+      doc.rect(156, 60, 44, 5, 'F');
+      doc.textWithLink('(http://pathogen.watch)', 156 + w, 60 + h, {url: 'http://pathogen.watch'})
+      doc.setFillColor(255, 255, 255);
+      doc.rect(181, 81.5, 80, 5, 'F');
+      doc.textWithLink('https://github.com/zadyson/TyphiNET.', 181 + w, 82 + h, {url: 'https://github.com/zadyson/TyphiNET'})
+      doc.setTextColor(0,0,0);
+      doc.setFont(undefined, 'bold')
+      doc.setFillColor(255, 255, 255);
+      doc.rect(106, 94, 80, 5, 'F');
+      doc.setTextColor(20,20,20);
+      doc.textWithLink('Dyson & Holt (2021), J. Infect. Dis.', 105 + w, 94 + h, {url: 'https://academic.oup.com/jid/advance-article/doi/10.1093/infdis/jiab414/6358992'})
+      doc.setFillColor(255, 255, 255);
+      doc.rect(188, 102, 80, 5, 'F');
+      doc.setTextColor(20,20,20);
+      doc.textWithLink('Argimón et al. 2021, Nat. Commun.', 188 + w, 102.5 + h, {url: 'https://www.nature.com/articles/s41467-021-23091-2'})
+      doc.setFillColor(255, 255, 255);
+      doc.rect(198, 111, 60, 5, 'F');
+      doc.setTextColor(20,20,20);
+      doc.textWithLink('Ingle et al. 2019, PLoS NTDs).', 198 + w, 111 + h, {url: 'https://journals.plos.org/plosntds/article?id=10.1371/journal.pntd.0007620'})
+      doc.setFont(undefined, 'normal')
+
+      doc.line(0, 200, 300, 200)
+      doc.setFontSize(10);
+      doc.text(`Source: typhi.net [${date}]`, IPW, 206, { align: "center" })
 
       doc.addPage('a4', 'l')
       doc.setFontSize(25);
-      doc.text("Global Overview of Salmonella Typhi", 80, 15);
+      doc.text("Global Overview of", 77, 12);
+      doc.setFont(undefined, 'italic')
+      doc.text("Salmonella", 154, 12);
+      doc.setFont(undefined, 'normal')
+      doc.text("Typhi", 200, 12);
 
       await svgAsPngUri(document.getElementById('control-map'), { scale: 4, backgroundColor: "white", width: 1200, left: -200 })
         .then(async (uri) => {
@@ -1741,7 +1674,7 @@ const DashboardPage = () => {
           canvas.height = 700;
           ctx.drawImage(mapImg, 0, 0, canvas.width, canvas.height);
           var img = canvas.toDataURL("image/png")
-          doc.addImage(img, "PNG", 0, 18, 298, 155);
+          doc.addImage(img, "PNG", 0, 45, 298, 155);
         })
 
       let actualMapView = info.mapView
@@ -1768,46 +1701,45 @@ const DashboardPage = () => {
           break;
       }
 
-      doc.setFontSize(14);
-      // doc.text("Map view: " + actualMapView, 10, 180);
-      doc.text(actualMapView, 10, 180);
-      doc.text("Dataset: " + info.dataset + " test ", 10, 187);
-      doc.text("Time period: " + info.actualTimePeriodRange[0] + " to " + info.actualTimePeriodRange[1], 10, 194);
-      doc.text("Country: " + info.country, 10, 201);
+      doc.setFontSize(12);
+      const dataset = info.dataset === "All" ? 'All (local + travel)' : info.dataset === "Local" ? 'Locally isolated' : 'Travel isolates'
+
+      doc.setFont(undefined, 'bold')
+      doc.text(info.mapView, 8, 20);
+      doc.setFont(undefined, 'normal')
+      doc.text(`Total ${info.actualGenomes} genomes`, 8, 25);
+      doc.text("Dataset: " + dataset, 8, 30);
+      doc.text("Time period: " + info.actualTimePeriodRange[0] + " to " + info.actualTimePeriodRange[1], 8, 35);
+      doc.text("Country: " + info.country, 8, 40);
+      doc.text("Region: " + info.region, 8, 45);
 
       if (info.mapView === 'Dominant Genotype') {
         var img = new Image()
         img.src = "legends/MapView_DominantGenotype.png"
-        doc.addImage(img, 'PNG', 90, 168.5, 150, 38)
+        doc.addImage(img, 'PNG', 68, 19, 219, 27)
       } else if (info.mapView === 'No. Samples') {
         var img2 = new Image()
         img2.src = "legends/MapView_NoSamples.png"
-        doc.addImage(img2, 'PNG', 250, 165, 40, 40)
+        doc.addImage(img2, 'PNG', 250, 15, 35, 35)
       } else {
         var img3 = new Image()
         img3.src = "legends/MapView_Others.png"
-        doc.addImage(img3, 'PNG', 250, 165, 40, 40)
+        doc.addImage(img3, 'PNG', 250, 15, 35, 35)
       }
+
+      doc.line(0, 200, 300, 200)
+      doc.setFontSize(10);
+      doc.text(`Source: typhi.net [${date}]`, IPW, 206, { align: "center" })
 
       doc.addPage('a4', 'l')
       const names2 = ["Resistance frequencies within genotypes", "Resistance determinants within genotypes", "Drug resistance trends", "Genotype distribution"]
       for (let index = 0; index < ids.length; index++) {
-        let legend
-        const graph = document.getElementById(ids[index])
-        if (index === 1 || index === 3) {
-          legend = graph.getElementsByClassName('recharts-legend-wrapper')[0];
-          legend.style.display = 'none'
-        }
 
         let url
         await domtoimage.toPng(document.getElementById(ids[index]), { quality: 1, bgcolor: "white" })
           .then(function (dataUrl) {
             url = dataUrl
           });
-
-        if (index === 1 || index === 3) {
-          legend.style.display = 'block'
-        }
 
         let subtitleH = 0
         if (index === 0 || index === 1 || index === 2) {
@@ -1840,36 +1772,36 @@ const DashboardPage = () => {
         }
 
         doc.text(texts[index], imgWidth + spaceBetween, 23 + subtitleH, { align: 'justify', maxWidth: 50 })
-        // if (index === 2) {
-        //   doc.setFont('helvetica', 'bold');
-        //   doc.setFontSize(11)
-        //   doc.text('Shown Drugs:', imgWidth + spaceBetween, 100 + subtitleH, { maxWidth: 50 })
-        //   doc.setFont('helvetica', 'normal');
-        //   doc.setFontSize(11)
-        //   doc.text(drugs.join(', '), imgWidth + spaceBetween, 105 + subtitleH, { align: 'justify', maxWidth: 50 })
-        // }
 
         doc.setFontSize(14)
-        doc.text(names2[index], 23, 10)
+        if (index === 1) {
+          doc.text(names2[index] + ' : ' + info.amrClassFilter, 23, 10)
+        } else {
+          doc.text(names2[index], 23, 10)
+        }
         doc.setFontSize(9)
 
         if (index === 0) {
-          doc.text("Top Genotypes (up to 5)", 23, 15)
+          doc.text(`Top Genotypes (up to ${info.RFWGCount})`, 23, 15)
         }
         if (index === 1) {
           doc.text("Top Genotypes (up to 10)", 23, 15)
         }
         if (index === 2) {
-          doc.text("Data are plotted for years with N ≥ 10 genomes", 23, 15)
+          doc.text("Data are plotted for years with N >= 10 genomes", 23, 15)
         }
 
-        // const brushInterval = info.brush[index]
+        doc.setFontSize(12)
+        doc.text(`Total ${info.actualGenomes} genomes`, 230, 30);
+        doc.text("Dataset: " + dataset, 230, 35);
+        doc.text("Time period: " + info.actualTimePeriodRange[0] + " to " + info.actualTimePeriodRange[1], 230, 40);
+        doc.text("Country: " + info.country, 230, 45);
+        doc.text("Region: " + info.region, 230, 50);
 
-        // if (index === 1 || index === 2) {
-        //   doc.text("Interval: " + brushInterval[0] + " to " + brushInterval[1], 23, 15)
-        // } else {
-        //   doc.text("Interval: " + brushInterval[0] + " to " + brushInterval[1], 23, 20)
-        // }
+        if (index === 1 || index === 3){
+          doc.setFillColor(255,255,255);
+          doc.rect(22, info.dimensions.width < info.desktop ? 120 : 115, 150, 100, 'F');
+        }
 
         if (index === 1) {
           var img4 = new Image()
@@ -1878,12 +1810,15 @@ const DashboardPage = () => {
           } else {
             img4.src = "legends/" + info.amrClassFilter + ".png"
           }
-          doc.addImage(img4, 'PNG', 22, 97 + subtitleH)
+          doc.addImage(img4, 'PNG', 22, 107 + subtitleH)
         } else if (index === 3) {
           var img5 = new Image()
           img5.src = "legends/Genotype_Distribution.png"
-          doc.addImage(img5, 'PNG', 22, 105 + subtitleH)
+          doc.addImage(img5, 'PNG', 22, (info.dimensions.width < info.desktop ? 115 : 108) + subtitleH)
         }
+        doc.line(0, 200, 300, 200)
+        doc.setFontSize(10);
+        doc.text(`Source: typhi.net [${date}]`, IPW, 206, { align: "center" })
         if (index < ids.length - 1) {
           doc.addPage('a4', 'l')
         }
@@ -1900,16 +1835,9 @@ const DashboardPage = () => {
       let graphImg = document.createElement("img");
       let graphImgPromise = imgOnLoadPromise(graphImg);
 
-      var legend = graph.getElementsByClassName('recharts-legend-wrapper')[0];
-
-      if (id === "RFWAG" || id === "GD") {
-        legend.style.display = 'none'
-      }
-
       await domtoimage.toPng(graph, { quality: 0.1, bgcolor: "white" })
         .then(function (dataUrl) {
           graphImg.src = dataUrl;
-          legend.style.display = 'block'
         });
 
       let cHeight = 20
@@ -1917,22 +1845,16 @@ const DashboardPage = () => {
       let legendHeight = 0
       let filterHeight = 80
       let subtitleHeight = 0
-      let drtShownLinesHeight = 0
       if (id === "RFWG" || id === "RFWAG" || id === "DRT") {
         cHeight += 20
         subtitleHeight = 20
       }
       let imgHeight = graphImg.height
       if (id === "RFWAG" || id === "GD") {
-        imgHeight -= 180
+        imgHeight -= 200
       }
 
-      if (id === "GD") legendHeight = 40
-      // if (id === "DRT") {
-      //   drtShownLinesHeight = 50
-      //   if (info.drugs.length > 4) drtShownLinesHeight += 22
-      //   if (info.drugs.length > 8) drtShownLinesHeight += 22
-      // }
+      if (id === "GD" || id === "RFWAG") legendHeight = 40
 
       let imgWidth = graphImg.width
       if (id === "RFWAG") {
@@ -1953,7 +1875,7 @@ const DashboardPage = () => {
       await graphImgPromise;
       canvas.width = imgWidth;
 
-      canvas.height = imgHeight + cHeight + logoHeight + legendHeight + filterHeight + subtitleHeight + 40 + drtShownLinesHeight;
+      canvas.height = imgHeight + cHeight + logoHeight + legendHeight + filterHeight + subtitleHeight + 60;
       ctx.fillStyle = "white";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.font = "18px Montserrat"
@@ -1961,12 +1883,15 @@ const DashboardPage = () => {
       ctx.textAlign = "center";
 
       ctx.drawImage(graphImg, 10, cHeight + logoHeight + subtitleHeight);
+      ctx.fillStyle = "white";
+      ctx.fillRect(60, canvas.height - 130, 800, 300);
+      ctx.fillStyle = "black";
 
       if (id === "RFWG") {
         ctx.fillText(brokenNames[0][0], canvas.width / 2, 10 + logoHeight)
         ctx.fillText(brokenNames[0][1], canvas.width / 2, 30 + logoHeight)
         ctx.font = "12px Montserrat"
-        ctx.fillText("Top Genotypes (up to 5)", canvas.width / 2, 32 + logoHeight + subtitleHeight)
+        ctx.fillText(`Top Genotypes (up to ${info.RFWGCount})`, canvas.width / 2, 32 + logoHeight + subtitleHeight)
       } else if (id === "RFWAG") {
         ctx.fillText(brokenNames[1][0], canvas.width / 2, 10 + logoHeight)
         ctx.fillText(brokenNames[1][1], canvas.width / 2, 30 + logoHeight)
@@ -2010,35 +1935,10 @@ const DashboardPage = () => {
       ctx.fillStyle = "black"
       ctx.font = "14px Montserrat"
       ctx.textAlign = "start"
-      ctx.fillText("Dataset: " + info.dataset, 10, canvas.height - 65 - drtShownLinesHeight)
-      ctx.fillText("Time period: " + info.actualTimePeriodRange[0] + " to " + info.actualTimePeriodRange[1], 10, canvas.height - 43 - drtShownLinesHeight)
-      ctx.fillText("Country: " + info.country, 10, canvas.height - 21 - drtShownLinesHeight)
-      // ctx.fillText("Interval: " + info.interval[0] + " to " + info.interval[1], 10, canvas.height - 24 - drtShownLinesHeight)
-      // if (id === "DRT") {
-      //   let drugs = []
-      //   let drugs2 = []
-      //   let drugs3 = []
-      //   for (let i = 0; i < info.drugs.length; i++) {
-      //     if (i < 4) {
-      //       drugs.push(info.drugs[i].value)
-      //     } else if (i < 8) {
-      //       drugs2.push(info.drugs[i].value)
-      //     } else {
-      //       drugs3.push(info.drugs[i].value)
-      //     }
-      //   }
-      //   if (drugs.length === 0) drugs = ['None']
-
-      //   ctx.font = "bold 14px Montserrat"
-      //   ctx.fillText("Shown Drugs:", 10, canvas.height + 8 - drtShownLinesHeight, 400)
-      //   ctx.font = "14px Montserrat"
-
-      //   let aux = info.drugs.length > 4
-      //   let aux2 = info.drugs.length > 8
-      //   ctx.fillText(drugs.join(", ") + (aux ? ',' : ''), 10, canvas.height - (aux2 ? 64 : aux ? 42 : 20), canvas.width - 20)
-      //   ctx.fillText(drugs2.join(", ") + (aux2 ? ',' : ''), 10, canvas.height - (aux2 ? 42 : 20), canvas.width - 20)
-      //   ctx.fillText(drugs3.join(", "), 10, canvas.height - 20, canvas.width - 20)
-      // }
+      ctx.fillText("Dataset: " + info.dataset, 10, canvas.height - 92)
+      ctx.fillText("Time period: " + info.actualTimePeriodRange[0] + " to " + info.actualTimePeriodRange[1], 10, canvas.height - 70)
+      ctx.fillText("Country: " + info.country, 10, canvas.height - 48)
+      ctx.fillText("Region: " + info.region, 10, canvas.height - 26)
 
       const base64 = canvas.toDataURL();
       stopLoading(index)
@@ -2235,9 +2135,9 @@ const DashboardPage = () => {
               <div className="color samples-info-insufficient-data" />
               <span>Insufficient data</span>
             </div>
-            {[...Array(5).keys()].map((n) => {
+            {[...Array(5).keys()].map((n, i) => {
               return (
-                <div key={n} className="samples-info">
+                <div key={n + i} className="samples-info">
                   <div className="color" style={{ backgroundColor: mapSamplesColorScale(aux[n]) }} />
                   <span>{legends[n]}</span>
                 </div>
@@ -2254,7 +2154,7 @@ const DashboardPage = () => {
             </div>
             {genotypes.map((g, n) => {
               return (
-                <div key={n} className="samples-info">
+                <div key={n + "DG"} className="samples-info">
                   <div className="color" style={{ backgroundColor: getColorForGenotype(g) }} />
                   <span>{g}</span>
                 </div>
@@ -2275,7 +2175,7 @@ const DashboardPage = () => {
             </div>
             {percentageSteps.map((g, n) => {
               return (
-                <div key={n} className="samples-info">
+                <div key={n + "H58"} className="samples-info">
                   <div className="color" style={{ backgroundColor: mapRedColorScale(g) }} />
                   {g === "1" && (<span>{'1 - 25'}%</span>)}
                   {g === "25" && (<span>{'26 - 50'}%</span>)}
@@ -2321,7 +2221,15 @@ const DashboardPage = () => {
         <FormControl fullWidth className={classes.formControlSelect}>
           <div className="map-legend-formcontrol-div map-legend-formcontrol-div-pad">
             <div className="map-legend-formcontrol-label">Select map view</div>
-            <FontAwesomeIcon icon={faInfoCircle} onClick={handleClickOpen3} className="icon-info" />
+            <IconTooltip
+              title={<div className={classes.tooltipTitle}>Percentage frequency data is shown only for countries with N≥20 genomes</div>}
+              placement="top"
+            >
+              <IconButton className={classes.tooltipButton}>
+                  <FontAwesomeIcon icon={faInfoCircle} size="xs" className={classes.tooltipIcon}/>
+              </IconButton>
+            </IconTooltip>
+            {/* <FontAwesomeIcon icon={faInfoCircle} onClick={handleClickOpen3} className="icon-info" />
             <Dialog
               open={open3}
               onClose={handleClose3}
@@ -2339,7 +2247,7 @@ const DashboardPage = () => {
                   Close
                 </Button>
               </DialogActions>
-            </Dialog>
+            </Dialog> */}
           </div>
           <Select
             value={mapView}
@@ -2347,9 +2255,9 @@ const DashboardPage = () => {
             fullWidth
             className={classes.select}
           >
-            {mapLegends.map((n) => {
+            {mapLegends.map((n, i) => {
               return (
-                <MenuItem className={classes.select} value={n[0]}>
+                <MenuItem key={i + "mapview"} className={classes.select} value={n[0]}>
                   {n[1]}
                 </MenuItem>
               )
@@ -2468,7 +2376,7 @@ const DashboardPage = () => {
                       geographies.map((geo) => {
                         const sample = worldMapSamplesData.find(s => s.displayName === geo.properties.NAME && (actualContinent === "All" || geo.properties.CONTINENT === actualContinent))
 
-                        const d = worldMapComplementaryData[geo.properties.NAME]; /* .NAME || .NAME_LONG */
+                        const d = worldMapComplementaryData[geo.properties.NAME];
                         let country
 
                         let fill = "lightgrey"
@@ -2903,33 +2811,20 @@ const DashboardPage = () => {
                       </ToggleButtonGroup>
                     </div>
                     <div className="margin-div">
-                      {/* <Typography gutterBottom className={classes.typography}>
-                        Select time period
-                      </Typography>
-                      <CustomSlider
-                        style={{ marginTop: dimensions.width > desktop ? '' : -5, marginBottom: dimensions.width > desktop ? '' : -5 }}
-                        value={actualTimePeriodRange}
-                        min={timePeriodRange[0]}
-                        max={timePeriodRange[1]}
-                        onChange={(evt, value) => {
-                          setActualTimePeriodRange(value)
-                        }}
-                        valueLabelDisplay="auto"
-                      /> */}
-                      <div className="my-year-range">
+                      {years.length > 2 && (<div className="my-year-range">
                         <div>
                           <Typography gutterBottom className={classes.typography}>
                             Start year
                           </Typography>
                           <Select
-                            value={actualTimePeriodRange[0]}
-                            onChange={(evt, value) => setActualTimePeriodRange([value.props.value, actualTimePeriodRange[1]])}
+                            value={actualTimeInitial}
+                            onChange={(evt, value) => setActualTimeInitial(value.props.value)}
                             className={classes.selectYear}
                             fullWidth
                           >
-                            {years?.filter(x => x < actualTimePeriodRange[1]).map((n) => {
+                            {years?.filter(x => x <= actualTimeFinal).map((n, i) => {
                               return (
-                                <MenuItem className={classes.select} value={n}>
+                                <MenuItem key={i+"timeperiod"} className={classes.select} value={n}>
                                   {n}
                                 </MenuItem>
                               )
@@ -2942,21 +2837,21 @@ const DashboardPage = () => {
                             End year
                           </Typography>
                           <Select
-                            value={actualTimePeriodRange[1]}
-                            onChange={(evt, value) => setActualTimePeriodRange([actualTimePeriodRange[0], value.props.value])}
+                            value={actualTimeFinal}
+                            onChange={(evt, value) => setActualTimeFinal(value.props.value)}
                             className={classes.selectYear}
                             fullWidth
                           >
-                            {years?.filter(x => x > actualTimePeriodRange[0]).map((n) => {
+                            {years?.filter(x => x >= actualTimeInitial).map((n, i) => {
                               return (
-                                <MenuItem className={classes.select} value={n}>
+                                <MenuItem key={i + "timeperiod2"} className={classes.select} value={n}>
                                   {n}
                                 </MenuItem>
                               )
                             })}
                           </Select>
                         </div>
-                      </div>
+                      </div>)}
                     </div>
                   </div>
                 </div>
@@ -3005,7 +2900,7 @@ const DashboardPage = () => {
                     className={`button ${captureControlMapInProgress && "disabled"}`}
                     onClick={() => {
                       if (!captureControlMapInProgress)
-                        capturePicture('control-map', 0, { mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange })
+                        capturePicture('control-map', 0, { mapView: mapView, dataset: dataset, actualTimePeriodRange: [actualTimeInitial, actualTimeFinal] })
                     }}
                   >
                     <FontAwesomeIcon icon={faCamera} />
@@ -3051,33 +2946,20 @@ const DashboardPage = () => {
                       </ToggleButtonGroup>
                     </div>
                     <div className="margin-div">
-                      {/* <Typography gutterBottom className={classes.typography}>
-                        Select time period
-                      </Typography>
-                      <CustomSlider
-                        style={{ marginTop: dimensions.width > desktop ? '' : -5, marginBottom: dimensions.width > desktop ? '' : -5 }}
-                        value={actualTimePeriodRange}
-                        min={timePeriodRange[0]}
-                        max={timePeriodRange[1]}
-                        onChange={(evt, value) => {
-                          setActualTimePeriodRange(value)
-                        }}
-                        valueLabelDisplay="auto"
-                      /> */}
                       <div className="my-year-range">
                         <div className="my-year-range-row">
                           <Typography gutterBottom className={classes.typography}>
                             Start year
                           </Typography>
                           <Select
-                            value={actualTimePeriodRange[0]}
-                            onChange={(evt, value) => setActualTimePeriodRange([value.props.value, actualTimePeriodRange[1]])}
+                            value={actualTimeInitial}
+                            onChange={(evt, value) => setActualTimeInitial(value.props.value)}
                             className={classes.select}
                             fullWidth
                           >
-                            {years.map((n) => {
+                            {years.map((n, i) => {
                               return (
-                                <MenuItem className={classes.select} value={n}>
+                                <MenuItem key={i + "year"} className={classes.select} value={n}>
                                   {n}
                                 </MenuItem>
                               )
@@ -3090,14 +2972,14 @@ const DashboardPage = () => {
                             End year
                           </Typography>
                           <Select
-                            value={actualTimePeriodRange[1]}
-                            onChange={(evt, value) => setActualTimePeriodRange([actualTimePeriodRange[0], value.props.value])}
+                            value={actualTimeFinal}
+                            onChange={(evt, value) => setActualTimeFinal(value.props.value)}
                             className={classes.select}
                             fullWidth
                           >
-                            {years.map((n) => {
+                            {years.map((n, i) => {
                               return (
-                                <MenuItem className={classes.select} value={n}>
+                                <MenuItem key={i + "year2"} className={classes.select} value={n}>
                                   {n}
                                 </MenuItem>
                               )
@@ -3131,11 +3013,11 @@ const DashboardPage = () => {
                     </div>
                   )}
                   {tooltipContent.genotypeInfo && (
-                    <div className="additional-info" className="margin-div">
+                    <div className="additional-info margin-div">
                       {tooltipContent.genotypeInfo.map((genotype, index) => {
                         if (index < 5) {
                           return (
-                            <div key={index} className="genotype">
+                            <div key={index + "genotypeInfo"} className="genotype">
                               <div className="color" style={{ backgroundColor: getColorForGenotype(genotype.lineage) }} />
                               <span>{genotype.lineage}: {genotype.count}</span>
                             </div>
@@ -3183,8 +3065,6 @@ const DashboardPage = () => {
                   )}
                   {tooltipContent.cipIInfo && (
                     <div className="additional-info">
-                      {/* <span>CipI: {tooltipContent.cipIInfo.count} ({tooltipContent.cipIInfo.percentage}%)</span>
-                      <span>CipR: {tooltipContent.cipRInfo2.count} ({tooltipContent.cipRInfo2.percentage}%)</span> */}
                       <span>CipI/R: {tooltipContent.cipIRInfo.count} ({tooltipContent.cipIRInfo.percentage}%)</span>
                     </div>
                   )}
@@ -3198,7 +3078,7 @@ const DashboardPage = () => {
                       {tooltipContent.drugsInfo.map((drug, index) => {
                         if (index < 5) {
                           return (
-                            <div key={index} className="genotype">
+                            <div key={index + "drugsInfo"} className="genotype">
                               <div className="color" style={{ backgroundColor: getColorForDrug(drug.name) }} />
                               <span>{drug.name}: {drug.count}</span>
                             </div>
@@ -3213,7 +3093,7 @@ const DashboardPage = () => {
                       {tooltipContent.amrProfilesInfo.map((amr, index) => {
                         if (index < 5) {
                           return (
-                            <div key={index} className="genotype">
+                            <div key={index + "amrInfo"} className="genotype">
                               <div className="color" style={{ backgroundColor: getColorForAMR(amr.name) }} />
                               <span>{amr.name}: {amr.count}</span>
                             </div>
@@ -3228,7 +3108,7 @@ const DashboardPage = () => {
                       {tooltipContent.incTypesInfo.map((incType, index) => {
                         if (index < 5) {
                           return (
-                            <div key={index} className="genotype">
+                            <div key={index + "inctypes"} className="genotype">
                               <div className="color" style={{ backgroundColor: getColorForIncType(incType.type) }} />
                               <span>{incType.type}: {incType.count}</span>
                             </div>
@@ -3249,7 +3129,7 @@ const DashboardPage = () => {
           </div>
         </div>
         <div className="chart-wrapper">
-          <h2 className="showing-data">Now showing: {dataset} data from {actualCountry === "All" ? "all countries" : actualCountry} from {actualTimePeriodRange.toString().substring(0, 4)} to {actualTimePeriodRange.toString().substring(5)}</h2>
+          <h2 className="showing-data">Now showing: {dataset} data from {actualCountry === "All" ? "all countries" : actualCountry} from {actualTimeInitial} to {actualTimeFinal}</h2>
           <div className="country-region-div" style={{flexDirection: dimensions.width > 560 ? 'row' : 'column'}}>
             <FormControl className={classes.formControlSelect, dimensions.width <= 560 ? classes.formControlSelectCountryRegionH : classes.formControlSelectCountryRegionV}>
               <label className="select-country-label">Select country (or click map)</label>
@@ -3261,7 +3141,7 @@ const DashboardPage = () => {
               >
                 {countriesForFilter.map((country, index) => {
                   return (
-                    <MenuItem key={index} className={classes.selectCountryValues} value={country}>
+                    <MenuItem key={index + "countriesFilter"} className={classes.selectCountryValues} value={country}>
                       {country}
                     </MenuItem>
                   )
@@ -3269,7 +3149,7 @@ const DashboardPage = () => {
               </Select>
             </FormControl>
             {dimensions.width > 560 && <div className="country-region-spacer"></div>}
-            <FormControl className={classes.formControlSelect, dimensions.width <= 560 ? classes.formControlSelectCountryRegionH : classes.formControlSelectCountryRegionV}>
+            <FormControl className={`${classes.formControlSelect} ${dimensions.width <= 560 ? classes.formControlSelectCountryRegionH : classes.formControlSelectCountryRegionV}`}>
               <label className="select-country-label">Select region</label>
               <Select
                 value={actualRegion}
@@ -3279,7 +3159,7 @@ const DashboardPage = () => {
               >
                 {regionsForFilter.map((region, index) => {
                   return (
-                    <MenuItem key={index} className={classes.selectCountryValues} value={region}>
+                    <MenuItem key={index + "regionFilter"} className={classes.selectCountryValues} value={region}>
                       {region}
                     </MenuItem>
                   )
@@ -3299,7 +3179,7 @@ const DashboardPage = () => {
                           className={`button ${captureControlChartRFWGInProgress && "disabled"}`}
                           onClick={() => {
                             if (!captureControlChartRFWGInProgress)
-                              capturePicture('RFWG', 1, { mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry, interval: brushRFWG })
+                              capturePicture('RFWG', 1, { mapView: mapView, dataset: dataset, actualTimePeriodRange: [actualTimeInitial, actualTimeFinal], country: actualCountry, region: actualRegion, RFWGCount: RFWGValues.length})
                           }}
                         >
                           <FontAwesomeIcon icon={faCamera} size="sm" />
@@ -3312,9 +3192,19 @@ const DashboardPage = () => {
                       )}
                     </div>
                   </div>
-                  <span className="chart-title chart-wrapper-RFWA-top">Top Genotypes (up to 5)</span>
+                  <span className="chart-title chart-wrapper-RFWA-top">Top Genotypes (up to {RFWGValues.length})</span>
                   <div className="chart-wrapper-RFWA-view" style={{ width: dimensions.width > 790 ? "71%" : '260px' }}>
-                    <InputLabel className={classes.inputLabel}>Data view</InputLabel>
+                    <div className="chart-wrapper-DRT-view-drugs">
+                      <div className="chart-wrapper-DRT-view-drugs-label">Data view</div>
+                      <IconTooltip
+                        title={<div className={classes.tooltipTitle}>Select up to 7 genotypes</div>}
+                        placement="top"
+                      >
+                        <IconButton className={classes.tooltipButton}>
+                            <FontAwesomeIcon icon={faInfoCircle} size="xs" className={classes.tooltipIcon}/>
+                        </IconButton>
+                      </IconTooltip>
+                    </div>
                     <FormControl fullWidth className={classes.formControlSelect}>
                       <DropDownSelect
                         options={RFWGFilterOptions}
@@ -3323,14 +3213,75 @@ const DashboardPage = () => {
                         values={[{ value: RFWGFilterOptions[RFWGFilter - 1].value, id: RFWGFilter }]}
                         onChange={evt => {
                           setRFWGFilter(evt[0].id)
-                          setBrushRFWG([drugsAndGenotypesChartData[0].name, drugsAndGenotypesChartData[drugsAndGenotypesChartData.length - 2].name])
                         }}
                         className="dropdown-select"
                       />
                     </FormControl>
+                    <FormControl id="DDS2" fullWidth className={classes.formControlSelect}>
+                      <DropDownSelect
+                        options={RFWGDropdownOptions}
+                        multi={true}
+                        searchable={false}
+                        clearable={true}
+                        separator={true}
+                        labelField={"label"}
+                        values={RFWGDropdownOptions.slice(0, 5)}
+                        className="dropdown-select"
+                        contentRenderer={({ props, state }) => {
+                          return (
+                            <div className="chart-wrapper-DRT-view-drugs-select">
+                              {state.values.length} of {props.options.length} Selected
+                            </div>
+                          );
+                        }}
+                        itemRenderer={({ item, itemIndex, props, state, methods }) => {
+                          return (
+                            <div key={item[props.valueField]} onClick={() => {
+                              if (RFWGValues.length >= 7) {
+                                if (methods.isSelected(item)) {
+                                  methods.addItem(item)
+                                }
+                              } else {
+                                methods.addItem(item)
+                              }
+                            }}>
+                              <div className="chart-wrapper-DRT-view-drugs-select-options">
+                                <input type="checkbox" checked={methods.isSelected(item)} onChange={() => {}} />
+                                &nbsp;&nbsp;&nbsp;{item[props.labelField]}
+                              </div>
+                            </div>
+                          )
+                        }}
+                        clearRenderer={
+                          ({ props, state, methods }) => {
+                            return (
+                              <Buttons>
+                                {state.values.length > 0 ? (
+                                  <ButtonClearSelect id="DSButton2" className="clear" onClick={methods.clearAll} checked={false}>
+                                    Clear all
+                                  </ButtonClearSelect>
+                                ) : (
+                                  <ButtonClearSelect
+                                    id="DSButton2"
+                                    onClick={() => {
+                                      methods.selectAll(RFWGDropdownOptions.slice(0,5))
+                                    }}
+                                    checked={true}
+                                  >
+                                    Reset
+                                  </ButtonClearSelect>
+                                )}
+                              </Buttons>
+                            );
+                          }
+                        }
+                        onChange={(values) => {
+                          setRFWGValues(values)
+                        }}
+                      />
+                    </FormControl>
                   </div>
                   <div id="RFWG">
-                    {/* <span className="y-axis-label-vertical" style={{ paddingRight: 8, marginBottom: 100 }}>{RFWGFilter === 1 ? 'Number of genomes' : 'Percentage within genotype (%)'}</span> */}
                     {plotDrugsAndGenotypesChart}
                   </div>
                 </div>
@@ -3343,7 +3294,7 @@ const DashboardPage = () => {
                           className={`button ${captureControlChartRFWAGInProgress && "disabled"}`}
                           onClick={() => {
                             if (!captureControlChartRFWAGInProgress)
-                              capturePicture('RFWAG', 4, { mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry, amrClassFilter: amrClassFilter, interval: brushRDWAG })
+                              capturePicture('RFWAG', 4, { mapView: mapView, dataset: dataset, actualTimePeriodRange: [actualTimeInitial, actualTimeFinal], country: actualCountry, amrClassFilter: amrClassFilter, region: actualRegion })
                           }}
                         >
                           <FontAwesomeIcon icon={faCamera} size="sm" />
@@ -3380,14 +3331,12 @@ const DashboardPage = () => {
                         values={[{ value: amrClassFilterOptions[RDWAGDataviewFilter - 1].value, id: RDWAGDataviewFilter }]}
                         onChange={evt => {
                           setRDWAGDataviewFilter(evt[0].id)
-                          setBrushRDWAG([amrClassChartData[0].genotype, amrClassChartData[amrClassChartData.length - 2].genotype])
                         }}
                         className="dropdown-select"
                       />
                     </FormControl>
                   </div>
                   <div id="RFWAG" >
-                    {/* <span className="y-axis-label-vertical" style={{ paddingRight: 8, paddingTop: 190 }}>Number of occurrences</span> */}
                     {plotAmrClassChart}
                   </div>
                 </div>
@@ -3402,7 +3351,7 @@ const DashboardPage = () => {
                           className={`button ${captureControlChartDRTInProgress && "disabled"}`}
                           onClick={() => {
                             if (!captureControlChartDRTInProgress)
-                              capturePicture('DRT', 2, { mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry, interval: brushDRT, drugs: trendValues })
+                              capturePicture('DRT', 2, { mapView: mapView, dataset: dataset, actualTimePeriodRange: [actualTimeInitial, actualTimeFinal], country: actualCountry, drugs: trendValues, region: actualRegion })
                           }}
                         >
                           <FontAwesomeIcon icon={faCamera} size="sm" />
@@ -3418,28 +3367,8 @@ const DashboardPage = () => {
                   <span className="chart-title chart-wrapper-RFWA-top">Data are plotted for years with N ≥ 10 genomes</span>
                   {dimensions.width > desktop && (<span className="chart-title" ></span>)}
                   <div className="chart-wrapper-DRT-view" style={{ width: dimensions.width > 790 ? "71%" : '260px' }}>
-                    {/* <InputLabel style={{fontSize: 12, fontWeight: 500, fontFamily: "Montserrat" }}>Drugs view</InputLabel> */}
                     <div className="chart-wrapper-DRT-view-drugs">
                       <div className="chart-wrapper-DRT-view-drugs-label">Drugs view</div>
-                      <FontAwesomeIcon icon={faInfoCircle} onClick={handleClickOpen4} className="icon-info" />
-                      <Dialog
-                        open={open4}
-                        onClose={handleClose4}
-                        aria-labelledby="alert-dialog-title"
-                        aria-describedby="alert-dialog-description"
-                      >
-                        <DialogTitle id="alert-dialog-title">{"Information"}</DialogTitle>
-                        <DialogContent>
-                          <DialogContentText id="alert-dialog-description">
-                            {'Data is shown only for years with N≥10 genomes'}
-                          </DialogContentText>
-                        </DialogContent>
-                        <DialogActions>
-                          <Button onClick={handleClose4} color="primary">
-                            Close
-                          </Button>
-                        </DialogActions>
-                      </Dialog>
                     </div>
                     <FormControl id="DDS" fullWidth className={classes.formControlSelect}>
                       <DropDownSelect
@@ -3461,7 +3390,7 @@ const DashboardPage = () => {
                         itemRenderer={({ item, itemIndex, props, state, methods }) => (
                           <div key={item[props.valueField]} onClick={() => methods.addItem(item)}>
                             <div className="chart-wrapper-DRT-view-drugs-select-options">
-                              <input type="checkbox" checked={methods.isSelected(item)} />
+                              <input type="checkbox" checked={methods.isSelected(item)} onChange={() => {}}/>
                               &nbsp;&nbsp;&nbsp;{item[props.labelField]}
                             </div>
                           </div>
@@ -3494,7 +3423,6 @@ const DashboardPage = () => {
                     </FormControl>
                   </div>
                   <div id="DRT">
-                    {/* <span className="y-axis-label-vertical" style={{ paddingTop: 80 }}>Resistant (%)</span> */}
                     {plotDrugTrendsChart}
                   </div>
                 </div>
@@ -3507,7 +3435,7 @@ const DashboardPage = () => {
                           className={`button ${captureControlChartGDInProgress && "disabled"}`}
                           onClick={() => {
                             if (!captureControlChartGDInProgress)
-                              capturePicture('GD', 3, { mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry, interval: brushGD })
+                              capturePicture('GD', 3, { mapView: mapView, dataset: dataset, actualTimePeriodRange: [actualTimeInitial, actualTimeFinal], country: actualCountry, region: actualRegion })
                           }}
                         >
                           <FontAwesomeIcon icon={faCamera} size="sm" />
@@ -3531,15 +3459,12 @@ const DashboardPage = () => {
                         values={[{ value: populationStructureFilterOptions[populationStructureFilter - 1].value, id: populationStructureFilter }]}
                         onChange={evt => {
                           setPopulationStructureFilter(evt[0].id)
-                          setBrushGD([populationStructureChartData[0].name, populationStructureChartData[populationStructureChartData.length - 1].name])
                         }}
                         className="dropdown-select"
                       />
                     </FormControl>
                   </div>
                   <div id="GD">
-                    {/* {getPopulationStructureChartLabel()} */}
-                    {/* <span className="y-axis-label-vertical" style={{ paddingTop: 190 }}>{populationStructureFilter === 1 ? 'Number of genomes' : '% Genomes per year'}</span> */}
                     {plotPopulationStructureChart}
                   </div>
                 </div>
@@ -3553,7 +3478,7 @@ const DashboardPage = () => {
               <div style={{ marginTop: dimensions.width > desktop ? 0 : 20, marginLeft: dimensions.width > desktop ? 20 : 0 }} className={`download-sheet-button`} onClick={() => {
                 if (!captureReportInProgress) {
                   setCaptureReportInProgress(true);
-                  capturePicture('', 5, { mapView: mapView, dataset: dataset, actualTimePeriodRange: actualTimePeriodRange, country: actualCountry, amrClassFilter: amrClassFilter, brush: [brushRFWG, brushRDWAG, brushDRT, brushGD], drugs: trendValues });
+                  capturePicture('', 5, { mapView: mapView, dataset: dataset, actualTimePeriodRange: [actualTimeInitial, actualTimeFinal], country: actualCountry, region: actualRegion, amrClassFilter: amrClassFilter, actualGenomes: actualGenomes.length, drugs: trendValues, dimensions: dimensions, desktop: desktop, RFWGCount: RFWGValues.length });
                 }
               }}>
                 <FontAwesomeIcon icon={faFilePdf} style={{ marginRight: 8 }} />
@@ -3622,7 +3547,8 @@ const DashboardPage = () => {
               onClick={() => {
                 setMapView('CipI');
                 setDataset('All');
-                setActualTimePeriodRange(timePeriodRange);
+                setActualTimeInitial(timeInitial);
+                setActualTimeFinal(timeFinal);
                 setControlMapPosition({ coordinates: [0, 0], zoom: 1 });
                 setActualCountry('All');
                 setActualRegion('All');
@@ -3634,6 +3560,10 @@ const DashboardPage = () => {
                 const text = document.getElementById('DSButton')
                 if (text.innerText === "SELECT ALL") {
                   text.click()
+                }
+                const text2 = document.getElementById('DSButton2')
+                if (text2.innerText === "RESET") {
+                  text2.click()
                 }
               }}
             >
@@ -3653,6 +3583,22 @@ const DashboardPage = () => {
           height={70}
           width={70}
         />
+      </div>
+      <div className="info" id="report-info">
+        <p><b>TyphiNET report [{(new Date()).toString().replace(/ *\([^)]*\) */g, "")}]</b></p>
+        <p>This report was generated by the TyphiNET <a href="http://typhi.net">(http://typhi.net)</a> website, a data visualisation platform that draws genome-derived data on antimicrobial resistance and genotypes from Typhi Pathogenwatch <a href="http://pathogen.watch">(http://pathogen.watch)</a>. Data were last updated on [{lastUpdated.toString()}].</p>
+        <p>This report was generated at [{(new Date()).toString().replace(/ *\([^)]*\) */g, "")}] using the beta version of TyphiNET which is still undergoing development and data are not yet complete. For code and further details please see: <a href="https://github.com/zadyson/TyphiNET">https://github.com/zadyson/TyphiNET</a></p>
+        <p className="info-p">The genotypes reported here are defined in <b>Dyson & Holt (2021), J. Infect. Dis.</b></p>
+        <p className="info-p">Antimicrobial resistance determinants are described in the Typhi Pathogenwatch paper, <b>Argimón et al. 2021, Nat. Commun.</b></p>
+        <p>Travel-associated cases are attributed to the country of travel, not the country of isolation (see <b>Ingle et al. 2019, PLoS NTDs</b>).</p>
+        <p>{'TyphiNET presents data aggregated from >100 studies. Individual genome information, including derived genotype and AMR calls, sequence data accession numbers, and source information (PubMedID for citation) can be downloaded as a spreadsheet from the TyphiNET website (typhi.net).'}</p>
+        <p>The TyphiNET dashboard was developed with support from the Wellcome Trust (Open Research Fund, 219692/Z/19/Z) and the EU Horizon 2020 research and innovation programme (Marie Sklodowska-Curie grant #845681).</p>
+        { actualCountry !== "All" && (
+          <div>
+            <p className="info-p"><b>For country report:</b></p>
+            <p>Studies contributing genomes representing infections originating from {actualCountry} have the following PubMed IDs (PMIDs): {countryPMID.join(', ')}.</p>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -68,6 +68,21 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 500,
         fontFamily: "Montserrat",
         paddingBottom: 5
+    },
+    tooltipButton: {
+        height: 15.5,
+        width: 15.5,
+        marginLeft: 5
+    },
+    tooltipTitle: {
+        fontSize: 12
+    },
+    tooltipIcon: {
+        color: "white",
+        backgroundColor: "black",
+        borderColor: "black",
+        borderWidth: 1,
+        borderRadius: "50%"
     }
 }));
 

@@ -1,6 +1,7 @@
 import './index.css';
 import React, { useEffect, useState } from 'react';
 import Table from '@material-ui/core/Table';
+import SearchBar from "material-ui-search-bar";
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
@@ -9,13 +10,17 @@ import TableRow from '@material-ui/core/TableRow';
 import TablePagination from '@material-ui/core/TablePagination';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from '@material-ui/core';
-import IconButton from '@material-ui/core/IconButton';
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Tooltip, Toolbar, Typography, Checkbox, Box, IconButton, Select, MenuItem, FormControl } from '@material-ui/core';
+import {FirstPage, LastPage, KeyboardArrowLeft, KeyboardArrowRight} from '@material-ui/icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTrashAlt, faEdit } from '@fortawesome/free-solid-svg-icons'
-import { useStyles, ColorButton, ColorButton3, ColorButton4, StyledHeaderCell, CustomTableContainer, CustomTableSortLabel } from './materialUI'
+import { faTrashAlt, faEdit, faInfoCircle } from '@fortawesome/free-solid-svg-icons'
+import { useStyles, ColorButton, ColorButton3, ColorButton4, ColorButton5, StyledHeaderCell, CustomTableContainer, CustomTableSortLabel, CustomCircularProgress } from './materialUI'
 import { API_ENDPOINT } from '../../constants';
 import axios from 'axios';
+import LZString from 'lz-string';
+import Loader from "react-loader-spinner";
+import PropTypes from 'prop-types';
+import { useTheme } from '@material-ui/core/styles';
 
 function createData(id, date, changes) {
   return { id, date, changes };
@@ -31,13 +36,29 @@ const AdminPage = () => {
     const [currentData, setCurrentData] = useState(0)
     const [tableKeys, setTableKeys] = useState([])
     const [page, setPage] = useState(0)
-    const [rowsPerPage, setRowsPerPage] = React.useState(50);
+    const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [order, setOrder] = React.useState('asc');
     const [orderBy, setOrderBy] = React.useState('NAME');
     const [currentRow, setCurrentRow] = useState({})
     const [open, setOpen] = React.useState(false);
     const [open2, setOpen2] = React.useState(false);
     const [open3, setOpen3] = React.useState(false);
+    const [open4, setOpen4] = React.useState(false);
+    const [open5, setOpen5] = React.useState(false);
+    const [open6, setOpen6] = React.useState(false);
+    const [open7, setOpen7] = React.useState(false);
+    const [resultMessage, setResultMessage] = React.useState("");
+    const [loading, setLoading] = React.useState(false);
+    const [selected, setSelected] = React.useState([]);
+    const [search, setSearch] = React.useState("");
+    const [filters, setFilters] = React.useState({});
+    const [filterOptions, setFilterOptions] = React.useState({});
+    const [filteredData, setFilteredData] = React.useState([]);
+    const [isLoading, setIsLoading] = React.useState(true);
+    const [startProgress, setStartProgress] = React.useState(false);
+    const [loadingMessage, setLoadingMessage] = React.useState("");
+
+    const [exceptions] = React.useState(["NAME", "ACCESION", "Genome ID", "LATITUDE", "LONGITUDE", "LOCATION", "Mash Distance", "Matching Hashes", "SANGER LANE", "STRAIN"]);
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -80,6 +101,7 @@ const AdminPage = () => {
     }
 
     function changeView (id) {
+        resetChanges()
         setData(originalData)
         const aux = JSON.parse(JSON.stringify(data))
         if (id > 0) {
@@ -113,13 +135,25 @@ const AdminPage = () => {
 
     function betterChanges (changes) {
         const aux = JSON.parse(JSON.stringify(changes))
-        const added = Object.keys(aux.added).length > 0 ? "[ " + Object.keys(aux.added) + " ]" : ""
-        const deleted = (Object.keys(aux.deleted).length > 0 ? ('[ ' + Object.keys(aux.deleted) + " ]") : "")
-        const updated = (Object.keys(aux.updated).length > 0 ? (JSON.stringify(aux.updated).replaceAll('\"','').replaceAll(',', ', ').replaceAll(':', ': ').replaceAll('{', '{ ').replaceAll('}', ' }')) : "")
+        const added = Object.keys(aux.added).length > 0 ? Object.keys(aux.added).join(", ") + "." : ""
+        const deleted = (Object.keys(aux.deleted).length > 0 ? (Object.keys(aux.deleted).join(", ")) + "." : "")
+        let updated = ""
+        
+        if (Object.keys(aux.updated).length > 0) {
+            updated = Object.entries(aux.updated).map(x => {
+                const updates = Object.entries(x[1])
+                const changes = updates.map((y, i) => {
+                    const point = i === updates.length - 1 ? "." : ""
+                    return y[0] + " (new: " + y[1].new + ", old: " + y[1].old + ")" + point
+                });
+                return x[0] + ": " + changes.join(", ");
+            })
+        }
+        
         const text = []
-        if (added !== "") text.push(["ADDED: ", added])
-        if (deleted !== "") text.push(["DELETED: ", deleted])
-        if (updated !== "") text.push(["UPDATED: ", updated])
+        if (added !== "") text.push(["ADDED", added])
+        if (deleted !== "") text.push(["DELETED", deleted])
+        if (updated !== "") text.push(["UPDATED", updated])
         return text
     }
 
@@ -133,10 +167,104 @@ const AdminPage = () => {
         setOpen2(true)
     }
 
+    function handleUpload () {
+        setOpen4(true)
+    }
+
+    function handleCheckChanges (message) {
+        setResultMessage(message);
+        setOpen5(true);
+    }
+
+    async function checkChanges (showPopup = true) {
+        setStartProgress(true);
+        setLoading(true);
+        return await axios.get(`${API_ENDPOINT}mongo/checkForChanges`)
+            .then(async (res) => {
+                if (res.data.Status === "Changes") {
+                    await resetChanges();
+                    await getData();
+                    if (showPopup) {
+                        handleCheckChanges('Changes were found. Tables updated.');
+                    }
+                    return true
+                } else if (res.data.Status === "No Changes") {
+                    if (showPopup) {
+                        handleCheckChanges('No changes found.');
+                    }
+                    return false
+                }
+            })
+            .catch((error) => {
+                if (showPopup) {
+                    handleCheckChanges('Could not check for changes. Try again later.');
+                }
+                return false
+            })
+            .finally(()=>{
+                setOpen7(false)
+                setLoading(false);
+                setStartProgress(false);
+            })
+    }
+
+    const handleSelectAllClick = (event) => {
+        if (event.target.checked) {
+          const newSelecteds = filteredData.map((n) => n.NAME);
+          setSelected(newSelecteds);
+          return;
+        }
+        setSelected([]);
+    };
+
+    const handleClick = (name) => {
+        const selectedIndex = selected.indexOf(name);
+        let newSelected = [];
+    
+        if (selectedIndex === -1) {
+            newSelected = newSelected.concat(selected, name);
+        } else if (selectedIndex === 0) {
+            newSelected = newSelected.concat(selected.slice(1));
+        } else if (selectedIndex === selected.length - 1) {
+            newSelected = newSelected.concat(selected.slice(0, -1));
+        } else if (selectedIndex > 0) {
+            newSelected = newSelected.concat(
+                selected.slice(0, selectedIndex),
+                selected.slice(selectedIndex + 1),
+            );
+        }
+    
+        setSelected(newSelected);
+    };
+
     function deleteRow () {
+        // if (isSelected(currentRow.NAME)) {
+        //     handleClick(currentRow.NAME)
+        // }
         const index = data.findIndex(x => x.NAME === currentRow.NAME)
-        data.splice(index, 1)
+        const aux = JSON.parse(JSON.stringify(data))
+        aux.splice(index, 1)
+        setData(aux)
         setOpen(false)
+    }
+
+    function deleteRows () {
+        const aux = JSON.parse(JSON.stringify(filteredData))
+        const aux2 = JSON.parse(JSON.stringify(data))
+        selected.forEach(row => {
+            const index = aux.findIndex(x => x.NAME === row);
+            if (index !== -1) {
+                aux.splice(index, 1)
+            }
+            const index2 = aux2.findIndex(x => x.NAME === row);
+            if (index2 !== -1) {
+                aux2.splice(index2, 1)
+            }
+        })
+        setData(aux2)
+        setFilteredData(aux)
+        setSelected([])
+        setOpen6(false)
     }
 
     function editRow () {
@@ -153,6 +281,8 @@ const AdminPage = () => {
         aux[rowIndex] = row
         setData(aux)
         setOpen2(false)
+        setResultMessage(`Row ${currentRow.NAME} edited with success!`)
+        setOpen5(true)
     }
 
     function addRow () {
@@ -168,41 +298,28 @@ const AdminPage = () => {
         aux.sort((a, b) => a.NAME < b.NAME ? -1 : 1)
         setData(aux)
         setOpen3(false)
+        setResultMessage(`Row ${row.NAME} added with success!`)
+        setOpen5(true)
     }
 
-    function resetChanges () {
+    async function resetChanges () {
+        setSearch("")
+        let aux = JSON.parse(JSON.stringify(filters))
+        for (const key in aux) {
+            aux[key] = ""
+        }
+        setFilters(aux)
+        setPage(0)
+        setRowsPerPage(10)
         setCurrentData(0)
         setData(originalData)
     }
 
-    function lzw_encode(s) {
-        var dict = {};
-        var data = (s + "").split("");
-        var out = [];
-        var currChar;
-        var phrase = data[0];
-        var code = 256;
-        for (var i=1; i<data.length; i++) {
-            currChar=data[i];
-            if (dict[phrase + currChar] != null) {
-                phrase += currChar;
-            }
-            else {
-                out.push(phrase.length > 1 ? dict[phrase] : phrase.charCodeAt(0));
-                dict[phrase + currChar] = code;
-                code++;
-                phrase=currChar;
-            }
-        }
-        out.push(phrase.length > 1 ? dict[phrase] : phrase.charCodeAt(0));
-        for (var i=0; i<out.length; i++) {
-            out[i] = String.fromCharCode(out[i]);
-        }
-        return out.join("");
-    }
-
     function uploadChanges () {
-        const times = Math.ceil(data.length / 1000)
+        setLoading(true)
+        setStartProgress(true);
+        setResultMessage("")
+        const times = Math.ceil(data.length / 1500)
         const parts = []
         for (let index = 0; index < times; index++) {
             if (times === 0) {
@@ -212,25 +329,47 @@ const AdminPage = () => {
                 if (times === 1) {
                     parts.push([data])
                 } else {
-                    parts.push([data.slice((times - 1) * 1000)])
+                    parts.push([data.slice((times - 1) * 1500)])
                 }
             } else {
-                parts.push([data.slice(index * 1000, (index * 1000) + 1000)])
+                parts.push([data.slice(index * 1500, (index * 1500) + 1500)])
             }
             axios.post(`${API_ENDPOINT}mongo/upload/admin`, {
-                data: lzw_encode(JSON.stringify(parts[parts.length - 1])),
+                data: LZString.compress(JSON.stringify(parts[parts.length - 1])),
                 parts: times,
                 current: index + 1
             })
-              .then((res) => {
-              })
+                .then((res) => {
+                    if (res.data !== '' && res.data.Status === 'Uploaded') {
+                        axios.get(`${API_ENDPOINT}mongo/download`)
+                        .then(async () => {
+                            await checkChanges()
+                            setResultMessage("Upload and download completed!")
+                        })
+                        .catch(() => {
+                            setResultMessage("Something went wrong with the download, please try again later!")
+                        })
+                        .finally(() => {
+                            setStartProgress(false)
+                            setLoading(false)
+                            setOpen4(false)
+                            setOpen5(true)
+                        })
+                    }
+                })
+                .catch(() => {
+                    setStartProgress(false)
+                    setLoading(false)
+                    setOpen4(false)
+                    setResultMessage("Something went wrong with the upload, please try again later!")
+                    setOpen5(true)
+                })
         }
         
     }
 
-
-    useEffect(() => {
-        axios.get(`${API_ENDPOINT}file/databaseLog`)
+    async function getData () {
+        await axios.get(`${API_ENDPOINT}file/databaseLog`)
           .then((res) => {
             let data = res.data
             let aux = []
@@ -243,76 +382,309 @@ const AdminPage = () => {
             setRows(aux)
             
             let aux2 = Object.values(data[data.length - 1].data)
+            let aux4 = {}
+            let aux5 = {}
+
+            Object.keys(aux2[0]).forEach(key => {
+                if (!exceptions.includes(key)) {
+                    aux4[key] = ""
+                    aux5[key] = []
+                    let options = aux2.map(value => value[key]);
+                    options.forEach(x => {
+                        if (!aux5[key].includes(x)) {
+                            aux5[key].push(x)
+                        }
+                    })
+                    aux5[key].sort()
+                }
+            });
+            
             setData(aux2)
+            setFilters(aux4)
+            setFilterOptions(aux5)
+            setFilteredData(JSON.parse(JSON.stringify(aux2)))
             setOriginalData(JSON.parse(JSON.stringify(aux2)))
             setTableKeys(Object.keys(aux2[0]))
           })
-      }, [])
+    }
+
+    useEffect(() => {
+        setLoadingMessage("Checking for changes...")
+        checkChanges(false).then((response)=>{
+            if (!response) {
+                getData().finally(() => {
+                    setIsLoading(false);
+                });
+            } else {
+                setIsLoading(false);
+            }
+        }).finally(()=>{
+            setLoadingMessage("")
+        })
+    }, [])
+
+    useEffect(() => {
+        let aux = JSON.parse(JSON.stringify(data))
+        if (search === "" && Object.values(filters).join("") === "") {
+            setFilteredData(aux)
+        } else {
+            let s = search.toLowerCase()
+
+            aux = aux.filter(x => {
+                let pass = true
+                Object.keys(x).forEach(y => {
+                    if (!exceptions.includes(y) && filters[y] !== "" && x[y] !== filters[y]) {
+                        pass = false
+                    }
+                    if (search !== "" && !Object.values(x).join(" ").toLowerCase().includes(s)) {
+                        pass = false
+                    }
+                })
+                return pass
+            })
+
+            setFilteredData(aux)
+        }
+    }, [search, data, filters, exceptions])
+
+    const EnhancedTableToolbar = (props) => {
+        const { numSelected } = props;
+        
+        return (
+            <Toolbar className={classes.toolbar}>
+                {numSelected > 0 ? (
+                    <Typography
+                        sx={{ flex: '1 1 100%' }}
+                        color="inherit"
+                        variant="subtitle1"
+                        component="div"
+                        className={classes.currentData}
+                    >
+                        {numSelected} selected
+                    </Typography>
+                ) : (
+                    <Typography
+                        sx={{ flex: '1 1 100%' }}
+                        variant="h6"
+                        id="tableTitle"
+                        component="div"
+                        className={classes.currentData}
+                    >
+                        <b>DATA ID:</b> {currentData}
+                    </Typography>
+                )}
+
+                <SearchBar
+                    value={search}
+                    placeholder={"Search and press enter..."}
+                    onCancelSearch={() => {
+                        setSearch("")
+                        setPage(0)
+                    }}
+                    onRequestSearch={(value) => {
+                        setSearch(value)
+                        setPage(0)
+                    }}
+                />
+            
+                {numSelected > 0 ? (
+                    <Tooltip title="Delete">
+                        <IconButton onClick={() => setOpen6(true)}>
+                            <FontAwesomeIcon icon={faTrashAlt} className={classes.deleteSelected}/>
+                        </IconButton>
+                    </Tooltip>
+                ) : null}
+
+                
+            </Toolbar>
+        );
+    };
 
     function EnhancedTableHead(props) {
-        const { classes, order, orderBy, onRequestSort } = props;
+        const { classes, order, orderBy, onRequestSort, onSelectAllClick, numSelected, rowCount } = props;
         const createSortHandler = (property) => (event) => {
             onRequestSort(event, property);
         };
         
-        return (
+        return data.length > 0 && (
             <TableHead>
-            <TableRow>
-                {tableKeys.map((headCell) => (
-                <StyledHeaderCell
-                    key={headCell + 'table'}
-                    align={'center'}
-                    sortDirection={orderBy === headCell ? order : false}
-                >
-                    <CustomTableSortLabel
-                        active={orderBy === headCell}
-                        direction={orderBy === headCell ? order : 'asc'}
-                        onClick={createSortHandler(headCell)}
-                    >
-                        {headCell}
-                    </CustomTableSortLabel>
-                </StyledHeaderCell>
-                ))}
-                <TableCell className={classes.stickyHeaderCell}>
-                    <div className="actions">ACTIONS</div>
-                </TableCell>
-            </TableRow>
+                <TableRow>
+                    <TableCell padding="checkbox" className={classes.checkboxCell}>
+                        <Checkbox
+                            color="primary"
+                            indeterminate={numSelected > 0 && numSelected < rowCount}
+                            checked={rowCount > 0 && numSelected === rowCount}
+                            onChange={onSelectAllClick}
+                            className={classes.checkbox}
+                        />
+                    </TableCell>
+                    {tableKeys.map((headCell) => (
+                        <StyledHeaderCell
+                            key={headCell + 'table'}
+                            align={'center'}
+                            sortDirection={orderBy === headCell ? order : false}
+                        >
+                            <CustomTableSortLabel
+                                active={orderBy === headCell}
+                                direction={orderBy === headCell ? order : 'asc'}
+                                onClick={createSortHandler(headCell)}
+                                className={classes.rowHeader}
+                            >
+                                <div className={classes.header}>
+                                    <div className={classes.headerTitle}>{headCell}</div>
+                                    {!exceptions.includes(headCell) && (
+                                        <FormControl>
+                                            <Select
+                                                value={filters[headCell]}
+                                                onChange={(event) => {
+                                                    setPage(0)
+                                                    let aux = JSON.parse(JSON.stringify(filters))
+                                                    aux[headCell] = event.target.value
+                                                    setFilters(aux)
+                                                    event.stopPropagation()
+                                                }}
+                                                displayEmpty
+                                                className={classes.selectFilter}
+                                                onOpen={(event) => event.stopPropagation()}
+                                                onClose={(event) => event.stopPropagation()}
+                                            >
+                                                <MenuItem value="">
+                                                    <em>None</em>
+                                                </MenuItem>
+                                                {filterOptions[headCell].map((option, i) => (<MenuItem key={i + option} value={option}>{option}</MenuItem>))}
+                                            </Select>
+                                        </FormControl>
+                                    )}
+                                </div>
+                            </CustomTableSortLabel>
+                        </StyledHeaderCell>
+                    ))}
+                    <TableCell className={classes.stickyHeaderCell}>
+                        <div className="actions">ACTIONS</div>
+                    </TableCell>
+                </TableRow>
             </TableHead>
         );
     }
+
+    function NumberOfPages() {
+        return Math.ceil(filteredData.length / rowsPerPage)
+    }
+
+    function TablePaginationActions(props) {
+        const theme = useTheme();
+        const { count, page, rowsPerPage, onPageChange } = props;
+      
+        const handleFirstPageButtonClick = (event) => {
+          onPageChange(event, 0);
+        };
+      
+        const handleBackButtonClick = (event) => {
+          onPageChange(event, page - 1);
+        };
+      
+        const handleNextButtonClick = (event) => {
+          onPageChange(event, page + 1);
+        };
+      
+        const handleLastPageButtonClick = (event) => {
+          onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
+        };
+      
+        return (
+          <Box sx={{ flexShrink: 0, ml: 2.5 }} className={classes.box}>
+            <IconButton
+              onClick={handleFirstPageButtonClick}
+              disabled={page === 0}
+              aria-label="first page"
+            >
+              {theme.direction === 'rtl' ? <LastPage /> : <FirstPage />}
+            </IconButton>
+            <IconButton
+              onClick={handleBackButtonClick}
+              disabled={page === 0}
+              aria-label="previous page"
+            >
+              {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+            </IconButton>
+            <IconButton
+              onClick={handleNextButtonClick}
+              disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+              aria-label="next page"
+            >
+              {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+            </IconButton>
+            <IconButton
+              onClick={handleLastPageButtonClick}
+              disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+              aria-label="last page"
+            >
+              {theme.direction === 'rtl' ? <FirstPage /> : <LastPage />}
+            </IconButton>
+          </Box>
+        );
+    } 
+      
+    TablePaginationActions.propTypes = {
+        count: PropTypes.number.isRequired,
+        onPageChange: PropTypes.func.isRequired,
+        page: PropTypes.number.isRequired,
+        rowsPerPage: PropTypes.number.isRequired,
+    };
+
+    const isSelected = (name) => selected.indexOf(name) !== -1;
 
     return (
         <div className="mainDiv">
             <div className="mainDiv-padding">
                 <div className="titleActions">
-                    <h2 className="title">MongoDB Admin Page</h2>
-                    <div>
-                        <ColorButton4 onClick={() => {uploadChanges()}} variant="outlined" size="small" className={classes.uploadButton} >Submit changes</ColorButton4>
+                    <div className="titleButtonRow">
+                        <h2 className="title">MongoDB Admin Page</h2>
+                        <ColorButton5 onClick={() => {setOpen7(true)}} variant="outlined" size="small" className={classes.checkChangesButton} >Refresh</ColorButton5>
+                    </div>
+                    <div className="tooltipSubmitRow">
+                        <Tooltip 
+                            title={<div className="tooltipTitle">Changes are only saved by pressing the <b className="boldTooltipText">SUBMIT CHANGES</b> button!</div>}
+                            placement="left"
+                        >
+                            <IconButton>
+                                <FontAwesomeIcon icon={faInfoCircle} />
+                            </IconButton>
+                        </Tooltip>
+                        <ColorButton4 onClick={() => {handleUpload()}} variant="outlined" size="small" className={classes.uploadButton} >Submit changes</ColorButton4>
                     </div>
                 </div>
                 <TableContainer component={Paper} className={classes.changesTable}>
-                    <Table size="small" aria-label="a dense table">
+                    <Table stickyHeader size="small" aria-label="a dense table">
                         <TableHead>
-                        <TableRow>
-                            <StyledHeaderCell>ID</StyledHeaderCell>
-                            <StyledHeaderCell>Date</StyledHeaderCell>
-                            <StyledHeaderCell align="left">Changes</StyledHeaderCell>
-                            <StyledHeaderCell align="left">Actions</StyledHeaderCell>
-                        </TableRow>
+                            <TableRow>
+                                <StyledHeaderCell>ID</StyledHeaderCell>
+                                <StyledHeaderCell>Date</StyledHeaderCell>
+                                <StyledHeaderCell align="left">Changes</StyledHeaderCell>
+                                <StyledHeaderCell className={classes.stickyHeaderCell} align="left">Actions</StyledHeaderCell>
+                            </TableRow>
                         </TableHead>
                         <TableBody>
-                            {rows.map((row) => (
+                            {rows.map((row, r) => (
                                 <TableRow key={row.id + 'changes'} className={row.id === currentData ? classes.cellON : classes.off}>
                                     <TableCell align="left">{row.id}</TableCell>
                                     <TableCell align="left">{row.date}</TableCell>
-                                    <TableCell align="left">{betterChanges(row.changes).map((text) => (
-                                        <div key={text[1] + 'change'}>
-                                            {text[0]}
-                                            {text[1]}
+                                    <TableCell align="left">{betterChanges(row.changes).map((text, t) => (
+                                        <div key={`${r}${t}change`} className="changesText">
+                                            <div>{text[0]}</div>
+                                            &nbsp;{"entries with name:"}&nbsp;
+                                            {text[0] !== "UPDATED" 
+                                                ? (<div>{text[1]}</div>) 
+                                                : (
+                                                    <div>
+                                                        {Object.values(text[1]).map((x, i) => (<div key={x + i}>{x}</div>))}
+                                                    </div>
+                                                )
+                                            }
                                         </div>
                                     ))}</TableCell>
-                                    <TableCell align="left">
-                                        <ColorButton onClick={() => changeView(row.id)} variant="outlined" size="small" className={classes.viewButton} >View</ColorButton>
+                                    <TableCell align="left" className={classes.stickyCell}>
+                                        <ColorButton onClick={() => changeView(row.id)} variant="outlined" size="small" className={classes.viewButton} >Load</ColorButton>
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -320,52 +692,102 @@ const AdminPage = () => {
                     </Table>
                 </TableContainer>
                 <div className="addButton">
-                    <ColorButton3 onClick={() => {resetChanges()}} variant="outlined" size="small" className={classes.resetButton} >Reset changes</ColorButton3>
+                    <ColorButton3
+                        onClick={() => {
+                            resetChanges()
+                        }}
+                        variant="outlined"
+                        size="small"
+                        className={classes.resetButton}
+                    >
+                        Reset changes
+                    </ColorButton3>
                     <ColorButton3 onClick={() => {setOpen3(true)}} variant="outlined" size="small" className={classes.uploadButton} >Add new entry</ColorButton3>
                 </div>
                 <Paper className={classes.tablePadding}>
-                    <div className="currentData"><b>DATA ID:</b> {currentData}</div>
+                    <EnhancedTableToolbar numSelected={selected.length} />
                     <CustomTableContainer>
                         <Table stickyHeader size="small" aria-label="a dense table">
                             <EnhancedTableHead
+                                numSelected={selected.length}
                                 classes={classes}
                                 order={order}
                                 orderBy={orderBy}
                                 onRequestSort={handleRequestSort}
+                                onSelectAllClick={handleSelectAllClick}
+                                rowCount={filteredData.length}
                             />
                             <TableBody>
-                                {stableSort(data, getComparator(order, orderBy)).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-                                    <TableRow key={row.NAME} className={classes.dataRow}>
-                                        {Object.values(row).map((cell) => (
-                                            <TableCell key={Math.random() + 'cell'} align="center">{cell}</TableCell>
-                                        ))}
-                                        <TableCell align="center" className={classes.stickyCell}>
-                                            <div className="tableActions">
-                                                <IconButton aria-label="edit" size="small" onClick={() => handleEdit(JSON.parse(JSON.stringify(row)))}>
-                                                    <FontAwesomeIcon icon={faEdit} className="editIcon" />
-                                                </IconButton>
-                                                <IconButton aria-label="delete" size="small" onClick={() => handleDelete(JSON.parse(JSON.stringify(row)))}>
-                                                    <FontAwesomeIcon icon={faTrashAlt} className="trashIcon"/>
-                                                </IconButton>
-                                            </div>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
+                                {stableSort(filteredData, getComparator(order, orderBy)).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
+                                    const isItemSelected = isSelected(row.NAME);
+                                    return (
+                                        <TableRow
+                                            key={row.NAME + index}
+                                            className={classes.dataRow}
+                                            role="checkbox"
+                                            hover
+                                            aria-checked={isItemSelected}
+                                            selected={isItemSelected}
+                                            classes={{selected: classes.tableRowSelected, root: classes.tableRowRoot}}
+                                        >
+                                            <TableCell padding="checkbox">
+                                                <Checkbox
+                                                    color="primary"
+                                                    checked={isItemSelected}
+                                                    onClick={() => handleClick(row.NAME)}
+                                                />
+                                            </TableCell>
+                                            {Object.values(row).map((cell) => (
+                                                <TableCell key={Math.random() + 'cell'} align="center">{cell}</TableCell>
+                                            ))}
+                                            <TableCell align="center" className={classes.stickyCell}>
+                                                <div className="tableActions">
+                                                    <IconButton aria-label="edit" size="small" onClick={() => handleEdit(JSON.parse(JSON.stringify(row)))}>
+                                                        <FontAwesomeIcon icon={faEdit} className="editIcon" />
+                                                    </IconButton>
+                                                    <IconButton aria-label="delete" size="small" onClick={() => handleDelete(JSON.parse(JSON.stringify(row)))}>
+                                                        <FontAwesomeIcon icon={faTrashAlt} className="trashIcon"/>
+                                                    </IconButton>
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    )
+                                })}
                             </TableBody>
                         </Table>
                     </CustomTableContainer>
-                    <TablePagination
-                        rowsPerPageOptions={[50, 100, 500, 1000]}
-                        component="div"
-                        count={data.length}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        onPageChange={handleChangePage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                    />
+                    <div className="pagination">
+                        <Typography className={classes.choosePage} variant="body2">Choose Page: </Typography>
+                        {filteredData.length > 0 && (<Select
+                            value={page}
+                            onChange={(event) => {setPage(event.target.value)}}
+                            className={classes.select}
+                            disableUnderline
+                        >
+                            {[...Array(NumberOfPages())].map((x, i) => <MenuItem key={x + 'nPage'} value={i}>{i}</MenuItem>)}
+                        </Select>)}
+                        <TablePagination
+                            rowsPerPageOptions={[10, 25, 50, 100]}
+                            component="div"
+                            count={filteredData.length}
+                            rowsPerPage={rowsPerPage}
+                            page={page}
+                            onPageChange={handleChangePage}
+                            onRowsPerPageChange={handleChangeRowsPerPage}
+                            ActionsComponent={TablePaginationActions}
+                        />
+                    </div>
                 </Paper>
-            
             </div>
+            { isLoading && (<div className="div-loader">
+                <Loader
+                    type="Circles"
+                    color="white"
+                    height={70}
+                    width={70}
+                />
+                <p className="div-loader-msg">{loadingMessage}</p>
+            </div>)}
             <Dialog
                 open={open}
                 onClose={() => setOpen(false)}
@@ -427,6 +849,95 @@ const AdminPage = () => {
                     <Button onClick={() => addRow()} autoFocus>
                         Ok
                     </Button>
+                </DialogActions>
+            </Dialog>
+            <Dialog
+                open={open4}
+                onClose={() => setOpen4(false)}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                {"Submit data"}
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        Would you like to submit changes to the database and download the new version to TyphiNET ?
+                    </DialogContentText>
+                    {loading && (<div className="spinner">
+                        <CustomCircularProgress></CustomCircularProgress>
+                    </div>)}
+                </DialogContent>
+                <DialogActions>
+                {!startProgress && (<Button onClick={() => setOpen4(false)}>Cancel</Button>)}
+                {!startProgress && (<Button onClick={() => uploadChanges()} autoFocus>
+                    Ok
+                </Button>)}
+                </DialogActions>
+            </Dialog>
+            <Dialog
+                open={open5}
+                onClose={() => setOpen5(false)}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                {"Result"}
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        {resultMessage}
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpen5(false)} autoFocus>
+                        Ok
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <Dialog
+                open={open6}
+                onClose={() => setOpen6(false)}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                {"Delete many"}
+                </DialogTitle>
+                <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                    Are you sure you want to delete {selected.length} row(s) ?
+                </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                <Button onClick={() => setOpen6(false)}>Cancel</Button>
+                <Button onClick={() => deleteRows()} autoFocus>
+                    Ok
+                </Button>
+                </DialogActions>
+            </Dialog>
+            <Dialog
+                open={open7}
+                onClose={() => setOpen7(false)}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                {"Look for changes"}
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        Look for changes in the database? If there are, your current changes in the table below will be reseted.
+                    </DialogContentText>
+                    {loading && (<div className="spinner">
+                        <CustomCircularProgress></CustomCircularProgress>
+                    </div>)}
+                </DialogContent>
+                <DialogActions>
+                {!startProgress && (<Button onClick={() => setOpen7(false)}>Cancel</Button>)}
+                {!startProgress && (<Button onClick={() => {checkChanges()}} autoFocus>
+                    Ok
+                </Button>)}
                 </DialogActions>
             </Dialog>
         </div>

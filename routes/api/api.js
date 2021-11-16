@@ -9,6 +9,8 @@ router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel/:region', functi
     let resultsJson = [];
     let read_file = Tools.path_clean_db || Tools.path_clean;
 
+    const empty = ["-", ""]
+
     fs.createReadStream(read_file)
         .on('error', (_) => { return res.json([{}, [{}], [{}]]) })
         .pipe(csv())
@@ -18,6 +20,7 @@ router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel/:region', functi
             let travel = params.travel
             let data_travel = false
             let allDrugs = {}
+            let pmid = []
 
             // let count = 0
             let allCountryDrugs = {}
@@ -43,9 +46,15 @@ router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel/:region', functi
                 }
 
                 //Check if country and date are not empty
-                const checkCountry = data["COUNTRY_ONLY"] !== "-"
-                const checkDate = data["DATE"] !== "-"
+                const checkCountry = !empty.includes(data["COUNTRY_ONLY"])
+                const checkDate = !empty.includes(data["DATE"])
                 const checkRegion = params.region === "all" ? true : data["REGION_IN_COUNTRY"] === params.region ? true : false
+
+                if (checkCountry && checkDate && data["COUNTRY_ONLY"] == params.country) {
+                    if (!pmid.includes(data["PMID"])) {
+                        pmid.push(data["PMID"])
+                    }
+                }
 
                 if (checkCountry && checkDate && data["DATE"] >= params.minYear && data["DATE"] <= params.maxYear && data_travel && checkRegion) {
                     let drugs = []
@@ -136,7 +145,7 @@ router.get('/drugTrendsChart/:country/:minYear/:maxYear/:travel/:region', functi
                     })
                 })
             })
-            response.push([allDrugs])
+            response.push([allDrugs, pmid])
             response.push([allCountryDrugs])
             res.json(response);
         })
@@ -152,6 +161,8 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel/:regi
 
     let fluoroR = ['3_QRDR + qnrS', '3_QRDR + qnrB', '3_QRDR', '2_QRDR + qnrS', '2_QRDR + qnrB', '1_QRDR + qnrS', '1_QRDR + qnrB']
     let fluoroI = ['2_QRDR', '1_QRDR', '0_QRDR + qnrS', '0_QRDR + qnrB']
+
+    const empty = ["-", ""]
 
     fs.createReadStream(read_file)
         .on('error', (_) => { return res.json([]) })
@@ -187,8 +198,8 @@ router.get('/amrClassChart/:country/:min_year/:max_year/:amr_class/:travel/:regi
                 let country = params.country == "all" ? data["COUNTRY_ONLY"] : params.country
 
                 //Check if country and date are not empty
-                const checkCountry = data["COUNTRY_ONLY"] !== "-"
-                const checkDate = data["DATE"] !== "-"
+                const checkCountry = !empty.includes(data["COUNTRY_ONLY"])
+                const checkDate = !empty.includes(data["DATE"])
                 const checkRegion = params.region === "all" ? true : data["REGION_IN_COUNTRY"] === params.region ? true : false
 
                 if (checkCountry && checkDate && (data["COUNTRY_ONLY"] == country) && (params.min_year <= data["DATE"] && data["DATE"] <= params.max_year) && data_travel && checkRegion) {
@@ -465,6 +476,8 @@ router.get('/getYearLimits', function (req, res, next) {
     let years = []
     let read_file = Tools.path_clean_db || Tools.path_clean
 
+    const empty = ["-", ""]
+
     fs.createReadStream(read_file)
         .on('error', (_) => {
             return res.json({
@@ -478,8 +491,8 @@ router.get('/getYearLimits', function (req, res, next) {
         .pipe(csv())
         .on('data', (data) => results.push(data))
         .on('end', () => {
-            min = results[0].DATE
-            max = results[0].DATE
+            min = results[0]?.DATE
+            max = results[0]?.DATE
 
             for (let data of results) {
 
@@ -488,7 +501,7 @@ router.get('/getYearLimits', function (req, res, next) {
                 }
 
                 //Check if country and date are not empty
-                if (data.COUNTRY_ONLY !== "-" && data.DATE !== "-") {
+                if (!empty.includes(data["COUNTRY_ONLY"]) && !empty.includes(data["DATE"])) {
 
                     if (!isNaN(data.DATE)) {
                         min = (data.DATE < min) ? data.DATE : min
@@ -524,6 +537,8 @@ router.get('/:filter1/:country/:min_year/:max_year/:travel/:region', function (r
     let results_json = [];
     let results = [];
     let read_file = Tools.path_clean_db || Tools.path_clean
+
+    const empty = ["-", ""]
 
     fs.createReadStream(read_file)
         .on('error', (_) => { return res.json([]) })
@@ -609,7 +624,7 @@ router.get('/:filter1/:country/:min_year/:max_year/:travel/:region', function (r
                 /* DRUG */
 
                 //Check if country and date are not empty
-                if (data["COUNTRY_ONLY"] !== "-" && data["DATE"] !== "-") {
+                if (!empty.includes(data["COUNTRY_ONLY"]) && !empty.includes(data["DATE"])) {
 
                     if ((data["COUNTRY_ONLY"] == params.country) && (data["DATE"] >= params.min_year && data["DATE"] <= params.max_year) && data_travel && checkRegion) {
 
@@ -676,6 +691,9 @@ router.get('/:country/:min_year/:max_year/:travel/:region', function (req, res, 
     let country_unique_genotype = {}
     let results = []
     let read_file = Tools.path_clean_db || Tools.path_clean
+
+    const empty = ["-", ""]
+
     fs.createReadStream(read_file)
         .on('error', (_) => { return res.json({}) })
         .pipe(csv())
@@ -706,7 +724,7 @@ router.get('/:country/:min_year/:max_year/:travel/:region', function (req, res, 
                 const checkRegion = params.region === "all" ? true : data["REGION_IN_COUNTRY"] === params.region ? true : false
 
                 //Check if country and date are not empty
-                if (data["COUNTRY_ONLY"] !== "-" && data["DATE"] !== "-") {
+                if (!empty.includes(data["COUNTRY_ONLY"]) && !empty.includes(data["DATE"])) {
 
                     if (params.country != "all") {
                         if (country_unique_genotype[params.country] == undefined) {
