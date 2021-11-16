@@ -1,8 +1,4 @@
 import mongoose from 'mongoose'
-import * as fs from 'fs';
-import { API_ENDPOINT } from '../constants.js';
-import axios from 'axios';
-import { detailedDiff, diff } from 'deep-object-diff';
 
 const CombinedSchema = mongoose.Schema({
     "NAME": {
@@ -317,48 +313,5 @@ const CombinedSchema = mongoose.Schema({
 });
 
 const CombinedModel = mongoose.model('CombinedModel', CombinedSchema);
-
-const path = "./database/log/previousDatabases.txt";
-axios.get(`${API_ENDPOINT}mongo/download`)
-    .then((res) => {
-        const text = fs.readFileSync(path, 'utf-8');
-        const aux = JSON.parse(text);
-        const collection = aux[aux.length - 1].data
-
-        const data = {}
-        for (const i in res.data) {
-            data[res.data[i].NAME.toString()] = res.data[i]
-        }
-
-        const difference = detailedDiff(collection, data)
-        Object.keys(difference.updated).forEach(element => {
-            for (const key in difference.updated[element]) {
-                difference.updated[element][key] = {
-                    new: difference.updated[element][key],
-                    old: collection[element][key]
-                }
-            }
-        });
-        Object.keys(difference.deleted).forEach(element => {
-            difference.deleted[element] = collection[element]
-        });
-
-        if (Object.keys(difference).filter(x => Object.keys(difference[x]).length > 0).length > 0) {
-            const currentDate = new Date();
-            aux.splice(0, 0, {
-                updatedAt: currentDate.toISOString(),
-                changes: difference
-            })
-            aux[aux.length - 1].data = data
-            aux[aux.length - 1].updatedAt = currentDate.toISOString()
-            fs.writeFileSync(path, JSON.stringify(aux));
-            console.log('Changes: true');
-        } else {
-            console.log('Changes: false');
-        }
-    })
-    .catch((error) => {
-        console.log('Could not check for changes!');
-    })
 
 export default CombinedModel
