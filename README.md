@@ -54,8 +54,6 @@ npm install
 #### 6. Inside the project folder create a file named ```.env```, inside it copy the following code
 
 ```sh
-EMAIL_USER= (insert here the email to which you want to receive the Contact Us messages)
-EMAIL_PASSWD= (password from previous email)
 MONGO_URI= (see item 7 from manual)
 MONGO_URI_ATLAS=(see item 7 from manual to access mongoDB Atlas cloud)
 ```
