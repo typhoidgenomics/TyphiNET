@@ -87,7 +87,6 @@ router.post('/upload/admin', (req, res) => {
     fs.writeFileSync(path, JSON.stringify(aux));
 
     if (req.body.current === req.body.parts) {
-        console.log(aux.data.length);
         CombinedModel.countDocuments(function (err, count) {
             if (err) {
                 return res.json({ "Status": `Error! ${err}` });
@@ -176,6 +175,18 @@ router.get('/lastUpdated', (req, res) => {
     const text = fs.readFileSync(path, 'utf-8');
     const aux = JSON.parse(text);
     return res.json(aux[0].updatedAt)
+});
+
+router.post('/deleteChange', (req, res) => {
+
+    const path = "./assets/database/previousDatabases.txt";
+    const id = req.body.id;
+    
+    const text = fs.readFileSync(path, 'utf-8');
+    let aux = JSON.parse(text);
+    aux.splice(id, 1)
+    fs.writeFileSync(path, JSON.stringify(aux));
+    return res.json(aux)
 });
 
 router.get('/genomes/:name', (req, res) => {

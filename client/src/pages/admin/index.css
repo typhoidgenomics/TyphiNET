@@ -101,7 +101,6 @@
 .changesText {
     display: flex;
     flex-direction: row;
-    white-space: nowrap;
 }
 
 .table-main-div{

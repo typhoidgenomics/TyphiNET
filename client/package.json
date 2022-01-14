@@ -17,6 +17,7 @@
         "d3-scale": "^3.2.3",
         "downloadjs": "^1.4.7",
         "material-ui-search-bar": "^1.0.0",
+        "moment": "^2.29.1",
         "react": "^17.0.1",
         "react-dom": "^17.0.1",
         "react-dropdown-select": "^4.7.4",

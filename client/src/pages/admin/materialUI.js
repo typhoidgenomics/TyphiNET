@@ -23,11 +23,20 @@ const useStyles = makeStyles({
     tablePadding: {
         marginTop: '16px'
     },
+    actionsCell:{
+      borderLeft: '1px solid rgba(224, 224, 224, 1)',
+      backgroundColor: 'white'
+    },
     stickyCell: {
         position: 'sticky',
         right: 0,
         borderLeft: '1px solid rgba(224, 224, 224, 1)',
         backgroundColor: 'white'
+    },
+    actionsHeaderCell: {
+      backgroundColor: 'black',
+      color: 'white',
+      borderLeft: '1px solid rgba(224, 224, 224, 1)'
     },
     stickyHeaderCell: {
         position: 'sticky',
@@ -41,12 +50,13 @@ const useStyles = makeStyles({
         marginBottom: 32
     },
     viewButton: {
-        width: 100
+        width: 80
     },
     resetButton: {
         width: 150,
         height: 40,
-        marginRight: 16
+        marginRight: 16,
+        marginLeft: 16
     },
     uploadButton: {
         width: 150,
@@ -139,7 +149,21 @@ const useStyles = makeStyles({
       display: 'flex',
       flexDirection: 'row',
       alignItems: 'flex-start'
-    }
+    },
+    deleteChangeButton: {
+      backgroundColor: 'grey',
+      width: 35,
+      borderRadius: 5,
+      color: 'white',
+      border: '1px solid rgba(0, 0, 0, 0.23)',
+      '&:hover': {
+        color: 'white',
+        backgroundColor: '#4F4F4F'
+      },
+    },
+    // dialogTransition: {
+    //   transition: 'none'
+    // }
   });
 
 const ColorButton = withStyles((theme) => ({

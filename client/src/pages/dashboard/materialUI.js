@@ -18,11 +18,11 @@ const useStyles = makeStyles((theme) => ({
     },
     formControlSelectCountryRegionH: {
         marginBottom: 16,
-        alignItems: "center"
+        alignItems: "flex-start"
     },
     formControlSelectCountryRegionV: {
         marginBottom: 16,
-        alignItems: "center",
+        alignItems: "flex-start",
     },
     select: {
         fontWeight: 600,

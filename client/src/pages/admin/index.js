@@ -47,6 +47,7 @@ const AdminPage = () => {
     const [open5, setOpen5] = React.useState(false);
     const [open6, setOpen6] = React.useState(false);
     const [open7, setOpen7] = React.useState(false);
+    const [open8, setOpen8] = React.useState(false);
     const [resultMessage, setResultMessage] = React.useState("");
     const [loading, setLoading] = React.useState(false);
     const [selected, setSelected] = React.useState([]);
@@ -57,6 +58,7 @@ const AdminPage = () => {
     const [isLoading, setIsLoading] = React.useState(true);
     const [startProgress, setStartProgress] = React.useState(false);
     const [loadingMessage, setLoadingMessage] = React.useState("");
+    const [currentChange, setCurrentChange] = React.useState(null);
 
     const [exceptions] = React.useState(["NAME", "ACCESION", "Genome ID", "LATITUDE", "LONGITUDE", "LOCATION", "Mash Distance", "Matching Hashes", "SANGER LANE", "STRAIN"]);
 
@@ -162,6 +164,11 @@ const AdminPage = () => {
         setOpen(true)
     }
 
+    function handleDeleteChange (id) {
+        setCurrentChange(id)
+        setOpen8(true)
+    }
+
     function handleEdit (row) {
         setCurrentRow(row)
         setOpen2(true)
@@ -174,6 +181,17 @@ const AdminPage = () => {
     function handleCheckChanges (message) {
         setResultMessage(message);
         setOpen5(true);
+    }
+
+    async function deleteChange () {
+        axios.post(`${API_ENDPOINT}mongo/deleteChange`, {id: currentChange})
+            .then((res) => {
+                getChangeData(res.data)
+                setCurrentData(0)
+            })
+            .finally(() => {
+                setOpen8(false)
+            })
     }
 
     async function checkChanges (showPopup = true) {
@@ -368,18 +386,23 @@ const AdminPage = () => {
         
     }
 
+    function getChangeData (changeData) {
+        let aux = []
+        for (let index = 0; index < changeData.length - 1; index++) {
+            const date = new Date(changeData[index].updatedAt)
+            aux.push(
+                createData(index + 1, date.toLocaleString(), changeData[index].changes)
+            )
+        }
+        setRows(aux)
+    }
+
     async function getData () {
         await axios.get(`${API_ENDPOINT}file/databaseLog`)
           .then((res) => {
             let data = res.data
-            let aux = []
-            for (let index = 0; index < data.length - 1; index++) {
-                const date = new Date(data[index].updatedAt)
-                aux.push(
-                    createData(index, date.toLocaleString(), data[index].changes)
-                )
-            }
-            setRows(aux)
+
+            getChangeData(data)
             
             let aux2 = Object.values(data[data.length - 1].data)
             let aux4 = {}
@@ -407,6 +430,8 @@ const AdminPage = () => {
             setTableKeys(Object.keys(aux2[0]))
           })
     }
+
+    
 
     useEffect(() => {
         setLoadingMessage("Checking for changes...")
@@ -644,7 +669,7 @@ const AdminPage = () => {
                     </div>
                     <div className="tooltipSubmitRow">
                         <Tooltip 
-                            title={<div className="tooltipTitle">Changes are only saved by pressing the <b className="boldTooltipText">SUBMIT CHANGES</b> button!</div>}
+                            title={<div className="tooltipTitle">Changes are only saved by pressing the <b className="boldTooltipText">SUBMIT CHANGES</b> button</div>}
                             placement="left"
                         >
                             <IconButton>
@@ -661,15 +686,23 @@ const AdminPage = () => {
                                 <StyledHeaderCell>ID</StyledHeaderCell>
                                 <StyledHeaderCell>Date</StyledHeaderCell>
                                 <StyledHeaderCell align="left">Changes</StyledHeaderCell>
-                                <StyledHeaderCell className={classes.stickyHeaderCell} align="left">Actions</StyledHeaderCell>
+                                <StyledHeaderCell className={classes.actionsHeaderCell} align="left">Actions</StyledHeaderCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
+                            <TableRow key={'00changes'} className={currentData === 0 ? classes.cellON : classes.off}>
+                                <TableCell align="left">{0}</TableCell>
+                                <TableCell align="left"></TableCell>
+                                <TableCell align="left" width="70%">{'CURRENT DATA'}</TableCell>
+                                <TableCell align="left" className={classes.actionsCell}>
+                                    <ColorButton onClick={() => changeView(0)} variant="outlined" size="small" className={classes.viewButton} >Load</ColorButton>
+                                </TableCell>
+                            </TableRow>
                             {rows.map((row, r) => (
                                 <TableRow key={row.id + 'changes'} className={row.id === currentData ? classes.cellON : classes.off}>
                                     <TableCell align="left">{row.id}</TableCell>
                                     <TableCell align="left">{row.date}</TableCell>
-                                    <TableCell align="left">{betterChanges(row.changes).map((text, t) => (
+                                    <TableCell align="left" width="70%">{betterChanges(row.changes).map((text, t) => (
                                         <div key={`${r}${t}change`} className="changesText">
                                             <div>{text[0]}</div>
                                             &nbsp;{"entries with name:"}&nbsp;
@@ -683,8 +716,13 @@ const AdminPage = () => {
                                             }
                                         </div>
                                     ))}</TableCell>
-                                    <TableCell align="left" className={classes.stickyCell}>
-                                        <ColorButton onClick={() => changeView(row.id)} variant="outlined" size="small" className={classes.viewButton} >Load</ColorButton>
+                                    <TableCell align="left" className={classes.actionsCell}>
+                                        <div className="tableActions">
+                                            <ColorButton onClick={() => changeView(row.id)} variant="outlined" size="small" className={classes.viewButton} >Load</ColorButton>
+                                            <IconButton aria-label="deleteChange" size="small" className={classes.deleteChangeButton} onClick={() => handleDeleteChange(row.id)}>
+                                                <FontAwesomeIcon icon={faTrashAlt}/>
+                                            </IconButton>
+                                        </div>
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -692,6 +730,7 @@ const AdminPage = () => {
                     </Table>
                 </TableContainer>
                 <div className="addButton">
+                    <ColorButton4 onClick={() => {handleUpload()}} variant="outlined" size="small" className={classes.uploadButton} >Submit changes</ColorButton4>
                     <ColorButton3
                         onClick={() => {
                             resetChanges()
@@ -791,6 +830,7 @@ const AdminPage = () => {
             <Dialog
                 open={open}
                 onClose={() => setOpen(false)}
+                style={classes.dialogTransition}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
@@ -812,6 +852,7 @@ const AdminPage = () => {
             <Dialog
                 open={open2}
                 onClose={() => setOpen2(false)}
+                style={classes.dialogTransition}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
@@ -833,6 +874,7 @@ const AdminPage = () => {
             <Dialog
                 open={open3}
                 onClose={() => setOpen3(false)}
+                style={classes.dialogTransition}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
@@ -854,6 +896,7 @@ const AdminPage = () => {
             <Dialog
                 open={open4}
                 onClose={() => setOpen4(false)}
+                style={classes.dialogTransition}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
@@ -878,6 +921,7 @@ const AdminPage = () => {
             <Dialog
                 open={open5}
                 onClose={() => setOpen5(false)}
+                style={classes.dialogTransition}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
@@ -898,6 +942,7 @@ const AdminPage = () => {
             <Dialog
                 open={open6}
                 onClose={() => setOpen6(false)}
+                style={classes.dialogTransition}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
@@ -919,6 +964,7 @@ const AdminPage = () => {
             <Dialog
                 open={open7}
                 onClose={() => setOpen7(false)}
+                style={classes.dialogTransition}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
@@ -938,6 +984,28 @@ const AdminPage = () => {
                 {!startProgress && (<Button onClick={() => {checkChanges()}} autoFocus>
                     Ok
                 </Button>)}
+                </DialogActions>
+            </Dialog>
+            <Dialog
+                open={open8}
+                onClose={() => setOpen8(false)}
+                style={classes.dialogTransition}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                {"Delete changes"}
+                </DialogTitle>
+                <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                    Are you sure you want to delete change nº {currentChange} ?
+                </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                <Button onClick={() => setOpen8(false)}>Cancel</Button>
+                <Button onClick={() => deleteChange()} autoFocus>
+                    Ok
+                </Button>
                 </DialogActions>
             </Dialog>
         </div>
