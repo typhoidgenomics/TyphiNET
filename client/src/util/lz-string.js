@@ -7,6 +7,9 @@
 // http://pieroxy.net/blog/pages/lz-string/testing.html
 //
 // LZ-based compression algorithm, version 1.4.4
+
+// This file is an alternate solution to pass data from the client to the server and vice-versa.
+// It is used for compressing data.
 var LZString = (function() {
 
 // private property

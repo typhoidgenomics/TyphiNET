@@ -12,10 +12,10 @@ import bodyParser from 'body-parser'
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-//dotenv config
+// Dotenv config
 dotenv.config()
 
-//connect database
+// Connect database
 connectDB()
 
 const app = express();
@@ -23,6 +23,7 @@ app.use(bodyParser.json({limit: '500kb'}))
 
 const PORT = process.env.PORT || 8080;
 
+// Define headers used for API requisitions
 app.use(function (req, res, next) {
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
     res.header("Access-Control-Allow-Origin", "*");
@@ -35,7 +36,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 
-//Define routes API here
+// Define routes API here
 app.use('/api/filters', api);
 app.use('/api/email', emailRouter);
 app.use('/api/file', generateFile);

@@ -546,21 +546,21 @@ export function filterForComponents({country, minYear, maxYear, dataset, region,
     const [results, genotypes, worldMapResults, PMIDResults] = [[], [], [], []]
     let [aux, auxWM, worldMapComplementaryResults, worldMapG, worldMapH58, worldMapSTAD, worldMapMDR, worldMapXDR, worldMapAZITH, worldMapCIPR, worldMapCIPI, RFWGResults, DRTResults, AMRResults, GDResults] = [null, null, {}, [], [], [], [], [], [], [], [], [], [], {}, []]
     AMRResults = { "Ampicillin": [], "Azithromycin": [], "Chloramphenicol": [], "Co-trimoxazole": [], "ESBL": [], "Fluoroquinolones (CipI/R)": [], "Sulphonamides": [], "Tetracyclines": [], "Trimethoprim": [] }
-    
+
     const empty = ["", "-"]
     data.forEach(x => {
         aux = true
-        auxWM = true
+        auxWM = true // WM = World Map
 
-        // Validation
+        // Validation if row will be used, this will allways happen
         if (empty.includes(x.COUNTRY_ONLY) || (country !== "All" && x.COUNTRY_ONLY !== country)) auxWM = false
         if (empty.includes(x.DATE) || x.DATE < minYear || x.DATE > maxYear) aux = false
         if (dataset !== "All" && x.TRAVEL !== dataset.toLowerCase()) aux = false
         if (country !== "All" && region !== "All" && (empty.includes(x.REGION_IN_COUNTRY) || region !== x.REGION_IN_COUNTRY)) auxWM = false
+        // This information in only valid for the NEW metadata
         if (x['PURPOSE OF SAMPLING'] !== undefined && !x['PURPOSE OF SAMPLING'].includes('Non Targeted')) aux = false
 
-        // FINAL
-
+        // If this passes than it's data for the map
         if (aux && !empty.includes(x.COUNTRY_ONLY)) {
             let displayName = x.COUNTRY_ONLY
             if (x.COUNTRY_ONLY === 'Democratic Republic of Congo') displayName = 'Dem. Rep. Congo'
@@ -582,7 +582,7 @@ export function filterForComponents({country, minYear, maxYear, dataset, region,
                 worldMapResults[countryIndex] = aux2;
             }
 
-            // WORLD MAP COMPLEMENTARY DATA
+            // WORLD MAP COMPLEMENTARY DATA FOR WORLD MAP (lines 572-583)
             if (worldMapComplementaryResults[displayName] === undefined) worldMapComplementaryResults[displayName] = WMCDTemplate
             worldMapComplementaryResults[displayName] = WMCDAux(JSON.stringify(worldMapComplementaryResults[displayName]), x)
             
@@ -597,6 +597,7 @@ export function filterForComponents({country, minYear, maxYear, dataset, region,
             worldMapCIPI = WMCountData(JSON.stringify(worldMapCIPI), x, displayName, "cip_pred_pheno", "CipIs", "type", false, "", true)
         }
 
+        // If this passes than it's data for the graphs
         if (aux && auxWM) {
             results.push(x)
             if (!genotypes.includes(x.GENOTYPE)) genotypes.push(x.GENOTYPE)
@@ -614,6 +615,7 @@ export function filterForComponents({country, minYear, maxYear, dataset, region,
             }
         }
     });
+    // Here are some ordenations and filters for the information before it is returned to the dashboard. IT IS IMPORTANT FOR THE CODE
     worldMapComplementaryResults = WMCDResults(JSON.stringify(worldMapComplementaryResults))
     worldMapG = WMCountDataResults(JSON.stringify(worldMapG), "genotypes")
     worldMapH58 = WMCountDataResults(JSON.stringify(worldMapH58), "genotypes")
@@ -631,22 +633,22 @@ export function filterForComponents({country, minYear, maxYear, dataset, region,
     GDResults.sort((a, b) => a.name - b.name)
 
     return [
-        results,
-        genotypes.length,
-        worldMapResults,
-        worldMapComplementaryResults,
-        worldMapG,
-        worldMapH58,
-        worldMapSTAD,
-        worldMapMDR,
-        worldMapXDR,
-        worldMapAZITH,
-        worldMapCIPR,
-        worldMapCIPI,
-        PMIDResults,
-        RFWGResults,
-        DRTResults,
-        AMRResults,
-        GDResults
+        results, // ALL ROWS
+        genotypes.length, // Number of genotypes
+        worldMapResults, // Data for World Map Samples
+        worldMapComplementaryResults, // Data for World Map Complementary Data
+        worldMapG, // World Map Genotypes data
+        worldMapH58, // WM H58 data
+        worldMapSTAD, // WM Sensitive to all drugs data
+        worldMapMDR, // WM MDR data
+        worldMapXDR, // WM XDR data
+        worldMapAZITH, // WM AzithR data
+        worldMapCIPR, // WM CipR data
+        worldMapCIPI, // WM CipI data
+        PMIDResults, // PMID data
+        RFWGResults, // Data for Resistance frequencies within genotypes graph
+        DRTResults, // Data for Drug resistance trends graph
+        AMRResults, // Data for Resistance determinants within genotypes graph
+        GDResults // DATA for Genotype distribution graph
     ]
 }

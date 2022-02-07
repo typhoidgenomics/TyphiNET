@@ -11,7 +11,7 @@ import TablePagination from '@material-ui/core/TablePagination';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Tooltip, Toolbar, Typography, Checkbox, Box, IconButton, Select, MenuItem, FormControl } from '@material-ui/core';
-import {FirstPage, LastPage, KeyboardArrowLeft, KeyboardArrowRight} from '@material-ui/icons'
+import { FirstPage, LastPage, KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrashAlt, faEdit, faInfoCircle } from '@fortawesome/free-solid-svg-icons'
 import { useStyles, ColorButton, ColorButton3, ColorButton4, ColorButton5, StyledHeaderCell, CustomTableContainer, CustomTableSortLabel, CustomCircularProgress } from './materialUI'
@@ -23,7 +23,7 @@ import PropTypes from 'prop-types';
 import { useTheme } from '@material-ui/core/styles';
 
 function createData(id, date, changes) {
-  return { id, date, changes };
+    return { id, date, changes };
 }
 
 const AdminPage = () => {
@@ -62,47 +62,55 @@ const AdminPage = () => {
 
     const [exceptions] = React.useState(["NAME", "ACCESION", "Genome ID", "LATITUDE", "LONGITUDE", "LOCATION", "Mash Distance", "Matching Hashes", "SANGER LANE", "STRAIN"]);
 
+    // Change table page
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
+
+    // Change number of rows per page and return to first page
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
     };
 
+    // Sort table by selected column in asc or desc
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
         setOrder(isAsc ? 'desc' : 'asc');
         setOrderBy(property);
     };
 
+    // Helper function for getComparator
     function descendingComparator(a, b, orderBy) {
         if (b[orderBy] < a[orderBy]) {
-          return -1;
+            return -1;
         }
         if (b[orderBy] > a[orderBy]) {
-          return 1;
+            return 1;
         }
         return 0;
     }
 
+    // Main function to return data ordered to table
     function stableSort(array, comparator) {
         const stabilizedThis = array.map((el, index) => [el, index]);
         stabilizedThis.sort((a, b) => {
-          const order = comparator(a[0], b[0]);
-          if (order !== 0) return order;
-          return a[1] - b[1];
+            const order = comparator(a[0], b[0]);
+            if (order !== 0) return order;
+            return a[1] - b[1];
         });
         return stabilizedThis.map((el) => el[0]);
     }
 
+    // Comparator to order table for stableSort
     function getComparator(order, orderBy) {
         return order === 'desc'
             ? (a, b) => descendingComparator(a, b, orderBy)
             : (a, b) => -descendingComparator(a, b, orderBy);
     }
 
-    function changeView (id) {
+    // Change current view of the table to another ID, this also resets all changes made on the table
+    function changeView(id) {
         resetChanges()
         setData(originalData)
         const aux = JSON.parse(JSON.stringify(data))
@@ -135,12 +143,13 @@ const AdminPage = () => {
         setCurrentData(id)
     }
 
-    function betterChanges (changes) {
+    // Beautify text for changes
+    function betterChanges(changes) {
         const aux = JSON.parse(JSON.stringify(changes))
         const added = Object.keys(aux.added).length > 0 ? Object.keys(aux.added).join(", ") + "." : ""
         const deleted = (Object.keys(aux.deleted).length > 0 ? (Object.keys(aux.deleted).join(", ")) + "." : "")
         let updated = ""
-        
+
         if (Object.keys(aux.updated).length > 0) {
             updated = Object.entries(aux.updated).map(x => {
                 const updates = Object.entries(x[1])
@@ -151,7 +160,7 @@ const AdminPage = () => {
                 return x[0] + ": " + changes.join(", ");
             })
         }
-        
+
         const text = []
         if (added !== "") text.push(["ADDED", added])
         if (deleted !== "") text.push(["DELETED", deleted])
@@ -159,32 +168,30 @@ const AdminPage = () => {
         return text
     }
 
-    function handleDelete (row) {
+    // The five handlers below are mediators between the button and the dialog. They set specific informations before opening the dialogs.
+    function handleDelete(row) {
         setCurrentRow(row)
         setOpen(true)
     }
-
-    function handleDeleteChange (id) {
+    function handleDeleteChange(id) {
         setCurrentChange(id)
         setOpen8(true)
     }
-
-    function handleEdit (row) {
+    function handleEdit(row) {
         setCurrentRow(row)
         setOpen2(true)
     }
-
-    function handleUpload () {
+    function handleUpload() {
         setOpen4(true)
     }
-
-    function handleCheckChanges (message) {
+    function handleCheckChanges(message) {
         setResultMessage(message);
         setOpen5(true);
     }
 
-    async function deleteChange () {
-        axios.post(`${API_ENDPOINT}mongo/deleteChange`, {id: currentChange})
+    // Delete chosen change
+    async function deleteChange() {
+        axios.post(`${API_ENDPOINT}mongo/deleteChange`, { id: currentChange - 1 })
             .then((res) => {
                 getChangeData(res.data)
                 setCurrentData(0)
@@ -194,7 +201,8 @@ const AdminPage = () => {
             })
     }
 
-    async function checkChanges (showPopup = true) {
+    // Check if there were any new changes on the database and updates the table
+    async function checkChanges(showPopup = true) {
         setStartProgress(true);
         setLoading(true);
         return await axios.get(`${API_ENDPOINT}mongo/checkForChanges`)
@@ -219,26 +227,28 @@ const AdminPage = () => {
                 }
                 return false
             })
-            .finally(()=>{
+            .finally(() => {
                 setOpen7(false)
                 setLoading(false);
                 setStartProgress(false);
             })
     }
 
+    // Handler for select all rows button
     const handleSelectAllClick = (event) => {
         if (event.target.checked) {
-          const newSelecteds = filteredData.map((n) => n.NAME);
-          setSelected(newSelecteds);
-          return;
+            const newSelecteds = filteredData.map((n) => n.NAME);
+            setSelected(newSelecteds);
+            return;
         }
         setSelected([]);
     };
 
+    // Handler for selecting specific row
     const handleClick = (name) => {
         const selectedIndex = selected.indexOf(name);
         let newSelected = [];
-    
+
         if (selectedIndex === -1) {
             newSelected = newSelected.concat(selected, name);
         } else if (selectedIndex === 0) {
@@ -251,14 +261,12 @@ const AdminPage = () => {
                 selected.slice(selectedIndex + 1),
             );
         }
-    
+
         setSelected(newSelected);
     };
 
-    function deleteRow () {
-        // if (isSelected(currentRow.NAME)) {
-        //     handleClick(currentRow.NAME)
-        // }
+    // Delete selected row
+    function deleteRow() {
         const index = data.findIndex(x => x.NAME === currentRow.NAME)
         const aux = JSON.parse(JSON.stringify(data))
         aux.splice(index, 1)
@@ -266,7 +274,8 @@ const AdminPage = () => {
         setOpen(false)
     }
 
-    function deleteRows () {
+    // If more than one row is selected than delete all of them
+    function deleteRows() {
         const aux = JSON.parse(JSON.stringify(filteredData))
         const aux2 = JSON.parse(JSON.stringify(data))
         selected.forEach(row => {
@@ -285,7 +294,8 @@ const AdminPage = () => {
         setOpen6(false)
     }
 
-    function editRow () {
+    // Edit selected row
+    function editRow() {
         const row = {}
         const aux = JSON.parse(JSON.stringify(data))
 
@@ -295,7 +305,7 @@ const AdminPage = () => {
         Object.values(inputs).forEach(input => {
             row[input.id] = input.value
         });
-        
+
         aux[rowIndex] = row
         setData(aux)
         setOpen2(false)
@@ -303,7 +313,8 @@ const AdminPage = () => {
         setOpen5(true)
     }
 
-    function addRow () {
+    // Add new row
+    function addRow() {
         const row = {}
         const aux = JSON.parse(JSON.stringify(data))
 
@@ -311,7 +322,7 @@ const AdminPage = () => {
         Object.values(inputs).forEach(input => {
             row[input.id] = input.value
         });
-        
+
         aux.push(row)
         aux.sort((a, b) => a.NAME < b.NAME ? -1 : 1)
         setData(aux)
@@ -320,7 +331,8 @@ const AdminPage = () => {
         setOpen5(true)
     }
 
-    async function resetChanges () {
+    // Reset all changes made on the table
+    async function resetChanges() {
         setSearch("")
         let aux = JSON.parse(JSON.stringify(filters))
         for (const key in aux) {
@@ -333,7 +345,8 @@ const AdminPage = () => {
         setData(originalData)
     }
 
-    function uploadChanges () {
+    // Upload changes on the current table to the database
+    function uploadChanges() {
         setLoading(true)
         setStartProgress(true);
         setResultMessage("")
@@ -360,19 +373,19 @@ const AdminPage = () => {
                 .then((res) => {
                     if (res.data !== '' && res.data.Status === 'Uploaded') {
                         axios.get(`${API_ENDPOINT}mongo/download`)
-                        .then(async () => {
-                            await checkChanges()
-                            setResultMessage("Upload and download completed!")
-                        })
-                        .catch(() => {
-                            setResultMessage("Something went wrong with the download, please try again later!")
-                        })
-                        .finally(() => {
-                            setStartProgress(false)
-                            setLoading(false)
-                            setOpen4(false)
-                            setOpen5(true)
-                        })
+                            .then(async () => {
+                                await checkChanges()
+                                setResultMessage("Upload and download completed!")
+                            })
+                            .catch(() => {
+                                setResultMessage("Something went wrong with the download, please try again later!")
+                            })
+                            .finally(() => {
+                                setStartProgress(false)
+                                setLoading(false)
+                                setOpen4(false)
+                                setOpen5(true)
+                            })
                     }
                 })
                 .catch(() => {
@@ -383,10 +396,11 @@ const AdminPage = () => {
                     setOpen5(true)
                 })
         }
-        
+
     }
 
-    function getChangeData (changeData) {
+    // Helper for function getData to get only the changes
+    function getChangeData(changeData) {
         let aux = []
         for (let index = 0; index < changeData.length - 1; index++) {
             const date = new Date(changeData[index].updatedAt)
@@ -397,45 +411,45 @@ const AdminPage = () => {
         setRows(aux)
     }
 
-    async function getData () {
+    // Main function to get data for all the admin page
+    async function getData() {
         await axios.get(`${API_ENDPOINT}file/databaseLog`)
-          .then((res) => {
-            let data = res.data
+            .then((res) => {
+                let data = res.data
 
-            getChangeData(data)
-            
-            let aux2 = Object.values(data[data.length - 1].data)
-            let aux4 = {}
-            let aux5 = {}
+                getChangeData(data)
 
-            Object.keys(aux2[0]).forEach(key => {
-                if (!exceptions.includes(key)) {
-                    aux4[key] = ""
-                    aux5[key] = []
-                    let options = aux2.map(value => value[key]);
-                    options.forEach(x => {
-                        if (!aux5[key].includes(x)) {
-                            aux5[key].push(x)
-                        }
-                    })
-                    aux5[key].sort()
-                }
-            });
-            
-            setData(aux2)
-            setFilters(aux4)
-            setFilterOptions(aux5)
-            setFilteredData(JSON.parse(JSON.stringify(aux2)))
-            setOriginalData(JSON.parse(JSON.stringify(aux2)))
-            setTableKeys(Object.keys(aux2[0]))
-          })
+                let aux2 = Object.values(data[data.length - 1].data)
+                let aux4 = {}
+                let aux5 = {}
+
+                Object.keys(aux2[0]).forEach(key => {
+                    if (!exceptions.includes(key)) {
+                        aux4[key] = ""
+                        aux5[key] = []
+                        let options = aux2.map(value => value[key]);
+                        options.forEach(x => {
+                            if (!aux5[key].includes(x)) {
+                                aux5[key].push(x)
+                            }
+                        })
+                        aux5[key].sort()
+                    }
+                });
+
+                setData(aux2)
+                setFilters(aux4)
+                setFilterOptions(aux5)
+                setFilteredData(JSON.parse(JSON.stringify(aux2)))
+                setOriginalData(JSON.parse(JSON.stringify(aux2)))
+                setTableKeys(Object.keys(aux2[0]))
+            })
     }
 
-    
-
+    // Check for changes when admin page is opened and get data
     useEffect(() => {
         setLoadingMessage("Checking for changes...")
-        checkChanges(false).then((response)=>{
+        checkChanges(false).then((response) => {
             if (!response) {
                 getData().finally(() => {
                     setIsLoading(false);
@@ -443,11 +457,13 @@ const AdminPage = () => {
             } else {
                 setIsLoading(false);
             }
-        }).finally(()=>{
+        }).finally(() => {
             setLoadingMessage("")
         })
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
+    // Watcher for filtering columns and search
     useEffect(() => {
         let aux = JSON.parse(JSON.stringify(data))
         if (search === "" && Object.values(filters).join("") === "") {
@@ -472,9 +488,10 @@ const AdminPage = () => {
         }
     }, [search, data, filters, exceptions])
 
+    // Component table toolbar (Above table header)
     const EnhancedTableToolbar = (props) => {
         const { numSelected } = props;
-        
+
         return (
             <Toolbar className={classes.toolbar}>
                 {numSelected > 0 ? (
@@ -511,26 +528,27 @@ const AdminPage = () => {
                         setPage(0)
                     }}
                 />
-            
+
                 {numSelected > 0 ? (
                     <Tooltip title="Delete">
                         <IconButton onClick={() => setOpen6(true)}>
-                            <FontAwesomeIcon icon={faTrashAlt} className={classes.deleteSelected}/>
+                            <FontAwesomeIcon icon={faTrashAlt} className={classes.deleteSelected} />
                         </IconButton>
                     </Tooltip>
                 ) : null}
 
-                
+
             </Toolbar>
         );
     };
 
+    // Component table header
     function EnhancedTableHead(props) {
         const { classes, order, orderBy, onRequestSort, onSelectAllClick, numSelected, rowCount } = props;
         const createSortHandler = (property) => (event) => {
             onRequestSort(event, property);
         };
-        
+
         return data.length > 0 && (
             <TableHead>
                 <TableRow>
@@ -592,64 +610,66 @@ const AdminPage = () => {
         );
     }
 
+    // Get number of pages for the table
     function NumberOfPages() {
         return Math.ceil(filteredData.length / rowsPerPage)
     }
 
+    // Component TablePaginationActions
     function TablePaginationActions(props) {
         const theme = useTheme();
         const { count, page, rowsPerPage, onPageChange } = props;
-      
+
         const handleFirstPageButtonClick = (event) => {
-          onPageChange(event, 0);
+            onPageChange(event, 0);
         };
-      
+
         const handleBackButtonClick = (event) => {
-          onPageChange(event, page - 1);
+            onPageChange(event, page - 1);
         };
-      
+
         const handleNextButtonClick = (event) => {
-          onPageChange(event, page + 1);
+            onPageChange(event, page + 1);
         };
-      
+
         const handleLastPageButtonClick = (event) => {
-          onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
+            onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
         };
-      
+
         return (
-          <Box sx={{ flexShrink: 0, ml: 2.5 }} className={classes.box}>
-            <IconButton
-              onClick={handleFirstPageButtonClick}
-              disabled={page === 0}
-              aria-label="first page"
-            >
-              {theme.direction === 'rtl' ? <LastPage /> : <FirstPage />}
-            </IconButton>
-            <IconButton
-              onClick={handleBackButtonClick}
-              disabled={page === 0}
-              aria-label="previous page"
-            >
-              {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
-            </IconButton>
-            <IconButton
-              onClick={handleNextButtonClick}
-              disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-              aria-label="next page"
-            >
-              {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
-            </IconButton>
-            <IconButton
-              onClick={handleLastPageButtonClick}
-              disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-              aria-label="last page"
-            >
-              {theme.direction === 'rtl' ? <FirstPage /> : <LastPage />}
-            </IconButton>
-          </Box>
+            <Box sx={{ flexShrink: 0, ml: 2.5 }} className={classes.box}>
+                <IconButton
+                    onClick={handleFirstPageButtonClick}
+                    disabled={page === 0}
+                    aria-label="first page"
+                >
+                    {theme.direction === 'rtl' ? <LastPage /> : <FirstPage />}
+                </IconButton>
+                <IconButton
+                    onClick={handleBackButtonClick}
+                    disabled={page === 0}
+                    aria-label="previous page"
+                >
+                    {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+                </IconButton>
+                <IconButton
+                    onClick={handleNextButtonClick}
+                    disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+                    aria-label="next page"
+                >
+                    {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+                </IconButton>
+                <IconButton
+                    onClick={handleLastPageButtonClick}
+                    disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+                    aria-label="last page"
+                >
+                    {theme.direction === 'rtl' ? <FirstPage /> : <LastPage />}
+                </IconButton>
+            </Box>
         );
-    } 
-      
+    }
+
     TablePaginationActions.propTypes = {
         count: PropTypes.number.isRequired,
         onPageChange: PropTypes.func.isRequired,
@@ -665,10 +685,10 @@ const AdminPage = () => {
                 <div className="titleActions">
                     <div className="titleButtonRow">
                         <h2 className="title">MongoDB Admin Page</h2>
-                        <ColorButton5 onClick={() => {setOpen7(true)}} variant="outlined" size="small" className={classes.checkChangesButton} >Refresh</ColorButton5>
                     </div>
                     <div className="tooltipSubmitRow">
-                        <Tooltip 
+                        <ColorButton5 onClick={() => { setOpen7(true) }} variant="outlined" size="small" className={classes.checkChangesButton} >Refresh</ColorButton5>
+                        <Tooltip
                             title={<div className="tooltipTitle">Changes are only saved by pressing the <b className="boldTooltipText">SUBMIT CHANGES</b> button</div>}
                             placement="left"
                         >
@@ -676,7 +696,7 @@ const AdminPage = () => {
                                 <FontAwesomeIcon icon={faInfoCircle} />
                             </IconButton>
                         </Tooltip>
-                        <ColorButton4 onClick={() => {handleUpload()}} variant="outlined" size="small" className={classes.uploadButton} >Submit changes</ColorButton4>
+                        <ColorButton4 onClick={() => { handleUpload() }} variant="outlined" size="small" className={classes.uploadButton} >Submit changes</ColorButton4>
                     </div>
                 </div>
                 <TableContainer component={Paper} className={classes.changesTable}>
@@ -695,7 +715,9 @@ const AdminPage = () => {
                                 <TableCell align="left"></TableCell>
                                 <TableCell align="left" width="70%">{'CURRENT DATA'}</TableCell>
                                 <TableCell align="left" className={classes.actionsCell}>
-                                    <ColorButton onClick={() => changeView(0)} variant="outlined" size="small" className={classes.viewButton} >Load</ColorButton>
+                                    <div className="tableActions">
+                                        <ColorButton onClick={() => changeView(0)} variant="outlined" size="small" className={classes.viewButton} >Load</ColorButton>
+                                    </div>
                                 </TableCell>
                             </TableRow>
                             {rows.map((row, r) => (
@@ -706,8 +728,8 @@ const AdminPage = () => {
                                         <div key={`${r}${t}change`} className="changesText">
                                             <div>{text[0]}</div>
                                             &nbsp;{"entries with name:"}&nbsp;
-                                            {text[0] !== "UPDATED" 
-                                                ? (<div>{text[1]}</div>) 
+                                            {text[0] !== "UPDATED"
+                                                ? (<div>{text[1]}</div>)
                                                 : (
                                                     <div>
                                                         {Object.values(text[1]).map((x, i) => (<div key={x + i}>{x}</div>))}
@@ -720,7 +742,7 @@ const AdminPage = () => {
                                         <div className="tableActions">
                                             <ColorButton onClick={() => changeView(row.id)} variant="outlined" size="small" className={classes.viewButton} >Load</ColorButton>
                                             <IconButton aria-label="deleteChange" size="small" className={classes.deleteChangeButton} onClick={() => handleDeleteChange(row.id)}>
-                                                <FontAwesomeIcon icon={faTrashAlt}/>
+                                                <FontAwesomeIcon icon={faTrashAlt} />
                                             </IconButton>
                                         </div>
                                     </TableCell>
@@ -730,7 +752,7 @@ const AdminPage = () => {
                     </Table>
                 </TableContainer>
                 <div className="addButton">
-                    <ColorButton4 onClick={() => {handleUpload()}} variant="outlined" size="small" className={classes.uploadButton} >Submit changes</ColorButton4>
+                    <ColorButton4 onClick={() => { handleUpload() }} variant="outlined" size="small" className={classes.uploadButton} >Submit changes</ColorButton4>
                     <ColorButton3
                         onClick={() => {
                             resetChanges()
@@ -741,7 +763,7 @@ const AdminPage = () => {
                     >
                         Reset changes
                     </ColorButton3>
-                    <ColorButton3 onClick={() => {setOpen3(true)}} variant="outlined" size="small" className={classes.uploadButton} >Add new entry</ColorButton3>
+                    <ColorButton3 onClick={() => { setOpen3(true) }} variant="outlined" size="small" className={classes.uploadButton} >Add new entry</ColorButton3>
                 </div>
                 <Paper className={classes.tablePadding}>
                     <EnhancedTableToolbar numSelected={selected.length} />
@@ -767,7 +789,7 @@ const AdminPage = () => {
                                             hover
                                             aria-checked={isItemSelected}
                                             selected={isItemSelected}
-                                            classes={{selected: classes.tableRowSelected, root: classes.tableRowRoot}}
+                                            classes={{ selected: classes.tableRowSelected, root: classes.tableRowRoot }}
                                         >
                                             <TableCell padding="checkbox">
                                                 <Checkbox
@@ -785,7 +807,7 @@ const AdminPage = () => {
                                                         <FontAwesomeIcon icon={faEdit} className="editIcon" />
                                                     </IconButton>
                                                     <IconButton aria-label="delete" size="small" onClick={() => handleDelete(JSON.parse(JSON.stringify(row)))}>
-                                                        <FontAwesomeIcon icon={faTrashAlt} className="trashIcon"/>
+                                                        <FontAwesomeIcon icon={faTrashAlt} className="trashIcon" />
                                                     </IconButton>
                                                 </div>
                                             </TableCell>
@@ -799,7 +821,7 @@ const AdminPage = () => {
                         <Typography className={classes.choosePage} variant="body2">Choose Page: </Typography>
                         {filteredData.length > 0 && (<Select
                             value={page}
-                            onChange={(event) => {setPage(event.target.value)}}
+                            onChange={(event) => { setPage(event.target.value) }}
                             className={classes.select}
                             disableUnderline
                         >
@@ -818,7 +840,7 @@ const AdminPage = () => {
                     </div>
                 </Paper>
             </div>
-            { isLoading && (<div className="div-loader">
+            {isLoading && (<div className="div-loader">
                 <Loader
                     type="Circles"
                     color="white"
@@ -835,18 +857,18 @@ const AdminPage = () => {
                 aria-describedby="alert-dialog-description"
             >
                 <DialogTitle id="alert-dialog-title">
-                {"Delete"}
+                    {"Delete"}
                 </DialogTitle>
                 <DialogContent>
-                <DialogContentText id="alert-dialog-description">
-                    Are you sure you want to delete {currentRow.NAME} ?
-                </DialogContentText>
+                    <DialogContentText id="alert-dialog-description">
+                        Are you sure you want to delete {currentRow.NAME} ?
+                    </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                <Button onClick={() => setOpen(false)}>Cancel</Button>
-                <Button onClick={() => deleteRow()} autoFocus>
-                    Ok
-                </Button>
+                    <Button onClick={() => setOpen(false)}>Cancel</Button>
+                    <Button onClick={() => deleteRow()} autoFocus>
+                        Ok
+                    </Button>
                 </DialogActions>
             </Dialog>
             <Dialog
@@ -901,7 +923,7 @@ const AdminPage = () => {
                 aria-describedby="alert-dialog-description"
             >
                 <DialogTitle id="alert-dialog-title">
-                {"Submit data"}
+                    {"Submit data"}
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
@@ -912,10 +934,10 @@ const AdminPage = () => {
                     </div>)}
                 </DialogContent>
                 <DialogActions>
-                {!startProgress && (<Button onClick={() => setOpen4(false)}>Cancel</Button>)}
-                {!startProgress && (<Button onClick={() => uploadChanges()} autoFocus>
-                    Ok
-                </Button>)}
+                    {!startProgress && (<Button onClick={() => setOpen4(false)}>Cancel</Button>)}
+                    {!startProgress && (<Button onClick={() => uploadChanges()} autoFocus>
+                        Ok
+                    </Button>)}
                 </DialogActions>
             </Dialog>
             <Dialog
@@ -926,7 +948,7 @@ const AdminPage = () => {
                 aria-describedby="alert-dialog-description"
             >
                 <DialogTitle id="alert-dialog-title">
-                {"Result"}
+                    {"Result"}
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
@@ -947,18 +969,18 @@ const AdminPage = () => {
                 aria-describedby="alert-dialog-description"
             >
                 <DialogTitle id="alert-dialog-title">
-                {"Delete many"}
+                    {"Delete many"}
                 </DialogTitle>
                 <DialogContent>
-                <DialogContentText id="alert-dialog-description">
-                    Are you sure you want to delete {selected.length} row(s) ?
-                </DialogContentText>
+                    <DialogContentText id="alert-dialog-description">
+                        Are you sure you want to delete {selected.length} row(s) ?
+                    </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                <Button onClick={() => setOpen6(false)}>Cancel</Button>
-                <Button onClick={() => deleteRows()} autoFocus>
-                    Ok
-                </Button>
+                    <Button onClick={() => setOpen6(false)}>Cancel</Button>
+                    <Button onClick={() => deleteRows()} autoFocus>
+                        Ok
+                    </Button>
                 </DialogActions>
             </Dialog>
             <Dialog
@@ -969,7 +991,7 @@ const AdminPage = () => {
                 aria-describedby="alert-dialog-description"
             >
                 <DialogTitle id="alert-dialog-title">
-                {"Look for changes"}
+                    {"Look for changes"}
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
@@ -980,10 +1002,10 @@ const AdminPage = () => {
                     </div>)}
                 </DialogContent>
                 <DialogActions>
-                {!startProgress && (<Button onClick={() => setOpen7(false)}>Cancel</Button>)}
-                {!startProgress && (<Button onClick={() => {checkChanges()}} autoFocus>
-                    Ok
-                </Button>)}
+                    {!startProgress && (<Button onClick={() => setOpen7(false)}>Cancel</Button>)}
+                    {!startProgress && (<Button onClick={() => { checkChanges() }} autoFocus>
+                        Ok
+                    </Button>)}
                 </DialogActions>
             </Dialog>
             <Dialog
@@ -994,18 +1016,18 @@ const AdminPage = () => {
                 aria-describedby="alert-dialog-description"
             >
                 <DialogTitle id="alert-dialog-title">
-                {"Delete changes"}
+                    {"Delete changes"}
                 </DialogTitle>
                 <DialogContent>
-                <DialogContentText id="alert-dialog-description">
-                    Are you sure you want to delete change nº {currentChange} ?
-                </DialogContentText>
+                    <DialogContentText id="alert-dialog-description">
+                        Are you sure you want to delete change nº {currentChange} ?
+                    </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                <Button onClick={() => setOpen8(false)}>Cancel</Button>
-                <Button onClick={() => deleteChange()} autoFocus>
-                    Ok
-                </Button>
+                    <Button onClick={() => setOpen8(false)}>Cancel</Button>
+                    <Button onClick={() => deleteChange()} autoFocus>
+                        Ok
+                    </Button>
                 </DialogActions>
             </Dialog>
         </div>

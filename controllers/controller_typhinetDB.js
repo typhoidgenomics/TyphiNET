@@ -10,25 +10,26 @@ import LZString from 'lz-string';
 const router = express.Router()
 
 //getData function to get all fields
-export const getUsers = asyncHandler(async(req, res) => {
-    const users = await CombinedModel.find({})
-    res.json(users)
-})
+// export const getUsers = asyncHandler(async(req, res) => {
+//     const users = await CombinedModel.find({})
+//     res.json(users)
+// })
 
-//getSampleById function to retrieve sample by id
-export const getUserById = asyncHandler(async(req, res) => {
-    const user = await CombinedModel.findById(req.params.id)
+// //getSampleById function to retrieve sample by id
+// export const getUserById = asyncHandler(async(req, res) => {
+//     const user = await CombinedModel.findById(req.params.id)
 
-    //if data id match param id send data else throw error
-    if (user) {
-        res.json(user)
-    } else {
-        res.status(404).json({ message: "Data not found" })
-        res.status(404)
-        throw new Error('Data not found')
-    }
-})
+//     //if data id match param id send data else throw error
+//     if (user) {
+//         res.json(user)
+//     } else {
+//         res.status(404).json({ message: "Data not found" })
+//         res.status(404)
+//         throw new Error('Data not found')
+//     }
+// })
 
+// Downloads data from MongoDB and creates the clean_db file
 router.get('/download', (req, res) => {
 
     CombinedModel.find().then(async(comb) => {
@@ -45,6 +46,7 @@ router.get('/download', (req, res) => {
     })
 })
 
+// Uploads clean file to MongoDB
 router.get('/upload', (req, res) => {
     let data_to_send = []
     fs.createReadStream(Tools.path_clean, { start: 0 })
@@ -69,6 +71,7 @@ router.get('/upload', (req, res) => {
         })
 });
 
+// Upload data from admin page to MongoDB
 router.post('/upload/admin', (req, res) => {
 
     const path = "./assets/database/lastClean.txt";
@@ -105,8 +108,8 @@ router.post('/upload/admin', (req, res) => {
 
 });
 
+// Check if there were any changes made directly in the MongoDB and update current data from the admin page
 router.get('/checkForChanges', async (req, res) => {
-
     let response = []
 
     response = await CombinedModel.find().then(async(comb) => {
@@ -119,7 +122,7 @@ router.get('/checkForChanges', async (req, res) => {
         }
         return send_comb
     })
-
+    
     const path = "./assets/database/previousDatabases.txt";
     const text = fs.readFileSync(path, 'utf-8');
     const aux = JSON.parse(text);
@@ -136,7 +139,6 @@ router.get('/checkForChanges', async (req, res) => {
         console.log('New data');
         res.json({ "Status": "New Data" });
     } else {
-
         const difference = detailedDiff(collection, data)
         Object.keys(difference.updated).forEach(element => {
             for (const key in difference.updated[element]) {
@@ -168,6 +170,7 @@ router.get('/checkForChanges', async (req, res) => {
     }
 });
 
+// Get last date that the MongoDB was updated
 router.get('/lastUpdated', (req, res) => {
 
     const path = "./assets/database/previousDatabases.txt";
@@ -177,6 +180,7 @@ router.get('/lastUpdated', (req, res) => {
     return res.json(aux[0].updatedAt)
 });
 
+// Delete specific change from the admin page
 router.post('/deleteChange', (req, res) => {
 
     const path = "./assets/database/previousDatabases.txt";
@@ -189,25 +193,26 @@ router.post('/deleteChange', (req, res) => {
     return res.json(aux)
 });
 
-router.get('/genomes/:name', (req, res) => {
+// This is not currently being used
+// router.get('/genomes/:name', (req, res) => {
 
-    CombinedModel.findOne({NAME: req.params.name}, function(err, result) {
-        if (err) {
-            return res.json({ success: false, message: "Something went wrong" });
-        }
+//     CombinedModel.findOne({NAME: req.params.name}, function(err, result) {
+//         if (err) {
+//             return res.json({ success: false, message: "Something went wrong" });
+//         }
     
-        if (result) {
-            return res.json({
-                success: true,
-                data: result
-            });
-        } else {
-            return res.json({
-                success: true,
-                data: 'no data'
-            });
-        }
-    });
-});
+//         if (result) {
+//             return res.json({
+//                 success: true,
+//                 data: result
+//             });
+//         } else {
+//             return res.json({
+//                 success: true,
+//                 data: 'no data'
+//             });
+//         }
+//     });
+// });
 
 export default router;
