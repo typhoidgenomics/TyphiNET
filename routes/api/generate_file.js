@@ -528,12 +528,15 @@ router.get('/create', function(req, res) {
     }
     return res.json({ "Finished": "All done!" });
 })
+
+// Download clean as spreadsheet
 router.get('/download', function(req, res, next) {
     res.setHeader("Access-Control-Allow-Origin", "*");
     let path_file = Tools.path_clean_db || Tools.path_clean
     res.download(path_file);
 });
 
+// Get data for admin page: changes and current data
 router.get('/databaseLog', function(req, res, next) {
     const path = "./assets/database/previousDatabases.txt";
     const text = fs.readFileSync(path, 'utf-8');

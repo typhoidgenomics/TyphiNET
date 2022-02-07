@@ -4,7 +4,7 @@ import { scaleLinear } from "d3-scale";
 import Loader from "react-loader-spinner";
 import { ComposableMap, Geographies, Geography, Sphere, Graticule, ZoomableGroup } from "react-simple-maps";
 import InputLabel from '@material-ui/core/InputLabel';
-import {Tooltip as IconTooltip} from '@material-ui/core';
+import { Tooltip as IconTooltip } from '@material-ui/core';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
@@ -21,8 +21,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faMinus, faCrosshairs, faCamera, faTable, faFilePdf, faInfoCircle, faUndoAlt } from '@fortawesome/free-solid-svg-icons'
 import download from 'downloadjs';
 import { svgAsPngUri } from 'save-svg-as-png';
-import typhinetLogoImg from '../../assets/img/logo-typhinet3.png';
-import typhinetLogoImg2 from '../../assets/img/logo-typhinet3.png';
+import typhinetLogoImg from '../../assets/img/logo-typhinet-beta.png';
+import euFlagImg from '../../assets/img/eu_flag.jpg';
 import geography from '../../assets/world-110m.json'
 import { API_ENDPOINT } from '../../constants';
 import { getColorForGenotype, getColorForDrug, getColorForTetracyclines } from '../../util/colorHelper';
@@ -77,7 +77,7 @@ const DashboardPage = () => {
   const [actualRegion, setActualRegion] = useState("All");
 
   const [actualContinent, setActualContinent] = useState("All")
-  const [continentOptions] = useState(['All', 'Africa', 'Asia', 'Central America', 'Europe', 'North America', 'Oceania', 'South America'])
+  // const [continentOptions] = useState(['All', 'Africa', 'Asia', 'Central America', 'Europe', 'North America', 'Oceania', 'South America'])
 
   const [populationStructureFilter, setPopulationStructureFilter] = React.useState(1);
   const [populationStructureFilterOptions] = useState([{ value: 'Number of genomes', id: 1 }, { value: 'Percentage per year', id: 2 }])
@@ -122,6 +122,7 @@ const DashboardPage = () => {
     width: window.innerWidth
   })
 
+  // Helper function for getting height and width of window
   function debounce(fn, ms) {
     let timer
     return _ => {
@@ -133,10 +134,12 @@ const DashboardPage = () => {
     };
   }
 
-  function formatDate (date) {
+  // Format selected date
+  function formatDate(date) {
     return moment(date).format("ddd MMM DD YYYY HH:mm:ss")
   }
 
+  // Watcher for window resize
   useEffect(() => {
     const debouncedHandleResize = debounce(function handleResize() {
       setDimensions({
@@ -172,6 +175,7 @@ const DashboardPage = () => {
     '4.3.1.1.P1', '4.3.1.1.EA1', '4.3.1.2', '4.3.1.2.EA2',
     '4.3.1.2.EA3', '4.3.1.3', '4.3.1.3.Bdq'].sort((a, b) => a.localeCompare(b)));
 
+  // Get date from the las update on the table from admin page
   useEffect(() => {
     axios.get(`${API_ENDPOINT}mongo/lastUpdated`)
       .then((res) => {
@@ -179,6 +183,7 @@ const DashboardPage = () => {
       })
   }, [])
 
+  // Colors for the No. Samples label
   const mapSamplesColorScale = (domain) => {
     if (domain >= 1 && domain <= 9) {
       return '#4575b4'
@@ -193,10 +198,12 @@ const DashboardPage = () => {
     }
   }
 
+  // Red color scale for some of the map's views
   const [mapRedColorScale] = useState(() => scaleLinear()
     .domain([0, 50, 100])
     .range(["#ffebee", "#f44336", "#b71c1c"]));
 
+  // Tooltip for all graphs but the Resistance determinants within genotypes
   const tooltip = React.useCallback((positionY, width1, width2, sort, wrapperS, stroke, chart = -1) => {
     return (
       <Tooltip
@@ -260,6 +267,7 @@ const DashboardPage = () => {
     )
   }, [desktop, dimensions, mobile, populationStructureFilter, RFWGFilter, hoverColor])
 
+  // Genotype Distribution graph
   useEffect(() => {
     const plotPopulationStructureChart = () => {
 
@@ -312,7 +320,7 @@ const DashboardPage = () => {
               />
 
               {tooltip([290, 290, 260], dimensions.width < 620 ? 250 : 530, dimensions.width > 620 ? "20%" : "50%", false, { zIndex: 100, top: 20, right: -20 }, false)}
-              {genotypes.map((item, i) => <Bar key={i+"PSC_Q"} dataKey={item} stackId={0} fill={getColorForGenotype(item)} />)}
+              {genotypes.map((item, i) => <Bar key={i + "PSC_Q"} dataKey={item} stackId={0} fill={getColorForGenotype(item)} />)}
             </BarChart>
           </ResponsiveContainer>
         )
@@ -374,7 +382,7 @@ const DashboardPage = () => {
               />
 
               {tooltip([290, 290, 260], dimensions.width < 620 ? 250 : 530, dimensions.width > 620 ? "20%" : "50%", false, { zIndex: 100, top: 20, right: -20 }, false, 3)}
-              {genotypes.map((item, i) => <Bar key={i+"PSC_P"} dataKey={item} stackId="a" fill={getColorForGenotype(item)} />)}
+              {genotypes.map((item, i) => <Bar key={i + "PSC_P"} dataKey={item} stackId="a" fill={getColorForGenotype(item)} />)}
             </BarChart>
           </ResponsiveContainer>
         )
@@ -383,6 +391,7 @@ const DashboardPage = () => {
     setPlotPopulationStructureChart(plotPopulationStructureChart)
   }, [dimensions.width, genotypes, populationStructureChartData, populationStructureFilter, tooltip])
 
+  // Resistance determinants within genotypes graph and tooltip
   useEffect(() => {
     const amrClassChartTooltip = () => {
       return (
@@ -407,7 +416,7 @@ const DashboardPage = () => {
                         }
                         percentage = Math.round(percentage * 100) / 100
                         return (
-                          <div key={index+"tooltip"} className="amr-tooltip-content-individual">
+                          <div key={index + "tooltip"} className="amr-tooltip-content-individual">
                             <div className="my-tooltip-content-square" style={{ backgroundColor: item.fill }} />
                             <div className="amr-tooltip-content-info">
                               <span className="amr-tooltip-content-name">{item.name}</span>
@@ -468,7 +477,7 @@ const DashboardPage = () => {
                         {payload.map((entry, index) => {
                           const { dataKey, color } = entry
                           return (
-                            <div key={index+"RDWAG-legend"} className="RDWAG-legend-info">
+                            <div key={index + "RDWAG-legend"} className="RDWAG-legend-info">
                               <div className="RDWAG-legend-info-circle" style={{ backgroundColor: color }} />
                               <span className="RDWAG-legend-info-name">{dataKey}</span>
                             </div>
@@ -483,7 +492,7 @@ const DashboardPage = () => {
               {amrClassChartTooltip()}
               {info.bars.map((item, i) => {
                 return (
-                  <Bar key={i+"RDWAG_Q"} dataKey={item[0]} fill={item[1]} stackId="a" barSize={30} />
+                  <Bar key={i + "RDWAG_Q"} dataKey={item[0]} fill={item[1]} stackId="a" barSize={30} />
                 )
               })}
             </BarChart>
@@ -546,7 +555,7 @@ const DashboardPage = () => {
               {amrClassChartTooltip()}
               {info.bars.map((item, i) => {
                 return (
-                  <Bar key={i+"RDWAG_P"} dataKey={item[0]} fill={item[1]} stackId="a" barSize={30} />
+                  <Bar key={i + "RDWAG_P"} dataKey={item[0]} fill={item[1]} stackId="a" barSize={30} />
                 )
               })}
             </BarChart>
@@ -665,6 +674,7 @@ const DashboardPage = () => {
     setPlotAmrClassChart(plotAmrClassChart)
   }, [RDWAGDataviewFilter, amrClassChartData, amrClassFilter, dimensions.width, hoverColor])
 
+  // Drug Resistance Trends graph
   useEffect(() => {
     const plotDrugTrendsChart = () => {
       let dataDRT = drugTrendsChartData
@@ -728,14 +738,15 @@ const DashboardPage = () => {
     setPlotDrugTrendsChart(plotDrugTrendsChart)
   }, [dimensions.width, drugTrendsChartData, mobile, timeFinal, timeInitial, tooltip, trendClassesForFilter])
 
+  // Resistance frequencies within genotypes graph
   useEffect(() => {
     const plotDrugsAndGenotypesChart = () => {
       let aux = JSON.parse(JSON.stringify(drugsAndGenotypesChartData))
-      
+
       const aux2 = []
       for (let index = 0; index < aux.length; index++) {
         const percentage = (aux[index].total / aux[index].totalS) * 100
-        aux2.push({value: aux[index].name, label: aux[index].name + ` (total N=${aux[index].totalS}, ${Math.round(percentage * 100) / 100}% resistant)`, id: index})
+        aux2.push({ value: aux[index].name, label: aux[index].name + ` (total N=${aux[index].totalS}, ${Math.round(percentage * 100) / 100}% resistant)`, id: index })
       }
       setRFWGDropdownOptions(aux2)
 
@@ -784,7 +795,7 @@ const DashboardPage = () => {
                 }}
               />
               {tooltip([155, 270, 270], dimensions.width < mobile ? 250 : 325, "50%", false, { zIndex: 100, top: 160 }, false, 0)}
-              {drtClassesForFilter.map((item, i) => (<Bar key={i+"DRT_Q"} dataKey={item} fill={getColorForDrug(item)} />))}
+              {drtClassesForFilter.map((item, i) => (<Bar key={i + "DRT_Q"} dataKey={item} fill={getColorForDrug(item)} />))}
             </BarChart>
           </ResponsiveContainer>
         )
@@ -841,7 +852,7 @@ const DashboardPage = () => {
                 }}
               />
               {tooltip([155, 270, 270], dimensions.width < mobile ? 250 : 325, "50%", false, { zIndex: 100, top: 160 }, false, 4)}
-              {drtClassesForFilter.map((item, i) => (<Bar key={i+"DRT_P"} dataKey={item} fill={getColorForDrug(item)} />))}
+              {drtClassesForFilter.map((item, i) => (<Bar key={i + "DRT_P"} dataKey={item} fill={getColorForDrug(item)} />))}
             </BarChart>
           </ResponsiveContainer>
         )
@@ -850,6 +861,7 @@ const DashboardPage = () => {
     setPlotDrugsAndGenotypesChart(plotDrugsAndGenotypesChart)
   }, [RFWGFilter, RFWGValues, dimensions.width, drtClassesForFilter, drugsAndGenotypesChartData, mobile, tooltip])
 
+  // Helper for loading images to the report
   function imgOnLoadPromise(obj) {
     return new Promise((resolve, reject) => {
       obj.onload = () => resolve(obj);
@@ -857,6 +869,7 @@ const DashboardPage = () => {
     });
   }
 
+  // Stop loadings
   const [stopLoading] = useState(() => (index) => {
     switch (index) {
       case 0: setCaptureControlMapInProgress(false)
@@ -874,6 +887,7 @@ const DashboardPage = () => {
     }
   })
 
+  // Start loadings
   const [capturePicture] = useState(() => async (id, index, info = {}) => {
     switch (index) {
       case 0:
@@ -903,15 +917,19 @@ const DashboardPage = () => {
       const IPW = doc.internal.pageSize.getWidth() / 2;
 
       let typhinetLogo = new Image();
-      typhinetLogo.src = typhinetLogoImg2;
+      typhinetLogo.src = typhinetLogoImg;
       doc.addImage(typhinetLogo, 'PNG', 110, 8, 80, 26)
+
+      let euFlag = new Image();
+      euFlag.src = euFlagImg;
+      doc.addImage(euFlag, 'JPG', 237, 148.2, 6, 4)
 
       let date = new Date()
       date = moment(date).format("ddd MMM DD YYYY HH:mm:ss")
 
       doc.setFontSize(12);
-      doc.setTextColor(0,0,0);
-      let space = 0
+      doc.setTextColor(0, 0, 0);
+
       const paragraph1 = `This report was generated by the TyphiNET (http://typhi.net) website, a data visualisation platform that draws genome-derived data on antimicrobial resistance and genotypes from Typhi Pathogenwatch (http://pathogen.watch). Data were last updated on [${formatDate(lastUpdated)}].  `
       const paragraph2 = `This report was generated at [${formatDate(new Date())}] using the beta version of TyphiNET which is still undergoing development and data are not yet complete. For code and further details please see: https://github.com/zadyson/TyphiNET`
       const paragraph3 = `The genotypes reported here are defined in Dyson & Holt (2021), J. Infect. Dis.`
@@ -919,7 +937,7 @@ const DashboardPage = () => {
       const paragraph5 = `Travel-associated cases are attributed to the country of travel, not the country of isolation (see Ingle et al. 2019, PLoS NTDs).`
       const paragraph6 = `TyphiNET presents data aggregated from >100 studies. Individual genome information, including derived genotype and AMR calls, sequence data accession numbers, and source information (PubMedID for citation) can be downloaded as a spreadsheet from the TyphiNET website (typhi.net).`
       const paragraph7 = `Studies contributing genomes representing infections originating from ${info.country} have the following PubMed IDs (PMIDs): ${info.PMID.join(', ')}.`
-      const paragraph8 = `The TyphiNET dashboard was developed with support from the Wellcome Trust (Open Research Fund, 219692/Z/19/Z) and the EU Horizon 2020 research and innovation programme (Marie Sklodowska-Curie grant #845681).`
+      const paragraph8 = `This project has received funding from the the Wellcome Trust (Open Research Fund, 219692/Z/19/Z) and the  European Union's Horizon 2020 research and innovation programme under the Marie Sklodowska-Curie grant agreement No 845681.`
       doc.setFont(undefined, 'bold')
       doc.text(`TyphiNET report [${formatDate(new Date())}]`, 20, 50, { align: 'justify', maxWidth: 255 })
       doc.setFont(undefined, 'normal')
@@ -931,7 +949,7 @@ const DashboardPage = () => {
       doc.text(paragraph6, 20, 125, { align: 'justify', maxWidth: 255 })
       doc.text(paragraph8, 20, 147, { align: 'justify', maxWidth: 255 })
       if (info.country !== "All") {
-          doc.text(paragraph7, 20, 164, { align: 'justify', maxWidth: 255 })
+        doc.text(paragraph7, 20, 164, { align: 'justify', maxWidth: 255 })
       }
 
       doc.line(0, 200, 300, 200)
@@ -1084,11 +1102,11 @@ const DashboardPage = () => {
         doc.text("Country: " + info.country, 230, 45);
         doc.text("Region: " + info.region, 230, 50);
 
-        if (index === 3){
-          doc.setFillColor(255,255,255);
+        if (index === 3) {
+          doc.setFillColor(255, 255, 255);
           doc.rect(22, info.dimensions.width < info.desktop ? 120 : 110, 300, 100, 'F');
-        } else if (index === 1){
-          doc.setFillColor(255,255,255);
+        } else if (index === 1) {
+          doc.setFillColor(255, 255, 255);
           doc.rect(22, 113, 300, 100, 'F');
         }
 
@@ -1217,7 +1235,7 @@ const DashboardPage = () => {
 
       let typhinetLogo = document.createElement("img");
       let typhinetLogoPromise = imgOnLoadPromise(typhinetLogo);
-      typhinetLogo.src = typhinetLogoImg2;
+      typhinetLogo.src = typhinetLogoImg;
       await typhinetLogoPromise;
       ctx.drawImage(typhinetLogo, 10, 10, 170, 55);
 
@@ -1320,7 +1338,7 @@ const DashboardPage = () => {
 
           let typhinetLogo = document.createElement("img");
           let typhinetLogoPromise = imgOnLoadPromise(typhinetLogo);
-          typhinetLogo.src = typhinetLogoImg2;
+          typhinetLogo.src = typhinetLogoImg;
           await typhinetLogoPromise;
           ctx.drawImage(typhinetLogo, 25, 25, 500, 200);
 
@@ -1332,6 +1350,7 @@ const DashboardPage = () => {
 
   })
 
+  // Download spreadsheet
   const [dowloadBaseSpreadsheet] = useState(() => () => {
     axios.get(`${API_ENDPOINT}file/download`)
       .then((res) => {
@@ -1346,6 +1365,7 @@ const DashboardPage = () => {
             lines.push(line)
           }
         }
+        // console.log(lines);
 
         for (let index = 0; index < cols_to_remove.length; index++) {
           let currentIndex = lines[0].indexOf(cols_to_remove[index])
@@ -1380,10 +1400,16 @@ const DashboardPage = () => {
           newCSV += aux
         }
 
+        console.log(newCSV);
         download(newCSV, 'TyphiNET_Database.csv');
       })
   })
 
+  const [dowloadCurrentDataSpreadsheet] = useState(() => () => {
+
+  })
+
+  // Component for map view's options
   const generateMapLegendOptions = () => {
     let percentageSteps = ['1', '25', '50', '75']
     const otherViews = ['CipI', 'CipR', 'Azith', 'Sensitive to all drugs', 'MDR', 'XDR']
@@ -1480,10 +1506,11 @@ const DashboardPage = () => {
     }
   }
 
+  // Map upper right buttons component
   const renderMapLegend = () => {
     const mapLegends = [
       ['MDR', 'Multidrug resistant (MDR)'], ['XDR', 'Extensively drug resistant (XDR)'], ['Azith', 'Azithromycin resistant'],
-      ['CipI', 'Ciprofloxacin insusceptible and resistant (CipI/R)'], ['CipR', 'Ciprofloxacin resistant (CipR)'], ['Sensitive to all drugs', 'Sensitive to all drugs'], 
+      ['CipI', 'Ciprofloxacin insusceptible and resistant (CipI/R)'], ['CipR', 'Ciprofloxacin resistant (CipR)'], ['Sensitive to all drugs', 'Sensitive to all drugs'],
       ['Dominant Genotype', 'Dominant Genotype'], ['H58 / Non-H58', 'H58 genotype'], ['No. Samples', 'No. Samples']
     ]
     return (
@@ -1496,7 +1523,7 @@ const DashboardPage = () => {
               placement="top"
             >
               <IconButton className={classes.tooltipButton}>
-                  <FontAwesomeIcon icon={faInfoCircle} size="xs" className={classes.tooltipIcon}/>
+                <FontAwesomeIcon icon={faInfoCircle} size="xs" className={classes.tooltipIcon} />
               </IconButton>
             </IconTooltip>
           </div>
@@ -1520,13 +1547,16 @@ const DashboardPage = () => {
     )
   }
 
+  // The variables and functions between the two dotted lines below represents the new method for filtering the data on the dashboard
   //-------------------------------------------------------------------------------------------------------------------
   const [data, setData] = useState([])
+  const [currentData, setCurrentData] = useState([])
   const [init, setInit] = useState(false)
   const [allCountryRegions, setAllCountryRegions] = useState({})
   const [loading, setLoading] = useState(false)
 
-  // Get data
+  // Get data from the csv file, filter it and set all initial values for the dashboard
+  // The CSV is only read ONCE in this function, after that the data passes only through the "filterForComponents" function from the filters.js file
   useEffect(() => {
     axios.get(`${API_ENDPOINT}filters/getDataFromCSV`)
       .then((res) => {
@@ -1540,14 +1570,14 @@ const DashboardPage = () => {
 
           if (!auxTGenotypes.includes(x.GENOTYPE)) auxTGenotypes.push(x.GENOTYPE)
           if (!auxYears.includes(x.DATE) && !empty.includes(x.DATE)) auxYears.push(x.DATE)
-          if (!auxCountries.includes(x.COUNTRY_ONLY) && !empty.includes(x.COUNTRY_ONLY)){
+          if (!auxCountries.includes(x.COUNTRY_ONLY) && !empty.includes(x.COUNTRY_ONLY)) {
             auxCountries.push(x.COUNTRY_ONLY)
             auxRegions[x.COUNTRY_ONLY] = []
           }
           if (!empty.includes(x.COUNTRY_ONLY) && !empty.includes(x.REGION_IN_COUNTRY) && !auxRegions[x.COUNTRY_ONLY].includes(x.REGION_IN_COUNTRY)) {
             auxRegions[x.COUNTRY_ONLY].push(x.REGION_IN_COUNTRY)
           }
-          
+
         })
         auxYears.sort()
         auxCountries.sort()
@@ -1561,13 +1591,15 @@ const DashboardPage = () => {
         setYears(auxYears)
         setCountriesForFilter(auxCountries)
         setAllCountryRegions(auxRegions)
-        
+
         console.log('FINISH');
         setInit(true)
       })
   }, [])
 
-  // Update regions after country changes
+  // Update regions after country changes.
+  // This was made apart from the normal filters because we already have all regions from all countries and it is not necessary
+  // to loop through all the data again.
   useEffect(() => {
     if (init) {
       setActualRegion("All")
@@ -1580,6 +1612,8 @@ const DashboardPage = () => {
     }
   }, [init, actualCountry, allCountryRegions])
 
+  // This function checks for changes on any of the filters and changes the loading status of the apge to TRUE.
+  // This triggers the function below this one (filterForComponents) and updates the data shown on the page
   useEffect(() => {
     if (init) {
       console.log('Something changed');
@@ -1587,9 +1621,9 @@ const DashboardPage = () => {
     }
   }, [init, dataset, actualTimeInitial, actualTimeFinal, actualCountry, actualRegion])
 
-  // Update all
+  // Watcher from changes from filter on the dashboard, this way data is passed through the filters.js file and returns
   useEffect(() => {
-    function update () {
+    function update() {
       if (init && loading) {
         console.log('Updating...');
         const aux = filterForComponents(
@@ -1602,6 +1636,7 @@ const DashboardPage = () => {
             region: actualRegion
           }
         )
+        setCurrentData(aux[0]);
         setActualGenomes(aux[0].length)
         setActualGenotypes(aux[1])
         setWorldMapSamplesData(aux[2])
@@ -1624,14 +1659,19 @@ const DashboardPage = () => {
       }
     }
     update()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading])
 
+  //-------------------------------------------------------------------------------------------------------------------
+
   return (
-    <div className="dashboard" style={{height: '100vh'}}>
+    <div className="dashboard" style={{ height: '100vh' }}>
+      {/* Mobile toolbar */}
       <div className="menu-bar-mobile">
         <img className="logoImageMenu-mobile" src={typhinetLogoImg} alt="TyphiNET" />
       </div>
       <div style={{ padding: dimensions.width > 770 ? '16px 16px 0px 16px' : '16x 0px 0px 0px', display: appLoading ? 'none' : '', backgroundColor: '#E5E5E5' }}>
+        {/* Logo and information on genotypes and genomes */}
         <div className="info-wrapper">
           {dimensions.width > desktop && (
             <>
@@ -1667,9 +1707,11 @@ const DashboardPage = () => {
             )}
           </div>
         </div>
+        {/* Map Wrapper*/}
         <div className="map-filters-wrapper">
           <h2>Global Overview of <i>Salmonella</i> Typhi</h2>
           <div className="map-filters-wrapper-inside" style={{ flexDirection: dimensions.width > desktop ? 'row' : 'column' }}>
+            {/* Map -> all map views and information */}
             <div className="map-wrapper">
               <ComposableMap
                 id="control-map"
@@ -1694,7 +1736,7 @@ const DashboardPage = () => {
                     {({ geographies }) =>
                       geographies.map((geo) => {
                         const sample = worldMapSamplesData.find(s => s.displayName === geo.properties.NAME && (actualContinent === "All" || geo.properties.CONTINENT === actualContinent))
-                        
+
                         const d = worldMapComplementaryData[geo.properties.NAME];
                         let country
 
@@ -1804,7 +1846,7 @@ const DashboardPage = () => {
                             cursor="pointer"
                             fill={fill}
                             onClick={() => {
-                              if (d !== undefined && sample !== undefined){
+                              if (d !== undefined && sample !== undefined) {
                                 setActualCountry(sample.name)
                               }
                             }}
@@ -2096,12 +2138,14 @@ const DashboardPage = () => {
                 </ZoomableGroup>
 
               </ComposableMap>
+              {/* Map legend */}
               {(dimensions.width > desktop) && (
                 <div className="map-upper-right-buttons">
                   {renderMapLegend()}
                 </div>
               )}
               {(dimensions.width > desktop) && (
+                // Dataset Filter
                 <div className="map-upper-left-buttons ">
                   <div className="map-filters" style={{ width: dimensions.width > desktop ? 200 : "-webkit-fill-available" }}>
                     <span className="map-filters-label" style={{ marginBottom: dimensions.width > desktop ? 20 : 10 }}>Filters</span>
@@ -2144,7 +2188,7 @@ const DashboardPage = () => {
                           >
                             {years?.filter(x => x <= actualTimeFinal).map((n, i) => {
                               return (
-                                <MenuItem key={i+"timeperiod"} className={classes.select} value={n}>
+                                <MenuItem key={i + "timeperiod"} className={classes.select} value={n}>
                                   {n}
                                 </MenuItem>
                               )
@@ -2176,6 +2220,7 @@ const DashboardPage = () => {
                   </div>
                 </div>
               )}
+              {/* Map controllers */}
               <div className="map-lower-left-buttons">
                 <Zoom in={controlMapPosition.zoom !== 1 || controlMapPosition.coordinates.some(c => c !== 0)}>
                   <TooltipMaterialUI title={<span className="my-font">Recenter Map</span>} placement="right">
@@ -2214,6 +2259,7 @@ const DashboardPage = () => {
                   </div>
                 </TooltipMaterialUI>
               </div>
+              {/* Download map button */}
               <div className="map-lower-right-buttons">
                 <TooltipMaterialUI title={<span className="my-font">Download Map as PNG</span>} placement="left">
                   <div
@@ -2234,12 +2280,16 @@ const DashboardPage = () => {
                 )}
               </div>
             </div>
+            {/* Map filters and legends for mobile */}
             {!(dimensions.width > desktop) && (
               <div className="wrapper-map-legend">
+                {/* Legend */}
                 {renderMapLegend()}
+                {/* Filters */}
                 <div>
                   <div className="map-filters-mobile" style={{ width: dimensions.width > desktop ? 200 : "-webkit-fill-available" }}>
                     <span className="map-filters-label" style={{ marginBottom: dimensions.width > desktop ? 20 : 10 }}>Filters</span>
+                    {/* Dataset Filter */}
                     <div style={{ marginBottom: dimensions.width > desktop ? 16 : 8 }}>
                       <Typography className={classes.typography}>
                         Select dataset
@@ -2265,6 +2315,7 @@ const DashboardPage = () => {
                         </CustomToggleButton>
                       </ToggleButtonGroup>
                     </div>
+                    {/* Year Filter */}
                     <div className="margin-div">
                       <div className="my-year-range">
                         <div className="my-year-range-row">
@@ -2312,6 +2363,7 @@ const DashboardPage = () => {
                 </div>
               </div>
             )}
+            {/* Map Tooltips */}
             <ReactTooltip>
               {tooltipContent && (
                 <div className="tooltip-map">
@@ -2397,14 +2449,16 @@ const DashboardPage = () => {
             </ReactTooltip>
           </div>
         </div>
+        {/* Chart Wrapper */}
         <div className="chart-wrapper">
           <h2 className="showing-data">Now showing: {dataset} data from {actualCountry === "All" ? "all countries" : actualCountry} from {actualTimeInitial} to {actualTimeFinal}</h2>
-          <div className="country-region-div" style={{flexDirection: dimensions.width > 560 ? 'row' : 'column'}}>
-            <FormControl className={classes.formControlSelect, dimensions.width <= 560 ? classes.formControlSelectCountryRegionH : classes.formControlSelectCountryRegionV}>
+          <div className="country-region-div" style={{ flexDirection: dimensions.width > 560 ? 'row' : 'column' }}>
+            {/* Select country dropdown */}
+            <FormControl className={classes.formControlSelectCountryRegion}>
               <label className="select-country-label">Select country (or click map)</label>
               <Select
                 value={actualCountry}
-                onChange={evt => {setActualCountry(evt.target.value)}}
+                onChange={evt => { setActualCountry(evt.target.value) }}
                 fullWidth
                 className={classes.selectCountry}
               >
@@ -2418,11 +2472,12 @@ const DashboardPage = () => {
               </Select>
             </FormControl>
             {dimensions.width > 560 && <div className="country-region-spacer"></div>}
-            <FormControl className={`${classes.formControlSelect} ${dimensions.width <= 560 ? classes.formControlSelectCountryRegionH : classes.formControlSelectCountryRegionV}`}>
+            {/* Select region dropdown */}
+            <FormControl className={`${classes.formControlSelectCountryRegion}`}>
               <label className="select-country-label">Select region</label>
               <Select
                 value={actualRegion}
-                onChange={evt => {setActualRegion(evt.target.value)}}
+                onChange={evt => { setActualRegion(evt.target.value) }}
                 fullWidth
                 className={classes.selectCountry}
               >
@@ -2436,19 +2491,22 @@ const DashboardPage = () => {
               </Select>
             </FormControl>
           </div>
+          {/* Charts */}
           <div className="chart-wrapper-div">
             <div className="chart-wrapper-div2" style={{ flexDirection: dimensions.width > desktop ? "row" : "column", paddingBottom: dimensions.width > desktop ? 20 : 0 }}>
               <div className="chart-wrapper-div3" style={{ paddingRight: dimensions.width < mobile ? 0 : 10 }}>
+                {/* Resistance frequencies within genotypes CHART */}
                 <div className="chart-wrapper-RFWA">
                   <div className="chart-wrapper-RFWA-div">
                     <span className="chart-title chart-wrapper-RFWA-title">Resistance frequencies within genotypes</span>
+                    {/* Download chart */}
                     <div className="chart-wrapper-RFWA-download">
                       <TooltipMaterialUI title={<span className="my-font">Download Chart as PNG</span>} placement="right">
                         <div
                           className={`button ${captureControlChartRFWGInProgress && "disabled"}`}
                           onClick={() => {
                             if (!captureControlChartRFWGInProgress)
-                              capturePicture('RFWG', 1, { mapView: mapView, dataset: dataset, actualTimePeriodRange: [actualTimeInitial, actualTimeFinal], country: actualCountry, region: actualRegion, RFWGCount: RFWGValues.length})
+                              capturePicture('RFWG', 1, { mapView: mapView, dataset: dataset, actualTimePeriodRange: [actualTimeInitial, actualTimeFinal], country: actualCountry, region: actualRegion, RFWGCount: RFWGValues.length })
                           }}
                         >
                           <FontAwesomeIcon icon={faCamera} size="sm" />
@@ -2461,6 +2519,7 @@ const DashboardPage = () => {
                       )}
                     </div>
                   </div>
+                  {/* Labels */}
                   <span className="chart-title chart-wrapper-RFWA-top">Top Genotypes (up to {RFWGValues.length})</span>
                   <div className="chart-wrapper-RFWA-view" style={{ width: dimensions.width > 790 ? "71%" : '260px' }}>
                     <div className="chart-wrapper-DRT-view-drugs">
@@ -2470,10 +2529,11 @@ const DashboardPage = () => {
                         placement="top"
                       >
                         <IconButton className={classes.tooltipButton}>
-                            <FontAwesomeIcon icon={faInfoCircle} size="xs" className={classes.tooltipIcon}/>
+                          <FontAwesomeIcon icon={faInfoCircle} size="xs" className={classes.tooltipIcon} />
                         </IconButton>
                       </IconTooltip>
                     </div>
+                    {/* Data view dropdown */}
                     <FormControl fullWidth className={classes.formControlSelect}>
                       <DropDownSelect
                         options={RFWGFilterOptions}
@@ -2486,6 +2546,7 @@ const DashboardPage = () => {
                         className="dropdown-select"
                       />
                     </FormControl>
+                    {/* Genotypes select dropdown */}
                     <FormControl id="DDS2" fullWidth className={classes.formControlSelect}>
                       <DropDownSelect
                         options={RFWGDropdownOptions}
@@ -2515,7 +2576,7 @@ const DashboardPage = () => {
                               }
                             }}>
                               <div className="chart-wrapper-DRT-view-drugs-select-options">
-                                <input type="checkbox" checked={methods.isSelected(item)} onChange={() => {}} />
+                                <input type="checkbox" checked={methods.isSelected(item)} onChange={() => { }} />
                                 &nbsp;&nbsp;&nbsp;{item[props.labelField]}
                               </div>
                             </div>
@@ -2533,7 +2594,7 @@ const DashboardPage = () => {
                                   <ButtonClearSelect
                                     id="DSButton2"
                                     onClick={() => {
-                                      methods.selectAll(RFWGDropdownOptions.slice(0,5))
+                                      methods.selectAll(RFWGDropdownOptions.slice(0, 5))
                                     }}
                                     checked={true}
                                   >
@@ -2554,9 +2615,11 @@ const DashboardPage = () => {
                     {plotDrugsAndGenotypesChart}
                   </div>
                 </div>
+                {/* Resistance determinants within genotypes CHART */}
                 <div className="chart-wrapper-RDWAG">
                   <div className="chart-wrapper-RDWAG-div">
                     <span className="chart-title chart-wrapper-RDWAG-title">Resistance determinants within genotypes</span>
+                    {/* Download chart */}
                     <div className="chart-wrapper-RDWAG-download">
                       <TooltipMaterialUI title={<span className="my-font">Download Chart as PNG</span>} placement="right">
                         <div
@@ -2576,9 +2639,11 @@ const DashboardPage = () => {
                       )}
                     </div>
                   </div>
+                  {/* Labels */}
                   <span className="chart-title chart-wrapper-RDWAG-top">Top Genotypes (up to 10)</span>
                   <div className="chart-wrapper-RDWAG-view" style={{ width: dimensions.width > desktop ? "71%" : "90%" }}>
                     <InputLabel className={classes.inputLabel}>Select Drug Class</InputLabel>
+                    {/* Drug class dropdown */}
                     <FormControl fullWidth className={classes.formControlSelect}>
                       <DropDownSelect
                         options={amrClassFilterforFilterOptions}
@@ -2592,6 +2657,7 @@ const DashboardPage = () => {
                       />
                     </FormControl>
                     <InputLabel className={classes.inputLabel}>Data view</InputLabel>
+                    {/* Data view dropdown */}
                     <FormControl fullWidth className={classes.formControlSelect}>
                       <DropDownSelect
                         options={amrClassFilterOptions}
@@ -2611,9 +2677,11 @@ const DashboardPage = () => {
                 </div>
               </div>
               <div className="chart-wrapper-div3" style={{ paddingLeft: dimensions.width < mobile ? 0 : 10, marginTop: dimensions.width < desktop ? 50 : 0 }}>
+                {/* Drug resistance trends CHART */}
                 <div className="chart-wrapper-DRT">
                   <div className="chart-wrapper-DRT-div">
                     <span className="chart-title chart-wrapper-DRT-title">Drug resistance trends</span>
+                    {/* Download button */}
                     <div className="chart-wrapper-DRT-download">
                       <TooltipMaterialUI title={<span className="my-font">Download Chart as PNG</span>} placement="right">
                         <div
@@ -2633,12 +2701,14 @@ const DashboardPage = () => {
                       )}
                     </div>
                   </div>
+                  {/* Labels */}
                   <span className="chart-title chart-wrapper-RFWA-top">Data are plotted for years with N ≥ 10 genomes</span>
                   {dimensions.width > desktop && (<span className="chart-title" ></span>)}
                   <div className="chart-wrapper-DRT-view" style={{ width: dimensions.width > 790 ? "71%" : '260px' }}>
                     <div className="chart-wrapper-DRT-view-drugs">
                       <div className="chart-wrapper-DRT-view-drugs-label">Drugs view</div>
                     </div>
+                    {/* Drugs dropdown */}
                     <FormControl id="DDS" fullWidth className={classes.formControlSelect}>
                       <DropDownSelect
                         options={trendDropdownOptions}
@@ -2659,7 +2729,7 @@ const DashboardPage = () => {
                         itemRenderer={({ item, itemIndex, props, state, methods }) => (
                           <div key={item[props.valueField]} onClick={() => methods.addItem(item)}>
                             <div className="chart-wrapper-DRT-view-drugs-select-options">
-                              <input type="checkbox" checked={methods.isSelected(item)} onChange={() => {}}/>
+                              <input type="checkbox" checked={methods.isSelected(item)} onChange={() => { }} />
                               &nbsp;&nbsp;&nbsp;{item[props.labelField]}
                             </div>
                           </div>
@@ -2695,9 +2765,11 @@ const DashboardPage = () => {
                     {plotDrugTrendsChart}
                   </div>
                 </div>
+                {/* Genotype distribution CHART */}
                 <div className="chart-wrapper-GD">
                   <div className="chart-wrapper-GD-div">
                     <span className="chart-title chart-wrapper-GD-title">Genotype distribution</span>
+                    {/* Download chart */}
                     <div className="chart-wrapper-GD-download">
                       <TooltipMaterialUI title={<span className="my-font">Download Chart as PNG</span>} placement="right">
                         <div
@@ -2720,6 +2792,7 @@ const DashboardPage = () => {
                   {dimensions.width > desktop && (<span className="chart-title chart-wrapper-GD-space"></span>)}
                   <div className="chart-wrapper-GD-view" style={{ paddingTop: dimensions.width > desktop ? '67px' : '', width: dimensions.width > desktop ? "71%" : "90%" }}>
                     <InputLabel className={classes.inputLabel}>Data view</InputLabel>
+                    {/* Data view dropdown */}
                     <FormControl fullWidth className={classes.formControlSelect}>
                       <DropDownSelect
                         options={populationStructureFilterOptions}
@@ -2739,11 +2812,16 @@ const DashboardPage = () => {
                 </div>
               </div>
             </div>
+            {/* Download spreadsheet and report wrappper */}
             <div className="wrapper-download-sheet-button" style={{ flexDirection: dimensions.width > desktop ? "row" : "column", padding: dimensions.width < desktop ? '0px 12px 12px 12px' : '50px 12px 12px 12px', width: "-webkit-fill-available" }}>
-              <div className="download-sheet-button" onClick={() => dowloadBaseSpreadsheet()}>
-                <FontAwesomeIcon icon={faTable} style={{ marginRight: 8 }} />
-                <span>Download database</span>
-              </div>
+              {/* Download spreadsheet */}
+              <TooltipMaterialUI title={<span className="my-font">Genome line list - including source information, genome-derived AMR and genotype information, and citations for each genome; pulled from Pathogenwatch.</span>} placement="top">
+                <div className="download-sheet-button" onClick={() => dowloadBaseSpreadsheet()}>
+                  <FontAwesomeIcon icon={faTable} style={{ marginRight: 8 }} />
+                  <span>Download database (CSV format)</span>
+                </div>
+              </TooltipMaterialUI>
+              {/* Download report */}
               <div style={{ marginTop: dimensions.width > desktop ? 0 : 20, marginLeft: dimensions.width > desktop ? 20 : 0 }} className={`download-sheet-button`} onClick={() => {
                 if (!captureReportInProgress) {
                   setCaptureReportInProgress(true);
@@ -2762,19 +2840,23 @@ const DashboardPage = () => {
             </div>
           </div>
         </div>
+        {/* About info */}
         <div className="about-wrapper">
           <h2>About TyphiNET</h2>
           <p>
             The TyphiNET dashboard collates antimicrobial resistance (AMR) and genotype (lineage) information extracted from whole genome sequence (WGS) data from the bacterial pathogen <i>Salmonella</i> Typhi, the agent of typhoid fever. Data are sourced monthly from Typhoid <a href="https://pathogen.watch/" target="_blank" rel="noreferrer">Pathogenwatch</a>. Information on genotype definitions and population structure can be found in <a href="https://www.nature.com/articles/ncomms12827" target="_blank" rel="noreferrer">Wong et al, 2016</a>, and details of AMR determinants in <a href="https://www.nature.com/articles/s41467-021-23091-2" target="_blank" rel="noreferrer">Argimon et al, 2021</a>. (CipI/R = decreased ciprofloxacin susceptibility).
           </p>
           <p>
-            The TyphiNET dashboard is coordinated by Dr Zoe Dyson, Dr Louise Cerdeira &amp; Prof Kat Holt at the <a href="https://www.lshtm.ac.uk/" target="_blank" rel="noreferrer">London School of Hygiene and Tropical Medicine</a> &amp; <a href="https://www.monash.edu/" target="_blank" rel="noreferrer">Monash University</a>, supported by the Wellcome Trust (Open Research Fund, 219692/Z/19/Z) and the EU Horizon 2020 research and innovation programme (Marie Skłodowska-Curie grant #845681).
+            The TyphiNET dashboard is coordinated by Dr Zoe Dyson, Dr Louise Cerdeira &amp; Prof Kat Holt at the <a href="https://www.lshtm.ac.uk/" target="_blank" rel="noreferrer">London School of Hygiene and Tropical Medicine</a> &amp; <a href="https://www.monash.edu/" target="_blank" rel="noreferrer">Monash University</a>. This project has received funding from the the Wellcome Trust (Open Research Fund, 219692/Z/19/Z) and the  European Union's Horizon 2020 research and innovation programme under the Marie Sklodowska-Curie grant agreement No 845681.
+            <img className="euFlagImage" src={euFlagImg} alt="EU_FLAG" height="20" />
           </p>
           <p>
             <b>Note: This is a beta version, data are incomplete</b>.
           </p>
         </div>
+        {/* Footer */}
         <div className="footer-buttons-wrapper">
+          {/* Contact Button */}
           <div
             className="flex-button"
             onClick={() => {
@@ -2784,6 +2866,7 @@ const DashboardPage = () => {
             <FontAwesomeIcon icon={faEnvelope} className="fontawesome-icon" />
             <span>Contact</span>
           </div>
+          {/* Github Button */}
           <div
             className="flex-button"
             onClick={() => {
@@ -2793,6 +2876,7 @@ const DashboardPage = () => {
             <FontAwesomeIcon icon={faGithub} className="fontawesome-icon" />
             <span>GitHub</span>
           </div>
+          {/* Twitter Button */}
           <div
             className="flex-button"
             onClick={() => {
@@ -2807,6 +2891,7 @@ const DashboardPage = () => {
         <div className="footer">
           <span>Data obtained from: <a href="https://pathogen.watch" rel="noreferrer" target="_blank">pathogen watch project</a> on 15/06/2021. <a href="https://holtlab.net" rel="noreferrer" target="_blank">Holt Lab</a></span>
         </div>
+        {/* FAB reset filters */}
         <div className="fab-button" style={{ width: dimensions.width < mobile ? '48px' : '56px' }}>
           <TooltipMaterialUI title={<span className="my-font">Reset Configurations</span>} placement="left">
             <Fab
@@ -2840,46 +2925,29 @@ const DashboardPage = () => {
             </Fab>
           </TooltipMaterialUI>
         </div>
-        {loading && (<div className="loading-2">
-          {/* <Loader
+        {/* Loading */}
+        {
+          loading && (<div className="loading-2">
+            Loading...
+          </div>)
+        }
+      </div >
+      {/* Loading Screen */}
+      {
+        appLoading && (<div className="loading">
+          {dimensions.width > desktop && (
+            <img className="logoImageMenu-loading" src={typhinetLogoImg} alt="TyphiNET" />
+          )}
+          <Loader
             className="my-loader"
             type="Circles"
             color="#D91E45"
             height={70}
             width={70}
-          /> */}
-          Loading...
-        </div>)}
-      </div>
-      {appLoading && (<div className="loading">
-        {dimensions.width > desktop && (
-          <img className="logoImageMenu-loading" src={typhinetLogoImg} alt="TyphiNET" />
-        )}
-        <Loader
-          className="my-loader"
-          type="Circles"
-          color="#D91E45"
-          height={70}
-          width={70}
-        />
-      </div>)}
-      {/* <div className="info" id="report-info">
-        <p><b>TyphiNET report [{formatDate(new Date())}]</b></p>
-        <p>This report was generated by the TyphiNET <a href="http://typhi.net">(http://typhi.net)</a> website, a data visualisation platform that draws genome-derived data on antimicrobial resistance and genotypes from Typhi Pathogenwatch <a href="http://pathogen.watch">(http://pathogen.watch)</a>. Data were last updated on [{formatDate(lastUpdated)}].</p>
-        <p>This report was generated at [{formatDate(new Date())}] using the beta version of TyphiNET which is still undergoing development and data are not yet complete. For code and further details please see: <a href="https://github.com/zadyson/TyphiNET">https://github.com/zadyson/TyphiNET</a></p>
-        <p className="info-p">The genotypes reported here are defined in <b>Dyson & Holt (2021), J. Infect. Dis.</b></p>
-        <p className="info-p">Antimicrobial resistance determinants are described in the Typhi Pathogenwatch paper, <b>Argimón et al. 2021, Nat. Commun.</b></p>
-        <p>Travel-associated cases are attributed to the country of travel, not the country of isolation (see <b>Ingle et al. 2019, PLoS NTDs</b>).</p>
-        <p>{'TyphiNET presents data aggregated from >100 studies. Individual genome information, including derived genotype and AMR calls, sequence data accession numbers, and source information (PubMedID for citation) can be downloaded as a spreadsheet from the TyphiNET website (typhi.net).'}</p>
-        <p>The TyphiNET dashboard was developed with support from the Wellcome Trust (Open Research Fund, 219692/Z/19/Z) and the EU Horizon 2020 research and innovation programme (Marie Sklodowska-Curie grant #845681).</p>
-        { actualCountry !== "All" && (
-          <div>
-            <p className="info-p"><b>For country report:</b></p>
-            <p>Studies contributing genomes representing infections originating from {actualCountry} have the following PubMed IDs (PMIDs): {countryPMID.join(', ')}.</p>
-          </div>
-        )}
-      </div> */}
-    </div>
+          />
+        </div>)
+      }
+    </div >
   );
 };
 
