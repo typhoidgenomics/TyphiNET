@@ -1,5 +1,6 @@
 import mongoose from 'mongoose'
 
+// MongoDB scheme
 const CombinedSchema = mongoose.Schema({
     "NAME": {
         type: String

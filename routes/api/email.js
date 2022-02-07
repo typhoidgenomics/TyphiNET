@@ -4,7 +4,7 @@ import nodemailer from "nodemailer";
 const router = express.Router();
 /* GET home page. */
 
-//Route POST to send a email body 
+//Route POST to send an email body 
 router.post('/', async function(req, res, next) {
 
     let email = req.body;

@@ -1,3 +1,5 @@
+
+// Helper for genotype color
 export const getColorForGenotype = (genotype) => {
   switch (genotype) {
     case '0':

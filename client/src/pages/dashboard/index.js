@@ -4,7 +4,7 @@ import { scaleLinear } from "d3-scale";
 import Loader from "react-loader-spinner";
 import { ComposableMap, Geographies, Geography, Sphere, Graticule, ZoomableGroup } from "react-simple-maps";
 import InputLabel from '@material-ui/core/InputLabel';
-import {Tooltip as IconTooltip} from '@material-ui/core';
+import { Tooltip as IconTooltip } from '@material-ui/core';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
@@ -21,11 +21,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faMinus, faCrosshairs, faCamera, faTable, faFilePdf, faInfoCircle, faUndoAlt } from '@fortawesome/free-solid-svg-icons'
 import download from 'downloadjs';
 import { svgAsPngUri } from 'save-svg-as-png';
-import typhinetLogoImg from '../../assets/img/logo-typhinet3.png';
-import typhinetLogoImg2 from '../../assets/img/logo-typhinet3.png';
+import typhinetLogoImg from '../../assets/img/logo-typhinet-beta.png';
+import euFlagImg from '../../assets/img/eu_flag.jpg';
 import geography from '../../assets/world-110m.json'
 import { API_ENDPOINT } from '../../constants';
-import { getColorForGenotype, getColorForAMR, getColorForDrug, getColorForIncType, getColorForTetracyclines } from '../../util/colorHelper';
+import { getColorForGenotype, getColorForDrug, getColorForTetracyclines } from '../../util/colorHelper';
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons'
 import { faGithub, faTwitter } from "@fortawesome/free-brands-svg-icons"
 import { Select as DropDownSelect } from "react-dropdown-select"
@@ -33,6 +33,8 @@ import 'rodal/lib/rodal.css';
 import domtoimage from 'dom-to-image';
 import { jsPDF } from "jspdf";
 import { useStyles, CustomCircularProgress, CustomToggleButton, Buttons, ButtonClearSelect } from './materialUI'
+import moment from 'moment';
+import { filterForComponents } from "./filters";
 
 const DashboardPage = () => {
   const classes = useStyles();
@@ -46,13 +48,9 @@ const DashboardPage = () => {
   const [worldMapMDRData, setWorldMapMDRData] = useState([]);
   const [worldMapSTADData, setWorldMapSTADData] = useState([]);
   const [worldMapXDRData, setWorldMapXDRData] = useState([]);
-  const [worldMapDCSData, setWorldMapDCSData] = useState([]);
   const [worldMapAZITHData, setWorldMapAZITHData] = useState([]);
   const [worldMapCIPIData, setWorldMapCIPIData] = useState([]);
   const [worldMapCIPRData, setWorldMapCIPRData] = useState([]);
-  const [worldMapDrugsData, setWorldMapDrugsData] = useState([]);
-  const [worldMapAmrProfilesData, setWorldMapAmrProfilesData] = useState([]);
-  const [worldMapPlasmidIncompatibilityTypeData, setWorldMapPlasmidIncompatibilityTypeData] = useState([]);
 
   const [plotAmrClassChart, setPlotAmrClassChart] = useState(function () { })
   const [plotDrugsAndGenotypesChart, setPlotDrugsAndGenotypesChart] = useState(function () { })
@@ -79,7 +77,7 @@ const DashboardPage = () => {
   const [actualRegion, setActualRegion] = useState("All");
 
   const [actualContinent, setActualContinent] = useState("All")
-  const [continentOptions] = useState(['All', 'Africa', 'Asia', 'Central America', 'Europe', 'North America', 'Oceania', 'South America'])
+  // const [continentOptions] = useState(['All', 'Africa', 'Asia', 'Central America', 'Europe', 'North America', 'Oceania', 'South America'])
 
   const [populationStructureFilter, setPopulationStructureFilter] = React.useState(1);
   const [populationStructureFilterOptions] = useState([{ value: 'Number of genomes', id: 1 }, { value: 'Percentage per year', id: 2 }])
@@ -98,28 +96,24 @@ const DashboardPage = () => {
 
   const [drugTrendsChartData, setDrugTrendsChartData] = useState([])
   const [drugsAndGenotypesChartData, setDrugsAndGenotypesChartData] = useState([])
-  const [chartMaxHeight, setChartMaxHeight] = useState(0)
   const [populationStructureChartData, setPopulationStructureChartData] = useState([])
-  const [amrClassChartData, setAmrClassChartData] = useState([])
+  const [amrClassChartData, setAmrClassChartData] = useState({})
 
   const [mapView, setMapView] = React.useState('CipI');
   const [dataset, setDataset] = React.useState('All');
-  const [totalGenomes, setTotalGenomes] = useState([])
-  const [actualGenomes, setActualGenomes] = useState([])
-  const [totalGenotypes, setTotalGenotypes] = useState([])
-  const [actualGenotypes, setActualGenotypes] = useState([])
-  const [appLoading, setAppLoading] = useState(0)
+  const [totalGenomes, setTotalGenomes] = useState(0)
+  const [actualGenomes, setActualGenomes] = useState(0)
+  const [totalGenotypes, setTotalGenotypes] = useState(0)
+  const [actualGenotypes, setActualGenotypes] = useState(0)
+  const [appLoading, setAppLoading] = useState(true)
   const [lastUpdated, setLastUpdated] = useState("")
   const [countryPMID, setCountryPMID] = useState([])
-
-  const [allGenotypes, setAllGenotypes] = useState({})
 
   const [trendValues, setTrendValues] = React.useState(trendDropdownOptions)
   const [RFWGValues, setRFWGValues] = React.useState([])
 
   const [desktop] = useState(767)
   const [mobile] = useState(500)
-  const [middle] = useState(1300)
 
   const [hoverColor] = useState("#D2F1F6")
 
@@ -128,6 +122,7 @@ const DashboardPage = () => {
     width: window.innerWidth
   })
 
+  // Helper function for getting height and width of window
   function debounce(fn, ms) {
     let timer
     return _ => {
@@ -139,15 +134,12 @@ const DashboardPage = () => {
     };
   }
 
-  useEffect(() => {
-    if (appLoading === 0) {
-      document.getElementsByClassName('App')[0].style.overflow = 'hidden'
-    } else if (appLoading === 2) {
-      document.getElementsByClassName('App')[0].style.overflow = 'visible'
-      document.getElementsByClassName('loading')[0].remove()
-    }
-  }, [appLoading])
+  // Format selected date
+  function formatDate(date) {
+    return moment(date).format("ddd MMM DD YYYY HH:mm:ss")
+  }
 
+  // Watcher for window resize
   useEffect(() => {
     const debouncedHandleResize = debounce(function handleResize() {
       setDimensions({
@@ -183,22 +175,7 @@ const DashboardPage = () => {
     '4.3.1.1.P1', '4.3.1.1.EA1', '4.3.1.2', '4.3.1.2.EA2',
     '4.3.1.2.EA3', '4.3.1.3', '4.3.1.3.Bdq'].sort((a, b) => a.localeCompare(b)));
 
-  useEffect(() => {
-    axios.get(`${API_ENDPOINT}filters/getYearLimits`)
-      .then((res) => {
-        let limits = res.data
-        setTimeInitial(limits.min)
-        setTimeFinal(limits.max)
-        setActualTimeInitial(limits.min)
-        setActualTimeFinal(limits.max)
-        // setAllCountries(limits.countries)
-        setAllGenotypes(limits.allGenotypes)
-        setTotalGenotypes(limits.totalGenotypes)
-        setAppLoading((value) => value + 1)
-        setYears(limits.years)
-      })
-  }, [])
-
+  // Get date from the las update on the table from admin page
   useEffect(() => {
     axios.get(`${API_ENDPOINT}mongo/lastUpdated`)
       .then((res) => {
@@ -206,679 +183,7 @@ const DashboardPage = () => {
       })
   }, [])
 
-  useEffect(() => {
-    const timeOutId = setTimeout(() => {
-      axios.get(`${API_ENDPOINT}filters/all/${actualTimeInitial}/${actualTimeFinal}/${dataset}/all`)
-        .then((res) => {
-          var response = res.data
-
-          response['Dem. Rep. Congo'] = response['Democratic Republic of Congo']
-          delete response['Democratic Republic of Congo']
-          response['Central African Rep.'] = response['Central African Republic']
-          delete response['Central African Republic']
-          response["Côte d'Ivoire"] = response['Ivory Coast']
-          delete response['Ivory Coast']
-          response["Timor-Leste"] = response['East Timor']
-          delete response['East Timor']
-
-          setWorldMapComplementaryData(response)
-        })
-    }, 500)
-    return () => clearTimeout(timeOutId);
-  }, [actualTimeInitial, actualTimeFinal, dataset])
-
-  useEffect(() => {
-    const parseDataForGenotypeChart = (data) => {
-      let finalRegions = [];
-      var finalPopulationStructureChartData = [];
-
-      var genomes = data;
-      var genotypes = [];
-
-      data.forEach((entry) => {
-        if (!finalRegions.some(e => e === entry['REGION_IN_COUNTRY']) && entry['REGION_IN_COUNTRY'] !== "-" && entry['REGION_IN_COUNTRY'] !== "")
-          finalRegions.push(entry['REGION_IN_COUNTRY'])
-
-        if (!genotypes.some(g => g === entry.GENOTYPE)) {
-          genotypes.push(entry.GENOTYPE)
-        }
-
-        /* POPULATION STRUCTURE CHART GENERATION */
-        if (!finalPopulationStructureChartData.some(e => e.name === entry.YEAR)) {
-          finalPopulationStructureChartData.push({
-            name: entry.YEAR,
-            [entry.GENOTYPE]: 1
-          })
-        } else {
-          let year = finalPopulationStructureChartData.find(e => e.name === entry.YEAR);
-          let yearIndex = finalPopulationStructureChartData.findIndex(e => e.name === entry.YEAR);
-
-          if (year[entry.GENOTYPE] === undefined) {
-            year[entry.GENOTYPE] = 1
-          } else {
-            year[entry.GENOTYPE] = year[entry.GENOTYPE] + 1
-          }
-          finalPopulationStructureChartData[yearIndex] = year;
-        }
-      })
-
-      finalRegions.sort((a, b) => a.localeCompare(b));
-      finalRegions.unshift("All");
-      setRegionsForFilter(finalRegions)
-
-      if (totalGenomes.length === 0)
-        setTotalGenomes(genomes)
-
-      setActualGenomes(genomes)
-      setActualGenotypes(genotypes)
-
-      finalPopulationStructureChartData.forEach((data) => {
-        let sum = 0;
-        Object.entries(data).forEach((entry) => {
-          if (entry[0] !== "name")
-            sum += entry[1];
-        })
-        data.total = sum;
-      })
-
-      if (!arraysEqual(finalPopulationStructureChartData, populationStructureChartData)) {
-        setPopulationStructureChartData(finalPopulationStructureChartData)
-      }
-
-      let populationStructureChartSums = []
-      finalPopulationStructureChartData.forEach((year) => {
-        let sum = 0
-        let yearArray = Object.entries(year)
-        yearArray.forEach((_year) => {
-          if (_year[0] !== "name" && _year[0] !== "total")
-            sum += _year[1]
-        })
-        populationStructureChartSums.push({
-          year: year.name,
-          sum
-        })
-      })
-
-      if (populationStructureChartSums.length > 0) {
-        let highestSum = populationStructureChartSums.sort((a, b) => b.sum - a.sum)[0].sum;
-
-        if (highestSum > chartMaxHeight)
-          setChartMaxHeight(Math.ceil(highestSum / 100) * 100)
-      }
-    }
-
-    const parseDataForCountryMap = (data) => {
-      let finalCountries = [];
-
-      let samplesData = [], genotypesData = [], h58Data = [], mdrData = [], stadData = [], xdrData = [], drugsData = [], amrData = [], incTypesData = [], dcsData = [], azithData = [], cipIData = [], cipRData = [];
-
-      const countData = (array, elementToCount, parentName, childName) => {
-        let temp = []
-        array.forEach(entry => {
-          if (!temp.some(e => e.name === entry['COUNTRY_ONLY'])) {
-            temp.push({
-              name: entry['COUNTRY_ONLY'],
-              displayName: entry['COUNTRY_ONLY'],
-              total: 1,
-              [parentName]: [{
-                [childName]: entry[elementToCount],
-                count: 1
-              }]
-            })
-          } else {
-            let country = temp.find(e => e.name === entry['COUNTRY_ONLY']);
-            let countryIndex = temp.findIndex(e => e.name === entry['COUNTRY_ONLY']);
-
-            if (!country[parentName].some(e => e[childName] === entry[elementToCount])) {
-              country[parentName].push({
-                [childName]: entry[elementToCount],
-                count: 1
-              })
-            } else {
-              let parent = country[parentName].find(e => e[childName] === entry[elementToCount]);
-              let index = country[parentName].findIndex(e => e[childName] === entry[elementToCount]);
-              parent.count = parent.count + 1
-              country[parentName][index] = parent
-            }
-            country.total = country.total + 1
-
-            temp[countryIndex] = country;
-          }
-        })
-
-        let congoCountryIndex = temp.findIndex(e => e.name === 'Democratic Republic of Congo');
-        if (congoCountryIndex !== -1)
-          temp[congoCountryIndex].displayName = 'Dem. Rep. Congo'
-
-        let centralAfricanRepublicCountryIndex = temp.findIndex(e => e.name === 'Central African Republic');
-        if (centralAfricanRepublicCountryIndex !== -1)
-          temp[centralAfricanRepublicCountryIndex].displayName = 'Central African Rep.'
-
-        let ivoryCoastCountryIndex = temp.findIndex(e => e.name === "Ivory Coast");
-        if (ivoryCoastCountryIndex !== -1)
-          temp[ivoryCoastCountryIndex].displayName = "Côte d'Ivoire"
-
-        let timorLesteCountryIndex = temp.findIndex(e => e.name === "East Timor");
-        if (timorLesteCountryIndex !== -1)
-          temp[timorLesteCountryIndex].displayName = "Timor-Leste"
-
-        temp.forEach((country) => {
-          country[parentName].sort((a, b) => b.count - a.count);
-        })
-        temp.sort((a, b) => a.name.localeCompare(b.name));
-
-        return temp
-      }
-
-      data.forEach((entry) => {
-        if (!finalCountries.some(e => e === entry['COUNTRY_ONLY']) && entry['COUNTRY_ONLY'] !== "-" && entry['COUNTRY_ONLY'] !== "")
-          finalCountries.push(entry['COUNTRY_ONLY'])
-
-        if (!samplesData.some(e => e.name === entry['COUNTRY_ONLY'])) {
-          samplesData.push({
-            name: entry['COUNTRY_ONLY'],
-            displayName: entry['COUNTRY_ONLY'],
-            count: 1
-          })
-        } else {
-          let country = samplesData.find(e => e.name === entry['COUNTRY_ONLY']);
-          let countryIndex = samplesData.findIndex(e => e.name === entry['COUNTRY_ONLY']);
-          country.count = country.count + 1
-          samplesData[countryIndex] = country;
-        }
-      })
-
-      if (!arraysEqual(samplesData, worldMapSamplesData)) {
-        let congoCountryIndex = samplesData.findIndex(e => e.name === 'Democratic Republic of Congo');
-        if (congoCountryIndex !== -1)
-          samplesData[congoCountryIndex].displayName = 'Dem. Rep. Congo'
-
-        let centralAfricanRepublicCountryIndex = samplesData.findIndex(e => e.name === 'Central African Republic');
-        if (centralAfricanRepublicCountryIndex !== -1)
-          samplesData[centralAfricanRepublicCountryIndex].displayName = 'Central African Rep.'
-
-        let ivoryCoastCountryIndex = samplesData.findIndex(e => e.name === "Ivory Coast");
-        if (ivoryCoastCountryIndex !== -1)
-          samplesData[ivoryCoastCountryIndex].displayName = "Côte d'Ivoire"
-
-        let timorLesteCountryIndex = samplesData.findIndex(e => e.name === "East Timor");
-        if (timorLesteCountryIndex !== -1)
-          samplesData[timorLesteCountryIndex].displayName = "Timor-Leste"
-
-        setWorldMapSamplesData(samplesData)
-      }
-
-      finalCountries.sort((a, b) => a.localeCompare(b));
-      finalCountries.unshift("All");
-      setCountriesForFilter(finalCountries)
-
-      if (!finalCountries.includes(actualCountry))
-        setActualCountry("All")
-
-      genotypesData = countData(data, "GENOTYPE", "genotypes", "lineage")
-      if (!arraysEqual(genotypesData, worldMapGenotypesData))
-        setWorldMapGenotypesData(genotypesData)
-
-      h58Data = countData(data, "GENOTYPE_SIMPLE", "genotypes", "type")
-      h58Data.forEach(country => {
-        country.genotypes.forEach((g, index) => {
-          let percentage = ((g.count / country.total) * 100)
-          if (Math.round(percentage) !== percentage) {
-            percentage = percentage.toFixed(2)
-          }
-          g.percentage = percentage
-        })
-      })
-      if (!arraysEqual(h58Data, worldMapH58Data))
-        setWorldMapH58Data(h58Data)
-
-      stadData = countData(data, "STAD", "STADs", "type")
-      stadData.forEach(country => {
-        country.STADs.forEach((stad, index) => {
-          if (stad.type === "No AMR detected") {
-            let percentage = ((stad.count / country.total) * 100)
-            if (Math.round(percentage) !== percentage)
-              percentage = percentage.toFixed(2)
-            percentage = parseFloat(percentage);
-            country.percentage = percentage;
-            country.count = stad.count;
-          }
-        })
-        if (country.percentage === undefined) {
-          country.percentage = parseFloat(0)
-        }
-        if (country.count === undefined) {
-          country.count = 0
-        }
-      })
-      if (!arraysEqual(stadData, worldMapSTADData))
-        setWorldMapSTADData(stadData)
-
-      mdrData = countData(data, "MDR", "MDRs", "type")
-      mdrData.forEach(country => {
-        country.MDRs.forEach((mdr, index) => {
-          if (mdr.type === "MDR") {
-            let percentage = ((mdr.count / country.total) * 100)
-            if (Math.round(percentage) !== percentage)
-              percentage = percentage.toFixed(2)
-            percentage = parseFloat(percentage);
-            country.percentage = percentage;
-            country.count = mdr.count;
-          }
-        })
-        if (country.percentage === undefined) {
-          country.percentage = parseFloat(0)
-        }
-        if (country.count === undefined) {
-          country.count = 0
-        }
-      })
-      if (!arraysEqual(mdrData, worldMapMDRData))
-        setWorldMapMDRData(mdrData)
-
-      xdrData = countData(data, "XDR", "XDRs", "type")
-      xdrData.forEach(country => {
-        country.XDRs.forEach((xdr, index) => {
-          if (xdr.type === "XDR") {
-            let percentage = ((xdr.count / country.total) * 100)
-            if (Math.round(percentage) !== percentage)
-              percentage = percentage.toFixed(2)
-            percentage = parseFloat(percentage);
-            country.percentage = percentage;
-            country.count = xdr.count;
-          }
-          if (country.percentage === undefined) {
-            country.percentage = parseFloat(0)
-          }
-          if (country.count === undefined) {
-            country.count = 0
-          }
-        })
-      })
-      if (!arraysEqual(xdrData, worldMapXDRData))
-        setWorldMapXDRData(xdrData)
-
-      dcsData = countData(data, "DCS", "DCSs", "type")
-      dcsData.forEach(country => {
-        country.DCSs.forEach((dcs, index) => {
-          if (dcs.type === "DCS") {
-            let percentage = ((dcs.count / country.total) * 100)
-            if (Math.round(percentage) !== percentage)
-              percentage = percentage.toFixed(2)
-            percentage = parseFloat(percentage);
-            country.percentage = percentage;
-            country.count = dcs.count;
-          }
-          if (country.percentage === undefined) {
-            country.percentage = parseFloat(0)
-          }
-          if (country.count === undefined) {
-            country.count = 0
-          }
-        })
-      })
-      if (!arraysEqual(dcsData, worldMapDCSData))
-        setWorldMapDCSData(dcsData)
-
-      azithData = countData(data, "Azith", "AZs", "type")
-      azithData.forEach(country => {
-        country.AZs.forEach((az, index) => {
-          if (az.type === "AzithR") {
-            let percentage = ((az.count / country.total) * 100)
-            if (Math.round(percentage) !== percentage)
-              percentage = percentage.toFixed(2)
-            percentage = parseFloat(percentage);
-            country.percentage = percentage;
-            country.count = az.count;
-          }
-          if (country.percentage === undefined) {
-            country.percentage = parseFloat(0)
-          }
-          if (country.count === undefined) {
-            country.count = 0
-          }
-        })
-      })
-      if (!arraysEqual(azithData, worldMapAZITHData))
-        setWorldMapAZITHData(azithData)
-
-      cipRData = countData(data, "CipR", "CipRs", "type")
-      cipRData.forEach(country => {
-        country.CipRs.forEach((cipRs, index) => {
-          if (cipRs.type === "CipR") {
-            let percentage = ((cipRs.count / country.total) * 100)
-            if (Math.round(percentage) !== percentage)
-              percentage = percentage.toFixed(2)
-            percentage = parseFloat(percentage);
-            country.percentage = percentage;
-            country.count = cipRs.count;
-          }
-          if (country.percentage === undefined) {
-            country.percentage = parseFloat(0)
-          }
-          if (country.count === undefined) {
-            country.count = 0
-          }
-        })
-      })
-      if (!arraysEqual(cipRData, worldMapCIPRData))
-        setWorldMapCIPRData(cipRData)
-      
-      cipIData = countData(data, "CipI", "CipIs", "type")
-      cipIData.forEach(country => {
-        let aux = country.CipIs.filter(x => x.type === 'CipI')
-        let aux2 = country.CipIs.filter(x => x.type === 'CipR')
-        if (aux.length) {
-          aux[0].percentage = (aux[0].count / country.total) * 100
-          aux = aux[0].count
-        } else {
-          aux = 0
-        }
-        if (aux2.length) {
-          aux2[0].percentage = (aux2[0].count / country.total) * 100
-          aux2 = aux2[0].count
-        } else {
-          aux2 = 0
-        }
-
-        let percentage = ((aux + aux2) / country.total) * 100
-        if (Math.round(percentage) !== percentage)
-          percentage = percentage.toFixed(2)
-        percentage = parseFloat(percentage);
-        country.percentage = percentage;
-        country.count = aux + aux2;
-        if (country.percentage === undefined) {
-          country.percentage = parseFloat(0)
-        }
-        if (country.count === undefined) {
-          country.count = 0
-        }
-      })
-      if (!arraysEqual(cipIData, worldMapCIPIData))
-        setWorldMapCIPIData(cipIData)
-
-      let dataForCountingDrugs = []
-      data.forEach(entry => {
-        entry.DRUGS.forEach(drug => {
-          dataForCountingDrugs.push({
-            ...entry,
-            DRUG: drug,
-          })
-        })
-      })
-      drugsData = countData(dataForCountingDrugs, "DRUG", "drugs", "name");
-      if (!arraysEqual(drugsData, worldMapDrugsData))
-        setWorldMapDrugsData(drugsData)
-
-      amrData = countData(data, "AMR", "amrProfiles", "name")
-      if (!arraysEqual(amrData, worldMapAmrProfilesData))
-        setWorldMapAmrProfilesData(amrData)
-
-      incTypesData = countData(data, "IncTypes", "incTypes", "type")
-      incTypesData.forEach(country => {
-        country.incTypes = country.incTypes.filter(g => g.type !== "")
-      })
-      if (!arraysEqual(incTypesData, worldMapPlasmidIncompatibilityTypeData))
-        setWorldMapPlasmidIncompatibilityTypeData(incTypesData)
-    }
-
-    const parseDataForAmrClassChart = (data) => {
-      let finalChartData = []
-      let maxSum = 0
-      let totalSum = {}
-      data.forEach((entry) => {
-        if (!finalChartData.some(e => e.genotype === entry.GENOTYPE)) {
-          finalChartData.push({
-            genotype: entry.GENOTYPE,
-            [entry.GENE]: 1
-          })
-        } else {
-          let genotype = finalChartData.find(e => e.genotype === entry.GENOTYPE);
-          let genotypeIndex = finalChartData.findIndex(e => e.genotype === entry.GENOTYPE);
-
-          if (genotype[entry.GENE] === undefined) {
-            genotype[entry.GENE] = 1
-          } else {
-            genotype[entry.GENE] = genotype[entry.GENE] + 1
-          }
-          finalChartData[genotypeIndex] = genotype;
-        }
-
-        if (entry.GENOTYPE !== "") {
-          if (!(entry.GENE in totalSum)) {
-            totalSum[entry.GENE] = 1
-          } else {
-            totalSum[entry.GENE] = totalSum[entry.GENE] + 1
-          }
-        }
-      })
-      delete totalSum[""]
-
-      finalChartData.sort((a, b) => a.genotype.localeCompare(b.genotype));
-
-      let genotypes = []
-      finalChartData.forEach(element => {
-        let keys = Object.keys(element).slice(1)
-        let filteredData = keys.filter((key) => { return !(key.includes('No')) && !(key.includes('0_')) })
-        filteredData.push('None')
-        filteredData.push('None (CipS)')
-        if (filteredData.length === 0) {
-          genotypes.push(element.genotype)
-        }
-      });
-
-      for (const genotype in genotypes) {
-        finalChartData = finalChartData.filter((obj) => {
-          return obj.genotype !== genotypes[genotype]
-        })
-      }
-
-      finalChartData.forEach((data) => {
-        let sum = 0;
-        Object.entries(data).forEach((entry) => {
-          if (entry[0] !== "genotype" && entry[0] !== "undefined") {
-            let errorMargin = Math.ceil(entry[1] * 0.2) // 20%
-            let lowerValue = errorMargin > entry[1] ? entry[1] : errorMargin;
-
-            if (entry[1] === 1)
-              lowerValue = 1
-
-            if (entry[1] === 0)
-              lowerValue = 0
-
-            data[`error-${entry[0]}`] = [lowerValue, errorMargin]
-
-            if (!(entry[0].includes('No')) && !(entry[0].includes('0_'))) {
-              sum += entry[1];
-              if (entry[1] > maxSum) {
-                maxSum = entry[1]
-              }
-            }
-
-          }
-        })
-        data.total = sum;
-      })
-
-      finalChartData.forEach((data) => {
-        Object.entries(data).forEach((entry) => {
-          if (entry[0] === "genotype") {
-            let noneCount = 0
-            if (amrClassFilter === "Fluoroquinolones (CipI/R)") {
-              noneCount = 'None (CipS)' in data ? data['None (CipS)'] : 0
-            } else {
-              noneCount = 'None' in data ? data['None'] : 0
-            }
-            data.total2 = data.total + noneCount
-          }
-        })
-      })
-
-      finalChartData = finalChartData.filter(g => g.genotype !== undefined && g.genotype !== "0")
-      let top10 = []
-      finalChartData.forEach(element => {
-        if (top10.length < 10) {
-          top10.push(element)
-        } else {
-          top10.sort(function (a, b) {
-            if (a.total === b.total && a.genotype > b.genotype)
-              return -1
-            return a.total > b.total ? -1 : 1
-          })
-          if (element.total === top10[9].total) {
-            if (element.genotype > top10[9].genotype) {
-              top10[9] = element
-            }
-          }
-          if (element.total > top10[9].total) {
-            top10[9] = element
-          }
-        }
-      })
-
-      top10.sort(function (a, b) {
-        if (a.total === b.total && a.genotype > b.genotype)
-          return -1
-        return a.total > b.total ? -1 : 1
-      })
-
-      top10.push({ maxSum: top10.length === 0 ? 0 : Math.ceil(top10[0].total2 / 50) * 50, totalSum: totalSum })
-
-      if (!arraysEqual(amrClassChartData, top10)) {
-        setAmrClassChartData(top10)
-      }
-    }
-
-    const parseDataForDrugTrendsChart = (data) => {
-      let finalDrugTrendsChartData = []
-      let finalDrugsAndGenotypesChartData = []
-      let totalSum = {}
-      let totalCountryCount = data[data.length - 1][0]
-      let allDrugs = data[data.length - 2][0]
-      setCountryPMID(data[data.length - 2][1])
-      data = data.slice(0, data.length - 2)
-
-      data.forEach((entry) => {
-        if (!finalDrugTrendsChartData.some(e => e.name === entry.YEAR)) {
-          finalDrugTrendsChartData.push({
-            name: entry.YEAR,
-            [entry.DRUG]: 1
-          })
-        } else {
-          let year = finalDrugTrendsChartData.find(e => e.name === entry.YEAR);
-          let yearIndex = finalDrugTrendsChartData.findIndex(e => e.name === entry.YEAR);
-
-          if (year[entry.DRUG] === undefined) {
-            year[entry.DRUG] = 1
-          } else {
-            year[entry.DRUG] = year[entry.DRUG] + 1
-          }
-          finalDrugTrendsChartData[yearIndex] = year;
-        }
-
-        if (!finalDrugsAndGenotypesChartData.some(e => e.name === entry.GENOTYPE)) {
-          finalDrugsAndGenotypesChartData.push({
-            name: entry.GENOTYPE,
-            [entry.DRUG]: 1
-          })
-        } else {
-          let genotype = finalDrugsAndGenotypesChartData.find(e => e.name === entry.GENOTYPE);
-          let genotypeIndex = finalDrugsAndGenotypesChartData.findIndex(e => e.name === entry.GENOTYPE);
-
-          if (genotype[entry.DRUG] === undefined) {
-            genotype[entry.DRUG] = 1
-          } else {
-            genotype[entry.DRUG] = genotype[entry.DRUG] + 1
-          }
-          finalDrugsAndGenotypesChartData[genotypeIndex] = genotype;
-        }
-
-        if (!(entry.GENOTYPE in totalSum)) {
-          totalSum[entry.GENOTYPE] = 1
-        } else {
-          totalSum[entry.GENOTYPE] = totalSum[entry.GENOTYPE] + 1
-        }
-      })
-      finalDrugTrendsChartData.forEach((data) => {
-        data.total = allDrugs[data["name"]];
-        let maxValue = 0;
-        const drugsPercentage = {}
-        for (const key in data) {
-          if (key !== 'name' && key !== 'total') {
-            if (data[key] > maxValue) {
-              maxValue = data[key]
-            }
-            const aux = (data[key] * 100) / data.total
-            drugsPercentage[key] = data[key]
-            data[key] = aux
-          }
-        }
-        data.higherPercentage = Math.round((maxValue * 100) / data.total)
-        data.drugsPercentage = drugsPercentage
-      })
-
-      finalDrugsAndGenotypesChartData.forEach((data) => {
-        Object.entries(data).forEach((entry) => {
-          if (entry[0] === "name") {
-            data.total = totalCountryCount[entry[1]].total
-            data.totalS = totalCountryCount[entry[1]].totalS
-          }
-        })
-      })
-
-      finalDrugTrendsChartData = finalDrugTrendsChartData.filter(item => item.total === 10 || item.total > 10)
-
-      finalDrugTrendsChartData.sort((a, b) => a.name.localeCompare(b.name))
-      finalDrugTrendsChartData.push({ totalSum: allDrugs })
-
-      finalDrugsAndGenotypesChartData.sort((a, b) => b.total - a.total)
-      finalDrugsAndGenotypesChartData.push({ totalSum: totalSum })
-
-      if (!arraysEqual(finalDrugTrendsChartData, drugTrendsChartData)) {
-        setDrugTrendsChartData(finalDrugTrendsChartData)
-
-      }
-      if (!arraysEqual(finalDrugsAndGenotypesChartData, drugsAndGenotypesChartData)) {
-        setDrugsAndGenotypesChartData(finalDrugsAndGenotypesChartData)
-      }
-    }
-
-    const timeOutId = setTimeout(async () => {
-      let filter;
-
-      filter = 2
-
-      let genotypeChartResponse = await axios.get(`${API_ENDPOINT}filters/${filter}/${actualCountry === "All" ? "all" : actualCountry}/${actualTimeInitial}/${actualTimeFinal}/${dataset}/${actualRegion === "All" ? "all" : actualRegion}`)
-      parseDataForGenotypeChart(genotypeChartResponse.data)
-
-      if (actualCountry === "All") {
-        parseDataForCountryMap(genotypeChartResponse.data)
-      } else {
-        let response = await axios.get(`${API_ENDPOINT}filters/${filter}/all/${actualTimeInitial}/${actualTimeFinal}/${dataset}/all`)
-        parseDataForCountryMap(response.data)
-      }
-
-      let drugTrendsChartResponse = await axios.get(`${API_ENDPOINT}filters/drugTrendsChart/${actualCountry === "All" ? "all" : actualCountry}/${actualTimeInitial}/${actualTimeFinal}/${dataset}/${actualRegion === "All" ? "all" : actualRegion}`)
-      parseDataForDrugTrendsChart(drugTrendsChartResponse.data)
-
-      let classChartResponse
-      if (amrClassFilter === "Fluoroquinolones (CipI/R)") {
-        classChartResponse = await axios.get(`${API_ENDPOINT}filters/amrClassChart/${actualCountry === "All" ? "all" : actualCountry}/${actualTimeInitial}/${actualTimeFinal}/${"Fluoroquinolones (CipI-R)"}/${dataset}/${actualRegion === "All" ? "all" : actualRegion}`)
-      } else {
-        classChartResponse = await axios.get(`${API_ENDPOINT}filters/amrClassChart/${actualCountry === "All" ? "all" : actualCountry}/${actualTimeInitial}/${actualTimeFinal}/${amrClassFilter}/${dataset}/${actualRegion === "All" ? "all" : actualRegion}`)
-      }
-      parseDataForAmrClassChart(classChartResponse.data)
-
-      setAppLoading((value) => { if (value < 2) return value + 1 })
-
-    }, 500);
-    return () => clearTimeout(timeOutId);
-  }, [populationStructureFilter, actualTimeInitial, actualTimeFinal, actualCountry, dataset, amrClassFilter, allGenotypes, actualRegion]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  function arraysEqual(a1, a2) {
-    return JSON.stringify(a1) === JSON.stringify(a2);
-  }
-
+  // Colors for the No. Samples label
   const mapSamplesColorScale = (domain) => {
     if (domain >= 1 && domain <= 9) {
       return '#4575b4'
@@ -893,10 +198,12 @@ const DashboardPage = () => {
     }
   }
 
+  // Red color scale for some of the map's views
   const [mapRedColorScale] = useState(() => scaleLinear()
     .domain([0, 50, 100])
     .range(["#ffebee", "#f44336", "#b71c1c"]));
 
+  // Tooltip for all graphs but the Resistance determinants within genotypes
   const tooltip = React.useCallback((positionY, width1, width2, sort, wrapperS, stroke, chart = -1) => {
     return (
       <Tooltip
@@ -960,6 +267,7 @@ const DashboardPage = () => {
     )
   }, [desktop, dimensions, mobile, populationStructureFilter, RFWGFilter, hoverColor])
 
+  // Genotype Distribution graph
   useEffect(() => {
     const plotPopulationStructureChart = () => {
 
@@ -1012,7 +320,7 @@ const DashboardPage = () => {
               />
 
               {tooltip([290, 290, 260], dimensions.width < 620 ? 250 : 530, dimensions.width > 620 ? "20%" : "50%", false, { zIndex: 100, top: 20, right: -20 }, false)}
-              {genotypes.map((item, i) => <Bar key={i+"PSC_Q"} dataKey={item} stackId={0} fill={getColorForGenotype(item)} />)}
+              {genotypes.map((item, i) => <Bar key={i + "PSC_Q"} dataKey={item} stackId={0} fill={getColorForGenotype(item)} />)}
             </BarChart>
           </ResponsiveContainer>
         )
@@ -1074,15 +382,16 @@ const DashboardPage = () => {
               />
 
               {tooltip([290, 290, 260], dimensions.width < 620 ? 250 : 530, dimensions.width > 620 ? "20%" : "50%", false, { zIndex: 100, top: 20, right: -20 }, false, 3)}
-              {genotypes.map((item, i) => <Bar key={i+"PSC_P"} dataKey={item} stackId="a" fill={getColorForGenotype(item)} />)}
+              {genotypes.map((item, i) => <Bar key={i + "PSC_P"} dataKey={item} stackId="a" fill={getColorForGenotype(item)} />)}
             </BarChart>
           </ResponsiveContainer>
         )
       }
     }
     setPlotPopulationStructureChart(plotPopulationStructureChart)
-  }, [dimensions, genotypes, populationStructureChartData, populationStructureFilter, tooltip])
+  }, [dimensions.width, genotypes, populationStructureChartData, populationStructureFilter, tooltip])
 
+  // Resistance determinants within genotypes graph and tooltip
   useEffect(() => {
     const amrClassChartTooltip = () => {
       return (
@@ -1107,7 +416,7 @@ const DashboardPage = () => {
                         }
                         percentage = Math.round(percentage * 100) / 100
                         return (
-                          <div key={index+"tooltip"} className="amr-tooltip-content-individual">
+                          <div key={index + "tooltip"} className="amr-tooltip-content-individual">
                             <div className="my-tooltip-content-square" style={{ backgroundColor: item.fill }} />
                             <div className="amr-tooltip-content-info">
                               <span className="amr-tooltip-content-name">{item.name}</span>
@@ -1131,11 +440,13 @@ const DashboardPage = () => {
 
     const armClassFilterComponent = (info) => {
       let maxSum = 0
-      if (amrClassChartData[amrClassChartData.length - 1] !== undefined) {
-        maxSum = amrClassChartData[amrClassChartData.length - 1].maxSum
+      const amr = amrClassChartData[amrClassFilter]
+      if (amr && amr[amr.length - 1] !== undefined) {
+        maxSum = amr[amr.length - 1].maxSum
       }
 
-      const dataAMR = amrClassChartData.slice(0, amrClassChartData.length - 1)
+      let dataAMR = amr?.slice(0, amr.length - 1)
+      if (dataAMR === undefined) dataAMR = []
 
       if (RDWAGDataviewFilter === 1) {
         return (
@@ -1166,7 +477,7 @@ const DashboardPage = () => {
                         {payload.map((entry, index) => {
                           const { dataKey, color } = entry
                           return (
-                            <div key={index+"RDWAG-legend"} className="RDWAG-legend-info">
+                            <div key={index + "RDWAG-legend"} className="RDWAG-legend-info">
                               <div className="RDWAG-legend-info-circle" style={{ backgroundColor: color }} />
                               <span className="RDWAG-legend-info-name">{dataKey}</span>
                             </div>
@@ -1181,7 +492,7 @@ const DashboardPage = () => {
               {amrClassChartTooltip()}
               {info.bars.map((item, i) => {
                 return (
-                  <Bar key={i+"RDWAG_Q"} dataKey={item[0]} fill={item[1]} stackId="a" barSize={30} />
+                  <Bar key={i + "RDWAG_Q"} dataKey={item[0]} fill={item[1]} stackId="a" barSize={30} />
                 )
               })}
             </BarChart>
@@ -1244,7 +555,7 @@ const DashboardPage = () => {
               {amrClassChartTooltip()}
               {info.bars.map((item, i) => {
                 return (
-                  <Bar key={i+"RDWAG_P"} dataKey={item[0]} fill={item[1]} stackId="a" barSize={30} />
+                  <Bar key={i + "RDWAG_P"} dataKey={item[0]} fill={item[1]} stackId="a" barSize={30} />
                 )
               })}
             </BarChart>
@@ -1258,81 +569,81 @@ const DashboardPage = () => {
         case 'Azithromycin':
           return (armClassFilterComponent({
             left: -5, fontsize: 14, strokeWidth: 1, width: null, bars: [
-              ['ereA', "#9e9ac8", "error-ereA"],
-              ['acrB_R717Q', "#addd8e", "error-acrB_R717Q"],
-              ['acrB_R717L', "#FBCFE5", "error-acrB_R717L"],
-              ['ereA + acrB_R717Q', "#FFEC78", "error-ereA-acrB_R717Q"],
-              ['ereA + acrB_R717L', "#66c2a4", "error-ereA-acrB_R717L"],
-              ['acrB_R717Q + acrB_R717L', "#fd8d3c", "error-acrB_R717Q-acrB_R717L"],
-              ['ereA + acrB_R717Q + acrB_R717L', "#6baed6", "error-ereA-acrB_R717Q-acrB_R717L"],
-              ['None', "#B9B9B9", "error-None"]
+              ['ereA', "#9e9ac8"],
+              ['acrB_R717Q', "#addd8e"],
+              ['acrB_R717L', "#FBCFE5"],
+              ['ereA + acrB_R717Q', "#FFEC78"],
+              ['ereA + acrB_R717L', "#66c2a4"],
+              ['acrB_R717Q + acrB_R717L', "#fd8d3c"],
+              ['ereA + acrB_R717Q + acrB_R717L', "#6baed6"],
+              ['None', "#B9B9B9"]
             ]
           }))
         case 'Fluoroquinolones (CipI/R)':
           return (armClassFilterComponent({
             left: 10, fontsize: 14, strokeWidth: 0.5, width: 3, bars: [
-              ['3_QRDR + qnrS (CipR)', "black", "error-3_QRDR + qnrS"],
-              ['3_QRDR + qnrB (CipR)', "#660000", "error-3_QRDR + qnrB"],
-              ['3_QRDR (CipR)', "#cc0000", "error-3_QRDR"],
-              ['2_QRDR + qnrS (CipR)', "#ff6666", "error-2_QRDR + qnrS"],
-              ['2_QRDR + qnrB (CipR)', "#ffcccc", "error-2_QRDR + qnrB"],
-              ['2_QRDR (CipI)', "#ff6600", "error-2_QRDR"],
-              ['1_QRDR + qnrS (CipR)', "#660066", "error-1_QRDR + qnrS"],
-              ['1_QRDR + qnrB (CipR)', "#993399", "error-1_QRDR + qnrB"],
-              ['1_QRDR (CipI)', "#ffcc00", "error-1_QRDR"],
-              ['0_QRDR + qnrS (CipI)', "#009999", "error-0_QRDR + qnrS"],
-              ['0_QRDR + qnrB (CipI)', "#0066cc", "error-0_QRDR + qnrB"],
-              ['None (CipS)', "#B9B9B9", "error-None"]]
+              ['3_QRDR + qnrS (CipR)', "black"],
+              ['3_QRDR + qnrB (CipR)', "#660000"],
+              ['3_QRDR (CipR)', "#cc0000"],
+              ['2_QRDR + qnrS (CipR)', "#ff6666"],
+              ['2_QRDR + qnrB (CipR)', "#ffcccc"],
+              ['2_QRDR (CipI)', "#ff6600"],
+              ['1_QRDR + qnrS (CipR)', "#660066"],
+              ['1_QRDR + qnrB (CipR)', "#993399"],
+              ['1_QRDR (CipI)', "#ffcc00"],
+              ['0_QRDR + qnrS (CipI)', "#009999"],
+              ['0_QRDR + qnrB (CipI)', "#0066cc"],
+              ['None (CipS)', "#B9B9B9"]]
           }))
         case 'Chloramphenicol':
           return (armClassFilterComponent({
             left: 3, fontsize: 14, strokeWidth: 1, width: null, bars: [
-              ['cmlA', "#addd8e", "error-cmlA"],
-              ['catA1', "#9e9ac8", "error-catA1"],
-              ["catA1 + cmlA", "#FFEC78", "error-catA1-cmlA"],
-              ['None', "#B9B9B9", "error-None"]
+              ['cmlA', "#addd8e"],
+              ['catA1', "#9e9ac8"],
+              ["catA1 + cmlA", "#FFEC78"],
+              ['None', "#B9B9B9"]
             ]
           }))
         case 'Ampicillin':
           return (armClassFilterComponent({
             left: 3, fontsize: 14, strokeWidth: 1, width: null, bars: [
-              ['blaTEM-1D', "#addd8e", "error-blaTEM-1D"],
-              ['None', "#B9B9B9", "error-None"]]
+              ['blaTEM-1D', "#addd8e"],
+              ['None', "#B9B9B9"]]
           }))
         case 'Sulphonamides':
           return (armClassFilterComponent({
             left: 3, fontsize: 14, strokeWidth: 1, width: null, bars: [
-              ['sul2', "#ffeda0", "error-sul2"],
-              ['sul1', "#fd8d3c", "error-sul1"],
-              ['sul1 + sul2', "#B4DD70", "error-sul1-sul2"],
-              ['None', "#B9B9B9", "error-None"]]
+              ['sul2', "#ffeda0"],
+              ['sul1', "#fd8d3c"],
+              ['sul1 + sul2', "#B4DD70"],
+              ['None', "#B9B9B9"]]
           }))
         case 'Trimethoprim':
           return (armClassFilterComponent({
             left: 3, fontsize: 14, strokeWidth: 0.5, width: 3, bars: [
-              ['dfrA1', "#B4DD70", "error-dfrA1"],
-              ['dfrA5', "#D7AEF7", "error-dfrA5"],
-              ['dfrA7', "#FFEC78", "error-dfrA7"],
-              ['dfrA14', "#6baed6", "error-dfrA14"],
-              ['dfrA7 + dfrA14', "#fd8d3c", "error-dfrA7-dfrA14"],
-              ['dfrA15', "#FBCFE5", "error-dfrA15"],
-              ['dfrA17', "#FCB469", "error-dfrA17"],
-              ['dfrA18', "#66c2a4", "error-dfrA18"],
-              ['None', "#B9B9B9", "error-None"]]
+              ['dfrA1', "#B4DD70"],
+              ['dfrA5', "#D7AEF7"],
+              ['dfrA7', "#FFEC78"],
+              ['dfrA14', "#6baed6"],
+              ['dfrA7 + dfrA14', "#fd8d3c"],
+              ['dfrA15', "#FBCFE5"],
+              ['dfrA17', "#FCB469"],
+              ['dfrA18', "#66c2a4"],
+              ['None', "#B9B9B9"]]
           }))
         case 'Co-trimoxazole':
           let cotrim = ["dfrA1", "dfrA5", "dfrA7", "dfrA14", "dfrA15", "dfrA17", "dfrA18"];
           let colors1 = ["#ffeda0", "#fd8d3c", "#addd8e", "#9e9ac8", "#6baed6", "#7a0177", "#54278f"]
           let colors2 = ["#a50f15", "#6a5acd", "#f1b6da", "#fb8072", "#4682b4", "#2e8b57", "#98fb98"]
           let colors3 = ["#fcc5c0", "#bcbddc", "#fdd0a2", "#c994c7", "#9ecae1", "#a8ddb5", "#fc9272"]
-          let bars = [['None', "#B9B9B9", "error-None"]]
+          let bars = [['None', "#B9B9B9"]]
 
           for (const index in cotrim) {
-            bars.push([cotrim[index] + " + sul1", colors1[index], "error-" + cotrim[index] + "-sul1"])
-            bars.push([cotrim[index] + " + sul2", colors2[index], "error-" + cotrim[index] + "-sul2"])
-            bars.push([cotrim[index] + " + sul1 + sul2", colors3[index], "error-" + cotrim[index] + "-sul1-sul2"])
+            bars.push([cotrim[index] + " + sul1", colors1[index]])
+            bars.push([cotrim[index] + " + sul2", colors2[index]])
+            bars.push([cotrim[index] + " + sul1 + sul2", colors3[index]])
           }
-          bars.push(["dfrA7 + dfrA14 + sul1 + sul2", "#F54CEB", "error-dfrA7-dfrA14-sul1-sul2"])
+          bars.push(["dfrA7 + dfrA14 + sul1 + sul2", "#F54CEB"])
 
           return (armClassFilterComponent({
             left: 3, fontsize: 14, strokeWidth: 0.5, width: 3, bars: bars
@@ -1340,37 +651,39 @@ const DashboardPage = () => {
         case 'Tetracyclines':
           return (armClassFilterComponent({
             left: 3, fontsize: 14, strokeWidth: 1, width: null, bars: [
-              ['tetA(D)', getColorForTetracyclines('tetA(D)'), "error-tetA(D)"],
-              ['tetA(C)', getColorForTetracyclines('tetA(C)'), "error-tetA(C)"],
-              ['tetA(B)', getColorForTetracyclines('tetA(B)'), "error-tetA(B)"],
-              ['tetA(A)', getColorForTetracyclines('tetA(A)'), "error-tetA(A)"],
-              ['None', "#B9B9B9", "error-None"]
+              ['tetA(D)', getColorForTetracyclines('tetA(D)')],
+              ['tetA(C)', getColorForTetracyclines('tetA(C)')],
+              ['tetA(B)', getColorForTetracyclines('tetA(B)')],
+              ['tetA(A)', getColorForTetracyclines('tetA(A)')],
+              ['None', "#B9B9B9"]
             ]
           }))
         case 'ESBL':
           return (armClassFilterComponent({
             left: 3, fontsize: 14, strokeWidth: 1, width: null, bars: [
-              ['blaSHV-12', "#addd8e", "error-blaSHV-12"],
-              ['blaOXA-7', "#9e9ac8", "error-blaOXA-7"],
-              ['blaCTX-M-15', "#6baed6", "error-blaCTX-M-15"],
-              ['blaCTX-M-55', "#FBCFE5", "error-blaCTX-M-55"],
-              ['None', "#B9B9B9", "error-None"]]
+              ['blaSHV-12', "#addd8e"],
+              ['blaOXA-7', "#9e9ac8"],
+              ['blaCTX-M-15', "#6baed6"],
+              ['blaCTX-M-55', "#FBCFE5"],
+              ['None', "#B9B9B9"]]
           }))
         default:
           return null;
       }
     }
     setPlotAmrClassChart(plotAmrClassChart)
-  }, [hoverColor, RDWAGDataviewFilter, amrClassFilter, dimensions, amrClassChartData, desktop, middle])
+  }, [RDWAGDataviewFilter, amrClassChartData, amrClassFilter, dimensions.width, hoverColor])
 
+  // Drug Resistance Trends graph
   useEffect(() => {
     const plotDrugTrendsChart = () => {
-      let dataDRT = drugTrendsChartData.slice(0, drugTrendsChartData.length - 1)
+      let dataDRT = drugTrendsChartData
       for (const index in dataDRT) {
         for (const i in trendClassesForFilter) {
-          if (!((trendClassesForFilter[i].toString()) in dataDRT[index])) {
-            dataDRT[index][trendClassesForFilter[i]] = 0
-            dataDRT[index].drugsPercentage[trendClassesForFilter[i]] = 0
+          const TCFF = trendClassesForFilter[i]
+          if (!((TCFF.toString()) in dataDRT[index])) {
+            dataDRT[index][TCFF] = 0
+            dataDRT[index].drugsPercentage[TCFF] = 0
           }
         }
       }
@@ -1391,7 +704,7 @@ const DashboardPage = () => {
                 Resistant (%)
               </Label>
             </YAxis>
-            {drugTrendsChartData.slice(0, drugTrendsChartData.length - 1).length > 0 && (
+            {drugTrendsChartData.length > 0 && (
               <Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} />
             )}
 
@@ -1423,16 +736,17 @@ const DashboardPage = () => {
     }
 
     setPlotDrugTrendsChart(plotDrugTrendsChart)
-  }, [trendClassesForFilter, dimensions, drugTrendsChartData, tooltip, mobile, timeInitial, timeFinal])
+  }, [dimensions.width, drugTrendsChartData, mobile, timeFinal, timeInitial, tooltip, trendClassesForFilter])
 
+  // Resistance frequencies within genotypes graph
   useEffect(() => {
     const plotDrugsAndGenotypesChart = () => {
-      let aux = JSON.parse(JSON.stringify(drugsAndGenotypesChartData.slice(0, drugsAndGenotypesChartData.length - 1)))
-      
+      let aux = JSON.parse(JSON.stringify(drugsAndGenotypesChartData))
+
       const aux2 = []
       for (let index = 0; index < aux.length; index++) {
         const percentage = (aux[index].total / aux[index].totalS) * 100
-        aux2.push({value: aux[index].name, label: aux[index].name + ` (total N=${aux[index].totalS}, ${Math.round(percentage * 100) / 100}% resistant)`, id: index})
+        aux2.push({ value: aux[index].name, label: aux[index].name + ` (total N=${aux[index].totalS}, ${Math.round(percentage * 100) / 100}% resistant)`, id: index })
       }
       setRFWGDropdownOptions(aux2)
 
@@ -1456,7 +770,7 @@ const DashboardPage = () => {
                   Number of genomes
                 </Label>
               </YAxis>
-              {drugsAndGenotypesChartData.slice(0, drugsAndGenotypesChartData.length - 1).length > 0 && (
+              {drugsAndGenotypesChartData.length > 0 && (
                 <Brush dataKey="name" height={20} stroke={"rgb(31, 187, 211)"} />
               )}
 
@@ -1481,7 +795,7 @@ const DashboardPage = () => {
                 }}
               />
               {tooltip([155, 270, 270], dimensions.width < mobile ? 250 : 325, "50%", false, { zIndex: 100, top: 160 }, false, 0)}
-              {drtClassesForFilter.map((item, i) => (<Bar key={i+"DRT_Q"} dataKey={item} fill={getColorForDrug(item)} />))}
+              {drtClassesForFilter.map((item, i) => (<Bar key={i + "DRT_Q"} dataKey={item} fill={getColorForDrug(item)} />))}
             </BarChart>
           </ResponsiveContainer>
         )
@@ -1491,11 +805,12 @@ const DashboardPage = () => {
           element["quantities"] = {}
           const keys = Object.keys(element);
           for (const key in keys) {
-            if (keys[key] !== 'name' && keys[key] !== 'total' && keys[key] !== 'quantities') {
-              let aux = keys[key]
-              element.quantities[aux] = element[aux]
-              element[aux] = (element[aux] * 100) / element.totalS
+            if (!['name', 'total', 'quantities', 'totalS'].includes(keys[key])) {
+              let aux3 = keys[key]
+              element.quantities[aux3] = element[aux3]
+              element[aux3] = (element[aux3] * 100) / element.totalS
             }
+            element.quantities['totalS'] = element.totalS
           }
         });
 
@@ -1537,15 +852,16 @@ const DashboardPage = () => {
                 }}
               />
               {tooltip([155, 270, 270], dimensions.width < mobile ? 250 : 325, "50%", false, { zIndex: 100, top: 160 }, false, 4)}
-              {drtClassesForFilter.map((item, i) => (<Bar key={i+"DRT_P"} dataKey={item} fill={getColorForDrug(item)} />))}
+              {drtClassesForFilter.map((item, i) => (<Bar key={i + "DRT_P"} dataKey={item} fill={getColorForDrug(item)} />))}
             </BarChart>
           </ResponsiveContainer>
         )
       }
     }
     setPlotDrugsAndGenotypesChart(plotDrugsAndGenotypesChart)
-  }, [actualCountry, drtClassesForFilter, dimensions, drugsAndGenotypesChartData, tooltip, mobile, RFWGFilter, actualRegion, RFWGValues])
+  }, [RFWGFilter, RFWGValues, dimensions.width, drtClassesForFilter, drugsAndGenotypesChartData, mobile, tooltip])
 
+  // Helper for loading images to the report
   function imgOnLoadPromise(obj) {
     return new Promise((resolve, reject) => {
       obj.onload = () => resolve(obj);
@@ -1553,6 +869,7 @@ const DashboardPage = () => {
     });
   }
 
+  // Stop loadings
   const [stopLoading] = useState(() => (index) => {
     switch (index) {
       case 0: setCaptureControlMapInProgress(false)
@@ -1570,6 +887,7 @@ const DashboardPage = () => {
     }
   })
 
+  // Start loadings
   const [capturePicture] = useState(() => async (id, index, info = {}) => {
     switch (index) {
       case 0:
@@ -1599,54 +917,40 @@ const DashboardPage = () => {
       const IPW = doc.internal.pageSize.getWidth() / 2;
 
       let typhinetLogo = new Image();
-      typhinetLogo.src = typhinetLogoImg2;
+      typhinetLogo.src = typhinetLogoImg;
       doc.addImage(typhinetLogo, 'PNG', 110, 8, 80, 26)
 
+      let euFlag = new Image();
+      euFlag.src = euFlagImg;
+      doc.addImage(euFlag, 'JPG', 237, 148.2, 6, 4)
+
       let date = new Date()
-      date = date.toString().replace(/ *\([^)]*\) */g, "")
-
-      let introURL
-
-      let reportIntro = document.getElementById("report-info");
-      reportIntro.style.visibility = 'visible'
-
-      await domtoimage.toPng(reportIntro, { quality: 1, bgcolor: "white" })
-        .then(function (dataUrl) {
-          introURL = dataUrl;
-          reportIntro.style.visibility = 'hidden'
-        });
-
-      doc.addImage(introURL, "PNG", 20 , 35);
-
-      const h = 3.5
-      const w = 1
+      date = moment(date).format("ddd MMM DD YYYY HH:mm:ss")
 
       doc.setFontSize(12);
-      doc.setTextColor(77,77,77);
-      doc.setFillColor(255, 255, 255);
-      doc.rect(105, 55, 31.5, 5, 'F');
-      doc.textWithLink('(http://typhi.net)', 105 + w, 55 + h, {url: 'http://typhi.net'})
-      doc.setFillColor(255, 255, 255);
-      doc.rect(156, 60, 44, 5, 'F');
-      doc.textWithLink('(http://pathogen.watch)', 156 + w, 60 + h, {url: 'http://pathogen.watch'})
-      doc.setFillColor(255, 255, 255);
-      doc.rect(181, 81.5, 80, 5, 'F');
-      doc.textWithLink('https://github.com/zadyson/TyphiNET.', 181 + w, 82 + h, {url: 'https://github.com/zadyson/TyphiNET'})
-      doc.setTextColor(0,0,0);
+      doc.setTextColor(0, 0, 0);
+
+      const paragraph1 = `This report was generated by the TyphiNET (http://typhi.net) website, a data visualisation platform that draws genome-derived data on antimicrobial resistance and genotypes from Typhi Pathogenwatch (http://pathogen.watch). Data were last updated on [${formatDate(lastUpdated)}].  `
+      const paragraph2 = `This report was generated at [${formatDate(new Date())}] using the beta version of TyphiNET which is still undergoing development and data are not yet complete. For code and further details please see: https://github.com/zadyson/TyphiNET`
+      const paragraph3 = `The genotypes reported here are defined in Dyson & Holt (2021), J. Infect. Dis.`
+      const paragraph4 = `Antimicrobial resistance determinants are described in the Typhi Pathogenwatch paper, Argimón et al. 2021, Nat. Commun.`
+      const paragraph5 = `Travel-associated cases are attributed to the country of travel, not the country of isolation (see Ingle et al. 2019, PLoS NTDs).`
+      const paragraph6 = `TyphiNET presents data aggregated from >100 studies. Individual genome information, including derived genotype and AMR calls, sequence data accession numbers, and source information (PubMedID for citation) can be downloaded as a spreadsheet from the TyphiNET website (typhi.net).`
+      const paragraph7 = `Studies contributing genomes representing infections originating from ${info.country} have the following PubMed IDs (PMIDs): ${info.PMID.join(', ')}.`
+      const paragraph8 = `This project has received funding from the the Wellcome Trust (Open Research Fund, 219692/Z/19/Z) and the  European Union's Horizon 2020 research and innovation programme under the Marie Sklodowska-Curie grant agreement No 845681.`
       doc.setFont(undefined, 'bold')
-      doc.setFillColor(255, 255, 255);
-      doc.rect(106, 94, 80, 5, 'F');
-      doc.setTextColor(20,20,20);
-      doc.textWithLink('Dyson & Holt (2021), J. Infect. Dis.', 105 + w, 94 + h, {url: 'https://academic.oup.com/jid/advance-article/doi/10.1093/infdis/jiab414/6358992'})
-      doc.setFillColor(255, 255, 255);
-      doc.rect(188, 102, 80, 5, 'F');
-      doc.setTextColor(20,20,20);
-      doc.textWithLink('Argimón et al. 2021, Nat. Commun.', 188 + w, 102.5 + h, {url: 'https://www.nature.com/articles/s41467-021-23091-2'})
-      doc.setFillColor(255, 255, 255);
-      doc.rect(198, 111, 60, 5, 'F');
-      doc.setTextColor(20,20,20);
-      doc.textWithLink('Ingle et al. 2019, PLoS NTDs).', 198 + w, 111 + h, {url: 'https://journals.plos.org/plosntds/article?id=10.1371/journal.pntd.0007620'})
+      doc.text(`TyphiNET report [${formatDate(new Date())}]`, 20, 50, { align: 'justify', maxWidth: 255 })
       doc.setFont(undefined, 'normal')
+      doc.text(paragraph1, 20, 65, { align: 'justify', maxWidth: 255 })
+      doc.text(paragraph2, 20, 82, { align: 'justify', maxWidth: 255 })
+      doc.text(paragraph3, 20, 99, { align: 'justify', maxWidth: 255 })
+      doc.text(paragraph4, 20, 106, { align: 'justify', maxWidth: 255 })
+      doc.text(paragraph5, 20, 113, { align: 'justify', maxWidth: 255 })
+      doc.text(paragraph6, 20, 125, { align: 'justify', maxWidth: 255 })
+      doc.text(paragraph8, 20, 147, { align: 'justify', maxWidth: 255 })
+      if (info.country !== "All") {
+        doc.text(paragraph7, 20, 164, { align: 'justify', maxWidth: 255 })
+      }
 
       doc.line(0, 200, 300, 200)
       doc.setFontSize(10);
@@ -1736,7 +1040,7 @@ const DashboardPage = () => {
       for (let index = 0; index < ids.length; index++) {
 
         let url
-        await domtoimage.toPng(document.getElementById(ids[index]), { quality: 1, bgcolor: "white" })
+        await domtoimage.toJpeg(document.getElementById(ids[index]), { quality: 1, bgcolor: "white" })
           .then(function (dataUrl) {
             url = dataUrl
           });
@@ -1798,9 +1102,12 @@ const DashboardPage = () => {
         doc.text("Country: " + info.country, 230, 45);
         doc.text("Region: " + info.region, 230, 50);
 
-        if (index === 1 || index === 3){
-          doc.setFillColor(255,255,255);
-          doc.rect(22, info.dimensions.width < info.desktop ? 120 : 115, 150, 100, 'F');
+        if (index === 3) {
+          doc.setFillColor(255, 255, 255);
+          doc.rect(22, info.dimensions.width < info.desktop ? 120 : 110, 300, 100, 'F');
+        } else if (index === 1) {
+          doc.setFillColor(255, 255, 255);
+          doc.rect(22, 113, 300, 100, 'F');
         }
 
         if (index === 1) {
@@ -1928,7 +1235,7 @@ const DashboardPage = () => {
 
       let typhinetLogo = document.createElement("img");
       let typhinetLogoPromise = imgOnLoadPromise(typhinetLogo);
-      typhinetLogo.src = typhinetLogoImg2;
+      typhinetLogo.src = typhinetLogoImg;
       await typhinetLogoPromise;
       ctx.drawImage(typhinetLogo, 10, 10, 170, 55);
 
@@ -2031,7 +1338,7 @@ const DashboardPage = () => {
 
           let typhinetLogo = document.createElement("img");
           let typhinetLogoPromise = imgOnLoadPromise(typhinetLogo);
-          typhinetLogo.src = typhinetLogoImg2;
+          typhinetLogo.src = typhinetLogoImg;
           await typhinetLogoPromise;
           ctx.drawImage(typhinetLogo, 25, 25, 500, 200);
 
@@ -2043,6 +1350,7 @@ const DashboardPage = () => {
 
   })
 
+  // Download spreadsheet
   const [dowloadBaseSpreadsheet] = useState(() => () => {
     axios.get(`${API_ENDPOINT}file/download`)
       .then((res) => {
@@ -2057,6 +1365,7 @@ const DashboardPage = () => {
             lines.push(line)
           }
         }
+        // console.log(lines);
 
         for (let index = 0; index < cols_to_remove.length; index++) {
           let currentIndex = lines[0].indexOf(cols_to_remove[index])
@@ -2091,10 +1400,16 @@ const DashboardPage = () => {
           newCSV += aux
         }
 
+        console.log(newCSV);
         download(newCSV, 'TyphiNET_Database.csv');
       })
   })
 
+  const [dowloadCurrentDataSpreadsheet] = useState(() => () => {
+
+  })
+
+  // Component for map view's options
   const generateMapLegendOptions = () => {
     let percentageSteps = ['1', '25', '50', '75']
     const otherViews = ['CipI', 'CipR', 'Azith', 'Sensitive to all drugs', 'MDR', 'XDR']
@@ -2191,33 +1506,15 @@ const DashboardPage = () => {
     }
   }
 
+  // Map upper right buttons component
   const renderMapLegend = () => {
     const mapLegends = [
       ['MDR', 'Multidrug resistant (MDR)'], ['XDR', 'Extensively drug resistant (XDR)'], ['Azith', 'Azithromycin resistant'],
-      ['CipI', 'Ciprofloxacin insusceptible and resistant (CipI/R)'], ['CipR', 'Ciprofloxacin resistant (CipR)'], ['Sensitive to all drugs', 'Sensitive to all drugs'], 
+      ['CipI', 'Ciprofloxacin insusceptible and resistant (CipI/R)'], ['CipR', 'Ciprofloxacin resistant (CipR)'], ['Sensitive to all drugs', 'Sensitive to all drugs'],
       ['Dominant Genotype', 'Dominant Genotype'], ['H58 / Non-H58', 'H58 genotype'], ['No. Samples', 'No. Samples']
     ]
     return (
       <div className="map-legend">
-        {/* <FormControl fullWidth className={classes.formControlSelect}>
-          <div className="map-legend-formcontrol-div">
-            <div className="map-legend-formcontrol-label">Select continent</div>
-          </div>
-          <Select
-            value={actualContinent}
-            onChange={(evt, value) => setActualContinent(value.props.value)}
-            className={classes.select}
-            fullWidth
-          >
-            {continentOptions.map((n)=>{
-              return (
-                <MenuItem className={classes.select} value={n}>
-                  {n}
-                </MenuItem>
-              )
-            })}
-          </Select>
-        </FormControl> */}
         <FormControl fullWidth className={classes.formControlSelect}>
           <div className="map-legend-formcontrol-div map-legend-formcontrol-div-pad">
             <div className="map-legend-formcontrol-label">Select map view</div>
@@ -2226,28 +1523,9 @@ const DashboardPage = () => {
               placement="top"
             >
               <IconButton className={classes.tooltipButton}>
-                  <FontAwesomeIcon icon={faInfoCircle} size="xs" className={classes.tooltipIcon}/>
+                <FontAwesomeIcon icon={faInfoCircle} size="xs" className={classes.tooltipIcon} />
               </IconButton>
             </IconTooltip>
-            {/* <FontAwesomeIcon icon={faInfoCircle} onClick={handleClickOpen3} className="icon-info" />
-            <Dialog
-              open={open3}
-              onClose={handleClose3}
-              aria-labelledby="alert-dialog-title"
-              aria-describedby="alert-dialog-description"
-            >
-              <DialogTitle id="alert-dialog-title">{"Information"}</DialogTitle>
-              <DialogContent>
-                <DialogContentText id="alert-dialog-description">
-                  {'Percentage frequency data is shown only for countries with N≥20 genomes'}
-                </DialogContentText>
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={handleClose3} color="primary">
-                  Close
-                </Button>
-              </DialogActions>
-            </Dialog> */}
           </div>
           <Select
             value={mapView}
@@ -2269,12 +1547,131 @@ const DashboardPage = () => {
     )
   }
 
+  // The variables and functions between the two dotted lines below represents the new method for filtering the data on the dashboard
+  //-------------------------------------------------------------------------------------------------------------------
+  const [data, setData] = useState([])
+  const [currentData, setCurrentData] = useState([])
+  const [init, setInit] = useState(false)
+  const [allCountryRegions, setAllCountryRegions] = useState({})
+  const [loading, setLoading] = useState(false)
+
+  // Get data from the csv file, filter it and set all initial values for the dashboard
+  // The CSV is only read ONCE in this function, after that the data passes only through the "filterForComponents" function from the filters.js file
+  useEffect(() => {
+    axios.get(`${API_ENDPOINT}filters/getDataFromCSV`)
+      .then((res) => {
+        console.log('Getting Data');
+        setData(res.data)
+        setTotalGenomes(res.data.length)
+
+        let [auxTGenotypes, auxYears, auxCountries, auxRegions] = [[], [], [], {}]
+        let empty = ["", "-"]
+        res.data.forEach((x) => {
+
+          if (!auxTGenotypes.includes(x.GENOTYPE)) auxTGenotypes.push(x.GENOTYPE)
+          if (!auxYears.includes(x.DATE) && !empty.includes(x.DATE)) auxYears.push(x.DATE)
+          if (!auxCountries.includes(x.COUNTRY_ONLY) && !empty.includes(x.COUNTRY_ONLY)) {
+            auxCountries.push(x.COUNTRY_ONLY)
+            auxRegions[x.COUNTRY_ONLY] = []
+          }
+          if (!empty.includes(x.COUNTRY_ONLY) && !empty.includes(x.REGION_IN_COUNTRY) && !auxRegions[x.COUNTRY_ONLY].includes(x.REGION_IN_COUNTRY)) {
+            auxRegions[x.COUNTRY_ONLY].push(x.REGION_IN_COUNTRY)
+          }
+
+        })
+        auxYears.sort()
+        auxCountries.sort()
+        auxCountries.unshift("All");
+
+        setTotalGenotypes(auxTGenotypes.length)
+        setTimeInitial(auxYears[0])
+        setActualTimeInitial(auxYears[0])
+        setTimeFinal(auxYears[auxYears.length - 1])
+        setActualTimeFinal(auxYears[auxYears.length - 1])
+        setYears(auxYears)
+        setCountriesForFilter(auxCountries)
+        setAllCountryRegions(auxRegions)
+
+        console.log('FINISH');
+        setInit(true)
+      })
+  }, [])
+
+  // Update regions after country changes.
+  // This was made apart from the normal filters because we already have all regions from all countries and it is not necessary
+  // to loop through all the data again.
+  useEffect(() => {
+    if (init) {
+      setActualRegion("All")
+      if (actualCountry !== "All") {
+        const auxRegions = allCountryRegions[actualCountry]
+        auxRegions.sort()
+        auxRegions.unshift("All");
+        setRegionsForFilter(auxRegions)
+      }
+    }
+  }, [init, actualCountry, allCountryRegions])
+
+  // This function checks for changes on any of the filters and changes the loading status of the apge to TRUE.
+  // This triggers the function below this one (filterForComponents) and updates the data shown on the page
+  useEffect(() => {
+    if (init) {
+      console.log('Something changed');
+      setLoading(true)
+    }
+  }, [init, dataset, actualTimeInitial, actualTimeFinal, actualCountry, actualRegion])
+
+  // Watcher from changes from filter on the dashboard, this way data is passed through the filters.js file and returns
+  useEffect(() => {
+    function update() {
+      if (init && loading) {
+        console.log('Updating...');
+        const aux = filterForComponents(
+          {
+            data: data,
+            dataset: dataset,
+            country: actualCountry,
+            minYear: actualTimeInitial,
+            maxYear: actualTimeFinal,
+            region: actualRegion
+          }
+        )
+        setCurrentData(aux[0]);
+        setActualGenomes(aux[0].length)
+        setActualGenotypes(aux[1])
+        setWorldMapSamplesData(aux[2])
+        setWorldMapComplementaryData(aux[3])
+        setWorldMapGenotypesData(aux[4])
+        setWorldMapH58Data(aux[5])
+        setWorldMapSTADData(aux[6])
+        setWorldMapMDRData(aux[7])
+        setWorldMapXDRData(aux[8])
+        setWorldMapAZITHData(aux[9])
+        setWorldMapCIPRData(aux[10])
+        setWorldMapCIPIData(aux[11])
+        setCountryPMID(aux[12])
+        setDrugsAndGenotypesChartData(aux[13])
+        setDrugTrendsChartData(aux[14])
+        setAmrClassChartData(aux[15])
+        setPopulationStructureChartData(aux[16])
+        setAppLoading(false)
+        setLoading(false)
+      }
+    }
+    update()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading])
+
+  //-------------------------------------------------------------------------------------------------------------------
+
   return (
-    <div className="dashboard">
+    <div className="dashboard" style={{ height: '100vh' }}>
+      {/* Mobile toolbar */}
       <div className="menu-bar-mobile">
         <img className="logoImageMenu-mobile" src={typhinetLogoImg} alt="TyphiNET" />
       </div>
-      <div style={{ padding: dimensions.width > 770 ? '16px 16px 0px 16px' : '16px 0px 0px 0px' }}>
+      <div style={{ padding: dimensions.width > 770 ? '16px 16px 0px 16px' : '16x 0px 0px 0px', display: appLoading ? 'none' : '', backgroundColor: '#E5E5E5' }}>
+        {/* Logo and information on genotypes and genomes */}
         <div className="info-wrapper">
           {dimensions.width > desktop && (
             <>
@@ -2286,71 +1683,35 @@ const DashboardPage = () => {
           <div className="card card-padding">
             <span>
               Total Genomes
-              {/* <FontAwesomeIcon icon={faInfoCircle} onClick={handleClickOpen2} className="icon-info" />
-              <Dialog
-                open={open2}
-                onClose={handleClose2}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-              >
-                <DialogTitle id="alert-dialog-title">{"Information"}</DialogTitle>
-                <DialogContent>
-                  <DialogContentText id="alert-dialog-description">
-                    155 genome samples absent from TyphiNET DB
-                  </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                  <Button onClick={handleClose2} color="primary">
-                    Close
-                  </Button>
-                </DialogActions>
-              </Dialog> */}
             </span>
-            {totalGenomes.length === actualGenomes.length ? (
-              <span className="value">{totalGenomes.length}</span>
+            {totalGenomes === actualGenomes ? (
+              <span className="value">{totalGenomes}</span>
             ) : (
               <span className="value">
-                {actualGenomes.length}
-                <span className="value-total">/{totalGenomes.length}</span>
+                {actualGenomes}
+                <span className="value-total">/{totalGenomes}</span>
               </span>
             )}
           </div>
           <div className="card">
             <span>
               Total Genotypes
-              {/* <FontAwesomeIcon icon={faInfoCircle} onClick={handleClickOpen} className="icon-info" />
-              <Dialog
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-              >
-                <DialogTitle id="alert-dialog-title">{"Information"}</DialogTitle>
-                <DialogContent>
-                  <DialogContentText id="alert-dialog-description">
-                    Total genotypes present in TyphiNET database / Total genotypes worldwide published
-                  </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                  <Button onClick={handleClose} color="primary">
-                    Close
-                  </Button>
-                </DialogActions>
-              </Dialog> */}
             </span>
-            {totalGenotypes.length === actualGenotypes.length ? (
-              <span className="value">{totalGenotypes.length}</span>
+            {totalGenotypes === actualGenotypes ? (
+              <span className="value">{totalGenotypes}</span>
             ) : (
               <span className="value">
-                {actualGenotypes.length}
-                <span className="value-total">/{totalGenotypes.length}</span>
+                {actualGenotypes}
+                <span className="value-total">/{totalGenotypes}</span>
               </span>
             )}
           </div>
         </div>
+        {/* Map Wrapper*/}
         <div className="map-filters-wrapper">
           <h2>Global Overview of <i>Salmonella</i> Typhi</h2>
           <div className="map-filters-wrapper-inside" style={{ flexDirection: dimensions.width > desktop ? 'row' : 'column' }}>
+            {/* Map -> all map views and information */}
             <div className="map-wrapper">
               <ComposableMap
                 id="control-map"
@@ -2485,8 +1846,9 @@ const DashboardPage = () => {
                             cursor="pointer"
                             fill={fill}
                             onClick={() => {
-                              if (d !== undefined && sample !== undefined)
+                              if (d !== undefined && sample !== undefined) {
                                 setActualCountry(sample.name)
+                              }
                             }}
                             onMouseLeave={() => {
                               setTooltipContent(null);
@@ -2776,12 +2138,14 @@ const DashboardPage = () => {
                 </ZoomableGroup>
 
               </ComposableMap>
+              {/* Map legend */}
               {(dimensions.width > desktop) && (
                 <div className="map-upper-right-buttons">
                   {renderMapLegend()}
                 </div>
               )}
               {(dimensions.width > desktop) && (
+                // Dataset Filter
                 <div className="map-upper-left-buttons ">
                   <div className="map-filters" style={{ width: dimensions.width > desktop ? 200 : "-webkit-fill-available" }}>
                     <span className="map-filters-label" style={{ marginBottom: dimensions.width > desktop ? 20 : 10 }}>Filters</span>
@@ -2824,7 +2188,7 @@ const DashboardPage = () => {
                           >
                             {years?.filter(x => x <= actualTimeFinal).map((n, i) => {
                               return (
-                                <MenuItem key={i+"timeperiod"} className={classes.select} value={n}>
+                                <MenuItem key={i + "timeperiod"} className={classes.select} value={n}>
                                   {n}
                                 </MenuItem>
                               )
@@ -2856,6 +2220,7 @@ const DashboardPage = () => {
                   </div>
                 </div>
               )}
+              {/* Map controllers */}
               <div className="map-lower-left-buttons">
                 <Zoom in={controlMapPosition.zoom !== 1 || controlMapPosition.coordinates.some(c => c !== 0)}>
                   <TooltipMaterialUI title={<span className="my-font">Recenter Map</span>} placement="right">
@@ -2894,6 +2259,7 @@ const DashboardPage = () => {
                   </div>
                 </TooltipMaterialUI>
               </div>
+              {/* Download map button */}
               <div className="map-lower-right-buttons">
                 <TooltipMaterialUI title={<span className="my-font">Download Map as PNG</span>} placement="left">
                   <div
@@ -2914,12 +2280,16 @@ const DashboardPage = () => {
                 )}
               </div>
             </div>
+            {/* Map filters and legends for mobile */}
             {!(dimensions.width > desktop) && (
               <div className="wrapper-map-legend">
+                {/* Legend */}
                 {renderMapLegend()}
+                {/* Filters */}
                 <div>
                   <div className="map-filters-mobile" style={{ width: dimensions.width > desktop ? 200 : "-webkit-fill-available" }}>
                     <span className="map-filters-label" style={{ marginBottom: dimensions.width > desktop ? 20 : 10 }}>Filters</span>
+                    {/* Dataset Filter */}
                     <div style={{ marginBottom: dimensions.width > desktop ? 16 : 8 }}>
                       <Typography className={classes.typography}>
                         Select dataset
@@ -2945,6 +2315,7 @@ const DashboardPage = () => {
                         </CustomToggleButton>
                       </ToggleButtonGroup>
                     </div>
+                    {/* Year Filter */}
                     <div className="margin-div">
                       <div className="my-year-range">
                         <div className="my-year-range-row">
@@ -2991,8 +2362,8 @@ const DashboardPage = () => {
                   </div>
                 </div>
               </div>
-
             )}
+            {/* Map Tooltips */}
             <ReactTooltip>
               {tooltipContent && (
                 <div className="tooltip-map">
@@ -3053,11 +2424,6 @@ const DashboardPage = () => {
                       <span>XDR: {tooltipContent.xdrInfo.count} ({tooltipContent.xdrInfo.percentage}%)</span>
                     </div>
                   )}
-                  {tooltipContent.dcsInfo && (
-                    <div className="additional-info">
-                      <span>DCS: {tooltipContent.dcsInfo.count} ({tooltipContent.dcsInfo.percentage}%)</span>
-                    </div>
-                  )}
                   {tooltipContent.azInfo && (
                     <div className="additional-info">
                       <span>AzithR: {tooltipContent.azInfo.count} ({tooltipContent.azInfo.percentage}%)</span>
@@ -3073,52 +2439,7 @@ const DashboardPage = () => {
                       <span>CipR: {tooltipContent.cipRInfo.count} ({tooltipContent.cipRInfo.percentage}%)</span>
                     </div>
                   )}
-                  {tooltipContent.drugsInfo && (
-                    <div className="additional-info margin-div">
-                      {tooltipContent.drugsInfo.map((drug, index) => {
-                        if (index < 5) {
-                          return (
-                            <div key={index + "drugsInfo"} className="genotype">
-                              <div className="color" style={{ backgroundColor: getColorForDrug(drug.name) }} />
-                              <span>{drug.name}: {drug.count}</span>
-                            </div>
-                          )
-                        } else
-                          return null;
-                      })}
-                    </div>
-                  )}
-                  {tooltipContent.amrProfilesInfo && (
-                    <div className="additional-info margin-div">
-                      {tooltipContent.amrProfilesInfo.map((amr, index) => {
-                        if (index < 5) {
-                          return (
-                            <div key={index + "amrInfo"} className="genotype">
-                              <div className="color" style={{ backgroundColor: getColorForAMR(amr.name) }} />
-                              <span>{amr.name}: {amr.count}</span>
-                            </div>
-                          )
-                        } else
-                          return null;
-                      })}
-                    </div>
-                  )}
-                  {tooltipContent.incTypesInfo && (
-                    <div className="additional-info margin-div">
-                      {tooltipContent.incTypesInfo.map((incType, index) => {
-                        if (index < 5) {
-                          return (
-                            <div key={index + "inctypes"} className="genotype">
-                              <div className="color" style={{ backgroundColor: getColorForIncType(incType.type) }} />
-                              <span>{incType.type}: {incType.count}</span>
-                            </div>
-                          )
-                        } else
-                          return null;
-                      })}
-                    </div>
-                  )}
-                  {(!tooltipContent.incTypesInfo && !tooltipContent.amrProfilesInfo && !tooltipContent.drugsInfo && !tooltipContent.xdrInfo && !tooltipContent.mdrInfo && !tooltipContent.stadInfo && !tooltipContent.dcsInfo && !tooltipContent.azInfo && !tooltipContent.cipIInfo && !tooltipContent.cipRInfo && !tooltipContent.simpleGenotypeInfo && !tooltipContent.genotypeInfo && !tooltipContent.additionalInfo) && (
+                  {(!tooltipContent.xdrInfo && !tooltipContent.mdrInfo && !tooltipContent.stadInfo && !tooltipContent.azInfo && !tooltipContent.cipIInfo && !tooltipContent.cipRInfo && !tooltipContent.simpleGenotypeInfo && !tooltipContent.genotypeInfo && !tooltipContent.additionalInfo) && (
                     <div className="additional-info">
                       <span>{tooltipContent.smallerThan20 ? "0%" : 'Insufficient data'}</span>
                     </div>
@@ -3128,14 +2449,16 @@ const DashboardPage = () => {
             </ReactTooltip>
           </div>
         </div>
+        {/* Chart Wrapper */}
         <div className="chart-wrapper">
           <h2 className="showing-data">Now showing: {dataset} data from {actualCountry === "All" ? "all countries" : actualCountry} from {actualTimeInitial} to {actualTimeFinal}</h2>
-          <div className="country-region-div" style={{flexDirection: dimensions.width > 560 ? 'row' : 'column'}}>
-            <FormControl className={classes.formControlSelect, dimensions.width <= 560 ? classes.formControlSelectCountryRegionH : classes.formControlSelectCountryRegionV}>
+          <div className="country-region-div" style={{ flexDirection: dimensions.width > 560 ? 'row' : 'column' }}>
+            {/* Select country dropdown */}
+            <FormControl className={classes.formControlSelectCountryRegion}>
               <label className="select-country-label">Select country (or click map)</label>
               <Select
                 value={actualCountry}
-                onChange={evt => setActualCountry(evt.target.value)}
+                onChange={evt => { setActualCountry(evt.target.value) }}
                 fullWidth
                 className={classes.selectCountry}
               >
@@ -3149,11 +2472,12 @@ const DashboardPage = () => {
               </Select>
             </FormControl>
             {dimensions.width > 560 && <div className="country-region-spacer"></div>}
-            <FormControl className={`${classes.formControlSelect} ${dimensions.width <= 560 ? classes.formControlSelectCountryRegionH : classes.formControlSelectCountryRegionV}`}>
+            {/* Select region dropdown */}
+            <FormControl className={`${classes.formControlSelectCountryRegion}`}>
               <label className="select-country-label">Select region</label>
               <Select
                 value={actualRegion}
-                onChange={evt => setActualRegion(evt.target.value)}
+                onChange={evt => { setActualRegion(evt.target.value) }}
                 fullWidth
                 className={classes.selectCountry}
               >
@@ -3167,19 +2491,22 @@ const DashboardPage = () => {
               </Select>
             </FormControl>
           </div>
+          {/* Charts */}
           <div className="chart-wrapper-div">
             <div className="chart-wrapper-div2" style={{ flexDirection: dimensions.width > desktop ? "row" : "column", paddingBottom: dimensions.width > desktop ? 20 : 0 }}>
               <div className="chart-wrapper-div3" style={{ paddingRight: dimensions.width < mobile ? 0 : 10 }}>
+                {/* Resistance frequencies within genotypes CHART */}
                 <div className="chart-wrapper-RFWA">
                   <div className="chart-wrapper-RFWA-div">
                     <span className="chart-title chart-wrapper-RFWA-title">Resistance frequencies within genotypes</span>
+                    {/* Download chart */}
                     <div className="chart-wrapper-RFWA-download">
                       <TooltipMaterialUI title={<span className="my-font">Download Chart as PNG</span>} placement="right">
                         <div
                           className={`button ${captureControlChartRFWGInProgress && "disabled"}`}
                           onClick={() => {
                             if (!captureControlChartRFWGInProgress)
-                              capturePicture('RFWG', 1, { mapView: mapView, dataset: dataset, actualTimePeriodRange: [actualTimeInitial, actualTimeFinal], country: actualCountry, region: actualRegion, RFWGCount: RFWGValues.length})
+                              capturePicture('RFWG', 1, { mapView: mapView, dataset: dataset, actualTimePeriodRange: [actualTimeInitial, actualTimeFinal], country: actualCountry, region: actualRegion, RFWGCount: RFWGValues.length })
                           }}
                         >
                           <FontAwesomeIcon icon={faCamera} size="sm" />
@@ -3192,6 +2519,7 @@ const DashboardPage = () => {
                       )}
                     </div>
                   </div>
+                  {/* Labels */}
                   <span className="chart-title chart-wrapper-RFWA-top">Top Genotypes (up to {RFWGValues.length})</span>
                   <div className="chart-wrapper-RFWA-view" style={{ width: dimensions.width > 790 ? "71%" : '260px' }}>
                     <div className="chart-wrapper-DRT-view-drugs">
@@ -3201,10 +2529,11 @@ const DashboardPage = () => {
                         placement="top"
                       >
                         <IconButton className={classes.tooltipButton}>
-                            <FontAwesomeIcon icon={faInfoCircle} size="xs" className={classes.tooltipIcon}/>
+                          <FontAwesomeIcon icon={faInfoCircle} size="xs" className={classes.tooltipIcon} />
                         </IconButton>
                       </IconTooltip>
                     </div>
+                    {/* Data view dropdown */}
                     <FormControl fullWidth className={classes.formControlSelect}>
                       <DropDownSelect
                         options={RFWGFilterOptions}
@@ -3217,6 +2546,7 @@ const DashboardPage = () => {
                         className="dropdown-select"
                       />
                     </FormControl>
+                    {/* Genotypes select dropdown */}
                     <FormControl id="DDS2" fullWidth className={classes.formControlSelect}>
                       <DropDownSelect
                         options={RFWGDropdownOptions}
@@ -3246,7 +2576,7 @@ const DashboardPage = () => {
                               }
                             }}>
                               <div className="chart-wrapper-DRT-view-drugs-select-options">
-                                <input type="checkbox" checked={methods.isSelected(item)} onChange={() => {}} />
+                                <input type="checkbox" checked={methods.isSelected(item)} onChange={() => { }} />
                                 &nbsp;&nbsp;&nbsp;{item[props.labelField]}
                               </div>
                             </div>
@@ -3264,7 +2594,7 @@ const DashboardPage = () => {
                                   <ButtonClearSelect
                                     id="DSButton2"
                                     onClick={() => {
-                                      methods.selectAll(RFWGDropdownOptions.slice(0,5))
+                                      methods.selectAll(RFWGDropdownOptions.slice(0, 5))
                                     }}
                                     checked={true}
                                   >
@@ -3285,9 +2615,11 @@ const DashboardPage = () => {
                     {plotDrugsAndGenotypesChart}
                   </div>
                 </div>
+                {/* Resistance determinants within genotypes CHART */}
                 <div className="chart-wrapper-RDWAG">
                   <div className="chart-wrapper-RDWAG-div">
                     <span className="chart-title chart-wrapper-RDWAG-title">Resistance determinants within genotypes</span>
+                    {/* Download chart */}
                     <div className="chart-wrapper-RDWAG-download">
                       <TooltipMaterialUI title={<span className="my-font">Download Chart as PNG</span>} placement="right">
                         <div
@@ -3307,9 +2639,11 @@ const DashboardPage = () => {
                       )}
                     </div>
                   </div>
+                  {/* Labels */}
                   <span className="chart-title chart-wrapper-RDWAG-top">Top Genotypes (up to 10)</span>
                   <div className="chart-wrapper-RDWAG-view" style={{ width: dimensions.width > desktop ? "71%" : "90%" }}>
                     <InputLabel className={classes.inputLabel}>Select Drug Class</InputLabel>
+                    {/* Drug class dropdown */}
                     <FormControl fullWidth className={classes.formControlSelect}>
                       <DropDownSelect
                         options={amrClassFilterforFilterOptions}
@@ -3323,6 +2657,7 @@ const DashboardPage = () => {
                       />
                     </FormControl>
                     <InputLabel className={classes.inputLabel}>Data view</InputLabel>
+                    {/* Data view dropdown */}
                     <FormControl fullWidth className={classes.formControlSelect}>
                       <DropDownSelect
                         options={amrClassFilterOptions}
@@ -3342,9 +2677,11 @@ const DashboardPage = () => {
                 </div>
               </div>
               <div className="chart-wrapper-div3" style={{ paddingLeft: dimensions.width < mobile ? 0 : 10, marginTop: dimensions.width < desktop ? 50 : 0 }}>
+                {/* Drug resistance trends CHART */}
                 <div className="chart-wrapper-DRT">
                   <div className="chart-wrapper-DRT-div">
                     <span className="chart-title chart-wrapper-DRT-title">Drug resistance trends</span>
+                    {/* Download button */}
                     <div className="chart-wrapper-DRT-download">
                       <TooltipMaterialUI title={<span className="my-font">Download Chart as PNG</span>} placement="right">
                         <div
@@ -3364,12 +2701,14 @@ const DashboardPage = () => {
                       )}
                     </div>
                   </div>
+                  {/* Labels */}
                   <span className="chart-title chart-wrapper-RFWA-top">Data are plotted for years with N ≥ 10 genomes</span>
                   {dimensions.width > desktop && (<span className="chart-title" ></span>)}
                   <div className="chart-wrapper-DRT-view" style={{ width: dimensions.width > 790 ? "71%" : '260px' }}>
                     <div className="chart-wrapper-DRT-view-drugs">
                       <div className="chart-wrapper-DRT-view-drugs-label">Drugs view</div>
                     </div>
+                    {/* Drugs dropdown */}
                     <FormControl id="DDS" fullWidth className={classes.formControlSelect}>
                       <DropDownSelect
                         options={trendDropdownOptions}
@@ -3390,7 +2729,7 @@ const DashboardPage = () => {
                         itemRenderer={({ item, itemIndex, props, state, methods }) => (
                           <div key={item[props.valueField]} onClick={() => methods.addItem(item)}>
                             <div className="chart-wrapper-DRT-view-drugs-select-options">
-                              <input type="checkbox" checked={methods.isSelected(item)} onChange={() => {}}/>
+                              <input type="checkbox" checked={methods.isSelected(item)} onChange={() => { }} />
                               &nbsp;&nbsp;&nbsp;{item[props.labelField]}
                             </div>
                           </div>
@@ -3426,9 +2765,11 @@ const DashboardPage = () => {
                     {plotDrugTrendsChart}
                   </div>
                 </div>
+                {/* Genotype distribution CHART */}
                 <div className="chart-wrapper-GD">
                   <div className="chart-wrapper-GD-div">
                     <span className="chart-title chart-wrapper-GD-title">Genotype distribution</span>
+                    {/* Download chart */}
                     <div className="chart-wrapper-GD-download">
                       <TooltipMaterialUI title={<span className="my-font">Download Chart as PNG</span>} placement="right">
                         <div
@@ -3451,6 +2792,7 @@ const DashboardPage = () => {
                   {dimensions.width > desktop && (<span className="chart-title chart-wrapper-GD-space"></span>)}
                   <div className="chart-wrapper-GD-view" style={{ paddingTop: dimensions.width > desktop ? '67px' : '', width: dimensions.width > desktop ? "71%" : "90%" }}>
                     <InputLabel className={classes.inputLabel}>Data view</InputLabel>
+                    {/* Data view dropdown */}
                     <FormControl fullWidth className={classes.formControlSelect}>
                       <DropDownSelect
                         options={populationStructureFilterOptions}
@@ -3470,15 +2812,20 @@ const DashboardPage = () => {
                 </div>
               </div>
             </div>
+            {/* Download spreadsheet and report wrappper */}
             <div className="wrapper-download-sheet-button" style={{ flexDirection: dimensions.width > desktop ? "row" : "column", padding: dimensions.width < desktop ? '0px 12px 12px 12px' : '50px 12px 12px 12px', width: "-webkit-fill-available" }}>
-              <div className="download-sheet-button" onClick={() => dowloadBaseSpreadsheet()}>
-                <FontAwesomeIcon icon={faTable} style={{ marginRight: 8 }} />
-                <span>Download database</span>
-              </div>
+              {/* Download spreadsheet */}
+              <TooltipMaterialUI title={<span className="my-font">Genome line list - including source information, genome-derived AMR and genotype information, and citations for each genome; pulled from Pathogenwatch.</span>} placement="top">
+                <div className="download-sheet-button" onClick={() => dowloadBaseSpreadsheet()}>
+                  <FontAwesomeIcon icon={faTable} style={{ marginRight: 8 }} />
+                  <span>Download database (CSV format)</span>
+                </div>
+              </TooltipMaterialUI>
+              {/* Download report */}
               <div style={{ marginTop: dimensions.width > desktop ? 0 : 20, marginLeft: dimensions.width > desktop ? 20 : 0 }} className={`download-sheet-button`} onClick={() => {
                 if (!captureReportInProgress) {
                   setCaptureReportInProgress(true);
-                  capturePicture('', 5, { mapView: mapView, dataset: dataset, actualTimePeriodRange: [actualTimeInitial, actualTimeFinal], country: actualCountry, region: actualRegion, amrClassFilter: amrClassFilter, actualGenomes: actualGenomes.length, drugs: trendValues, dimensions: dimensions, desktop: desktop, RFWGCount: RFWGValues.length });
+                  capturePicture('', 5, { mapView: mapView, dataset: dataset, actualTimePeriodRange: [actualTimeInitial, actualTimeFinal], country: actualCountry, region: actualRegion, amrClassFilter: amrClassFilter, actualGenomes: actualGenomes, drugs: trendValues, dimensions: dimensions, desktop: desktop, RFWGCount: RFWGValues.length, PMID: countryPMID });
                 }
               }}>
                 <FontAwesomeIcon icon={faFilePdf} style={{ marginRight: 8 }} />
@@ -3493,19 +2840,23 @@ const DashboardPage = () => {
             </div>
           </div>
         </div>
+        {/* About info */}
         <div className="about-wrapper">
           <h2>About TyphiNET</h2>
           <p>
             The TyphiNET dashboard collates antimicrobial resistance (AMR) and genotype (lineage) information extracted from whole genome sequence (WGS) data from the bacterial pathogen <i>Salmonella</i> Typhi, the agent of typhoid fever. Data are sourced monthly from Typhoid <a href="https://pathogen.watch/" target="_blank" rel="noreferrer">Pathogenwatch</a>. Information on genotype definitions and population structure can be found in <a href="https://www.nature.com/articles/ncomms12827" target="_blank" rel="noreferrer">Wong et al, 2016</a>, and details of AMR determinants in <a href="https://www.nature.com/articles/s41467-021-23091-2" target="_blank" rel="noreferrer">Argimon et al, 2021</a>. (CipI/R = decreased ciprofloxacin susceptibility).
           </p>
           <p>
-            The TyphiNET dashboard is coordinated by Dr Zoe Dyson, Dr Louise Cerdeira &amp; Prof Kat Holt at the <a href="https://www.lshtm.ac.uk/" target="_blank" rel="noreferrer">London School of Hygiene and Tropical Medicine</a> &amp; <a href="https://www.monash.edu/" target="_blank" rel="noreferrer">Monash University</a>, supported by the Wellcome Trust (Open Research Fund, 219692/Z/19/Z) and the EU Horizon 2020 research and innovation programme (Marie Skłodowska-Curie grant #845681).
+            The TyphiNET dashboard is coordinated by Dr Zoe Dyson, Dr Louise Cerdeira &amp; Prof Kat Holt at the <a href="https://www.lshtm.ac.uk/" target="_blank" rel="noreferrer">London School of Hygiene and Tropical Medicine</a> &amp; <a href="https://www.monash.edu/" target="_blank" rel="noreferrer">Monash University</a>. This project has received funding from the the Wellcome Trust (Open Research Fund, 219692/Z/19/Z) and the  European Union's Horizon 2020 research and innovation programme under the Marie Sklodowska-Curie grant agreement No 845681.
+            <img className="euFlagImage" src={euFlagImg} alt="EU_FLAG" height="20" />
           </p>
           <p>
             <b>Note: This is a beta version, data are incomplete</b>.
           </p>
         </div>
+        {/* Footer */}
         <div className="footer-buttons-wrapper">
+          {/* Contact Button */}
           <div
             className="flex-button"
             onClick={() => {
@@ -3515,6 +2866,7 @@ const DashboardPage = () => {
             <FontAwesomeIcon icon={faEnvelope} className="fontawesome-icon" />
             <span>Contact</span>
           </div>
+          {/* Github Button */}
           <div
             className="flex-button"
             onClick={() => {
@@ -3524,6 +2876,7 @@ const DashboardPage = () => {
             <FontAwesomeIcon icon={faGithub} className="fontawesome-icon" />
             <span>GitHub</span>
           </div>
+          {/* Twitter Button */}
           <div
             className="flex-button"
             onClick={() => {
@@ -3538,6 +2891,7 @@ const DashboardPage = () => {
         <div className="footer">
           <span>Data obtained from: <a href="https://pathogen.watch" rel="noreferrer" target="_blank">pathogen watch project</a> on 15/06/2021. <a href="https://holtlab.net" rel="noreferrer" target="_blank">Holt Lab</a></span>
         </div>
+        {/* FAB reset filters */}
         <div className="fab-button" style={{ width: dimensions.width < mobile ? '48px' : '56px' }}>
           <TooltipMaterialUI title={<span className="my-font">Reset Configurations</span>} placement="left">
             <Fab
@@ -3545,13 +2899,13 @@ const DashboardPage = () => {
               aria-label="add"
               size={dimensions.width < mobile ? 'medium' : 'large'}
               onClick={() => {
-                setMapView('CipI');
                 setDataset('All');
                 setActualTimeInitial(timeInitial);
                 setActualTimeFinal(timeFinal);
-                setControlMapPosition({ coordinates: [0, 0], zoom: 1 });
                 setActualCountry('All');
                 setActualRegion('All');
+                setMapView('CipI');
+                setControlMapPosition({ coordinates: [0, 0], zoom: 1 });
                 setPopulationStructureFilter(1);
                 setAmrClassFilter(amrClassesForFilter[5]);
                 setRDWAGDataviewFilter(2)
@@ -3571,36 +2925,29 @@ const DashboardPage = () => {
             </Fab>
           </TooltipMaterialUI>
         </div>
-      </div>
-      <div className="loading">
-        {dimensions.width > desktop && (
-          <img className="logoImageMenu-loading" src={typhinetLogoImg} alt="TyphiNET" />
-        )}
-        <Loader
-          className="my-loader"
-          type="Circles"
-          color="#D91E45"
-          height={70}
-          width={70}
-        />
-      </div>
-      <div className="info" id="report-info">
-        <p><b>TyphiNET report [{(new Date()).toString().replace(/ *\([^)]*\) */g, "")}]</b></p>
-        <p>This report was generated by the TyphiNET <a href="http://typhi.net">(http://typhi.net)</a> website, a data visualisation platform that draws genome-derived data on antimicrobial resistance and genotypes from Typhi Pathogenwatch <a href="http://pathogen.watch">(http://pathogen.watch)</a>. Data were last updated on [{lastUpdated.toString()}].</p>
-        <p>This report was generated at [{(new Date()).toString().replace(/ *\([^)]*\) */g, "")}] using the beta version of TyphiNET which is still undergoing development and data are not yet complete. For code and further details please see: <a href="https://github.com/zadyson/TyphiNET">https://github.com/zadyson/TyphiNET</a></p>
-        <p className="info-p">The genotypes reported here are defined in <b>Dyson & Holt (2021), J. Infect. Dis.</b></p>
-        <p className="info-p">Antimicrobial resistance determinants are described in the Typhi Pathogenwatch paper, <b>Argimón et al. 2021, Nat. Commun.</b></p>
-        <p>Travel-associated cases are attributed to the country of travel, not the country of isolation (see <b>Ingle et al. 2019, PLoS NTDs</b>).</p>
-        <p>{'TyphiNET presents data aggregated from >100 studies. Individual genome information, including derived genotype and AMR calls, sequence data accession numbers, and source information (PubMedID for citation) can be downloaded as a spreadsheet from the TyphiNET website (typhi.net).'}</p>
-        <p>The TyphiNET dashboard was developed with support from the Wellcome Trust (Open Research Fund, 219692/Z/19/Z) and the EU Horizon 2020 research and innovation programme (Marie Sklodowska-Curie grant #845681).</p>
-        { actualCountry !== "All" && (
-          <div>
-            <p className="info-p"><b>For country report:</b></p>
-            <p>Studies contributing genomes representing infections originating from {actualCountry} have the following PubMed IDs (PMIDs): {countryPMID.join(', ')}.</p>
-          </div>
-        )}
-      </div>
-    </div>
+        {/* Loading */}
+        {
+          loading && (<div className="loading-2">
+            Loading...
+          </div>)
+        }
+      </div >
+      {/* Loading Screen */}
+      {
+        appLoading && (<div className="loading">
+          {dimensions.width > desktop && (
+            <img className="logoImageMenu-loading" src={typhinetLogoImg} alt="TyphiNET" />
+          )}
+          <Loader
+            className="my-loader"
+            type="Circles"
+            color="#D91E45"
+            height={70}
+            width={70}
+          />
+        </div>)
+      }
+    </div >
   );
 };
 

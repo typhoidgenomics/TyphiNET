@@ -1,4 +1,4 @@
-![TyphiNET_Logo](assets/img/logo-typhinet.png)
+![TyphiNET_Logo](assets/img/logo-typhinet-beta.png)
 
 # TyphiNET web dashboard
 
@@ -13,13 +13,19 @@
 ## Table of Contents
 
 * [Description](#Description)
+* [Video demonstration](#Demonstration)
 * [Installation](#Installation)
 
 ## Description
 
-TyphiNET is a dashboard for visualising global *Salmonella* Typhi genotype and antimicrobial resistance data.  Our interface allows you to search for specific data on individual countries, and over specific time periods.  Data are regularly updated (last updated/curation on March 11th 2021) from [Pathogenwatch](https://pathogen.watch/).
+TyphiNET is a dashboard for visualising global *Salmonella* Typhi genotype and antimicrobial resistance data.  Our interface allows you to search for specific data on individual countries, and over specific time periods.  Data are regularly updated (last updated/curation on June 15th 2021) from [Pathogenwatch](https://pathogen.watch/).  
 
-## Installation
+TyphiNET is available at: http://typhi.net 
+
+## Demonstration
+https://user-images.githubusercontent.com/8507671/144901022-3017adcb-30d2-451e-b7b8-421054426d85.mp4
+
+## Installation (for software development purposes only, please visit http://typhi.net for all other purposes)
 
 #### 1. Install <a href="https://git-scm.com/">GIT</a>, <a href="https://www.npmjs.com/get-npm">NPM</a> and <a href="https://www.mongodb.com/try/download/community?tck=docs_server">MongoDB</a>
 
@@ -48,8 +54,6 @@ npm install
 #### 6. Inside the project folder create a file named ```.env```, inside it copy the following code
 
 ```sh
-EMAIL_USER= (insert here the email to which you want to receive the Contact Us messages)
-EMAIL_PASSWD= (password from previous email)
 MONGO_URI= (see item 7 from manual)
 MONGO_URI_ATLAS=(see item 7 from manual to access mongoDB Atlas cloud)
 ```

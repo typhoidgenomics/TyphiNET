@@ -1,9 +1,9 @@
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import Slider from '@material-ui/core/Slider';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import styled from "@emotion/styled";
 
+// CSS like classes
 const useStyles = makeStyles((theme) => ({
     formControlSelect: {
         marginBottom: 12,
@@ -14,15 +14,19 @@ const useStyles = makeStyles((theme) => ({
         },
         '&:not(.Mui-error).MuiInput-underline:after': {
             borderBottomColor: "rgb(31, 187, 211)",
-        }
+        },
     },
-    formControlSelectCountryRegionH: {
+    formControlSelectCountryRegion: {
         marginBottom: 16,
+        marginTop: 2,
+        minWidth: 120,
+        '&.label.Mui-focused': {
+            color: "rgb(31, 187, 211)",
+        },
+        '&:not(.Mui-error).MuiInput-underline:after': {
+            borderBottomColor: "rgb(31, 187, 211)",
+        },
         alignItems: "flex-start"
-    },
-    formControlSelectCountryRegionV: {
-        marginBottom: 16,
-        alignItems: "flex-start",
     },
     select: {
         fontWeight: 600,
@@ -86,29 +90,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const CustomSlider = withStyles({
-    root: {
-        color: "rgb(31, 187, 211)"
-    },
-    thumb: {
-        "&.MuiSlider-thumb": {
-            "&:not(.MuiSlider-active):focus": {
-                boxShadow: "0px 0px 0px 8px rgba(31, 187, 211, 0.16)"
-            },
-            "&:not(.MuiSlider-active):hover": {
-                boxShadow: "0px 0px 0px 8px rgba(31, 187, 211, 0.16)"
-            },
-            "&.MuiSlider-active": {
-                boxShadow: "0px 0px 0px 14px rgba(31, 187, 211, 0.16)"
-            },
-        },
-    },
-    valueLabel: {
-        fontFamily: "Montserrat",
-        fontWeight: 500
-    }
-})(Slider);
-
+// Loading circular progress for the map and charts download buttons
 const CustomCircularProgress = withStyles({
     root: {
         color: "rgb(31, 187, 211)",
@@ -118,6 +100,7 @@ const CustomCircularProgress = withStyles({
     }
 })(CircularProgress);
 
+// Options for dataset ToggleButtonGroup
 const CustomToggleButton = withStyles({
     root: {
         padding: "2px 8px",
@@ -130,6 +113,7 @@ const CustomToggleButton = withStyles({
     }
 })(ToggleButton);
 
+// Wrapper for the ButtonClearSelect component (below)
 const Buttons = styled.div`
   display: flex;
 
@@ -139,6 +123,7 @@ const Buttons = styled.div`
   }
 `;
 
+// 'Clear all' and 'reset' buttons from the dropdowns on RFWG and DRT charts
 const ButtonClearSelect = styled.button`
   background: none;
   border: 1px solid #555;
@@ -162,4 +147,4 @@ const ButtonClearSelect = styled.button`
   }
 `;
 
-export { useStyles, CustomSlider, CustomCircularProgress, CustomToggleButton, Buttons, ButtonClearSelect };
+export { useStyles, CustomCircularProgress, CustomToggleButton, Buttons, ButtonClearSelect };

@@ -5,12 +5,14 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
+// CircularProgress for 'Submit data' and 'Look for changes' dialogs
 const CustomCircularProgress = withStyles({
   root: {
       color: "rgb(31, 187, 211)"
   }
 })(CircularProgress);
 
+// CSS like classes
 const useStyles = makeStyles({
     cellON: {
         backgroundColor: '#e9f9fc'
@@ -23,11 +25,20 @@ const useStyles = makeStyles({
     tablePadding: {
         marginTop: '16px'
     },
+    actionsCell:{
+      borderLeft: '1px solid rgba(224, 224, 224, 1)',
+      backgroundColor: 'white'
+    },
     stickyCell: {
         position: 'sticky',
         right: 0,
         borderLeft: '1px solid rgba(224, 224, 224, 1)',
         backgroundColor: 'white'
+    },
+    actionsHeaderCell: {
+      backgroundColor: 'black',
+      color: 'white',
+      borderLeft: '1px solid rgba(224, 224, 224, 1)'
     },
     stickyHeaderCell: {
         position: 'sticky',
@@ -41,12 +52,13 @@ const useStyles = makeStyles({
         marginBottom: 32
     },
     viewButton: {
-        width: 100
+        width: 80
     },
     resetButton: {
         width: 150,
         height: 40,
-        marginRight: 16
+        marginRight: 16,
+        marginLeft: 16
     },
     uploadButton: {
         width: 150,
@@ -54,8 +66,7 @@ const useStyles = makeStyles({
     },
     checkChangesButton: {
       width: 100,
-      height: 40,
-      marginLeft: 16
+      height: 40
     }, 
     dialog: {
         display: 'flex',
@@ -71,7 +82,9 @@ const useStyles = makeStyles({
     },
     currentData: {
       backgroundColor: 'black',
-      color: 'white'
+      color: 'white',
+      whiteSpace: 'nowrap',
+      paddingRight: 8
     },
     toolbar: {
       backgroundColor: 'black',
@@ -105,7 +118,7 @@ const useStyles = makeStyles({
       textAlign: 'right',
       paddingLeft: 8,
       textAlignLast: 'right',
-      minWidth: 16,
+      minWidth: 50,
       userSelect: 'none',
       borderRadius: 0,
       font: 'inherit',
@@ -116,10 +129,12 @@ const useStyles = makeStyles({
       '&:focus': {
         backgroundColor: 'transparent',
       },
-      marginRight: 12
+      marginRight: 12,
     },
     choosePage: {
-      opacity: 0.87
+      opacity: 0.87,
+      whiteSpace: 'nowrap',
+      paddingLeft: 8
     },
     selectFilter: {
       backgroundColor: 'white',
@@ -139,9 +154,24 @@ const useStyles = makeStyles({
       display: 'flex',
       flexDirection: 'row',
       alignItems: 'flex-start'
-    }
+    },
+    deleteChangeButton: {
+      backgroundColor: 'grey',
+      width: 35,
+      borderRadius: 5,
+      color: 'white',
+      border: '1px solid rgba(0, 0, 0, 0.23)',
+      '&:hover': {
+        color: 'white',
+        backgroundColor: '#4F4F4F'
+      },
+    },
+    // dialogTransition: {
+    //   transition: 'none'
+    // }
   });
 
+// Load button from the changes table
 const ColorButton = withStyles((theme) => ({
     root: {
       backgroundColor: 'grey',
@@ -154,6 +184,7 @@ const ColorButton = withStyles((theme) => ({
     },
 }))(Button);
 
+// 'Reset changes' and 'Add new entry' buttons
 const ColorButton3 = withStyles((theme) => ({
     root: {
       backgroundColor: 'white',
@@ -166,6 +197,7 @@ const ColorButton3 = withStyles((theme) => ({
     },
 }))(Button);
 
+// Submit changes button
 const ColorButton4 = withStyles((theme) => ({
     root: {
       backgroundColor: '#1FBBD3',
@@ -177,6 +209,7 @@ const ColorButton4 = withStyles((theme) => ({
     },
 }))(Button);
 
+// Refresh button
 const ColorButton5 = withStyles((theme) => ({
   root: {
     color: 'black',
@@ -189,6 +222,7 @@ const ColorButton5 = withStyles((theme) => ({
   },
 }))(Button);
 
+// Header cell for both tables
 const StyledHeaderCell = withStyles((theme) => ({
     head: {
       backgroundColor: theme.palette.common.black,
@@ -199,12 +233,14 @@ const StyledHeaderCell = withStyles((theme) => ({
     },
   }))(TableCell);
 
+// Wrapper for data table
 const CustomTableContainer = withStyles((theme) => ({
     root: {
         maxHeight: '600px'
     }
 }))(TableContainer);
 
+// Label for header cells from the data table with order buttons
 const CustomTableSortLabel = withStyles((theme) => ({
     root: {
         color: 'white',
