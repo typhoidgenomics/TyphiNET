@@ -2818,7 +2818,7 @@ const DashboardPage = () => {
               <TooltipMaterialUI title={<span className="my-font">Genome line list - including source information, genome-derived AMR and genotype information, and citations for each genome; pulled from Pathogenwatch.</span>} placement="top">
                 <div className="download-sheet-button" onClick={() => dowloadBaseSpreadsheet()}>
                   <FontAwesomeIcon icon={faTable} style={{ marginRight: 8 }} />
-                  <span>Download database (CSV format)</span>
+                  <span>Download database (CSV format, 2MB)</span>
                 </div>
               </TooltipMaterialUI>
               {/* Download report */}
