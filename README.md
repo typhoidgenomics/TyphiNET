@@ -15,6 +15,7 @@
 * [Description](#Description)
 * [Video demonstration](#Demonstration)
 * [Installation](#Installation)
+* [Funding acknowledgements](#Acknowledgements)
 
 ## Description
 
@@ -65,3 +66,8 @@ MONGO_URI_ATLAS=(see item 7 from manual to access mongoDB Atlas cloud)
 ```sh
 yarn start:prod
 ```
+
+
+## Acknowledgements  
+
+The TyphiNET dashboard is coordinated by Dr Zoe Dyson, Dr Louise Cerdeira & Prof Kat Holt at the London School of Hygiene and Tropical Medicine & Monash University. This project has received funding from the the Wellcome Trust (Open Research Fund, 219692/Z/19/Z) and the European Union's Horizon 2020 research and innovation programme under the Marie Sklodowska-Curie grant agreement No 845681. <img src="https://user-images.githubusercontent.com/8507671/153406979-9462c466-5a65-469e-adb6-14e271fd9e21.jpg" height="30" />
