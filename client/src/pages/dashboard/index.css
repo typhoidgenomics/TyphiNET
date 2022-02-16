@@ -702,7 +702,8 @@
 }
 
 .samples-info-zero-percent {
-  background-color: #727272;
+  /* background-color: #4682b4; */
+  background-color: #4575b4;
 }
 
 .map-legend-DG {

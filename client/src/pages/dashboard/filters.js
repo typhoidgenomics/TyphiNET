@@ -15,7 +15,7 @@ const WMCDTemplate = {
     "TOTAL_OCCURRENCE": 0
 }
 
-function WMCDAux(currentData, data){
+function WMCDAux(currentData, data) {
     currentData = JSON.parse(currentData)
 
     currentData["TOTAL_OCCURRENCE"]++
@@ -54,7 +54,7 @@ function WMCDAux(currentData, data){
     return currentData
 }
 
-function WMCDResults(worldMapComplementaryResults){
+function WMCDResults(worldMapComplementaryResults) {
     worldMapComplementaryResults = JSON.parse(worldMapComplementaryResults)
 
     for (let data in worldMapComplementaryResults) {
@@ -72,11 +72,11 @@ function WMCDResults(worldMapComplementaryResults){
     return worldMapComplementaryResults
 }
 
-function WMCountData(currentData, data, displayName, elementToCount, parentName, childName, h58 = false, other = "", cipI = false){
+function WMCountData(currentData, data, displayName, elementToCount, parentName, childName, h58 = false, other = "", cipI = false) {
     currentData = JSON.parse(currentData)
 
     if (!currentData.some(e => e.name === data.COUNTRY_ONLY)) {
-        currentData.push({ name: data.COUNTRY_ONLY, displayName: displayName, total: 1, [parentName]: [{ [childName]: data[elementToCount], count: 1 }]})
+        currentData.push({ name: data.COUNTRY_ONLY, displayName: displayName, total: 1, [parentName]: [{ [childName]: data[elementToCount], count: 1 }] })
         if (elementToCount !== "GENOTYPE") currentData[currentData.length - 1].percentage = 0
         if (!h58 && elementToCount !== "GENOTYPE") currentData[currentData.length - 1].count = 0
     } else {
@@ -85,8 +85,8 @@ function WMCountData(currentData, data, displayName, elementToCount, parentName,
 
         if (!country[parentName].some(e => e[childName] === data[elementToCount])) {
             country[parentName].push({
-            [childName]: data[elementToCount],
-            count: 1
+                [childName]: data[elementToCount],
+                count: 1
             })
         } else {
             let parent = country[parentName].find(e => e[childName] === data[elementToCount]);
@@ -100,22 +100,22 @@ function WMCountData(currentData, data, displayName, elementToCount, parentName,
             country[parentName].forEach((g, index) => {
                 let percentage = ((g.count / country.total) * 100)
                 if (Math.round(percentage) !== percentage) {
-                  percentage = percentage.toFixed(2)
+                    percentage = percentage.toFixed(2)
                 }
                 g.percentage = percentage
             })
         } else if (other !== "") {
             country[parentName].forEach((item, index) => {
                 if (item[childName] === other) {
-                  let percentage = ((item.count / country.total) * 100)
-                  if (Math.round(percentage) !== percentage) percentage = percentage.toFixed(2)
-                  percentage = parseFloat(percentage);
-                  country.percentage = percentage;
-                  country.count = item.count;
+                    let percentage = ((item.count / country.total) * 100)
+                    if (Math.round(percentage) !== percentage) percentage = percentage.toFixed(2)
+                    percentage = parseFloat(percentage);
+                    country.percentage = percentage;
+                    country.count = item.count;
                 }
             })
-            if (country.percentage === undefined) {country.percentage = parseFloat(0)}
-            if (country.count === undefined) {country.count = 0}
+            if (country.percentage === undefined) { country.percentage = parseFloat(0) }
+            if (country.count === undefined) { country.count = 0 }
         } else if (cipI) {
             let aux = country.CipIs.filter(x => x.type === 'CipI')
             let aux2 = country.CipIs.filter(x => x.type === 'CipR')
@@ -130,37 +130,37 @@ function WMCountData(currentData, data, displayName, elementToCount, parentName,
 
             let percentage = ((aux + aux2) / country.total) * 100
             if (Math.round(percentage) !== percentage)
-            percentage = percentage.toFixed(2)
+                percentage = percentage.toFixed(2)
             percentage = parseFloat(percentage);
             country.percentage = percentage;
             country.count = aux + aux2;
             if (country.percentage === undefined) country.percentage = parseFloat(0)
             if (country.count === undefined) country.count = 0
         }
-    
+
         currentData[countryIndex] = country;
     }
 
     return currentData
 }
 
-function WMCountDataResults(worldMapCurrent, parentName){
+function WMCountDataResults(worldMapCurrent, parentName) {
     worldMapCurrent = JSON.parse(worldMapCurrent)
     worldMapCurrent.forEach((country) => {
-      country[parentName].sort((a, b) => b.count - a.count);
+        country[parentName].sort((a, b) => b.count - a.count);
     })
     worldMapCurrent.sort((a, b) => a.name.localeCompare(b.name));
 
     return worldMapCurrent
 }
 
-function ChartData(RFWGData, DRTData, data){
+function ChartData(RFWGData, DRTData, data) {
     RFWGData = JSON.parse(RFWGData)
     DRTData = JSON.parse(DRTData)
 
     let index = RFWGData.findIndex(x => x.name === data.GENOTYPE)
     if (index === -1) {
-        RFWGData.push({name: data.GENOTYPE, total: 0, totalS: 0})
+        RFWGData.push({ name: data.GENOTYPE, total: 0, totalS: 0 })
         index = RFWGData.length - 1
     }
     RFWGData[index].totalS += 1
@@ -250,16 +250,16 @@ function ChartData(RFWGData, DRTData, data){
     return [RFWGData, DRTData]
 }
 
-function DRTDataResults(DRTData){
+function DRTDataResults(DRTData) {
     DRTData = JSON.parse(DRTData)
     DRTData.forEach(element => {
         const drugsPercentage = {}
         for (const key in element) {
-          if (key !== 'name' && key !== 'total') {
-            const aux = (element[key] * 100) / element.total
-            drugsPercentage[key] = element[key]
-            element[key] = aux
-          }
+            if (key !== 'name' && key !== 'total') {
+                const aux = (element[key] * 100) / element.total
+                drugsPercentage[key] = element[key]
+                element[key] = aux
+            }
         }
         element.drugsPercentage = drugsPercentage
     });
@@ -276,7 +276,7 @@ function AMRData(currentData, data) {
     Object.keys(currentData).forEach(key => {
         let index = currentData[key].findIndex(x => x.genotype === data.GENOTYPE)
         if (index === -1) {
-            currentData[key].push({genotype: data.GENOTYPE, total: 0, total2: 0})
+            currentData[key].push({ genotype: data.GENOTYPE, total: 0, total2: 0 })
             index = currentData[key].length - 1
         }
         if (key === "Azithromycin") {
@@ -286,49 +286,49 @@ function AMRData(currentData, data) {
                 currentData[key][index].total2 += 1
                 if (data["ereA"] === "1" && data["acrB_R717Q"] === "1" && data["acrB_R717L" == "1"]) {
                     const name = "ereA + acrB_R717Q + acrB_R717L"
-                    if ( currentData[key][index][name] === undefined) {currentData[key][index][name] = 1} else {currentData[key][index][name] += 1}
+                    if (currentData[key][index][name] === undefined) { currentData[key][index][name] = 1 } else { currentData[key][index][name] += 1 }
                 } else {
                     if (data["ereA"] === "1" && data["acrB_R717Q"] === "1") {
                         const name = "ereA + acrB_R717Q"
-                        if (currentData[key][index][name] === undefined) {currentData[key][index][name] = 1} else {currentData[key][index][name] += 1}
+                        if (currentData[key][index][name] === undefined) { currentData[key][index][name] = 1 } else { currentData[key][index][name] += 1 }
                     } else if (data["ereA"] === "1" && data["acrB_R717L"] === "1") {
                         const name = "ereA + acrB_R717L"
-                        if (currentData[key][index][name] === undefined) {currentData[key][index][name] = 1} else {currentData[key][index][name] += 1}
+                        if (currentData[key][index][name] === undefined) { currentData[key][index][name] = 1 } else { currentData[key][index][name] += 1 }
                     } else if (data["acrB_R717Q"] === "1" && data["acrB_R717L"] === "1") {
                         const name = "acrB_R717Q + acrB_R717L"
-                        if (currentData[key][index][name] === undefined) {currentData[key][index][name] = 1} else {currentData[key][index][name] += 1}
+                        if (currentData[key][index][name] === undefined) { currentData[key][index][name] = 1 } else { currentData[key][index][name] += 1 }
                     } else if (data["ereA"] === "1") {
                         const name = "ereA"
-                        if (currentData[key][index][name] === undefined) {currentData[key][index][name] = 1} else {currentData[key][index][name] += 1}
+                        if (currentData[key][index][name] === undefined) { currentData[key][index][name] = 1 } else { currentData[key][index][name] += 1 }
                     } else if (data["acrB_R717Q"] === "1") {
                         const name = "acrB_R717Q"
-                        if (currentData[key][index][name] === undefined) {currentData[key][index][name] = 1} else {currentData[key][index][name] += 1}
+                        if (currentData[key][index][name] === undefined) { currentData[key][index][name] = 1 } else { currentData[key][index][name] += 1 }
                     } else if (data["acrB_R717L"] === "1") {
                         const name = "acrB_R717L"
-                        if (currentData[key][index][name] === undefined) {currentData[key][index][name] = 1} else {currentData[key][index][name] += 1}
+                        if (currentData[key][index][name] === undefined) { currentData[key][index][name] = 1 } else { currentData[key][index][name] += 1 }
                     }
                 }
             } else if (AZITH === "AzithS") {
                 currentData[key][index].total2 += 1
                 const name = "None"
-                if (currentData[key][index][name] === undefined) {currentData[key][index][name] = 1} else {currentData[key][index][name] += 1}
+                if (currentData[key][index][name] === undefined) { currentData[key][index][name] = 1 } else { currentData[key][index][name] += 1 }
             }
         } else if (key === "Fluoroquinolones (CipI/R)") {
             const DCS = data["dcs_mechanisms"]
             if (DCS === "0_QRDR") {
                 currentData[key][index].total2 += 1
                 const name = "None (CipS)"
-                if (currentData[key][index][name] === undefined) {currentData[key][index][name] = 1} else {currentData[key][index][name] += 1}
+                if (currentData[key][index][name] === undefined) { currentData[key][index][name] = 1 } else { currentData[key][index][name] += 1 }
             } else if (fluoroR.includes(DCS)) {
                 currentData[key][index].total2 += 1
                 currentData[key][index].total += 1
                 const name = DCS + " (CipR)"
-                if (currentData[key][index][name] === undefined) {currentData[key][index][name] = 1} else {currentData[key][index][name] += 1}
+                if (currentData[key][index][name] === undefined) { currentData[key][index][name] = 1 } else { currentData[key][index][name] += 1 }
             } else if (fluoroI.includes(DCS)) {
                 currentData[key][index].total2 += 1
                 currentData[key][index].total += 1
                 const name = DCS + " (CipI)"
-                if (currentData[key][index][name] === undefined) {currentData[key][index][name] = 1} else {currentData[key][index][name] += 1}
+                if (currentData[key][index][name] === undefined) { currentData[key][index][name] = 1 } else { currentData[key][index][name] += 1 }
             }
         } else if (key === "ESBL") {
             const ESBL = data["ESBL_category"]
@@ -337,24 +337,24 @@ function AMRData(currentData, data) {
                 currentData[key][index].total += 1
                 if (data["blaCTX-M-15_23"] === "1") {
                     const name = "blaCTX-M-15"
-                    if (currentData[key][index][name] === undefined) {currentData[key][index][name] = 1} else {currentData[key][index][name] += 1}
-                } 
+                    if (currentData[key][index][name] === undefined) { currentData[key][index][name] = 1 } else { currentData[key][index][name] += 1 }
+                }
                 if (data["blaOXA-7"] === "1") {
                     const name = "blaOXA-7"
-                    if (currentData[key][index][name] === undefined) {currentData[key][index][name] = 1} else {currentData[key][index][name] += 1}
-                } 
+                    if (currentData[key][index][name] === undefined) { currentData[key][index][name] = 1 } else { currentData[key][index][name] += 1 }
+                }
                 if (data["blaSHV-12"] === "1") {
                     const name = "blaSHV-12"
-                    if (currentData[key][index][name] === undefined) {currentData[key][index][name] = 1} else {currentData[key][index][name] += 1}
-                } 
+                    if (currentData[key][index][name] === undefined) { currentData[key][index][name] = 1 } else { currentData[key][index][name] += 1 }
+                }
                 if (data["blaCTX-M-55"] === "1") {
                     const name = "blaCTX-M-55"
-                    if (currentData[key][index][name] === undefined) {currentData[key][index][name] = 1} else {currentData[key][index][name] += 1}
+                    if (currentData[key][index][name] === undefined) { currentData[key][index][name] = 1 } else { currentData[key][index][name] += 1 }
                 }
             } else if (ESBL === "Non-ESBL") {
                 currentData[key][index].total2 += 1
                 const name = "None"
-                if (currentData[key][index][name] === undefined) {currentData[key][index][name] = 1} else {currentData[key][index][name] += 1}
+                if (currentData[key][index][name] === undefined) { currentData[key][index][name] = 1 } else { currentData[key][index][name] += 1 }
             }
         } else if (key === "Chloramphenicol") {
             const CHLO = data["chloramphenicol_category"]
@@ -363,31 +363,31 @@ function AMRData(currentData, data) {
                 currentData[key][index].total += 1
                 if (data["catA1"] === "1" && data["cmlA"] === "1") {
                     const name = "catA1 + cmlA"
-                    if (currentData[key][index][name] === undefined) {currentData[key][index][name] = 1} else {currentData[key][index][name] += 1}
+                    if (currentData[key][index][name] === undefined) { currentData[key][index][name] = 1 } else { currentData[key][index][name] += 1 }
                 } else {
-                    if (data["catA1"] === "1"){
+                    if (data["catA1"] === "1") {
                         const name = "catA1"
-                        if (currentData[key][index][name] === undefined) {currentData[key][index][name] = 1} else {currentData[key][index][name] += 1}
+                        if (currentData[key][index][name] === undefined) { currentData[key][index][name] = 1 } else { currentData[key][index][name] += 1 }
                     }
                     if (data["cmlA"] === "1") {
                         const name = "cmlA"
-                        if (currentData[key][index][name] === undefined) {currentData[key][index][name] = 1} else {currentData[key][index][name] += 1}
+                        if (currentData[key][index][name] === undefined) { currentData[key][index][name] = 1 } else { currentData[key][index][name] += 1 }
                     }
                 }
             } else if (CHLO === "ChlS") {
                 currentData[key][index].total2 += 1
                 const name = "None"
-                if (currentData[key][index][name] === undefined) {currentData[key][index][name] = 1} else {currentData[key][index][name] += 1}
+                if (currentData[key][index][name] === undefined) { currentData[key][index][name] = 1 } else { currentData[key][index][name] += 1 }
             }
         } else if (key === "Ampicillin") {
             currentData[key][index].total2 += 1
             if (data["blaTEM-1D"] === "1") {
                 currentData[key][index].total += 1
                 const name = "blaTEM-1D"
-                if (currentData[key][index][name] === undefined) {currentData[key][index][name] = 1} else {currentData[key][index][name] += 1}
+                if (currentData[key][index][name] === undefined) { currentData[key][index][name] = 1 } else { currentData[key][index][name] += 1 }
             } else {
                 const name = "None"
-                if (currentData[key][index][name] === undefined) {currentData[key][index][name] = 1} else {currentData[key][index][name] += 1}
+                if (currentData[key][index][name] === undefined) { currentData[key][index][name] = 1 } else { currentData[key][index][name] += 1 }
             }
         } else if (key === "Co-trimoxazole") {
             const COTRIM = data["co_trim"]
@@ -407,12 +407,12 @@ function AMRData(currentData, data) {
                     genes.push("sul2")
                 }
                 const name = genes.join(' + ')
-                if (currentData[key][index][name] === undefined) {currentData[key][index][name] = 1} else {currentData[key][index][name] += 1}
-                
+                if (currentData[key][index][name] === undefined) { currentData[key][index][name] = 1 } else { currentData[key][index][name] += 1 }
+
             } else if (COTRIM === "0") {
                 currentData[key][index].total2 += 1
                 const name = "None"
-                if (currentData[key][index][name] === undefined) {currentData[key][index][name] = 1} else {currentData[key][index][name] += 1}
+                if (currentData[key][index][name] === undefined) { currentData[key][index][name] = 1 } else { currentData[key][index][name] += 1 }
             }
         } else if (key === "Sulphonamides") {
             const SULPH = data["sul_any"]
@@ -421,20 +421,20 @@ function AMRData(currentData, data) {
                 currentData[key][index].total += 1
                 if (data["sul1"] === "1" && data["sul2"] === "1") {
                     const name = "sul1 + sul2"
-                    if (currentData[key][index][name] === undefined) {currentData[key][index][name] = 1} else {currentData[key][index][name] += 1}
+                    if (currentData[key][index][name] === undefined) { currentData[key][index][name] = 1 } else { currentData[key][index][name] += 1 }
                 }
                 else if (data["sul1"] === "1") {
                     const name = "sul1"
-                    if (currentData[key][index][name] === undefined) {currentData[key][index][name] = 1} else {currentData[key][index][name] += 1}
+                    if (currentData[key][index][name] === undefined) { currentData[key][index][name] = 1 } else { currentData[key][index][name] += 1 }
                 }
                 else if (data["sul2"] === "1") {
                     const name = "sul2"
-                    if (currentData[key][index][name] === undefined) {currentData[key][index][name] = 1} else {currentData[key][index][name] += 1}
+                    if (currentData[key][index][name] === undefined) { currentData[key][index][name] = 1 } else { currentData[key][index][name] += 1 }
                 }
             } else if (SULPH === "0") {
                 currentData[key][index].total2 += 1
                 const name = "None"
-                if (currentData[key][index][name] === undefined) {currentData[key][index][name] = 1} else {currentData[key][index][name] += 1}
+                if (currentData[key][index][name] === undefined) { currentData[key][index][name] = 1 } else { currentData[key][index][name] += 1 }
             }
         } else if (key === "Trimethoprim") {
             const TRIM = data["dfra_any"]
@@ -443,12 +443,12 @@ function AMRData(currentData, data) {
                 currentData[key][index].total += 1
                 if (data["dfrA7"] === "1" && data["dfrA14"] === "1") {
                     const name = "dfrA7 + dfrA14"
-                    if (currentData[key][index][name] === undefined) {currentData[key][index][name] = 1} else {currentData[key][index][name] += 1}
+                    if (currentData[key][index][name] === undefined) { currentData[key][index][name] = 1 } else { currentData[key][index][name] += 1 }
                 } else {
                     for (const i in trime) {
                         if (data[trime[i]] === "1") {
                             const name = trime[i]
-                            if (currentData[key][index][name] === undefined) {currentData[key][index][name] = 1} else {currentData[key][index][name] += 1}
+                            if (currentData[key][index][name] === undefined) { currentData[key][index][name] = 1 } else { currentData[key][index][name] += 1 }
                             break
                         }
                     }
@@ -456,7 +456,7 @@ function AMRData(currentData, data) {
             } else if (TRIM === "0") {
                 currentData[key][index].total2 += 1
                 const name = "None"
-                if (currentData[key][index][name] === undefined) {currentData[key][index][name] = 1} else {currentData[key][index][name] += 1}
+                if (currentData[key][index][name] === undefined) { currentData[key][index][name] = 1 } else { currentData[key][index][name] += 1 }
             }
         } else if (key === "Tetracyclines") {
             const TETRA = data["tetracycline_category"]
@@ -465,24 +465,24 @@ function AMRData(currentData, data) {
                 currentData[key][index].total += 1
                 if (data["tetA(A)"] === "1") {
                     const name = "tetA(A)"
-                    if (currentData[key][index][name] === undefined) {currentData[key][index][name] = 1} else {currentData[key][index][name] += 1}
+                    if (currentData[key][index][name] === undefined) { currentData[key][index][name] = 1 } else { currentData[key][index][name] += 1 }
                 }
                 if (data["tetA(B)"] === "1") {
                     const name = "tetA(B)"
-                    if (currentData[key][index][name] === undefined) {currentData[key][index][name] = 1} else {currentData[key][index][name] += 1}
+                    if (currentData[key][index][name] === undefined) { currentData[key][index][name] = 1 } else { currentData[key][index][name] += 1 }
                 }
                 if (data["tetA(C)"] === "1") {
                     const name = "tetA(C)"
-                    if (currentData[key][index][name] === undefined) {currentData[key][index][name] = 1} else {currentData[key][index][name] += 1}
+                    if (currentData[key][index][name] === undefined) { currentData[key][index][name] = 1 } else { currentData[key][index][name] += 1 }
                 }
                 if (data["tetA(D)"] === "1") {
                     const name = "tetA(D)"
-                    if (currentData[key][index][name] === undefined) {currentData[key][index][name] = 1} else {currentData[key][index][name] += 1}
+                    if (currentData[key][index][name] === undefined) { currentData[key][index][name] = 1 } else { currentData[key][index][name] += 1 }
                 }
             } else if (TETRA === "TetS") {
                 currentData[key][index].total2 += 1
                 const name = "None"
-                if (currentData[key][index][name] === undefined) {currentData[key][index][name] = 1} else {currentData[key][index][name] += 1}
+                if (currentData[key][index][name] === undefined) { currentData[key][index][name] = 1 } else { currentData[key][index][name] += 1 }
             }
         }
     })
@@ -490,7 +490,7 @@ function AMRData(currentData, data) {
     return currentData
 }
 
-function AMRDataResults (AMRData) {
+function AMRDataResults(AMRData) {
     AMRData = JSON.parse(AMRData)
 
     Object.keys(AMRData).forEach(key => {
@@ -538,11 +538,11 @@ function GDData(currentData, data) {
         if (currentData[index][data.GENOTYPE] === undefined) currentData[index][data.GENOTYPE] = 1
         else currentData[index][data.GENOTYPE] += 1
     }
-      
+
     return currentData
 }
 
-export function filterForComponents({country, minYear, maxYear, dataset, region, data, amr}) {
+export function filterForComponents({ country, minYear, maxYear, dataset, region, data, amr }) {
     const [results, genotypes, worldMapResults, PMIDResults] = [[], [], [], []]
     let [aux, auxWM, worldMapComplementaryResults, worldMapG, worldMapH58, worldMapSTAD, worldMapMDR, worldMapXDR, worldMapAZITH, worldMapCIPR, worldMapCIPI, RFWGResults, DRTResults, AMRResults, GDResults] = [null, null, {}, [], [], [], [], [], [], [], [], [], [], {}, []]
     AMRResults = { "Ampicillin": [], "Azithromycin": [], "Chloramphenicol": [], "Co-trimoxazole": [], "ESBL": [], "Fluoroquinolones (CipI/R)": [], "Sulphonamides": [], "Tetracyclines": [], "Trimethoprim": [] }
@@ -585,7 +585,7 @@ export function filterForComponents({country, minYear, maxYear, dataset, region,
             // WORLD MAP COMPLEMENTARY DATA FOR WORLD MAP (lines 572-583)
             if (worldMapComplementaryResults[displayName] === undefined) worldMapComplementaryResults[displayName] = WMCDTemplate
             worldMapComplementaryResults[displayName] = WMCDAux(JSON.stringify(worldMapComplementaryResults[displayName]), x)
-            
+
             // WORLD MAP DATA FOR EACH MAPVIEW
             worldMapG = WMCountData(JSON.stringify(worldMapG), x, displayName, "GENOTYPE", "genotypes", "lineage")
             worldMapH58 = WMCountData(JSON.stringify(worldMapH58), x, displayName, "GENOTYPE_SIMPLE", "genotypes", "type", true)
