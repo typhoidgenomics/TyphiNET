@@ -199,9 +199,30 @@ const DashboardPage = () => {
   }
 
   // Red color scale for some of the map's views
-  const [mapRedColorScale] = useState(() => scaleLinear()
-    .domain([0, 50, 100])
-    .range(["#ffebee", "#f44336", "#b71c1c"]));
+  // const [mapRedColorScale] = useState(() => scaleLinear()
+  //   .domain([0, 50, 100])
+  //   .range(["#ffebee", "#f44336", "#b71c1c"]));
+  const mapRedColorScale = (percentage) => {
+    const p = parseInt(percentage)
+    // if (p >= 51) {
+    //   return '#a6611a'
+    // } else if (p >= 11) {
+    //   return '#fdb863'
+    // } else if (p >= 3) {
+    //   return '#dfc27d'
+    // } else {
+    //   return '#1e90ff'
+    // }
+    if (p >= 51) {
+      return '#fc8d59'
+    } else if (p >= 11) {
+      return '#fee090'
+    } else if (p >= 3) {
+      return '#addd8e'
+    } else {
+      return '#91bfdb'
+    }
+  }
 
   // Tooltip for all graphs but the Resistance determinants within genotypes
   const tooltip = React.useCallback((positionY, width1, width2, sort, wrapperS, stroke, chart = -1) => {
@@ -228,6 +249,8 @@ const DashboardPage = () => {
                     {chart === 0 && (<span className="my-tooltip-title-total">{"N = " + (payload[0].payload.totalS)}</span>)}
                     {chart === 4 && (<span className="my-tooltip-title-total">{"N = " + (payload[0].payload.quantities.totalS)}</span>)}
                     {chart === 1 && (<span className="my-tooltip-title-total">{"N = " + payload[0].payload.total}</span>)}
+                    {chart === 2 && (<span className="my-tooltip-title-total">{"N = " + payload[0].payload.total}</span>)}
+                    {chart === 3 && (<span className="my-tooltip-title-total">{"N = " + payload[0].payload.total}</span>)}
                   </div>
                   <div className="my-tooltip-content" style={{ width: width1 }}>
                     {payload.reverse().map((item, index) => {
@@ -319,7 +342,7 @@ const DashboardPage = () => {
                 }}
               />
 
-              {tooltip([290, 290, 260], dimensions.width < 620 ? 250 : 530, dimensions.width > 620 ? "20%" : "50%", false, { zIndex: 100, top: 20, right: -20 }, false)}
+              {tooltip([290, 290, 260], dimensions.width < 620 ? 250 : 530, dimensions.width > 620 ? "20%" : "50%", false, { zIndex: 100, top: 20, right: -20 }, false, 2)}
               {genotypes.map((item, i) => <Bar key={i + "PSC_Q"} dataKey={item} stackId={0} fill={getColorForGenotype(item)} />)}
             </BarChart>
           </ResponsiveContainer>
@@ -405,7 +428,10 @@ const DashboardPage = () => {
               if (active) {
                 return (
                   <div className="my-tooltip">
-                    <span className="my-tooltip-title-label">{label}</span>
+                    <div className="my-tooltip-title">
+                      <span className="my-tooltip-title-label">{label}</span>
+                      <span className="my-tooltip-title-total">{"N = " + payload[0].payload.total2}</span>
+                    </div>
                     <div className="my-tooltip-content amr-tooltip-content">
                       {payload.reverse().map((item, index) => {
                         let percentage
@@ -993,7 +1019,7 @@ const DashboardPage = () => {
           actualMapView = "Azithromycin resistant"
           break;
         case "CipI":
-          actualMapView = "Ciprofloxacin insusceptible and resistant (CipI/R)"
+          actualMapView = "Ciprofloxacin nonsusceptible (CipI/R)"
           break;
         case "CipR":
           actualMapView = "Ciprofloxacin resistant (CipR)"
@@ -1295,7 +1321,7 @@ const DashboardPage = () => {
               actualMapView = "Azithromycin resistant"
               break;
             case "CipI":
-              actualMapView = "Ciprofloxacin insusceptible and resistant (CipI/R)"
+              actualMapView = "Ciprofloxacin nonsusceptible (CipI/R)"
               break;
             case "CipR":
               actualMapView = "Ciprofloxacin resistant (CipR)"
@@ -1400,7 +1426,7 @@ const DashboardPage = () => {
           newCSV += aux
         }
 
-        console.log(newCSV);
+        // console.log(newCSV);
         download(newCSV, 'TyphiNET_Database.csv');
       })
   })
@@ -1411,7 +1437,8 @@ const DashboardPage = () => {
 
   // Component for map view's options
   const generateMapLegendOptions = () => {
-    let percentageSteps = ['1', '25', '50', '75']
+    // let percentageSteps = ['1', '2', '10', '50']
+    let percentageSteps = ['1', '3', '11', '51']
     const otherViews = ['CipI', 'CipR', 'Azith', 'Sensitive to all drugs', 'MDR', 'XDR']
 
     if (otherViews.includes(mapView)) {
@@ -1429,10 +1456,14 @@ const DashboardPage = () => {
             return (
               <div key={n} className="samples-info">
                 <div className="color" style={{ backgroundColor: mapRedColorScale(n) }} />
-                {n === "1" && (<span>{'1 - 25'}%</span>)}
-                {n === "25" && (<span>{'26 - 50'}%</span>)}
-                {n === "50" && (<span>{'51 - 75'}%</span>)}
-                {n === "75" && (<span>{'76 - 100'}%</span>)}
+                {/* {n === "1" && (<span>{'1 - 2'}%</span>)}
+                {n === "2" && (<span>{'3 - 10'}%</span>)}
+                {n === "10" && (<span>{'11 - 50'}%</span>)}
+                {n === "50" && (<span>{'51 - 100'}%</span>)} */}
+                {n === "1" && (<span>{'1 - 2'}%</span>)}
+                {n === "3" && (<span>{'3 - 10'}%</span>)}
+                {n === "11" && (<span>{'11 - 50'}%</span>)}
+                {n === "51" && (<span>{'51 - 100'}%</span>)}
               </div>
             )
           })}
@@ -1492,10 +1523,14 @@ const DashboardPage = () => {
               return (
                 <div key={n + "H58"} className="samples-info">
                   <div className="color" style={{ backgroundColor: mapRedColorScale(g) }} />
-                  {g === "1" && (<span>{'1 - 25'}%</span>)}
-                  {g === "25" && (<span>{'26 - 50'}%</span>)}
-                  {g === "50" && (<span>{'51 - 75'}%</span>)}
-                  {g === "75" && (<span>{'76 - 100'}%</span>)}
+                  {/* {g === "1" && (<span>{'1 - 2'}%</span>)}
+                  {g === "2" && (<span>{'3 - 10'}%</span>)}
+                  {g === "10" && (<span>{'11 - 50'}%</span>)}
+                  {g === "50" && (<span>{'51 - 100'}%</span>)} */}
+                  {g === "1" && (<span>{'1 - 2'}%</span>)}
+                  {g === "3" && (<span>{'3 - 10'}%</span>)}
+                  {g === "11" && (<span>{'11 - 50'}%</span>)}
+                  {g === "51" && (<span>{'51 - 100'}%</span>)}
                 </div>
               )
             })}
@@ -1510,7 +1545,7 @@ const DashboardPage = () => {
   const renderMapLegend = () => {
     const mapLegends = [
       ['MDR', 'Multidrug resistant (MDR)'], ['XDR', 'Extensively drug resistant (XDR)'], ['Azith', 'Azithromycin resistant'],
-      ['CipI', 'Ciprofloxacin insusceptible and resistant (CipI/R)'], ['CipR', 'Ciprofloxacin resistant (CipR)'], ['Sensitive to all drugs', 'Sensitive to all drugs'],
+      ['CipI', 'Ciprofloxacin nonsusceptible (CipI/R)'], ['CipR', 'Ciprofloxacin resistant (CipR)'], ['Sensitive to all drugs', 'Sensitive to all drugs'],
       ['Dominant Genotype', 'Dominant Genotype'], ['H58 / Non-H58', 'H58 genotype'], ['No. Samples', 'No. Samples']
     ]
     return (
@@ -1560,7 +1595,7 @@ const DashboardPage = () => {
   useEffect(() => {
     axios.get(`${API_ENDPOINT}filters/getDataFromCSV`)
       .then((res) => {
-        console.log('Getting Data');
+        // console.log('Getting Data');
         setData(res.data)
         setTotalGenomes(res.data.length)
 
@@ -1592,7 +1627,7 @@ const DashboardPage = () => {
         setCountriesForFilter(auxCountries)
         setAllCountryRegions(auxRegions)
 
-        console.log('FINISH');
+        // console.log('FINISH');
         setInit(true)
       })
   }, [])
@@ -1616,7 +1651,7 @@ const DashboardPage = () => {
   // This triggers the function below this one (filterForComponents) and updates the data shown on the page
   useEffect(() => {
     if (init) {
-      console.log('Something changed');
+      // console.log('Something changed');
       setLoading(true)
     }
   }, [init, dataset, actualTimeInitial, actualTimeFinal, actualCountry, actualRegion])
@@ -1625,7 +1660,7 @@ const DashboardPage = () => {
   useEffect(() => {
     function update() {
       if (init && loading) {
-        console.log('Updating...');
+        // console.log('Updating...');
         const aux = filterForComponents(
           {
             data: data,
@@ -1741,7 +1776,9 @@ const DashboardPage = () => {
                         let country
 
                         let fill = "lightgrey"
-                        let darkGray = "#727272"
+                        // let darkGray = "#727272"
+                        // let darkGray = "#4682b4"
+                        let darkGray = "#4575b4"
 
                         switch (mapView) {
                           case 'No. Samples':
@@ -2473,7 +2510,7 @@ const DashboardPage = () => {
             </FormControl>
             {dimensions.width > 560 && <div className="country-region-spacer"></div>}
             {/* Select region dropdown */}
-            <FormControl className={`${classes.formControlSelectCountryRegion}`}>
+            {/* <FormControl className={`${classes.formControlSelectCountryRegion}`}>
               <label className="select-country-label">Select region</label>
               <Select
                 value={actualRegion}
@@ -2489,7 +2526,7 @@ const DashboardPage = () => {
                   )
                 })}
               </Select>
-            </FormControl>
+            </FormControl> */}
           </div>
           {/* Charts */}
           <div className="chart-wrapper-div">
@@ -2844,14 +2881,14 @@ const DashboardPage = () => {
         <div className="about-wrapper">
           <h2>About TyphiNET</h2>
           <p>
-            The TyphiNET dashboard collates antimicrobial resistance (AMR) and genotype (lineage) information extracted from whole genome sequence (WGS) data from the bacterial pathogen <i>Salmonella</i> Typhi, the agent of typhoid fever. Data are sourced monthly from Typhoid <a href="https://pathogen.watch/" target="_blank" rel="noreferrer">Pathogenwatch</a>. Information on genotype definitions and population structure can be found in <a href="https://www.nature.com/articles/ncomms12827" target="_blank" rel="noreferrer">Wong et al, 2016</a>, and details of AMR determinants in <a href="https://www.nature.com/articles/s41467-021-23091-2" target="_blank" rel="noreferrer">Argimon et al, 2021</a>. (CipI/R = decreased ciprofloxacin susceptibility).
+            The TyphiNET dashboard collates antimicrobial resistance (AMR) and genotype (lineage) information extracted from whole genome sequence (WGS) data from the bacterial pathogen <i>Salmonella</i> Typhi, the agent of typhoid fever. Data are sourced monthly from Typhoid <a href="https://pathogen.watch/" target="_blank" rel="noreferrer">Pathogenwatch</a>. Information on genotype definitions and population structure can be found in <a href="https://www.nature.com/articles/ncomms12827" target="_blank" rel="noreferrer">Wong et al, 2016</a>, and details of AMR determinants in <a href="https://www.nature.com/articles/s41467-021-23091-2" target="_blank" rel="noreferrer">Argimon et al, 2021</a>. (CipI/R = ciprofloxacin nonsusceptible).
           </p>
           <p>
             The TyphiNET dashboard is coordinated by Dr Zoe Dyson, Dr Louise Cerdeira &amp; Prof Kat Holt at the <a href="https://www.lshtm.ac.uk/" target="_blank" rel="noreferrer">London School of Hygiene and Tropical Medicine</a> &amp; <a href="https://www.monash.edu/" target="_blank" rel="noreferrer">Monash University</a>. This project has received funding from the the Wellcome Trust (Open Research Fund, 219692/Z/19/Z) and the  European Union's Horizon 2020 research and innovation programme under the Marie Sklodowska-Curie grant agreement No 845681.
             <img className="euFlagImage" src={euFlagImg} alt="EU_FLAG" height="20" />
           </p>
           <p>
-            <b>Note: This is a beta version, data are incomplete</b>.
+            <b>Note: This is a beta version. Data are incomplete and, for some countries, include biased sampling frames. And will be addressed in an upcoming release.</b>
           </p>
         </div>
         {/* Footer */}

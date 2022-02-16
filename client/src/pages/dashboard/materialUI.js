@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
         '&:not(.Mui-error).MuiInput-underline:after': {
             borderBottomColor: "rgb(31, 187, 211)",
         },
-        alignItems: "flex-start"
+        alignItems: "center"
     },
     select: {
         fontWeight: 600,
