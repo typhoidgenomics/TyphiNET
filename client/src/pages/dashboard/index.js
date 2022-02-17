@@ -2888,7 +2888,7 @@ const DashboardPage = () => {
             <img className="euFlagImage" src={euFlagImg} alt="EU_FLAG" height="20" />
           </p>
           <p>
-            <b>Note: This is a beta version. Data are incomplete and, for some countries, include biased sampling frames. And will be addressed in an upcoming release.</b>
+            <b>Note: This is a beta version. Data are incomplete and, for some countries, include biased sampling frames. This will be addressed in an upcoming release.</b>
           </p>
         </div>
         {/* Footer */}
