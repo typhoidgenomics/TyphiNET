@@ -198,29 +198,16 @@ const DashboardPage = () => {
     }
   }
 
-  // Red color scale for some of the map's views
-  // const [mapRedColorScale] = useState(() => scaleLinear()
-  //   .domain([0, 50, 100])
-  //   .range(["#ffebee", "#f44336", "#b71c1c"]));
   const mapRedColorScale = (percentage) => {
     const p = parseInt(percentage)
-    // if (p >= 51) {
-    //   return '#a6611a'
-    // } else if (p >= 11) {
-    //   return '#fdb863'
-    // } else if (p >= 3) {
-    //   return '#dfc27d'
-    // } else {
-    //   return '#1e90ff'
-    // }
     if (p >= 51) {
-      return '#fc8d59'
+      return '#A20F17'
     } else if (p >= 11) {
-      return '#fee090'
+      return '#DD2C24'
     } else if (p >= 3) {
-      return '#addd8e'
+      return '#FA694A'
     } else {
-      return '#91bfdb'
+      return '#FAAD8F'
     }
   }
 
@@ -1391,7 +1378,6 @@ const DashboardPage = () => {
             lines.push(line)
           }
         }
-        // console.log(lines);
 
         for (let index = 0; index < cols_to_remove.length; index++) {
           let currentIndex = lines[0].indexOf(cols_to_remove[index])
@@ -1426,7 +1412,6 @@ const DashboardPage = () => {
           newCSV += aux
         }
 
-        // console.log(newCSV);
         download(newCSV, 'TyphiNET_Database.csv');
       })
   })
@@ -1456,10 +1441,6 @@ const DashboardPage = () => {
             return (
               <div key={n} className="samples-info">
                 <div className="color" style={{ backgroundColor: mapRedColorScale(n) }} />
-                {/* {n === "1" && (<span>{'1 - 2'}%</span>)}
-                {n === "2" && (<span>{'3 - 10'}%</span>)}
-                {n === "10" && (<span>{'11 - 50'}%</span>)}
-                {n === "50" && (<span>{'51 - 100'}%</span>)} */}
                 {n === "1" && (<span>{'1 - 2'}%</span>)}
                 {n === "3" && (<span>{'3 - 10'}%</span>)}
                 {n === "11" && (<span>{'11 - 50'}%</span>)}
@@ -1523,10 +1504,6 @@ const DashboardPage = () => {
               return (
                 <div key={n + "H58"} className="samples-info">
                   <div className="color" style={{ backgroundColor: mapRedColorScale(g) }} />
-                  {/* {g === "1" && (<span>{'1 - 2'}%</span>)}
-                  {g === "2" && (<span>{'3 - 10'}%</span>)}
-                  {g === "10" && (<span>{'11 - 50'}%</span>)}
-                  {g === "50" && (<span>{'51 - 100'}%</span>)} */}
                   {g === "1" && (<span>{'1 - 2'}%</span>)}
                   {g === "3" && (<span>{'3 - 10'}%</span>)}
                   {g === "11" && (<span>{'11 - 50'}%</span>)}
@@ -1776,9 +1753,7 @@ const DashboardPage = () => {
                         let country
 
                         let fill = "lightgrey"
-                        // let darkGray = "#727272"
-                        // let darkGray = "#4682b4"
-                        let darkGray = "#4575b4"
+                        let darkGray = "#727272"
 
                         switch (mapView) {
                           case 'No. Samples':
