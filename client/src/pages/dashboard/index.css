@@ -702,8 +702,7 @@
 }
 
 .samples-info-zero-percent {
-  /* background-color: #727272; */
-  background-color: #4575b4;
+  background-color: #727272;
 }
 
 .map-legend-DG {
@@ -975,4 +974,8 @@
 
 .euFlagImage {
   margin-left: 5px;
+}
+
+.chartWidth{
+  width: 90%;
 }
