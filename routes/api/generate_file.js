@@ -353,7 +353,7 @@ router.get("/create", function (req, res) {
               obj_parser["tetracycline_category"] = "TetS";
             }
           }
-          if (column_names.indexOf("qnrS") != -1) {
+          if (file === "pw_amr-genes.csv") {
             if (obj_parser["cip_pheno_qrdr_gene"] == undefined) {
               obj_parser["cip_pheno_qrdr_gene"] =
                 data["qnrS"].toString() + data["qnrB"].toString();
@@ -384,8 +384,11 @@ router.get("/create", function (req, res) {
                 obj_parser["dcs_mechanisms"] =
                   obj_parser["dcs_mechanisms"] + `_QRDR + qnrB`;
               } else {
-                obj_parser["dcs_mechanisms"] =
-                  obj_parser["dcs_mechanisms"] + `_QRDR`;
+                let auxDCS = obj_parser["dcs_mechanisms"];
+                if (!(typeof auxDCS === "string" && auxDCS.includes("QRDR"))) {
+                  obj_parser["dcs_mechanisms"] =
+                    obj_parser["dcs_mechanisms"] + `_QRDR`;
+                }
               }
             }
           }
@@ -597,6 +600,7 @@ router.get("/create", function (req, res) {
         });
 
         let temp = [];
+        let tempAll = [];
 
         for (let d = 0; d < data_to_write.length; d++) {
           if (!["", undefined].includes(data_to_write[d]["num_qrdr"])) {
@@ -630,14 +634,24 @@ router.get("/create", function (req, res) {
             }
           }
           if (
+            data_to_write[d]["cip_pred_pheno"] === "CipI" ||
+            data_to_write[d]["cip_pred_pheno"] === "CipR"
+          ) {
+            data_to_write[d]["dcs_category"] = "DCS";
+          } else {
+            data_to_write[d]["dcs_category"] = "CipS";
+          }
+          if (
             !empty.includes(data_to_write[d]["DATE"]) &&
             !empty.includes(data_to_write[d]["COUNTRY_ONLY"]) &&
             data_to_write[d]["PURPOSE OF SAMPLING"].includes("Non Targeted")
           ) {
             temp.push(data_to_write[d]);
           }
+          tempAll.push(data_to_write[d]);
         }
         await Tools.CreateFile(temp, "clean.csv");
+        await Tools.CreateFile(tempAll, "cleanAll.csv");
       });
   }
   return res.json({ Finished: "All done!" });

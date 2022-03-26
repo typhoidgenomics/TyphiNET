@@ -1,4 +1,4 @@
-![TyphiNET_Logo](assets/img/logo-typhinet-prod.png)
+![TyphiNET_Logo](assets/img/logo-typhinet-beta.png)
 
 # TyphiNET web dashboard
 

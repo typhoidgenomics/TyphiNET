@@ -255,7 +255,7 @@ function ChartData(RFWGData, DRTData, data) {
     else currentRFWG["Azithromycin"] += 1;
     currentDRT["Azithromycin"] += 1;
   }
-  if (data["dcs_category"] === "DCS") {
+  if (data["cip_pred_pheno"] === "CipR" || data["cip_pred_pheno"] === "CipI") {
     if (currentRFWG["Fluoroquinolones (CipI/R)"] === undefined)
       currentRFWG["Fluoroquinolones (CipI/R)"] = 1;
     else currentRFWG["Fluoroquinolones (CipI/R)"] += 1;
@@ -470,6 +470,8 @@ function AMRData(currentData, data) {
         } else {
           currentData[key][index][name] += 1;
         }
+      } else {
+        console.log(currentData[key][index], DCS);
       }
     } else if (key === "ESBL") {
       const ESBL = data["ESBL_category"];
@@ -873,8 +875,19 @@ export function filterForComponents({
         displayName = "Dem. Rep. Congo";
       else if (x.COUNTRY_ONLY === "Central African Republic")
         displayName = "Central African Rep.";
-      else if (x.COUNTRY_ONLY === "Ivory Coast") displayName = "Côte d'Ivoire";
+      else if (
+        x.COUNTRY_ONLY === "Ivory Coast" ||
+        x.COUNTRY_ONLY === "Cote d'Ivoire"
+      )
+        displayName = "Côte d'Ivoire";
       else if (x.COUNTRY_ONLY === "East Timor") displayName = "Timor-Leste";
+      else if (x.COUNTRY_ONLY === "State of Palestine")
+        displayName = "Palestine";
+      else if (x.COUNTRY_ONLY === "Dominican Republic")
+        displayName = "Dominican Rep.";
+      else if (x.COUNTRY_ONLY === "Viet Nam") displayName = "Vietnam";
+      else if (x.COUNTRY_ONLY === "USA")
+        displayName = "United States of America";
 
       // WORLD MAP
       if (!worldMapResults.some((e) => e.name === x.COUNTRY_ONLY)) {
