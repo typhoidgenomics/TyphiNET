@@ -356,6 +356,9 @@ const DashboardPage = () => {
       "3.5.2",
       "3.5.3",
       "3.5.4",
+      "3.5.4.1",
+      "3.5.4.2",
+      "3.5.4.3",
       "4",
       "4.1",
       "4.1.1",
@@ -370,6 +373,8 @@ const DashboardPage = () => {
       "4.3.1.2",
       "4.3.1.2.EA2",
       "4.3.1.2.EA3",
+      "4.3.1.2.1",
+      "4.3.1.2.1.1",
       "4.3.1.3",
       "4.3.1.3.Bdq",
     ].sort((a, b) => a.localeCompare(b))
@@ -1731,7 +1736,7 @@ const DashboardPage = () => {
       const paragraph1 = `This report was generated at [${formatDate(
         new Date()
       )}] using TyphiNET (http://typhi.net), a data data visualisation platform that draws genome-derived data on antimicrobial resistance and genotypes from Typhi Pathogenwatch (http://pathogen.watch).`;
-      const paragraph2 = `TyphiNET data were last updated on October 10 2022. For code and further details please see: https://github.com/zadyson/TyphiNET.`;
+      const paragraph2 = `TyphiNET data were last updated on October 02 2023. For code and further details please see: https://github.com/zadyson/TyphiNET.`;
       const paragraph3 = `The genotypes reported here are defined in Dyson & Holt (2021), J. Infect. Dis.`;
       const paragraph4 = `Antimicrobial resistance determinants are described in the Typhi Pathogenwatch paper, Argimón et al. 2021, Nat. Commun.`;
       const paragraph5 = `Travel-associated cases are attributed to the country of travel, not the country of isolation (see Ingle et al. 2019, PLoS NTDs).`;
@@ -4403,7 +4408,7 @@ const DashboardPage = () => {
                   onClick={() => dowloadBaseSpreadsheet()}
                 >
                   <FontAwesomeIcon icon={faTable} style={{ marginRight: 8 }} />
-                  <span>Download database (CSV format, 3.5MB)</span>
+                  <span>Download database (CSV format, 7.2MB)</span>
                 </div>
               </TooltipMaterialUI>
               {/* Download report */}
@@ -4613,7 +4618,7 @@ const DashboardPage = () => {
             <a href="https://pathogen.watch" rel="noreferrer" target="_blank">
               pathogen watch project
             </a>{" "}
-            on 10/10/2022.{" "}
+            on 21/02/2023.{" "}
             <a href="https://holtlab.net" rel="noreferrer" target="_blank">
               Holt Lab
             </a>
