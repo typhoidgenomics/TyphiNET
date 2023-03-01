@@ -1,0 +1,29 @@
+.contact {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.contact .row {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 767px) {
+  .contact {
+    width: unset;
+    /* min-height: 100vh; */
+  }
+
+  .contact .row {
+    flex-direction: column;
+    margin-bottom: 0;
+  }
+
+  .contact .row div {
+    margin-bottom: 8px;
+  }
+}
