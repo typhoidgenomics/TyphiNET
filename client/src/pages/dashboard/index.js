@@ -1731,7 +1731,7 @@ const DashboardPage = () => {
       const paragraph1 = `This report was generated at [${formatDate(
         new Date()
       )}] using TyphiNET (http://typhi.net), a data data visualisation platform that draws genome-derived data on antimicrobial resistance and genotypes from Typhi Pathogenwatch (http://pathogen.watch).`;
-      const paragraph2 = `TyphiNET data were last updated on April 03 2022. For code and further details please see: https://github.com/zadyson/TyphiNET.`;
+      const paragraph2 = `TyphiNET data were last updated on October 10 2022. For code and further details please see: https://github.com/zadyson/TyphiNET.`;
       const paragraph3 = `The genotypes reported here are defined in Dyson & Holt (2021), J. Infect. Dis.`;
       const paragraph4 = `Antimicrobial resistance determinants are described in the Typhi Pathogenwatch paper, Argimón et al. 2021, Nat. Commun.`;
       const paragraph5 = `Travel-associated cases are attributed to the country of travel, not the country of isolation (see Ingle et al. 2019, PLoS NTDs).`;
@@ -4469,22 +4469,7 @@ const DashboardPage = () => {
             The TyphiNET dashboard collates antimicrobial resistance (AMR) and
             genotype (lineage) information extracted from whole genome sequence
             (WGS) data from the bacterial pathogen <i> Salmonella</i> Typhi, the
-            agent of typhoid fever. Data are sourced regularly from Typhi{" "}
-            <a href="https://pathogen.watch/" target="_blank" rel="noreferrer">
-              Pathogenwatch
-            </a>
-            , and filtered to include only genomes from unbiased sampling frames
-            (e.g. routine or project - based enteric fever surveillance, as
-            opposed to AMR - focused sampling). Information on genotype
-            definitions can be found in{" "}
-            <a
-              href="https://academic.oup.com/jid/article/224/Supplement_7/S775/6358992?login=true"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Dyson & Holt, 2021
-            </a>
-            .
+            agent of typhoid fever.
           </p>
           <p>
             AMR determinants identified in the genome assemblies using
@@ -4518,18 +4503,48 @@ const DashboardPage = () => {
             for details.
           </p>
           <p>
-            The TyphiNET dashboard is coordinated by Dr Zoe Dyson, Dr Louise
-            Cerdeira &amp; Prof Kat Holt at the{" "}
-            <a href="https://www.lshtm.ac.uk/" target="_blank" rel="noreferrer">
-              London School of Hygiene and Tropical Medicine
-            </a>{" "}
-            &amp;{" "}
-            <a href="https://www.monash.edu/" target="_blank" rel="noreferrer">
-              Monash University
+            <b>Data:</b> Data are sourced regularly from Typhi{" "}
+            <a href="https://pathogen.watch/" target="_blank" rel="noreferrer">
+              Pathogenwatch
             </a>
-            . This project has received funding from the the Wellcome Trust
-            (Open Research Fund, 219692/Z/19/Z) and the European Union's Horizon
-            2020 research and innovation programme under the Marie
+            , and filtered to include only genomes from unbiased sampling frames
+            (e.g. routine or project - based enteric fever surveillance, as
+            opposed to AMR - focused sampling), based on curation by the {" "}
+            <a href="https://www.typhoidgenomics.org/" target="_blank" rel="noreferrer">
+              Global Typhoid Genomics Consortium
+            </a>. 
+            The database can be downloaded using the button below.
+            <p>
+            <b>Documentation:</b> Full documentation for the dashboard is available {" "}
+            <a href="https://github.com/zadyson/TyphiNET/wiki" target="_blank" rel="noreferrer">
+              here
+            </a>.
+            </p>
+            Information on genotype definitions can be found in{" "}
+            <a
+              href="https://academic.oup.com/jid/article/224/Supplement_7/S775/6358992?login=true"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Dyson & Holt, 2021
+            </a>
+            .
+          </p>
+          <p>
+            <b>Team:</b> The TyphiNET dashboard is coordinated by {" "}
+            <a href="https://scholar.google.com.au/citations?hl=en&user=klhFnE0AAAAJ" target="_blank" rel="noreferrer">
+              Dr Zoe Dyson
+            </a>
+            , {" "}
+            <a href="https://scholar.google.com.au/citations?hl=en&user=O2dcz5MAAAAJ" target="_blank" rel="noreferrer">
+              Dr Louise Cerdeira
+            </a>
+             &amp; {" "}
+            <a href="https://holtlab.net/" target="_blank" rel="noreferrer">
+              Prof Kat Holt
+            </a>
+             , with support from  the Wellcome Trust (Open Research Fund, 219692/Z/19/Z),
+             the European Union's Horizon 2020 research and innovation programme under the Marie
             Sklodowska-Curie grant agreement No 845681.
             <img
               className="euFlagImage"
@@ -4537,6 +4552,15 @@ const DashboardPage = () => {
               alt="EU_FLAG"
               height="20"
             />
+            , the{" "}
+            <a href="https://www.lshtm.ac.uk/" target="_blank" rel="noreferrer">
+              London School of Hygiene and Tropical Medicine
+            </a>{" "}
+            &amp;{" "}
+            <a href="https://www.monash.edu/" target="_blank" rel="noreferrer">
+              Monash University
+            </a>
+            .
           </p>
         </div>
         {/* Footer */}
@@ -4550,6 +4574,16 @@ const DashboardPage = () => {
           >
             <FontAwesomeIcon icon={faEnvelope} className="fontawesome-icon" />
             <span>Contact</span>
+          </div>
+          {/* Documentation Button */}
+          <div
+            className="flex-button"
+            onClick={() => {
+              window.open("https://github.com/zadyson/TyphiNET/wiki", "_blank");
+            }}
+          >
+            <FontAwesomeIcon icon={faGithub} className="fontawesome-icon" />
+            <span>Documentation</span>
           </div>
           {/* Github Button */}
           <div
@@ -4579,7 +4613,7 @@ const DashboardPage = () => {
             <a href="https://pathogen.watch" rel="noreferrer" target="_blank">
               pathogen watch project
             </a>{" "}
-            on 03/04/2022.{" "}
+            on 10/10/2022.{" "}
             <a href="https://holtlab.net" rel="noreferrer" target="_blank">
               Holt Lab
             </a>

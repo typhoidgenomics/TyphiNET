@@ -2,9 +2,7 @@
 node_modules/
 /.pnp
 .pnp.js
-
 /build
-
 .DS_Store
 .env.local
 .env.development.local
@@ -17,3 +15,4 @@ yarn-error.log*
 yarn.lock
 package-lock.json
 .vscode/
+assets/webscrap/raw_data/Fev2023/
