@@ -1109,13 +1109,13 @@ const DashboardPage = () => {
             strokeWidth: 1,
             width: null,
             bars: [
-              ["ereA", "#9e9ac8"],
+              // ["ereA", "#9e9ac8"],
               ["acrB_R717Q", "#addd8e"],
               ["acrB_R717L", "#FBCFE5"],
-              ["ereA + acrB_R717Q", "#FFEC78"],
-              ["ereA + acrB_R717L", "#66c2a4"],
+              // ["ereA + acrB_R717Q", "#FFEC78"],
+              // ["ereA + acrB_R717L", "#66c2a4"],
               ["acrB_R717Q + acrB_R717L", "#fd8d3c"],
-              ["ereA + acrB_R717Q + acrB_R717L", "#6baed6"],
+              // ["ereA + acrB_R717Q + acrB_R717L", "#6baed6"],
               ["None", "#B9B9B9"],
             ],
           });
