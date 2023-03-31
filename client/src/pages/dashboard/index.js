@@ -159,7 +159,7 @@ const DashboardPage = () => {
     { value: "Chloramphenicol", id: 2 },
     { value: "Co-trimoxazole", id: 3 },
     { value: "ESBL", id: 4 },
-    { value: "Fluoroquinolones (CipI/R)", id: 5 },
+    { value: "Fluoroquinolones (CipNS)", id: 5 },
     { value: "Sulphonamides", id: 6 },
     { value: "Tetracyclines", id: 7 },
     { value: "Trimethoprim", id: 8 },
@@ -172,7 +172,7 @@ const DashboardPage = () => {
     "Chloramphenicol",
     "Co-trimoxazole",
     "ESBL",
-    "Fluoroquinolones (CipI/R)",
+    "Fluoroquinolones (CipNS)",
     "Sulphonamides",
     "Tetracyclines",
     "Trimethoprim",
@@ -183,7 +183,7 @@ const DashboardPage = () => {
     "Chloramphenicol",
     "Co-trimoxazole",
     "ESBL",
-    "Fluoroquinolones (CipI/R)",
+    "Fluoroquinolones (CipNS)",
     "Susceptible",
     "Sulphonamides",
     "Tetracyclines",
@@ -196,7 +196,7 @@ const DashboardPage = () => {
     /*"Fluoroquinolone (CipI)",*/ "Fluoroquinolones (CipR)",
     "Co-trimoxazole",
     "ESBL",
-    "Fluoroquinolones (CipI/R)",
+    "Fluoroquinolones (CipNS)",
     "Susceptible",
     "Sulphonamides",
     "Tetracyclines",
@@ -212,7 +212,7 @@ const DashboardPage = () => {
     },
     { value: "Co-trimoxazole", id: 4 },
     { value: "ESBL", id: 5 },
-    { value: "Fluoroquinolones (CipI/R)", id: 6 },
+    { value: "Fluoroquinolones (CipNS)", id: 6 },
     { value: "Susceptible", id: 7 },
     { value: "Sulphonamides", id: 8 },
     { value: "Tetracyclines", id: 9 },
@@ -939,7 +939,7 @@ const DashboardPage = () => {
                         style={{
                           justifyContent:
                             amrClassFilter === "Ampicillin" ||
-                              amrClassFilter === "Fluoroquinolones (CipI/R)"
+                              amrClassFilter === "Fluoroquinolones (CipNS)"
                               ? ""
                               : "space-between",
                         }}
@@ -1054,7 +1054,7 @@ const DashboardPage = () => {
                         style={{
                           justifyContent:
                             amrClassFilter === "Ampicillin" ||
-                              amrClassFilter === "Fluoroquinolones (CipI/R)"
+                              amrClassFilter === "Fluoroquinolones (CipNS)"
                               ? ""
                               : "space-between",
                         }}
@@ -1119,7 +1119,7 @@ const DashboardPage = () => {
               ["None", "#B9B9B9"],
             ],
           });
-        case "Fluoroquinolones (CipI/R)":
+        case "Fluoroquinolones (CipNS)":
           return armClassFilterComponent({
             left: 10,
             fontsize: 14,
@@ -1806,7 +1806,7 @@ const DashboardPage = () => {
           actualMapView = "Azithromycin resistant";
           break;
         case "CipI":
-          actualMapView = "Ciprofloxacin nonsusceptible (CipI/R)";
+          actualMapView = "Ciprofloxacin nonsusceptible (CipNS)";
           break;
         case "CipR":
           actualMapView = "Ciprofloxacin resistant (CipR)";
@@ -1956,7 +1956,7 @@ const DashboardPage = () => {
 
         if (index === 1) {
           var img4 = new Image();
-          if (info.amrClassFilter === "Fluoroquinolones (CipI/R)") {
+          if (info.amrClassFilter === "Fluoroquinolones (CipNS)") {
             img4.src = "legends/Fluoroquinolones (CipI-R).png";
           } else {
             img4.src = "legends/" + info.amrClassFilter + ".png";
@@ -2018,7 +2018,7 @@ const DashboardPage = () => {
           imgWidth += 100;
         } else if (info.amrClassFilter === "Co-trimoxazole") {
           imgWidth += 195;
-        } else if (info.amrClassFilter === "Fluoroquinolones (CipI/R)") {
+        } else if (info.amrClassFilter === "Fluoroquinolones (CipNS)") {
           imgWidth += 250;
         }
       } else if (id === "GD") {
@@ -2081,7 +2081,7 @@ const DashboardPage = () => {
         let legendImg = document.createElement("img");
         let legendImgPromise = imgOnLoadPromise(legendImg);
         if (id === "RFWAG") {
-          if (info.amrClassFilter === "Fluoroquinolones (CipI/R)") {
+          if (info.amrClassFilter === "Fluoroquinolones (CipNS)") {
             legendImg.src = "legends/Fluoroquinolones (CipI-R).png";
           } else {
             if (
@@ -2180,7 +2180,7 @@ const DashboardPage = () => {
             actualMapView = "Azithromycin resistant";
             break;
           case "CipI":
-            actualMapView = "Ciprofloxacin nonsusceptible (CipI/R)";
+            actualMapView = "Ciprofloxacin nonsusceptible (CipNS)";
             break;
           case "CipR":
             actualMapView = "Ciprofloxacin resistant (CipR)";
@@ -2493,7 +2493,7 @@ const DashboardPage = () => {
       ["MDR", "Multidrug resistant (MDR)"],
       ["XDR", "Extensively drug resistant (XDR)"],
       ["Azith", "Azithromycin resistant"],
-      ["CipI", "Ciprofloxacin nonsusceptible (CipI/R)"],
+      ["CipI", "Ciprofloxacin nonsusceptible (CipNS)"],
       ["CipR", "Ciprofloxacin resistant (CipR)"],
       ["Sensitive to all drugs", "Sensitive to all drugs"],
       ["Dominant Genotype", "Dominant Genotype"],
@@ -3670,7 +3670,7 @@ const DashboardPage = () => {
                       <span>CipI: {tooltipContent.additionalInfo.CipI}%</span>
                       <span>CipR: {tooltipContent.additionalInfo.CipR}%</span>
                       <span>
-                        CipI/R: {tooltipContent.additionalInfo.CipI_R}%
+                        CipNS: {tooltipContent.additionalInfo.CipI_R}%
                       </span>
                       <span>
                         Susceptible: {tooltipContent.additionalInfo.STAD}%
@@ -3758,7 +3758,7 @@ const DashboardPage = () => {
                   {tooltipContent.cipIInfo && (
                     <div className="additional-info">
                       <span>
-                        CipI/R: {tooltipContent.cipIRInfo.count} (
+                        CipNS: {tooltipContent.cipIRInfo.count} (
                         {tooltipContent.cipIRInfo.percentage}%)
                       </span>
                     </div>
@@ -4213,6 +4213,24 @@ const DashboardPage = () => {
                       <div className="chart-wrapper-DRT-view-drugs-label">
                         Drugs view
                       </div>
+                      <IconTooltip
+                        title={
+                          <div className={classes.tooltipTitle}>
+                            The resistance frequencies are only shown for years with N≥10 genomes.
+                            When the data is insufficient per year to calculate annual frequencies,
+                            there are no data points to show.
+                          </div>
+                        }
+                        placement="top"
+                      >
+                        <IconButton className={classes.tooltipButton}>
+                          <FontAwesomeIcon
+                            icon={faInfoCircle}
+                            size="xs"
+                            className={classes.tooltipIcon}
+                          />
+                        </IconButton>
+                      </IconTooltip>
                     </div>
                     {/* Drugs dropdown */}
                     <FormControl
@@ -4396,9 +4414,12 @@ const DashboardPage = () => {
               <TooltipMaterialUI
                 title={
                   <span className="my-font">
+                    The full database can be downloaded using the button below,
+                    note this includes all genomes including those from biased
+                    sampling frames that are not shown in the dashboard.
                     Genome line list - including source information,
                     genome-derived AMR and genotype information, and citations
-                    for each genome; pulled from Pathogenwatch.
+                    for each genome; pulled from Pathogenwatch. 
                   </span>
                 }
                 placement="top"
@@ -4483,7 +4504,7 @@ const DashboardPage = () => {
             chloramphenicol (<i>catA1</i> or <i>cmlA</i>), ampicillin (
             <i>bla</i>TEM-1D, <i>bla</i>OXA-7), and co-trimoxazole (at least one{" "}
             <i>dfrA</i> gene and at least one <i>sul</i> gene). Ciprofloxacin
-            non-susceptible (CipI/R): one or more of the quinolone resistance
+            non-susceptible (CipNS): one or more of the quinolone resistance
             determining region(QRDR) mutations at <i>gyrA</i>-83, <i>gyrA</i>
             -87, <i>parC</i>-80, <i>parC</i>-84, <i>gyrB</i>-464 or presence of
             a plasmid - mediated quinolone resistance(PMQR) gene(<i>qnrB</i>,{" "}
@@ -4513,8 +4534,8 @@ const DashboardPage = () => {
               Pathogenwatch
             </a>
             , and filtered to include only genomes from unbiased sampling frames
-            (e.g. routine or project - based enteric fever surveillance, as
-            opposed to AMR - focused sampling), based on curation by the {" "}
+            (e.g. routine or project-based enteric fever surveillance, as
+            opposed to AMR-focused sampling), based on curation by the {" "}
             <a href="https://www.typhoidgenomics.org/" target="_blank" rel="noreferrer">
               Global Typhoid Genomics Consortium
             </a>. 
@@ -4548,7 +4569,7 @@ const DashboardPage = () => {
             <a href="https://holtlab.net/" target="_blank" rel="noreferrer">
               Prof Kat Holt
             </a>
-             , with support from  the Wellcome Trust (Open Research Fund, 219692/Z/19/Z),
+             , with support from  the Wellcome Trust (219692/Z/19/Z and 226432/Z/22/Z),
              the European Union's Horizon 2020 research and innovation programme under the Marie
             Sklodowska-Curie grant agreement No 845681.
             <img

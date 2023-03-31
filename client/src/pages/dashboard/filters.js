@@ -1,7 +1,7 @@
 const WMCDTemplate = {
   GENOTYPES: {
     GENOTYPES_LIST: [],
-    TOTAL: 0,
+    TOTAL: 0
   },
   H58: 0,
   MDR: 0,
@@ -12,45 +12,45 @@ const WMCDTemplate = {
   CipR: 0,
   CipI_R: 0,
   STAD: 0,
-  TOTAL_OCCURRENCE: 0,
+  TOTAL_OCCURRENCE: 0
 };
 
 function WMCDAux(currentData, data) {
   currentData = JSON.parse(currentData);
 
-  currentData["TOTAL_OCCURRENCE"]++;
+  currentData['TOTAL_OCCURRENCE']++;
   if (
-    currentData["GENOTYPES"]["GENOTYPES_LIST"].indexOf(data["GENOTYPE"]) === -1
+    currentData['GENOTYPES']['GENOTYPES_LIST'].indexOf(data['GENOTYPE']) === -1
   ) {
-    currentData["GENOTYPES"]["GENOTYPES_LIST"].push(data["GENOTYPE"]);
-    currentData["GENOTYPES"]["TOTAL"]++;
+    currentData['GENOTYPES']['GENOTYPES_LIST'].push(data['GENOTYPE']);
+    currentData['GENOTYPES']['TOTAL']++;
   }
 
-  if (data["GENOTYPE_SIMPLE"] === "H58") {
-    currentData["H58"]++;
+  if (data['GENOTYPE_SIMPLE'] === 'H58') {
+    currentData['H58']++;
   }
-  if (data["MDR"] === "MDR") {
-    currentData["MDR"]++;
+  if (data['MDR'] === 'MDR') {
+    currentData['MDR']++;
   }
-  if (data["XDR"] === "XDR") {
-    currentData["XDR"]++;
+  if (data['XDR'] === 'XDR') {
+    currentData['XDR']++;
   }
-  if (data["dcs_category"] === "DCS") {
-    currentData["DCS"]++;
+  if (data['dcs_category'] === 'DCS') {
+    currentData['DCS']++;
   }
-  if (data["azith_pred_pheno"] === "AzithR") {
-    currentData["AzithR"]++;
+  if (data['azith_pred_pheno'] === 'AzithR') {
+    currentData['AzithR']++;
   }
-  if (data["cip_pred_pheno"] === "CipI") {
-    currentData["CipI"]++;
-    currentData["CipI_R"]++;
+  if (data['cip_pred_pheno'] === 'CipI') {
+    currentData['CipI']++;
+    currentData['CipI_R']++;
   }
-  if (data["cip_pred_pheno"] === "CipR") {
-    currentData["CipR"]++;
-    currentData["CipI_R"]++;
+  if (data['cip_pred_pheno'] === 'CipR') {
+    currentData['CipR']++;
+    currentData['CipI_R']++;
   }
-  if (data["amr_category"] === "No AMR detected") {
-    currentData["STAD"]++;
+  if (data['amr_category'] === 'No AMR detected') {
+    currentData['STAD']++;
   }
 
   return currentData;
@@ -60,41 +60,41 @@ function WMCDResults(worldMapComplementaryResults) {
   worldMapComplementaryResults = JSON.parse(worldMapComplementaryResults);
 
   for (let data in worldMapComplementaryResults) {
-    worldMapComplementaryResults[data]["H58"] =
-      (worldMapComplementaryResults[data]["H58"] /
-        worldMapComplementaryResults[data]["TOTAL_OCCURRENCE"]) *
+    worldMapComplementaryResults[data]['H58'] =
+      (worldMapComplementaryResults[data]['H58'] /
+        worldMapComplementaryResults[data]['TOTAL_OCCURRENCE']) *
       100;
-    worldMapComplementaryResults[data]["MDR"] =
-      (worldMapComplementaryResults[data]["MDR"] /
-        worldMapComplementaryResults[data]["TOTAL_OCCURRENCE"]) *
+    worldMapComplementaryResults[data]['MDR'] =
+      (worldMapComplementaryResults[data]['MDR'] /
+        worldMapComplementaryResults[data]['TOTAL_OCCURRENCE']) *
       100;
-    worldMapComplementaryResults[data]["XDR"] =
-      (worldMapComplementaryResults[data]["XDR"] /
-        worldMapComplementaryResults[data]["TOTAL_OCCURRENCE"]) *
+    worldMapComplementaryResults[data]['XDR'] =
+      (worldMapComplementaryResults[data]['XDR'] /
+        worldMapComplementaryResults[data]['TOTAL_OCCURRENCE']) *
       100;
-    worldMapComplementaryResults[data]["DCS"] =
-      (worldMapComplementaryResults[data]["DCS"] /
-        worldMapComplementaryResults[data]["TOTAL_OCCURRENCE"]) *
+    worldMapComplementaryResults[data]['DCS'] =
+      (worldMapComplementaryResults[data]['DCS'] /
+        worldMapComplementaryResults[data]['TOTAL_OCCURRENCE']) *
       100;
-    worldMapComplementaryResults[data]["AzithR"] =
-      (worldMapComplementaryResults[data]["AzithR"] /
-        worldMapComplementaryResults[data]["TOTAL_OCCURRENCE"]) *
+    worldMapComplementaryResults[data]['AzithR'] =
+      (worldMapComplementaryResults[data]['AzithR'] /
+        worldMapComplementaryResults[data]['TOTAL_OCCURRENCE']) *
       100;
-    worldMapComplementaryResults[data]["CipI"] =
-      (worldMapComplementaryResults[data]["CipI"] /
-        worldMapComplementaryResults[data]["TOTAL_OCCURRENCE"]) *
+    worldMapComplementaryResults[data]['CipI'] =
+      (worldMapComplementaryResults[data]['CipI'] /
+        worldMapComplementaryResults[data]['TOTAL_OCCURRENCE']) *
       100;
-    worldMapComplementaryResults[data]["CipR"] =
-      (worldMapComplementaryResults[data]["CipR"] /
-        worldMapComplementaryResults[data]["TOTAL_OCCURRENCE"]) *
+    worldMapComplementaryResults[data]['CipR'] =
+      (worldMapComplementaryResults[data]['CipR'] /
+        worldMapComplementaryResults[data]['TOTAL_OCCURRENCE']) *
       100;
-    worldMapComplementaryResults[data]["CipI_R"] =
-      (worldMapComplementaryResults[data]["CipI_R"] /
-        worldMapComplementaryResults[data]["TOTAL_OCCURRENCE"]) *
+    worldMapComplementaryResults[data]['CipI_R'] =
+      (worldMapComplementaryResults[data]['CipI_R'] /
+        worldMapComplementaryResults[data]['TOTAL_OCCURRENCE']) *
       100;
-    worldMapComplementaryResults[data]["STAD"] =
-      (worldMapComplementaryResults[data]["STAD"] /
-        worldMapComplementaryResults[data]["TOTAL_OCCURRENCE"]) *
+    worldMapComplementaryResults[data]['STAD'] =
+      (worldMapComplementaryResults[data]['STAD'] /
+        worldMapComplementaryResults[data]['TOTAL_OCCURRENCE']) *
       100;
     delete worldMapComplementaryResults[data].TOTAL_OCCURRENCE;
   }
@@ -109,7 +109,7 @@ function WMCountData(
   parentName,
   childName,
   h58 = false,
-  other = "",
+  other = '',
   cipI = false
 ) {
   currentData = JSON.parse(currentData);
@@ -119,16 +119,16 @@ function WMCountData(
       name: data.COUNTRY_ONLY,
       displayName: displayName,
       total: 1,
-      [parentName]: [{ [childName]: data[elementToCount], count: 1 }],
+      [parentName]: [{ [childName]: data[elementToCount], count: 1 }]
     });
-    if (elementToCount !== "GENOTYPE")
+    if (elementToCount !== 'GENOTYPE')
       currentData[currentData.length - 1].percentage = 0;
-    if (!h58 && elementToCount !== "GENOTYPE")
+    if (!h58 && elementToCount !== 'GENOTYPE')
       currentData[currentData.length - 1].count = 0;
   } else {
-    const country = currentData.find((e) => e.name === data["COUNTRY_ONLY"]);
+    const country = currentData.find((e) => e.name === data['COUNTRY_ONLY']);
     const countryIndex = currentData.findIndex(
-      (e) => e.name === data["COUNTRY_ONLY"]
+      (e) => e.name === data['COUNTRY_ONLY']
     );
 
     if (
@@ -136,7 +136,7 @@ function WMCountData(
     ) {
       country[parentName].push({
         [childName]: data[elementToCount],
-        count: 1,
+        count: 1
       });
     } else {
       let parent = country[parentName].find(
@@ -158,7 +158,7 @@ function WMCountData(
         }
         g.percentage = percentage;
       });
-    } else if (other !== "") {
+    } else if (other !== '') {
       country[parentName].forEach((item, index) => {
         if (item[childName] === other) {
           let percentage = (item.count / country.total) * 100;
@@ -176,8 +176,8 @@ function WMCountData(
         country.count = 0;
       }
     } else if (cipI) {
-      let aux = country.CipIs.filter((x) => x.type === "CipI");
-      let aux2 = country.CipIs.filter((x) => x.type === "CipR");
+      let aux = country.CipIs.filter((x) => x.type === 'CipI');
+      let aux2 = country.CipIs.filter((x) => x.type === 'CipR');
       if (aux.length) {
         aux[0].percentage = (aux[0].count / country.total) * 100;
         aux = aux[0].count;
@@ -231,16 +231,16 @@ function ChartData(RFWGData, DRTData, data) {
       total: 0,
       drugsPercentage: {},
       Azithromycin: 0,
-      "Fluoroquinolones (CipI/R)": 0,
+      'Fluoroquinolones (CipNS)': 0,
       ESBL: 0,
       Chloramphenicol: 0,
       Ampicillin: 0,
-      "Co-trimoxazole": 0,
+      'Co-trimoxazole': 0,
       Sulphonamides: 0,
       Trimethoprim: 0,
       Tetracyclines: 0,
       Susceptible: 0,
-      "Fluoroquinolones (CipR)": 0,
+      'Fluoroquinolones (CipR)': 0
     });
     index2 = DRTData.length - 1;
   }
@@ -249,71 +249,71 @@ function ChartData(RFWGData, DRTData, data) {
   const currentRFWG = RFWGData[index];
   const currentDRT = DRTData[index2];
 
-  if (data["azith_pred_pheno"] === "AzithR") {
-    if (currentRFWG["Azithromycin"] === undefined)
-      currentRFWG["Azithromycin"] = 1;
-    else currentRFWG["Azithromycin"] += 1;
-    currentDRT["Azithromycin"] += 1;
+  if (data['azith_pred_pheno'] === 'AzithR') {
+    if (currentRFWG['Azithromycin'] === undefined)
+      currentRFWG['Azithromycin'] = 1;
+    else currentRFWG['Azithromycin'] += 1;
+    currentDRT['Azithromycin'] += 1;
   }
-  if (data["cip_pred_pheno"] === "CipR" || data["cip_pred_pheno"] === "CipI") {
-    if (currentRFWG["Fluoroquinolones (CipI/R)"] === undefined)
-      currentRFWG["Fluoroquinolones (CipI/R)"] = 1;
-    else currentRFWG["Fluoroquinolones (CipI/R)"] += 1;
-    currentDRT["Fluoroquinolones (CipI/R)"] += 1;
+  if (data['cip_pred_pheno'] === 'CipR' || data['cip_pred_pheno'] === 'CipI') {
+    if (currentRFWG['Fluoroquinolones (CipNS)'] === undefined)
+      currentRFWG['Fluoroquinolones (CipNS)'] = 1;
+    else currentRFWG['Fluoroquinolones (CipNS)'] += 1;
+    currentDRT['Fluoroquinolones (CipNS)'] += 1;
   }
-  if (data["ESBL_category"] === "ESBL") {
-    if (currentRFWG["ESBL"] === undefined) currentRFWG["ESBL"] = 1;
-    else currentRFWG["ESBL"] += 1;
-    currentDRT["ESBL"] += 1;
+  if (data['ESBL_category'] === 'ESBL') {
+    if (currentRFWG['ESBL'] === undefined) currentRFWG['ESBL'] = 1;
+    else currentRFWG['ESBL'] += 1;
+    currentDRT['ESBL'] += 1;
   }
-  if (data["chloramphenicol_category"] === "ChlR") {
-    if (currentRFWG["Chloramphenicol"] === undefined)
-      currentRFWG["Chloramphenicol"] = 1;
-    else currentRFWG["Chloramphenicol"] += 1;
-    currentDRT["Chloramphenicol"] += 1;
+  if (data['chloramphenicol_category'] === 'ChlR') {
+    if (currentRFWG['Chloramphenicol'] === undefined)
+      currentRFWG['Chloramphenicol'] = 1;
+    else currentRFWG['Chloramphenicol'] += 1;
+    currentDRT['Chloramphenicol'] += 1;
   }
-  if (data["blaTEM-1D"] === "1") {
-    if (currentRFWG["Ampicillin"] === undefined) currentRFWG["Ampicillin"] = 1;
-    else currentRFWG["Ampicillin"] += 1;
-    currentDRT["Ampicillin"] += 1;
+  if (data['blaTEM-1D'] === '1') {
+    if (currentRFWG['Ampicillin'] === undefined) currentRFWG['Ampicillin'] = 1;
+    else currentRFWG['Ampicillin'] += 1;
+    currentDRT['Ampicillin'] += 1;
   }
-  if (data["co_trim"] === "1") {
-    if (currentRFWG["Co-trimoxazole"] === undefined)
-      currentRFWG["Co-trimoxazole"] = 1;
-    else currentRFWG["Co-trimoxazole"] += 1;
-    currentDRT["Co-trimoxazole"] += 1;
+  if (data['co_trim'] === '1') {
+    if (currentRFWG['Co-trimoxazole'] === undefined)
+      currentRFWG['Co-trimoxazole'] = 1;
+    else currentRFWG['Co-trimoxazole'] += 1;
+    currentDRT['Co-trimoxazole'] += 1;
   }
-  if (data["sul_any"] === "1") {
-    if (currentRFWG["Sulphonamides"] === undefined)
-      currentRFWG["Sulphonamides"] = 1;
-    else currentRFWG["Sulphonamides"] += 1;
-    currentDRT["Sulphonamides"] += 1;
+  if (data['sul_any'] === '1') {
+    if (currentRFWG['Sulphonamides'] === undefined)
+      currentRFWG['Sulphonamides'] = 1;
+    else currentRFWG['Sulphonamides'] += 1;
+    currentDRT['Sulphonamides'] += 1;
   }
-  if (data["dfra_any"] === "1") {
-    if (currentRFWG["Trimethoprim"] === undefined)
-      currentRFWG["Trimethoprim"] = 1;
-    else currentRFWG["Trimethoprim"] += 1;
-    currentDRT["Trimethoprim"] += 1;
+  if (data['dfra_any'] === '1') {
+    if (currentRFWG['Trimethoprim'] === undefined)
+      currentRFWG['Trimethoprim'] = 1;
+    else currentRFWG['Trimethoprim'] += 1;
+    currentDRT['Trimethoprim'] += 1;
   }
-  if (data["tetracycline_category"] === "TetR") {
-    if (currentRFWG["Tetracyclines"] === undefined)
-      currentRFWG["Tetracyclines"] = 1;
-    else currentRFWG["Tetracyclines"] += 1;
-    currentDRT["Tetracyclines"] += 1;
+  if (data['tetracycline_category'] === 'TetR') {
+    if (currentRFWG['Tetracyclines'] === undefined)
+      currentRFWG['Tetracyclines'] = 1;
+    else currentRFWG['Tetracyclines'] += 1;
+    currentDRT['Tetracyclines'] += 1;
   }
-  if (data["amr_category"] === "No AMR detected") {
-    if (currentRFWG["Susceptible"] === undefined)
-      currentRFWG["Susceptible"] = 1;
-    else currentRFWG["Susceptible"] += 1;
-    currentDRT["Susceptible"] += 1;
+  if (data['amr_category'] === 'No AMR detected') {
+    if (currentRFWG['Susceptible'] === undefined)
+      currentRFWG['Susceptible'] = 1;
+    else currentRFWG['Susceptible'] += 1;
+    currentDRT['Susceptible'] += 1;
   } else {
     currentRFWG.total += 1;
   }
-  if (data["cip_pred_pheno"] === "CipR") {
-    if (currentRFWG["Fluoroquinolones (CipR)"] === undefined)
-      currentRFWG["Fluoroquinolones (CipR)"] = 1;
-    else currentRFWG["Fluoroquinolones (CipR)"] += 1;
-    currentDRT["Fluoroquinolones (CipR)"] += 1;
+  if (data['cip_pred_pheno'] === 'CipR') {
+    if (currentRFWG['Fluoroquinolones (CipR)'] === undefined)
+      currentRFWG['Fluoroquinolones (CipR)'] = 1;
+    else currentRFWG['Fluoroquinolones (CipR)'] += 1;
+    currentDRT['Fluoroquinolones (CipR)'] += 1;
   }
 
   return [RFWGData, DRTData];
@@ -324,7 +324,7 @@ function DRTDataResults(DRTData) {
   DRTData.forEach((element) => {
     const drugsPercentage = {};
     for (const key in element) {
-      if (key !== "name" && key !== "total") {
+      if (key !== 'name' && key !== 'total') {
         const aux = (element[key] * 100) / element.total;
         drugsPercentage[key] = element[key];
         element[key] = aux;
@@ -338,32 +338,32 @@ function DRTDataResults(DRTData) {
 function AMRData(currentData, data) {
   currentData = JSON.parse(currentData);
   const fluoroR = [
-    "3_QRDR + qnrS",
-    "3_QRDR + qnrB",
-    "3_QRDR",
-    "2_QRDR + qnrS",
-    "2_QRDR + qnrB",
-    "1_QRDR + qnrS",
-    "1_QRDR + qnrB",
+    '3_QRDR + qnrS',
+    '3_QRDR + qnrB',
+    '3_QRDR',
+    '2_QRDR + qnrS',
+    '2_QRDR + qnrB',
+    '1_QRDR + qnrS',
+    '1_QRDR + qnrB'
   ];
-  const fluoroI = ["2_QRDR", "1_QRDR", "0_QRDR + qnrS", "0_QRDR + qnrB"];
+  const fluoroI = ['2_QRDR', '1_QRDR', '0_QRDR + qnrS', '0_QRDR + qnrB'];
   const cotrim = [
-    "dfrA1",
-    "dfrA5",
-    "dfrA7",
-    "dfrA14",
-    "dfrA15",
-    "dfrA17",
-    "dfrA18",
+    'dfrA1',
+    'dfrA5',
+    'dfrA7',
+    'dfrA14',
+    'dfrA15',
+    'dfrA17',
+    'dfrA18'
   ];
   const trime = [
-    "dfrA1",
-    "dfrA14",
-    "dfrA15",
-    "dfrA17",
-    "dfrA18",
-    "dfrA5",
-    "dfrA7",
+    'dfrA1',
+    'dfrA14',
+    'dfrA15',
+    'dfrA17',
+    'dfrA18',
+    'dfrA5',
+    'dfrA7'
   ];
 
   Object.keys(currentData).forEach((key) => {
@@ -372,81 +372,85 @@ function AMRData(currentData, data) {
       currentData[key].push({ genotype: data.GENOTYPE, total: 0, total2: 0 });
       index = currentData[key].length - 1;
     }
-    if (key === "Azithromycin") {
-      const AZITH = data["azith_pred_pheno"];
-      if (AZITH === "AzithR") {
+    if (key === 'Azithromycin') {
+      const AZITH = data['azith_pred_pheno'];
+      if (AZITH === 'AzithR') {
         currentData[key][index].total += 1;
         currentData[key][index].total2 += 1;
-        if (
-          data["ereA"] === "1" &&
-          data["acrB_R717Q"] === "1" &&
-          data["acrB_R717L" == "1"]
-        ) {
-          const name = "ereA + acrB_R717Q + acrB_R717L";
+        // if (
+        //   data['ereA'] === '1' &&
+        //   data['acrB_R717Q'] === '1' &&
+        //   data['acrB_R717L' == '1']
+        // ) {
+        //   const name = 'ereA + acrB_R717Q + acrB_R717L';
+        //   if (currentData[key][index][name] === undefined) {
+        //     currentData[key][index][name] = 1;
+        //   } else {
+        //     currentData[key][index][name] += 1;
+        //   }
+        // } else {
+        // if (data['ereA'] === '1' && data['acrB_R717Q'] === '1') {
+        //   const name = 'ereA + acrB_R717Q';
+        //   if (currentData[key][index][name] === undefined) {
+        //     currentData[key][index][name] = 1;
+        //   } else {
+        //     currentData[key][index][name] += 1;
+        //   }
+        // }
+        // else if (data['ereA'] === '1' && data['acrB_R717L'] === '1') {
+        //   const name = 'ereA + acrB_R717L';
+        //   if (currentData[key][index][name] === undefined) {
+        //     currentData[key][index][name] = 1;
+        //   } else {
+        //     currentData[key][index][name] += 1;
+        //   }
+        // } else
+        if (data['acrB_R717Q'] === '1' && data['acrB_R717L'] === '1') {
+          const name = 'acrB_R717Q + acrB_R717L';
           if (currentData[key][index][name] === undefined) {
             currentData[key][index][name] = 1;
           } else {
             currentData[key][index][name] += 1;
           }
-        } else {
-          if (data["ereA"] === "1" && data["acrB_R717Q"] === "1") {
-            const name = "ereA + acrB_R717Q";
-            if (currentData[key][index][name] === undefined) {
-              currentData[key][index][name] = 1;
-            } else {
-              currentData[key][index][name] += 1;
-            }
-          } else if (data["ereA"] === "1" && data["acrB_R717L"] === "1") {
-            const name = "ereA + acrB_R717L";
-            if (currentData[key][index][name] === undefined) {
-              currentData[key][index][name] = 1;
-            } else {
-              currentData[key][index][name] += 1;
-            }
-          } else if (data["acrB_R717Q"] === "1" && data["acrB_R717L"] === "1") {
-            const name = "acrB_R717Q + acrB_R717L";
-            if (currentData[key][index][name] === undefined) {
-              currentData[key][index][name] = 1;
-            } else {
-              currentData[key][index][name] += 1;
-            }
-          } else if (data["ereA"] === "1") {
-            const name = "ereA";
-            if (currentData[key][index][name] === undefined) {
-              currentData[key][index][name] = 1;
-            } else {
-              currentData[key][index][name] += 1;
-            }
-          } else if (data["acrB_R717Q"] === "1") {
-            const name = "acrB_R717Q";
-            if (currentData[key][index][name] === undefined) {
-              currentData[key][index][name] = 1;
-            } else {
-              currentData[key][index][name] += 1;
-            }
-          } else if (data["acrB_R717L"] === "1") {
-            const name = "acrB_R717L";
-            if (currentData[key][index][name] === undefined) {
-              currentData[key][index][name] = 1;
-            } else {
-              currentData[key][index][name] += 1;
-            }
+        }
+        // else if (data['ereA'] === '1') {
+        //   const name = 'ereA';
+        //   if (currentData[key][index][name] === undefined) {
+        //     currentData[key][index][name] = 1;
+        //   } else {
+        //     currentData[key][index][name] += 1;
+        //   }
+        // }
+        else if (data['acrB_R717Q'] === '1') {
+          const name = 'acrB_R717Q';
+          if (currentData[key][index][name] === undefined) {
+            currentData[key][index][name] = 1;
+          } else {
+            currentData[key][index][name] += 1;
+          }
+        } else if (data['acrB_R717L'] === '1') {
+          const name = 'acrB_R717L';
+          if (currentData[key][index][name] === undefined) {
+            currentData[key][index][name] = 1;
+          } else {
+            currentData[key][index][name] += 1;
           }
         }
-      } else if (AZITH === "AzithS") {
+        // }
+      } else if (AZITH === 'AzithS') {
         currentData[key][index].total2 += 1;
-        const name = "None";
+        const name = 'None';
         if (currentData[key][index][name] === undefined) {
           currentData[key][index][name] = 1;
         } else {
           currentData[key][index][name] += 1;
         }
       }
-    } else if (key === "Fluoroquinolones (CipI/R)") {
-      const DCS = data["dcs_mechanisms"];
-      if (DCS === "0_QRDR") {
+    } else if (key === 'Fluoroquinolones (CipNS)') {
+      const DCS = data['dcs_mechanisms'];
+      if (DCS === '0_QRDR') {
         currentData[key][index].total2 += 1;
-        const name = "None (CipS)";
+        const name = 'None (CipS)';
         if (currentData[key][index][name] === undefined) {
           currentData[key][index][name] = 1;
         } else {
@@ -455,7 +459,7 @@ function AMRData(currentData, data) {
       } else if (fluoroR.includes(DCS)) {
         currentData[key][index].total2 += 1;
         currentData[key][index].total += 1;
-        const name = DCS + " (CipR)";
+        const name = DCS + ' (CipR)';
         if (currentData[key][index][name] === undefined) {
           currentData[key][index][name] = 1;
         } else {
@@ -464,16 +468,16 @@ function AMRData(currentData, data) {
       } else if (fluoroI.includes(DCS)) {
         currentData[key][index].total2 += 1;
         currentData[key][index].total += 1;
-        const name = DCS + " (CipI)";
+        const name = DCS + ' (CipI)';
         if (currentData[key][index][name] === undefined) {
           currentData[key][index][name] = 1;
         } else {
           currentData[key][index][name] += 1;
         }
       }
-    } else if (key === "ESBL") {
-      const ESBL = data["ESBL_category"];
-      if (ESBL === "ESBL") {
+    } else if (key === 'ESBL') {
+      const ESBL = data['ESBL_category'];
+      if (ESBL === 'ESBL') {
         currentData[key][index].total2 += 1;
         currentData[key][index].total += 1;
         // if (data["blaCTX-M-12"] === "1") {
@@ -484,70 +488,70 @@ function AMRData(currentData, data) {
         //     currentData[key][index][name] += 1;
         //   }
         // }
-        if (data["blaCTX-M-15_23"] === "1") {
-          const name = "blaCTX-M-15";
+        if (data['blaCTX-M-15_23'] === '1') {
+          const name = 'blaCTX-M-15';
           if (currentData[key][index][name] === undefined) {
             currentData[key][index][name] = 1;
           } else {
             currentData[key][index][name] += 1;
           }
         }
-        if (data["blaOXA-7"] === "1") {
-          const name = "blaOXA-7";
+        if (data['blaOXA-7'] === '1') {
+          const name = 'blaOXA-7';
           if (currentData[key][index][name] === undefined) {
             currentData[key][index][name] = 1;
           } else {
             currentData[key][index][name] += 1;
           }
         }
-        if (data["blaSHV-12"] === "1") {
-          const name = "blaSHV-12";
+        if (data['blaSHV-12'] === '1') {
+          const name = 'blaSHV-12';
           if (currentData[key][index][name] === undefined) {
             currentData[key][index][name] = 1;
           } else {
             currentData[key][index][name] += 1;
           }
         }
-        if (data["blaCTX-M-55"] === "1") {
-          const name = "blaCTX-M-55";
+        if (data['blaCTX-M-55'] === '1') {
+          const name = 'blaCTX-M-55';
           if (currentData[key][index][name] === undefined) {
             currentData[key][index][name] = 1;
           } else {
             currentData[key][index][name] += 1;
           }
         }
-      } else if (ESBL === "Non-ESBL") {
+      } else if (ESBL === 'Non-ESBL') {
         currentData[key][index].total2 += 1;
-        const name = "None";
+        const name = 'None';
         if (currentData[key][index][name] === undefined) {
           currentData[key][index][name] = 1;
         } else {
           currentData[key][index][name] += 1;
         }
       }
-    } else if (key === "Chloramphenicol") {
-      const CHLO = data["chloramphenicol_category"];
-      if (CHLO === "ChlR") {
+    } else if (key === 'Chloramphenicol') {
+      const CHLO = data['chloramphenicol_category'];
+      if (CHLO === 'ChlR') {
         currentData[key][index].total2 += 1;
         currentData[key][index].total += 1;
-        if (data["catA1"] === "1" && data["cmlA"] === "1") {
-          const name = "catA1 + cmlA";
+        if (data['catA1'] === '1' && data['cmlA'] === '1') {
+          const name = 'catA1 + cmlA';
           if (currentData[key][index][name] === undefined) {
             currentData[key][index][name] = 1;
           } else {
             currentData[key][index][name] += 1;
           }
         } else {
-          if (data["catA1"] === "1") {
-            const name = "catA1";
+          if (data['catA1'] === '1') {
+            const name = 'catA1';
             if (currentData[key][index][name] === undefined) {
               currentData[key][index][name] = 1;
             } else {
               currentData[key][index][name] += 1;
             }
           }
-          if (data["cmlA"] === "1") {
-            const name = "cmlA";
+          if (data['cmlA'] === '1') {
+            const name = 'cmlA';
             if (currentData[key][index][name] === undefined) {
               currentData[key][index][name] = 1;
             } else {
@@ -555,16 +559,16 @@ function AMRData(currentData, data) {
             }
           }
         }
-      } else if (CHLO === "ChlS") {
+      } else if (CHLO === 'ChlS') {
         currentData[key][index].total2 += 1;
-        const name = "None";
+        const name = 'None';
         if (currentData[key][index][name] === undefined) {
           currentData[key][index][name] = 1;
         } else {
           currentData[key][index][name] += 1;
         }
       }
-    } else if (key === "Ampicillin") {
+    } else if (key === 'Ampicillin') {
       currentData[key][index].total2 += 1;
       //   if (data["blaTEM-1D"] === "1" && data["blaOXA-1"] === "1") {
       //     currentData[key][index].total += 1;
@@ -576,9 +580,9 @@ function AMRData(currentData, data) {
       //     }
       //   } else
 
-      if (data["blaTEM-1D"] === "1") {
+      if (data['blaTEM-1D'] === '1') {
         currentData[key][index].total += 1;
-        const name = "blaTEM-1D";
+        const name = 'blaTEM-1D';
         if (currentData[key][index][name] === undefined) {
           currentData[key][index][name] = 1;
         } else {
@@ -595,88 +599,88 @@ function AMRData(currentData, data) {
       //     }
       //   }
       else {
-        const name = "None";
+        const name = 'None';
         if (currentData[key][index][name] === undefined) {
           currentData[key][index][name] = 1;
         } else {
           currentData[key][index][name] += 1;
         }
       }
-    } else if (key === "Co-trimoxazole") {
-      const COTRIM = data["co_trim"];
-      if (COTRIM === "1") {
+    } else if (key === 'Co-trimoxazole') {
+      const COTRIM = data['co_trim'];
+      if (COTRIM === '1') {
         const genes = [];
         currentData[key][index].total2 += 1;
         currentData[key][index].total += 1;
         for (const i in cotrim) {
-          if (data[cotrim[i]] === "1") {
+          if (data[cotrim[i]] === '1') {
             genes.push(cotrim[i]);
           }
         }
-        if (data["sul1"] === "1") {
-          genes.push("sul1");
+        if (data['sul1'] === '1') {
+          genes.push('sul1');
         }
-        if (data["sul2"] === "1") {
-          genes.push("sul2");
+        if (data['sul2'] === '1') {
+          genes.push('sul2');
         }
-        const name = genes.join(" + ");
+        const name = genes.join(' + ');
         if (currentData[key][index][name] === undefined) {
           currentData[key][index][name] = 1;
         } else {
           currentData[key][index][name] += 1;
         }
-      } else if (COTRIM === "0") {
+      } else if (COTRIM === '0') {
         currentData[key][index].total2 += 1;
-        const name = "None";
-        if (currentData[key][index][name] === undefined) {
-          currentData[key][index][name] = 1;
-        } else {
-          currentData[key][index][name] += 1;
-        }
-      }
-    } else if (key === "Sulphonamides") {
-      const SULPH = data["sul_any"];
-      if (SULPH === "1") {
-        currentData[key][index].total2 += 1;
-        currentData[key][index].total += 1;
-        if (data["sul1"] === "1" && data["sul2"] === "1") {
-          const name = "sul1 + sul2";
-          if (currentData[key][index][name] === undefined) {
-            currentData[key][index][name] = 1;
-          } else {
-            currentData[key][index][name] += 1;
-          }
-        } else if (data["sul1"] === "1") {
-          const name = "sul1";
-          if (currentData[key][index][name] === undefined) {
-            currentData[key][index][name] = 1;
-          } else {
-            currentData[key][index][name] += 1;
-          }
-        } else if (data["sul2"] === "1") {
-          const name = "sul2";
-          if (currentData[key][index][name] === undefined) {
-            currentData[key][index][name] = 1;
-          } else {
-            currentData[key][index][name] += 1;
-          }
-        }
-      } else if (SULPH === "0") {
-        currentData[key][index].total2 += 1;
-        const name = "None";
+        const name = 'None';
         if (currentData[key][index][name] === undefined) {
           currentData[key][index][name] = 1;
         } else {
           currentData[key][index][name] += 1;
         }
       }
-    } else if (key === "Trimethoprim") {
-      const TRIM = data["dfra_any"];
-      if (TRIM === "1") {
+    } else if (key === 'Sulphonamides') {
+      const SULPH = data['sul_any'];
+      if (SULPH === '1') {
         currentData[key][index].total2 += 1;
         currentData[key][index].total += 1;
-        if (data["dfrA7"] === "1" && data["dfrA14"] === "1") {
-          const name = "dfrA7 + dfrA14";
+        if (data['sul1'] === '1' && data['sul2'] === '1') {
+          const name = 'sul1 + sul2';
+          if (currentData[key][index][name] === undefined) {
+            currentData[key][index][name] = 1;
+          } else {
+            currentData[key][index][name] += 1;
+          }
+        } else if (data['sul1'] === '1') {
+          const name = 'sul1';
+          if (currentData[key][index][name] === undefined) {
+            currentData[key][index][name] = 1;
+          } else {
+            currentData[key][index][name] += 1;
+          }
+        } else if (data['sul2'] === '1') {
+          const name = 'sul2';
+          if (currentData[key][index][name] === undefined) {
+            currentData[key][index][name] = 1;
+          } else {
+            currentData[key][index][name] += 1;
+          }
+        }
+      } else if (SULPH === '0') {
+        currentData[key][index].total2 += 1;
+        const name = 'None';
+        if (currentData[key][index][name] === undefined) {
+          currentData[key][index][name] = 1;
+        } else {
+          currentData[key][index][name] += 1;
+        }
+      }
+    } else if (key === 'Trimethoprim') {
+      const TRIM = data['dfra_any'];
+      if (TRIM === '1') {
+        currentData[key][index].total2 += 1;
+        currentData[key][index].total += 1;
+        if (data['dfrA7'] === '1' && data['dfrA14'] === '1') {
+          const name = 'dfrA7 + dfrA14';
           if (currentData[key][index][name] === undefined) {
             currentData[key][index][name] = 1;
           } else {
@@ -684,7 +688,7 @@ function AMRData(currentData, data) {
           }
         } else {
           for (const i in trime) {
-            if (data[trime[i]] === "1") {
+            if (data[trime[i]] === '1') {
               const name = trime[i];
               if (currentData[key][index][name] === undefined) {
                 currentData[key][index][name] = 1;
@@ -695,55 +699,55 @@ function AMRData(currentData, data) {
             }
           }
         }
-      } else if (TRIM === "0") {
+      } else if (TRIM === '0') {
         currentData[key][index].total2 += 1;
-        const name = "None";
+        const name = 'None';
         if (currentData[key][index][name] === undefined) {
           currentData[key][index][name] = 1;
         } else {
           currentData[key][index][name] += 1;
         }
       }
-    } else if (key === "Tetracyclines") {
-      const TETRA = data["tetracycline_category"];
-      if (TETRA === "TetR") {
+    } else if (key === 'Tetracyclines') {
+      const TETRA = data['tetracycline_category'];
+      if (TETRA === 'TetR') {
         currentData[key][index].total2 += 1;
         currentData[key][index].total += 1;
-        if (data["tetA(A)"] === "1") {
-          const name = "tetA(A)";
+        if (data['tetA(A)'] === '1') {
+          const name = 'tetA(A)';
           if (currentData[key][index][name] === undefined) {
             currentData[key][index][name] = 1;
           } else {
             currentData[key][index][name] += 1;
           }
         }
-        if (data["tetA(B)"] === "1") {
-          const name = "tetA(B)";
+        if (data['tetA(B)'] === '1') {
+          const name = 'tetA(B)';
           if (currentData[key][index][name] === undefined) {
             currentData[key][index][name] = 1;
           } else {
             currentData[key][index][name] += 1;
           }
         }
-        if (data["tetA(C)"] === "1") {
-          const name = "tetA(C)";
+        if (data['tetA(C)'] === '1') {
+          const name = 'tetA(C)';
           if (currentData[key][index][name] === undefined) {
             currentData[key][index][name] = 1;
           } else {
             currentData[key][index][name] += 1;
           }
         }
-        if (data["tetA(D)"] === "1") {
-          const name = "tetA(D)";
+        if (data['tetA(D)'] === '1') {
+          const name = 'tetA(D)';
           if (currentData[key][index][name] === undefined) {
             currentData[key][index][name] = 1;
           } else {
             currentData[key][index][name] += 1;
           }
         }
-      } else if (TETRA === "TetS") {
+      } else if (TETRA === 'TetS') {
         currentData[key][index].total2 += 1;
-        const name = "None";
+        const name = 'None';
         if (currentData[key][index][name] === undefined) {
           currentData[key][index][name] = 1;
         } else {
@@ -782,7 +786,7 @@ function AMRDataResults(AMRData) {
       return a.total > b.total ? -1 : 1;
     });
     top10.push({
-      maxSum: data.length === 0 ? 0 : Math.ceil(data[0].total2 / 50) * 50,
+      maxSum: data.length === 0 ? 0 : Math.ceil(data[0].total2 / 50) * 50
     });
 
     AMRData[key] = top10;
@@ -799,7 +803,7 @@ function GDData(currentData, data) {
     currentData.push({
       name: data.DATE,
       [data.GENOTYPE]: 1,
-      total: 1,
+      total: 1
     });
   } else {
     currentData[index].total += 1;
@@ -818,7 +822,7 @@ export function filterForComponents({
   dataset,
   region,
   data,
-  amr,
+  amr
 }) {
   const [results, genotypes, worldMapResults, PMIDResults] = [[], [], [], []];
   let [
@@ -836,32 +840,32 @@ export function filterForComponents({
     RFWGResults,
     DRTResults,
     AMRResults,
-    GDResults,
+    GDResults
   ] = [null, null, {}, [], [], [], [], [], [], [], [], [], [], {}, []];
   AMRResults = {
     Ampicillin: [],
     Azithromycin: [],
     Chloramphenicol: [],
-    "Co-trimoxazole": [],
+    'Co-trimoxazole': [],
     ESBL: [],
-    "Fluoroquinolones (CipI/R)": [],
+    'Fluoroquinolones (CipNS)': [],
     Sulphonamides: [],
     Tetracyclines: [],
-    Trimethoprim: [],
+    Trimethoprim: []
   };
 
-  const empty = ["", "-"];
+  const empty = ['', '-'];
   data.forEach((x) => {
     aux = true;
     auxWM = true; // WM = World Map
 
     // Validation if row will be used, this will allways happen
-    if (country !== "All" && x.COUNTRY_ONLY !== country) auxWM = false;
+    if (country !== 'All' && x.COUNTRY_ONLY !== country) auxWM = false;
     if (x.DATE < minYear || x.DATE > maxYear) aux = false;
-    if (dataset !== "All" && x.TRAVEL !== dataset.toLowerCase()) aux = false;
+    if (dataset !== 'All' && x.TRAVEL !== dataset.toLowerCase()) aux = false;
     if (
-      country !== "All" &&
-      region !== "All" &&
+      country !== 'All' &&
+      region !== 'All' &&
       (empty.includes(x.REGION_IN_COUNTRY) || region !== x.REGION_IN_COUNTRY)
     )
       auxWM = false;
@@ -869,34 +873,33 @@ export function filterForComponents({
     // If this passes than it's data for the map
     if (aux && !empty.includes(x.COUNTRY_ONLY)) {
       let displayName = x.COUNTRY_ONLY;
-      if (x.COUNTRY_ONLY === "Democratic Republic of the Congo")
-        displayName = "Dem. Rep. Congo";
-      else if (x.COUNTRY_ONLY === "Central African Republic")
-        displayName = "Central African Rep.";
+      if (x.COUNTRY_ONLY === 'Democratic Republic of the Congo')
+        displayName = 'Dem. Rep. Congo';
+      else if (x.COUNTRY_ONLY === 'Central African Republic')
+        displayName = 'Central African Rep.';
       else if (
-        x.COUNTRY_ONLY === "Ivory Coast" ||
+        x.COUNTRY_ONLY === 'Ivory Coast' ||
         x.COUNTRY_ONLY === "Cote d'Ivoire"
       )
         displayName = "Côte d'Ivoire";
-      else if (x.COUNTRY_ONLY === "East Timor") displayName = "Timor-Leste";
-      else if (x.COUNTRY_ONLY === "State of Palestine")
-        displayName = "Palestine";
-      else if (x.COUNTRY_ONLY === "Dominican Republic")
-        displayName = "Dominican Rep.";
-      else if (x.COUNTRY_ONLY === "Viet Nam") displayName = "Vietnam";
-      else if (x.COUNTRY_ONLY === "USA")
-        displayName = "United States of America";
-      else if (x.COUNTRY_ONLY === "Cape Verde")
-        displayName = "Cabo Verde";
-      else if (x.COUNTRY_ONLY === "Turks and Caicos Islands")
-        displayName = "Turks and Caicos Is.";
+      else if (x.COUNTRY_ONLY === 'East Timor') displayName = 'Timor-Leste';
+      else if (x.COUNTRY_ONLY === 'State of Palestine')
+        displayName = 'Palestine';
+      else if (x.COUNTRY_ONLY === 'Dominican Republic')
+        displayName = 'Dominican Rep.';
+      else if (x.COUNTRY_ONLY === 'Viet Nam') displayName = 'Vietnam';
+      else if (x.COUNTRY_ONLY === 'USA')
+        displayName = 'United States of America';
+      else if (x.COUNTRY_ONLY === 'Cape Verde') displayName = 'Cabo Verde';
+      else if (x.COUNTRY_ONLY === 'Turks and Caicos Islands')
+        displayName = 'Turks and Caicos Is.';
 
       // WORLD MAP
       if (!worldMapResults.some((e) => e.name === x.COUNTRY_ONLY)) {
         worldMapResults.push({
           name: x.COUNTRY_ONLY,
           displayName: displayName,
-          count: 1,
+          count: 1
         });
       } else {
         let aux2 = worldMapResults.find((e) => e.name === x.COUNTRY_ONLY);
@@ -920,78 +923,78 @@ export function filterForComponents({
         JSON.stringify(worldMapG),
         x,
         displayName,
-        "GENOTYPE",
-        "genotypes",
-        "lineage"
+        'GENOTYPE',
+        'genotypes',
+        'lineage'
       );
       worldMapH58 = WMCountData(
         JSON.stringify(worldMapH58),
         x,
         displayName,
-        "GENOTYPE_SIMPLE",
-        "genotypes",
-        "type",
+        'GENOTYPE_SIMPLE',
+        'genotypes',
+        'type',
         true
       );
       worldMapSTAD = WMCountData(
         JSON.stringify(worldMapSTAD),
         x,
         displayName,
-        "amr_category",
-        "STADs",
-        "type",
+        'amr_category',
+        'STADs',
+        'type',
         false,
-        "No AMR detected"
+        'No AMR detected'
       );
       worldMapMDR = WMCountData(
         JSON.stringify(worldMapMDR),
         x,
         displayName,
-        "MDR",
-        "MDRs",
-        "type",
+        'MDR',
+        'MDRs',
+        'type',
         false,
-        "MDR"
+        'MDR'
       );
       worldMapXDR = WMCountData(
         JSON.stringify(worldMapXDR),
         x,
         displayName,
-        "XDR",
-        "XDRs",
-        "type",
+        'XDR',
+        'XDRs',
+        'type',
         false,
-        "XDR"
+        'XDR'
       );
       worldMapAZITH = WMCountData(
         JSON.stringify(worldMapAZITH),
         x,
         displayName,
-        "azith_pred_pheno",
-        "AZs",
-        "type",
+        'azith_pred_pheno',
+        'AZs',
+        'type',
         false,
-        "AzithR"
+        'AzithR'
       );
       worldMapCIPR = WMCountData(
         JSON.stringify(worldMapCIPR),
         x,
         displayName,
-        "cip_pred_pheno",
-        "CipRs",
-        "type",
+        'cip_pred_pheno',
+        'CipRs',
+        'type',
         false,
-        "CipR"
+        'CipR'
       );
       worldMapCIPI = WMCountData(
         JSON.stringify(worldMapCIPI),
         x,
         displayName,
-        "cip_pred_pheno",
-        "CipIs",
-        "type",
+        'cip_pred_pheno',
+        'CipIs',
+        'type',
         false,
-        "",
+        '',
         true
       );
     }
@@ -1022,14 +1025,14 @@ export function filterForComponents({
   worldMapComplementaryResults = WMCDResults(
     JSON.stringify(worldMapComplementaryResults)
   );
-  worldMapG = WMCountDataResults(JSON.stringify(worldMapG), "genotypes");
-  worldMapH58 = WMCountDataResults(JSON.stringify(worldMapH58), "genotypes");
-  worldMapSTAD = WMCountDataResults(JSON.stringify(worldMapSTAD), "STADs");
-  worldMapMDR = WMCountDataResults(JSON.stringify(worldMapMDR), "MDRs");
-  worldMapXDR = WMCountDataResults(JSON.stringify(worldMapXDR), "XDRs");
-  worldMapAZITH = WMCountDataResults(JSON.stringify(worldMapAZITH), "AZs");
-  worldMapCIPR = WMCountDataResults(JSON.stringify(worldMapCIPR), "CipRs");
-  worldMapCIPI = WMCountDataResults(JSON.stringify(worldMapCIPI), "CipIs");
+  worldMapG = WMCountDataResults(JSON.stringify(worldMapG), 'genotypes');
+  worldMapH58 = WMCountDataResults(JSON.stringify(worldMapH58), 'genotypes');
+  worldMapSTAD = WMCountDataResults(JSON.stringify(worldMapSTAD), 'STADs');
+  worldMapMDR = WMCountDataResults(JSON.stringify(worldMapMDR), 'MDRs');
+  worldMapXDR = WMCountDataResults(JSON.stringify(worldMapXDR), 'XDRs');
+  worldMapAZITH = WMCountDataResults(JSON.stringify(worldMapAZITH), 'AZs');
+  worldMapCIPR = WMCountDataResults(JSON.stringify(worldMapCIPR), 'CipRs');
+  worldMapCIPI = WMCountDataResults(JSON.stringify(worldMapCIPI), 'CipIs');
   RFWGResults.sort((a, b) => b.total - a.total);
   DRTResults = DRTResults.filter((item) => item.total >= 10);
   DRTResults.sort((a, b) => a.name.localeCompare(b.name));
@@ -1054,6 +1057,6 @@ export function filterForComponents({
     RFWGResults, // Data for Resistance frequencies within genotypes graph
     DRTResults, // Data for Drug resistance trends graph
     AMRResults, // Data for Resistance determinants within genotypes graph
-    GDResults, // DATA for Genotype distribution graph
+    GDResults // DATA for Genotype distribution graph
   ];
 }
