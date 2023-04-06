@@ -4490,58 +4490,26 @@ const DashboardPage = () => {
         </div>
         {/* About info */}
         <div className="about-wrapper">
-          <h2>About TyphiNET</h2>
-          <p>
+            <h2>About TyphiNET</h2>
+            <p>
             The TyphiNET dashboard collates antimicrobial resistance (AMR) and
             genotype (lineage) information extracted from whole genome sequence
             (WGS) data from the bacterial pathogen <i> Salmonella</i> Typhi, the
-            agent of typhoid fever.
-          </p>
-          <p>
-            AMR determinants identified in the genome assemblies using
-            Pathogenwatch are used to define drug resistance variables as
+            agent of typhoid fever. AMR determinants identified in the genome 
+            assemblies using Pathogenwatch are used to define drug resistance variables as
             follows.
-          </p>
-          <p>
-            Multidrug resistance(MDR): resistance determinants for
-            chloramphenicol (<i>catA1</i> or <i>cmlA</i>), ampicillin (
-            <i>bla</i>TEM-1D, <i>bla</i>OXA-7), and co-trimoxazole (at least one{" "}
-            <i>dfrA</i> gene and at least one <i>sul</i> gene).
-          </p>
-          <p>
-            Ciprofloxacin non-susceptible (CipNS): one or more of the quinolone resistance
-            determining region(QRDR) mutations at <i>gyrA</i>-83, <i>gyrA</i>
-            -87, <i>parC</i>-80, <i>parC</i>-84, <i>gyrB</i>-464 or presence of
-            a plasmid-mediated quinolone resistance(PMQR) gene(<i>qnrB</i>,{" "}
-            <i>qnrD</i> , <i>qnrS</i>).
-          </p>
-          <p>
-            Ciprofloxacin resistant (CipR): QRDR triple mutant (<i>gyrA</i>-83 and <i>gyrA</i>-87, together with
-            either <i>parC</i>-80 or <i>parC</i>-84), or plasmid-mediated
-            quinolone resistance(PMQR) together with <i>gyrA</i>-83, <i>gyrA</i>
-            -87 and/or <i>gyrB</i>-464.
-          </p>
-          <p>
-            Third-generation cephalosporin resistance (3 GCR): presence of an extended-spectrum
-            beta-lactamase(ESBL) (<i>bla</i>CTX-M-12, <i>bla</i>CTX-M-15,{" "}
-            <i>bla</i>CTX-M-23, <i>bla</i>CTX-M-55, <i>bla</i>SHV-12) or{" "}
-            <i>ampC</i> gene.
-          </p>
-          <p>
+            </p>
+            <p>
+            Multidrug resistance(MDR): resistance determinants for chloramphenicol (<i>catA1</i> or <i>cmlA</i>), ampicillin (<i>bla</i>TEM-1D, <i>bla</i>OXA-7), and co-trimoxazole (at least one{" "} <i>dfrA</i> gene and at least one <i>sul</i>gene).
+            Ciprofloxacin non-susceptible (CipNS): one or more of the quinolone resistance determining region(QRDR) mutations at <i>gyrA</i>-83,<i>gyrA</i>-87,<i>parC</i>-80,<i>parC</i>-84,<i>gyrB</i>-464 or presence of a plasmid-mediated quinolone resistance(PMQR) gene(<i> qnrB</i>, {" "} <i>qnrD</i>, <i>qnrS</i>).
+            Ciprofloxacin resistant (CipR): QRDR triple mutant (<i>gyrA</i>-83 and <i>gyrA</i>-87, together with either <i>parC</i>-80 or <i>parC</i>-84), or plasmid-mediated quinolone resistance(PMQR) together with <i>gyrA</i>-83, <i>gyrA</i>-87 and/or <i>gyrB</i>-464.
+            Third-generation cephalosporin resistance (3 GCR): presence of an extended-spectrum beta-lactamase(ESBL) (<i>bla</i>CTX-M-12,<i>bla</i>CTX-M-15,{" "} <i>bla</i>CTX-M-23,<i>bla</i>CTX-M-55,<i>bla</i>SHV-12) or{" "} <i>ampC</i> gene.
             Extreme drug resistance(XDR): MDR plus CipR plus 3 GCR.
-          </p>
-          <p>
             Azithromycin resistance(AziR): mutation at <i>acrB</i>-717. See{" "}
-            <a
-              href="https://www.nature.com/articles/s41467-021-23091-2"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Argimon et al, 2021
-            </a>{" "}
-            for details.
-          </p>
-          <p>
+            <a href="https://www.nature.com/articles/s41467-021-23091-2" target="_blank" rel="noreferrer"> Argimon et al, 2021
+            </a>{" "} for details.
+            </p>
+            <p>
             <b>Data:</b> Data are sourced regularly from Typhi{" "}
             <a href="https://pathogen.watch/" target="_blank" rel="noreferrer">
               Pathogenwatch
@@ -4553,12 +4521,12 @@ const DashboardPage = () => {
               Global Typhoid Genomics Consortium
             </a>. 
             The database can be downloaded using the button below.
+            </p>
             <p>
             <b>Documentation:</b> Full documentation for the dashboard is available {" "}
             <a href="https://github.com/zadyson/TyphiNET/wiki" target="_blank" rel="noreferrer">
               here
             </a>.
-            </p>
             Information on genotype definitions can be found in{" "}
             <a
               href="https://academic.oup.com/jid/article/224/Supplement_7/S775/6358992?login=true"
@@ -4566,8 +4534,7 @@ const DashboardPage = () => {
               rel="noreferrer"
             >
               Dyson & Holt, 2021
-            </a>
-            .
+            </a>.
           </p>
           <p>
             <b>Team:</b> The TyphiNET dashboard is coordinated by {" "}
