@@ -4495,19 +4495,8 @@ const DashboardPage = () => {
             The TyphiNET dashboard collates antimicrobial resistance (AMR) and
             genotype (lineage) information extracted from whole genome sequence
             (WGS) data from the bacterial pathogen <i> Salmonella</i> Typhi, the
-            agent of typhoid fever. AMR determinants identified in the genome 
-            assemblies using Pathogenwatch are used to define drug resistance variables as
-            follows.
-            </p>
-            <p>
-            Multidrug resistance(MDR): resistance determinants for chloramphenicol (<i>catA1</i> or <i>cmlA</i>), ampicillin (<i>bla</i>TEM-1D, <i>bla</i>OXA-7), and co-trimoxazole (at least one{" "} <i>dfrA</i> gene and at least one <i>sul</i>gene).
-            Ciprofloxacin non-susceptible (CipNS): one or more of the quinolone resistance determining region(QRDR) mutations at <i>gyrA</i>-83,<i>gyrA</i>-87,<i>parC</i>-80,<i>parC</i>-84,<i>gyrB</i>-464 or presence of a plasmid-mediated quinolone resistance(PMQR) gene(<i> qnrB</i>, {" "} <i>qnrD</i>, <i>qnrS</i>).
-            Ciprofloxacin resistant (CipR): QRDR triple mutant (<i>gyrA</i>-83 and <i>gyrA</i>-87, together with either <i>parC</i>-80 or <i>parC</i>-84), or plasmid-mediated quinolone resistance(PMQR) together with <i>gyrA</i>-83, <i>gyrA</i>-87 and/or <i>gyrB</i>-464.
-            Third-generation cephalosporin resistance (3 GCR): presence of an extended-spectrum beta-lactamase(ESBL) (<i>bla</i>CTX-M-12,<i>bla</i>CTX-M-15,{" "} <i>bla</i>CTX-M-23,<i>bla</i>CTX-M-55,<i>bla</i>SHV-12) or{" "} <i>ampC</i> gene.
-            Extreme drug resistance(XDR): MDR plus CipR plus 3 GCR.
-            Azithromycin resistance(AziR): mutation at <i>acrB</i>-717. See{" "}
-            <a href="https://www.nature.com/articles/s41467-021-23091-2" target="_blank" rel="noreferrer"> Argimon et al, 2021
-            </a>{" "} for details.
+            agent of typhoid fever. Data sources and definitions are available in the 
+            <a href="https://github.com/zadyson/TyphiNET/wiki" target="_blank" rel="noreferrer">TyphiNET wiki</a>.
             </p>
             <p>
             <b>Data:</b> Data are sourced regularly from Typhi{" "}
@@ -4523,7 +4512,7 @@ const DashboardPage = () => {
             The database can be downloaded using the button below.
             </p>
             <p>
-            <b>Documentation:</b> Full documentation for the dashboard is available {" "}
+            <b>Documentation:</b> Full documentation for the dashboard, including variable definitions, is available {" "}
             <a href="https://github.com/zadyson/TyphiNET/wiki" target="_blank" rel="noreferrer">
               here
             </a>.
@@ -4545,7 +4534,7 @@ const DashboardPage = () => {
             <a href="https://scholar.google.com.au/citations?hl=en&user=O2dcz5MAAAAJ" target="_blank" rel="noreferrer">
               Dr Louise Cerdeira
             </a>
-             &amp; {" "}
+             and
             <a href="https://holtlab.net/" target="_blank" rel="noreferrer">
               Prof Kat Holt
             </a>
@@ -4615,14 +4604,7 @@ const DashboardPage = () => {
         <div style={{ flex: 1 }} />
         <div className="footer">
           <span>
-            Data obtained from:{" "}
-            <a href="https://pathogen.watch" rel="noreferrer" target="_blank">
-              pathogen watch project
-            </a>{" "}
-            on 21/02/2023.{" "}
-            <a href="https://holtlab.net" rel="noreferrer" target="_blank">
-              Holt Lab
-            </a>
+            Data last updated on 21/02/2023.{" "}
           </span>
         </div>
         {/* FAB reset filters */}
