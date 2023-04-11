@@ -4495,7 +4495,7 @@ const DashboardPage = () => {
             The TyphiNET dashboard collates antimicrobial resistance (AMR) and
             genotype (lineage) information extracted from whole genome sequence
             (WGS) data from the bacterial pathogen <i> Salmonella</i> Typhi, the
-            agent of typhoid fever. Data sources and definitions are available in the 
+            agent of typhoid fever. Data sources and definitions are available in the {" "}
             <a href="https://github.com/zadyson/TyphiNET/wiki" target="_blank" rel="noreferrer">TyphiNET wiki</a>.
             </p>
             <p>
@@ -4533,8 +4533,8 @@ const DashboardPage = () => {
             , {" "}
             <a href="https://scholar.google.com.au/citations?hl=en&user=O2dcz5MAAAAJ" target="_blank" rel="noreferrer">
               Dr Louise Cerdeira
-            </a>
-             and
+            </a> {" "}
+             and {" "}
             <a href="https://holtlab.net/" target="_blank" rel="noreferrer">
               Prof Kat Holt
             </a>
