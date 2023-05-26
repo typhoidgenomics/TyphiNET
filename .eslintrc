@@ -1,0 +1,11 @@
+{
+    "env": {
+      "node": true,
+      "es6": true
+    },
+    "parser": "babel-eslint",
+    "parserOptions": {
+      "ecmaVersion": 11
+    },
+    "extends": ["eslint:recommended", "plugin:react/recommended"]
+  }
