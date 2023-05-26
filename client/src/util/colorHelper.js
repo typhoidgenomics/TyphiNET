@@ -169,14 +169,15 @@ export const getColorForDrug = (drug) => {
   switch (drug) {
     case 'Azithromycin':
       return 'rgb(144,211,199)';
-    case 'Fluoroquinolones (CipNS)':
+    case 'Ciprofloxacin NS':
       return 'rgb(255,236,120)';
-    case 'ESBL':
+    case 'Ceftriaxone':
       return '#DB90F0';
     case 'Chloramphenicol':
       return 'rgb(249,129,117)';
     case 'Ampicillin':
       return 'rgb(129,178,210)';
+    case 'Trimethoprim-sulfamethoxazole':
     case 'Co-trimoxazole':
       return 'rgb(252,180,105)';
     case 'Sulphonamides':
@@ -189,7 +190,7 @@ export const getColorForDrug = (drug) => {
       return 'lightGray';
     case 'Fluoroquinolones (CipI)':
       return '#98fb98';
-    case 'Fluoroquinolones (CipR)':
+    case 'Ciprofloxacin R':
       return '#9e9ac8';
     default:
       return '#F5F4F6';

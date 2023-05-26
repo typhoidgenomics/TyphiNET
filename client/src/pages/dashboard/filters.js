@@ -231,16 +231,16 @@ function ChartData(RFWGData, DRTData, data) {
       total: 0,
       drugsPercentage: {},
       Azithromycin: 0,
-      'Fluoroquinolones (CipNS)': 0,
-      ESBL: 0,
+      'Ciprofloxacin NS': 0,
+      Ceftriaxone: 0,
       Chloramphenicol: 0,
       Ampicillin: 0,
-      'Co-trimoxazole': 0,
+      'Trimethoprim-sulfamethoxazole': 0,
       Sulphonamides: 0,
       Trimethoprim: 0,
       Tetracyclines: 0,
       Susceptible: 0,
-      'Fluoroquinolones (CipR)': 0
+      'Ciprofloxacin R': 0
     });
     index2 = DRTData.length - 1;
   }
@@ -256,15 +256,16 @@ function ChartData(RFWGData, DRTData, data) {
     currentDRT['Azithromycin'] += 1;
   }
   if (data['cip_pred_pheno'] === 'CipR' || data['cip_pred_pheno'] === 'CipI') {
-    if (currentRFWG['Fluoroquinolones (CipNS)'] === undefined)
-      currentRFWG['Fluoroquinolones (CipNS)'] = 1;
-    else currentRFWG['Fluoroquinolones (CipNS)'] += 1;
-    currentDRT['Fluoroquinolones (CipNS)'] += 1;
+    if (currentRFWG['Ciprofloxacin NS'] === undefined)
+      currentRFWG['Ciprofloxacin NS'] = 1;
+    else currentRFWG['Ciprofloxacin NS'] += 1;
+    currentDRT['Ciprofloxacin NS'] += 1;
   }
   if (data['ESBL_category'] === 'ESBL') {
-    if (currentRFWG['ESBL'] === undefined) currentRFWG['ESBL'] = 1;
-    else currentRFWG['ESBL'] += 1;
-    currentDRT['ESBL'] += 1;
+    if (currentRFWG['Ceftriaxone'] === undefined)
+      currentRFWG['Ceftriaxone'] = 1;
+    else currentRFWG['Ceftriaxone'] += 1;
+    currentDRT['Ceftriaxone'] += 1;
   }
   if (data['chloramphenicol_category'] === 'ChlR') {
     if (currentRFWG['Chloramphenicol'] === undefined)
@@ -281,7 +282,7 @@ function ChartData(RFWGData, DRTData, data) {
     if (currentRFWG['Co-trimoxazole'] === undefined)
       currentRFWG['Co-trimoxazole'] = 1;
     else currentRFWG['Co-trimoxazole'] += 1;
-    currentDRT['Co-trimoxazole'] += 1;
+    currentDRT['Trimethoprim-sulfamethoxazole'] += 1;
   }
   if (data['sul_any'] === '1') {
     if (currentRFWG['Sulphonamides'] === undefined)
@@ -313,7 +314,7 @@ function ChartData(RFWGData, DRTData, data) {
     if (currentRFWG['Fluoroquinolones (CipR)'] === undefined)
       currentRFWG['Fluoroquinolones (CipR)'] = 1;
     else currentRFWG['Fluoroquinolones (CipR)'] += 1;
-    currentDRT['Fluoroquinolones (CipR)'] += 1;
+    currentDRT['Ciprofloxacin R'] += 1;
   }
 
   return [RFWGData, DRTData];
@@ -377,66 +378,62 @@ function AMRData(currentData, data) {
       if (AZITH === 'AzithR') {
         currentData[key][index].total += 1;
         currentData[key][index].total2 += 1;
-        // if (
-        //   data['ereA'] === '1' &&
-        //   data['acrB_R717Q'] === '1' &&
-        //   data['acrB_R717L' == '1']
-        // ) {
-        //   const name = 'ereA + acrB_R717Q + acrB_R717L';
-        //   if (currentData[key][index][name] === undefined) {
-        //     currentData[key][index][name] = 1;
-        //   } else {
-        //     currentData[key][index][name] += 1;
-        //   }
-        // } else {
-        // if (data['ereA'] === '1' && data['acrB_R717Q'] === '1') {
-        //   const name = 'ereA + acrB_R717Q';
-        //   if (currentData[key][index][name] === undefined) {
-        //     currentData[key][index][name] = 1;
-        //   } else {
-        //     currentData[key][index][name] += 1;
-        //   }
-        // }
-        // else if (data['ereA'] === '1' && data['acrB_R717L'] === '1') {
-        //   const name = 'ereA + acrB_R717L';
-        //   if (currentData[key][index][name] === undefined) {
-        //     currentData[key][index][name] = 1;
-        //   } else {
-        //     currentData[key][index][name] += 1;
-        //   }
-        // } else
-        if (data['acrB_R717Q'] === '1' && data['acrB_R717L'] === '1') {
-          const name = 'acrB_R717Q + acrB_R717L';
+        if (
+          data['ereA'] === '1' &&
+          data['acrB_R717Q'] === '1' &&
+          data['acrB_R717L' == '1']
+        ) {
+          const name = 'ereA + acrB_R717Q + acrB_R717L';
           if (currentData[key][index][name] === undefined) {
             currentData[key][index][name] = 1;
           } else {
             currentData[key][index][name] += 1;
+          }
+        } else {
+          if (data['ereA'] === '1' && data['acrB_R717Q'] === '1') {
+            const name = 'ereA + acrB_R717Q';
+            if (currentData[key][index][name] === undefined) {
+              currentData[key][index][name] = 1;
+            } else {
+              currentData[key][index][name] += 1;
+            }
+          } else if (data['ereA'] === '1' && data['acrB_R717L'] === '1') {
+            const name = 'ereA + acrB_R717L';
+            if (currentData[key][index][name] === undefined) {
+              currentData[key][index][name] = 1;
+            } else {
+              currentData[key][index][name] += 1;
+            }
+          } else if (data['acrB_R717Q'] === '1' && data['acrB_R717L'] === '1') {
+            const name = 'acrB_R717Q + acrB_R717L';
+            if (currentData[key][index][name] === undefined) {
+              currentData[key][index][name] = 1;
+            } else {
+              currentData[key][index][name] += 1;
+            }
+          } else if (data['ereA'] === '1') {
+            const name = 'ereA';
+            if (currentData[key][index][name] === undefined) {
+              currentData[key][index][name] = 1;
+            } else {
+              currentData[key][index][name] += 1;
+            }
+          } else if (data['acrB_R717Q'] === '1') {
+            const name = 'acrB_R717Q';
+            if (currentData[key][index][name] === undefined) {
+              currentData[key][index][name] = 1;
+            } else {
+              currentData[key][index][name] += 1;
+            }
+          } else if (data['acrB_R717L'] === '1') {
+            const name = 'acrB_R717L';
+            if (currentData[key][index][name] === undefined) {
+              currentData[key][index][name] = 1;
+            } else {
+              currentData[key][index][name] += 1;
+            }
           }
         }
-        // else if (data['ereA'] === '1') {
-        //   const name = 'ereA';
-        //   if (currentData[key][index][name] === undefined) {
-        //     currentData[key][index][name] = 1;
-        //   } else {
-        //     currentData[key][index][name] += 1;
-        //   }
-        // }
-        else if (data['acrB_R717Q'] === '1') {
-          const name = 'acrB_R717Q';
-          if (currentData[key][index][name] === undefined) {
-            currentData[key][index][name] = 1;
-          } else {
-            currentData[key][index][name] += 1;
-          }
-        } else if (data['acrB_R717L'] === '1') {
-          const name = 'acrB_R717L';
-          if (currentData[key][index][name] === undefined) {
-            currentData[key][index][name] = 1;
-          } else {
-            currentData[key][index][name] += 1;
-          }
-        }
-        // }
       } else if (AZITH === 'AzithS') {
         currentData[key][index].total2 += 1;
         const name = 'None';
@@ -446,7 +443,7 @@ function AMRData(currentData, data) {
           currentData[key][index][name] += 1;
         }
       }
-    } else if (key === 'Fluoroquinolones (CipNS)') {
+    } else if (key === 'Ciprofloxacin') {
       const DCS = data['dcs_mechanisms'];
       if (DCS === '0_QRDR') {
         currentData[key][index].total2 += 1;
@@ -848,7 +845,7 @@ export function filterForComponents({
     Chloramphenicol: [],
     'Co-trimoxazole': [],
     ESBL: [],
-    'Fluoroquinolones (CipNS)': [],
+    Ciprofloxacin: [],
     Sulphonamides: [],
     Tetracyclines: [],
     Trimethoprim: []
