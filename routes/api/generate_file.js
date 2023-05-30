@@ -296,37 +296,19 @@ router.get("/create", function (req, res) {
                 obj_parser["dfra_any"] = "1";
               }
             }
+            
             if (data["sul1"] == "0" && data["sul2"] == "0") {
               obj_parser["sul_any"] = "0";
             } else {
               obj_parser["sul_any"] = "1";
             }
+            
             if (obj_parser["sul_any"] == "1" && obj_parser["dfra_any"] == "1") {
               obj_parser["co_trim"] = "1";
             } else {
               obj_parser["co_trim"] = "0";
             }
-            if (
-              data["catA1"] == "1" &&
-              data["blaTEM-1D"] == "1" &&
-              obj_parser["co_trim"] == "1"
-            ) {
-              obj_parser["MDR"] = "MDR";
-            } else {
-              obj_parser["MDR"] = "-";
-            }
-            if (
-              obj_parser["MDR"] == "MDR" &&
-              data["blaCTX-M-15_23"] == "1" &&
-              data["qnrS"] == "1"
-            ) {
-              obj_parser["XDR"] = "XDR";
-            } else {
-              obj_parser["XDR"] = "-";
-            }
-            if (data["ereA"] == "1") {
-              obj_parser["azith_pred_pheno"] = "AzithR";
-            }
+            
             if (
               data["blaCTX-M-15_23"] == "1" ||
               data["blaOXA-7"] == "1" ||
@@ -337,11 +319,13 @@ router.get("/create", function (req, res) {
             } else {
               obj_parser["ESBL_category"] = "Non-ESBL";
             }
+            
             if (data["catA1"] == "1" || data["cmlA"] == "1") {
               obj_parser["chloramphenicol_category"] = "ChlR";
             } else {
               obj_parser["chloramphenicol_category"] = "ChlS";
             }
+            
             if (
               data["tetA(A)"] == "1" ||
               data["tetA(B)"] == "1" ||
@@ -353,6 +337,7 @@ router.get("/create", function (req, res) {
               obj_parser["tetracycline_category"] = "TetS";
             }
           }
+          
           if (file === "pw_amr-genes.csv") {
             if (obj_parser["cip_pheno_qrdr_gene"] == undefined) {
               obj_parser["cip_pheno_qrdr_gene"] =
@@ -392,6 +377,7 @@ router.get("/create", function (req, res) {
               }
             }
           }
+          
           if (column_names.indexOf("gyrA_S83F") != -1) {
             for (let column of headers_amr_snps) {
               obj_parser[column] = data[column];
@@ -423,6 +409,7 @@ router.get("/create", function (req, res) {
               obj_parser["dcs_mechanisms"] =
                 obj_parser["num_qrdr"] + obj_parser["dcs_mechanisms"];
             }
+            
             obj_parser["num_acrb"] = data["acrB_R717Q"];
             if (obj_parser["azith_pred_pheno"] == undefined) {
               if (
@@ -434,6 +421,7 @@ router.get("/create", function (req, res) {
                 obj_parser["azith_pred_pheno"] = "AzithS";
               }
             }
+
 
             if (obj_parser["num_qrdr"] === 3) {
               obj_parser["cip_pred_pheno"] = "CipR";
@@ -447,7 +435,43 @@ router.get("/create", function (req, res) {
             if (obj_parser["num_qrdr"] === 0) {
               obj_parser["cip_pred_pheno"] = "CipS";
             }
-
+            
+            if (
+              obj_parser[num_qrdr != 0] && 
+            	data["qnrS"] == "1"
+            ) {
+              obj_parser["cip_pred_pheno"] = "CipR";
+            }
+            
+            if (
+              obj_parser[num_qrdr != 0] && 
+            	data["qnrB"] == "1"
+            ) {
+              obj_parser["cip_pred_pheno"] = "CipR";
+            }
+            
+            if (
+              data["chloramphenicol_category"] == "ChlR" &&
+              data["blaTEM-1D"] == "1" &&
+              obj_parser["co_trim"] == "1"
+            ) {
+              obj_parser["MDR"] = "MDR";
+            } else {
+              obj_parser["MDR"] = "-";
+            }
+            
+            
+            if (
+              obj_parser["MDR"] == "MDR" &&
+              data["ESBL_category"] == "ESBL" &&
+              data["cip_pred_pheno"] == "CipR"
+            ) {
+              obj_parser["XDR"] = "XDR";
+            } else {
+              obj_parser["XDR"] = "-";
+            }
+            
+            
             if (obj_parser["cip_pheno_qrdr_gene"] != undefined) {
               let cid_pred_pheno =
                 obj_parser["cip_pred_pheno"].toString() +
