@@ -15,4 +15,3 @@ yarn-error.log*
 yarn.lock
 package-lock.json
 .vscode/
-assets/webscrap/raw_data/Fev2023/
