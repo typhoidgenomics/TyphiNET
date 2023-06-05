@@ -284,9 +284,9 @@ router.get('/create', function (req, res) {
             } else {
               obj_parser['XDR'] = '-';
             }
-            if (data['ereA'] == '1') {
-              obj_parser['azith_pred_pheno'] = 'AzithR';
-            }
+            // if (data['ereA'] == '1') {
+            //   obj_parser['azith_pred_pheno'] = 'AzithR';
+            // }
             if (
               data['blaCTX-M-15_23'] == '1' ||
               data['blaOXA-7'] == '1' ||
@@ -372,7 +372,7 @@ router.get('/create', function (req, res) {
             }
             obj_parser['num_acrb'] = data['acrB_R717Q'];
             if (obj_parser['azith_pred_pheno'] == undefined) {
-              if (parseInt(data['acrB_R717Q']) > 0 || parseInt(data['acrB_R717L'])) {
+              if (parseInt(data['acrB_R717Q']) > 0 || parseInt(data['acrB_R717L']) > 0) {
                 obj_parser['azith_pred_pheno'] = 'AzithR';
               } else {
                 obj_parser['azith_pred_pheno'] = 'AzithS';
@@ -538,7 +538,7 @@ router.get('/create', function (req, res) {
               data_to_write[d]['num_qrdr'] === 0 &&
               (data_to_write[d]['qnrS'] === '1' || data_to_write[d]['qnrB'] === '1')
             ) {
-              data_to_write[d]['cip_pred_pheno'] = 'CipI';
+              data_to_write[d]['cip_pred_pheno'] = 'CipR';
             } else if (data_to_write[d]['num_qrdr'] === 0) {
               data_to_write[d]['cip_pred_pheno'] = 'CipS';
             } else if (

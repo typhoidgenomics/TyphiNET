@@ -62,10 +62,10 @@ export const getColorForDrug = (drug) => {
       return '#54C2FF';
 
     case 'XDR':
-      return '#adff2f';
+      return '#000';
 
     case 'MDR':
-      return '#00bfff';
+      return '#B80F0F';
 
     default:
       return '#F5F4F6';

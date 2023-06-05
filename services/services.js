@@ -10,7 +10,7 @@ const path_clean = path.join(__dirname, '../assets/webscrap/clean/clean.csv');
 var path_clean_db;
 const path_clean_all = path.join(__dirname, '../assets/webscrap/clean/cleanAll.csv');
 
-const watcher = chokidar.watch(path.join(__dirname, '../assets/webscrap/clean/styphi/'), {
+const watcher = chokidar.watch(path.join(__dirname, '../assets/webscrap/clean/'), {
   ignored: /^\./,
   persistent: true
 });

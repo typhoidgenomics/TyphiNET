@@ -1,6 +1,6 @@
 {
     "name": "typhinet",
-    "version": "1.1.0",
+    "version": "0.0.1",
     "private": true,
     "dependencies": {
         "@emotion/react": "^11.10.6",
@@ -25,7 +25,6 @@
         "react-router-dom": "^6.10.0",
         "react-scripts": "4.0.3",
         "react-simple-maps": "^2.3.0",
-        "react-tooltip": "^4.2.10",
         "recharts": "^2.5.0",
         "rodal": "^1.8.1",
         "save-svg-as-png": "^1.4.17",
