@@ -24,7 +24,7 @@ export const getColorForDrug = (drug) => {
     case 'Colistin':
       return '#DB90F0';
 
-    case 'Fluoroquinolones (CipI)':
+    // case 'Fluoroquinolones (CipI)':
     case 'Fosfomycin':
       return '#98fb98';
 

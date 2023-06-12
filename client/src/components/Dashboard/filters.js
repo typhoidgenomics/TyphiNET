@@ -19,7 +19,7 @@ export function filterData({ data, dataset, actualTimeInitial, actualTimeFinal, 
   let listPMID = [];
 
   if (actualCountry !== 'All') {
-    const countryData = newData.filter((x) => x.COUNTRY_ONLY === actualCountry);
+    const countryData = newData.filter((x) => getCountryDisplayName(x.COUNTRY_ONLY) === actualCountry);
     genomesCount = countryData.length;
     listPMID = [...new Set(countryData.map((x) => x.PMID))];
 
@@ -131,12 +131,7 @@ export function getMapData({ data, countries }) {
     stats.AzithR = getMapStatsData({ countryData, columnKey: 'azith_pred_pheno', statsKey: 'AzithR' });
     stats.Susceptible = getMapStatsData({ countryData, columnKey: 'amr_category', statsKey: 'No AMR detected' });
     stats.CipR = getMapStatsData({ countryData, columnKey: 'cip_pred_pheno', statsKey: 'CipR' });
-    stats.CipI = getMapStatsData({ countryData, columnKey: 'cip_pred_pheno', statsKey: 'CipI' });
-    stats.CipNS = {
-      items: [],
-      count: stats.CipI.count + stats.CipR.count,
-      percentage: Number((((stats.CipI.count + stats.CipR.count) / countryData.length) * 100).toFixed(2))
-    };
+    stats.CipNS = getMapStatsData({ countryData, columnKey: 'cip_pred_pheno', statsKey: 'CipNS' });
 
     return {
       name: country,
@@ -154,7 +149,7 @@ export function getYearsData({ data, years, actualCountry }) {
 
   const genotypesData = years.map((year) => {
     const yearData = data.filter(
-      (x) => x.DATE === year && (actualCountry === 'All' || x.COUNTRY_ONLY === actualCountry)
+      (x) => x.DATE === year && (actualCountry === 'All' || getCountryDisplayName(x.COUNTRY_ONLY) === actualCountry)
     );
     const response = {
       name: year.toString(),
@@ -180,7 +175,7 @@ export function getYearsData({ data, years, actualCountry }) {
           drugStats[rule.key] = drugData.length;
 
           if (rule.key === 'Ciprofloxacin NS') {
-            drugStats['Ciprofloxacin R'] = drugData.filter((x) => x[rule.columnID] === 'CipR').length;
+            drugStats['Ciprofloxacin R'] = yearData.filter((x) => x[rule.columnID] === 'CipR').length;
           }
         });
 
@@ -214,7 +209,8 @@ export function getGenotypesData({ data, genotypes, actualCountry }) {
 
   const genotypesDrugsData = genotypes.map((genotype) => {
     const genotypeData = data.filter(
-      (x) => x.GENOTYPE === genotype && (actualCountry === 'All' || x.COUNTRY_ONLY === actualCountry)
+      (x) =>
+        x.GENOTYPE === genotype && (actualCountry === 'All' || getCountryDisplayName(x.COUNTRY_ONLY) === actualCountry)
     );
 
     const response = {
@@ -234,7 +230,7 @@ export function getGenotypesData({ data, genotypes, actualCountry }) {
       response[rule.key] = drugData.length;
 
       if (rule.key === 'Ciprofloxacin NS') {
-        response['Ciprofloxacin R'] = drugData.filter((x) => x[rule.columnID] === 'CipR').length;
+        response['Ciprofloxacin R'] = genotypeData.filter((x) => x[rule.columnID] === 'CipR').length;
       }
 
       if (rule.key !== 'Susceptible') {

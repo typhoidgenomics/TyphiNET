@@ -9,7 +9,7 @@ export const drugRules = [
   // { key: 'ESBL', columnID: 'ESBL_category', values: ['ESBL'] },
   { key: 'Ceftriaxone', columnID: 'ESBL_category', values: ['ESBL'] },
   // { key: 'Fluoroquinolones (CipNS)', columnID: 'cip_pred_pheno', values: ['CipR', 'CipI'] },
-  { key: 'Ciprofloxacin NS', columnID: 'cip_pred_pheno', values: ['CipR', 'CipI'] },
+  { key: 'Ciprofloxacin NS', columnID: 'cip_pred_pheno', values: ['CipNS'] },
   { key: 'Sulphonamides', columnID: 'sul_any', values: ['1'] },
   { key: 'Susceptible', columnID: 'amr_category', values: ['No AMR detected'] },
   { key: 'Tetracyclines', columnID: 'tetracycline_category', values: ['TetR'] },
@@ -417,12 +417,12 @@ export const drugClassesRules = {
     },
 
     {
-      name: '2_QRDR (CipI)',
+      name: '2_QRDR (CipNS)',
       susceptible: false,
       rules: [{ columnID: 'dcs_mechanisms', value: '2_QRDR' }]
     },
     {
-      name: '1_QRDR (CipI)',
+      name: '1_QRDR (CipNS)',
       susceptible: false,
       rules: [{ columnID: 'dcs_mechanisms', value: '1_QRDR' }]
     },

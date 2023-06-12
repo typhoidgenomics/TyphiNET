@@ -25,7 +25,6 @@ interface StatsModel {
   AzithR: ItemsModel;
   Susceptible: ItemsModel;
   CipR: ItemsModel;
-  CipI: ItemsModel;
   CipNS: ItemsModel;
 }
 
@@ -73,7 +72,6 @@ export const mapSlice = createSlice({
     setTooltipContent: (state, action: PayloadAction<Object | null>) => {
       state.tooltipContent = action.payload;
     },
-
     setDataset: (state, action: PayloadAction<string>) => {
       state.dataset = action.payload;
     },

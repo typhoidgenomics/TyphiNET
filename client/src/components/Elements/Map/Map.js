@@ -65,7 +65,6 @@ export const Map = () => {
               MDR: `${countryStats.MDR.percentage}%`,
               XDR: `${countryStats.XDR.percentage}%`,
               AzithR: `${countryStats.AzithR.percentage}%`,
-              CipI: `${countryStats.CipI.percentage}%`,
               CipR: `${countryStats.CipR.percentage}%`,
               CipNS: `${countryStats.CipNS.percentage}%`,
               Susceptible: `${countryStats.Susceptible.percentage}%`
