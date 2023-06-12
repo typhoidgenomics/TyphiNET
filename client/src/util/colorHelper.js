@@ -1,4 +1,6 @@
-// Helper for genotype color
+// Helper for colors
+
+// Color for Salmonella genotypes
 export const getColorForGenotype = (genotype) => {
   switch (genotype) {
     case '0':
@@ -127,164 +129,108 @@ export const getColorForGenotype = (genotype) => {
   }
 };
 
-export const getColorForAMR = (amr) => {
-  switch (amr) {
-    case 'No AMR detected':
-      return '#addd8e';
-    case 'MDR_DCS':
-      return '#9e9ac8';
-    case 'MDR':
-      return 'red';
-    case 'DCS':
-      return '#6baed6';
-    case 'AzithR_MDR':
-      return '#a50f15';
-    case 'AzithR_DCS':
-      return '#7a0177';
-    case 'AzithR_DCS_MDR':
-      return '#54278f';
-    case 'XDR':
-      return 'black';
-    case 'AMR':
-      return '#ffeda0';
-    case 'AMR_DCS':
-      return '#fd8d3c';
-    default:
-      return '#F5F4F6';
-  }
+// Colors for Salmonella drug classes genes
+export const colorForDrugClasses = {
+  Azithromycin: [
+    { name: 'acrB_R717L', color: '#FBCFE5' },
+    { name: 'acrB_R717Q', color: '#addd8e' },
+    { name: 'acrB_R717Q + acrB_R717L', color: '#fd8d3c' },
+    { name: 'None', color: '#B9B9B9' }
+  ],
+  // 'Fluoroquinolones (CipNS)': [
+  'Ciprofloxacin NS': [
+    { name: '0_QRDR + qnrB (CipR)', color: '#0066cc' },
+    { name: '0_QRDR + qnrS (CipR)', color: '#009999' },
+    { name: '1_QRDR (CipNS)', color: '#ffcc00' },
+    { name: '1_QRDR + qnrB (CipR)', color: '#993399' },
+    { name: '1_QRDR + qnrS (CipR)', color: '#660066' },
+    { name: '2_QRDR (CipNS)', color: '#ff6600' },
+    { name: '2_QRDR + qnrB (CipR)', color: '#ffcccc' },
+    { name: '2_QRDR + qnrS (CipR)', color: '#ff6666' },
+    { name: '3_QRDR (CipR)', color: '#cc0000' },
+    { name: '3_QRDR + qnrB (CipR)', color: '#660000' },
+    { name: '3_QRDR + qnrS (CipR)', color: 'black' },
+    { name: 'None (CipS)', color: '#B9B9B9' }
+  ],
+  Chloramphenicol: [
+    { name: 'catA1', color: '#9e9ac8' },
+    { name: 'catA1 + cmlA', color: '#FFEC78' },
+    { name: 'cmlA', color: '#addd8e' },
+    { name: 'None', color: '#B9B9B9' }
+  ],
+  Ampicillin: [
+    { name: 'blaTEM-1D', color: '#addd8e' },
+    { name: 'None', color: '#B9B9B9' }
+  ],
+  Sulphonamides: [
+    { name: 'None', color: '#B9B9B9' },
+    { name: 'sul1', color: '#fd8d3c' },
+    { name: 'sul1 + sul2', color: '#B4DD70' },
+    { name: 'sul2', color: '#ffeda0' }
+  ],
+  Trimethoprim: [
+    { name: 'dfrA1', color: '#B4DD70' },
+    { name: 'dfrA5', color: '#D7AEF7' },
+    { name: 'dfrA7', color: '#FFEC78' },
+    { name: 'dfrA7 + dfrA14', color: '#fd8d3c' },
+    { name: 'dfrA14', color: '#6baed6' },
+    { name: 'dfrA15', color: '#FBCFE5' },
+    { name: 'dfrA17', color: '#FCB469' },
+    { name: 'dfrA18', color: '#66c2a4' },
+    { name: 'None', color: '#B9B9B9' }
+  ],
+  Tetracyclines: [
+    { name: 'tetA(A)', color: 'rgb(174,227,154)' },
+    { name: 'tetA(B)', color: '#D7AEF7' },
+    { name: 'tetA(C)', color: '#FFEC78' },
+    { name: 'tetA(D)', color: '#FCB469' },
+    { name: 'None', color: '#B9B9B9' }
+  ],
+  // ESBL: [
+  //   { name: 'blaCTX-M-15', color: '#6baed6' },
+  //   { name: 'blaCTX-M-55', color: '#FBCFE5' },
+  //   { name: 'blaOXA-7', color: '#9e9ac8' },
+  //   { name: 'blaSHV-12', color: '#addd8e' },
+  //   { name: 'None', color: '#B9B9B9' }
+  // ],
+  Ceftriaxone: [
+    { name: 'blaCTX-M-15', color: '#6baed6' },
+    { name: 'blaCTX-M-55', color: '#FBCFE5' },
+    { name: 'blaOXA-7', color: '#9e9ac8' },
+    { name: 'blaSHV-12', color: '#addd8e' },
+    { name: 'None', color: '#B9B9B9' }
+  ],
+  // 'Co-trimoxazole': [
+  'Trimethoprim-sulfamethoxazole': [
+    { name: 'dfrA1 + sul1', color: '#ffeda0' },
+    { name: 'dfrA1 + sul2', color: '#a50f15' },
+    { name: 'dfrA1 + sul1 + sul2', color: '#fcc5c0' },
+    { name: 'dfrA5 + sul1', color: '#fd8d3c' },
+    { name: 'dfrA5 + sul2', color: '#6a5acd' },
+    { name: 'dfrA5 + sul1 + sul2', color: '#bcbddc' },
+    { name: 'dfrA7 + sul1', color: '#addd8e' },
+    { name: 'dfrA7 + sul2', color: '#f1b6da' },
+    { name: 'dfrA7 + sul1 + sul2', color: '#fdd0a2' },
+    { name: 'dfrA7 + dfrA14 + sul1 + sul2', color: '#F54CEB' },
+    { name: 'dfrA14 + sul1', color: '#9e9ac8' },
+    { name: 'dfrA14 + sul2', color: '#fb8072' },
+    { name: 'dfrA14 + sul1 + sul2', color: '#c994c7' },
+    { name: 'dfrA15 + sul1', color: '#4682b4' },
+    { name: 'dfrA15 + sul2', color: '#6baed6' },
+    { name: 'dfrA15 + sul1 + sul2', color: '#9ecae1' },
+    { name: 'dfrA17 + sul1', color: '#7a0177' },
+    { name: 'dfrA17 + sul2', color: '#2e8b57' },
+    { name: 'dfrA17 + sul1 + sul2', color: '#a8ddb5' },
+    { name: 'dfrA18 + sul1', color: '#54278f' },
+    { name: 'dfrA18 + sul2', color: '#98fb98' },
+    { name: 'dfrA18 + sul1 + sul2', color: '#fc9272' },
+    { name: 'None', color: '#B9B9B9' }
+  ]
 };
 
-export const getColorForSimpleGenotype = (genotype) => {
-  switch (genotype) {
-    case 'H58':
-      return 'green';
-    case 'Non-H58':
-      return 'red';
-    default:
-      return '#F5F4F6';
-  }
-};
-
-export const getColorForDrug = (drug) => {
-  switch (drug) {
-    case 'Azithromycin':
-      return 'rgb(144,211,199)';
-    case 'Ciprofloxacin NS':
-      return 'rgb(255,236,120)';
-    case 'Ceftriaxone':
-      return '#DB90F0';
-    case 'Chloramphenicol':
-      return 'rgb(249,129,117)';
-    case 'Ampicillin':
-      return 'rgb(129,178,210)';
-    case 'Trimethoprim-sulfamethoxazole':
-    case 'Co-trimoxazole':
-      return 'rgb(252,180,105)';
-    case 'Sulphonamides':
-      return 'rgb(180,221,112)';
-    case 'Trimethoprim':
-      return 'rgb(102,102,255)';
-    case 'Tetracyclines':
-      return 'rgb(251,207,229)';
-    case 'Susceptible':
-      return 'lightGray';
-    case 'Fluoroquinolones (CipI)':
-      return '#98fb98';
-    case 'Ciprofloxacin R':
-      return '#9e9ac8';
-    default:
-      return '#F5F4F6';
-  }
-};
-
-export const getColorForIncType = (incType) => {
-  switch (incType) {
-    case 'IncX1':
-      return 'rgb(174,227,154)';
-    case 'IncFIA(HI1)':
-      return 'rgb(138,35,139)';
-    case 'IncFIB(pHCM2)':
-      return 'rgb(163,215,30)';
-    case 'IncA/C2':
-      return 'rgb(69,51,214)';
-    case 'IncP1':
-      return 'rgb(223,207,231)';
-    case 'IncFIA(HI1)/IncHI1A/IncHI1B(R27)':
-      return 'rgb(66,69,94)';
-    case 'Col(BS512)':
-      return 'rgb(251,172,246)';
-    case 'IncHI1A/IncHI1B(R27)':
-      return 'rgb(34,151,67)';
-    case 'IncN':
-      return 'rgb(238,83,190)';
-    case 'IncHI1B(R27)':
-      return 'rgb(68,242,112)';
-    case 'p0111':
-      return 'rgb(251,45,76)';
-    case 'IncHI1A':
-      return 'rgb(101,230,249)';
-    case 'IncI1':
-      return 'rgb(123,44,49)';
-    case 'IncY':
-      return 'rgb(231,173,121)';
-    case 'IncFIB(AP001918)':
-      return 'rgb(32,80,46)';
-    case 'IncFIB(K)':
-      return 'rgb(53,136,209)';
-    case 'IncHI2/IncHI2A':
-      return 'rgb(115,140,78)';
-    case 'Col440I':
-      return 'rgb(159,4,252)';
-    case 'Col156':
-      return 'rgb(244,212,3)';
-    case 'Col440II/Col440II':
-      return 'rgb(17,160,170)';
-    case 'IncFIA(HI1)/IncHI1A':
-      return 'rgb(251,120,16)';
-    case 'ColRNAI':
-      return 'rgb(91,67,11)';
-    case 'ColpVC':
-      return 'rgb(248,117,116)';
-    case 'IncX3':
-      return 'rgb(190,177,231)';
-    default:
-      return '#F5F4F6';
-  }
-};
-
-export const getColorForTetracyclines = (tetA) => {
-  switch (tetA) {
-    case 'tetA(A)':
-      return 'rgb(174,227,154)';
-    case 'tetA(B)':
-      return '#D7AEF7';
-    case 'tetA(C)':
-      return '#FFEC78';
-    case 'tetA(D)':
-      return '#FCB469';
-    case 'tetA(AB)':
-      return 'rgb(223,207,231)';
-    case 'tetA(ABC)':
-      return 'rgb(66,69,94)';
-    case 'tetA(ABD)':
-      return 'rgb(251,172,246)';
-    case 'tetA(ABCD)':
-      return 'rgb(34,151,67)';
-    case 'tetA(AC)':
-      return 'rgb(238,83,190)';
-    case 'tetA(ACD)':
-      return 'rgb(68,242,112)';
-    case 'tetA(AD)':
-      return 'rgb(251,45,76)';
-    case 'tetA(BC)':
-      return 'rgb(101,230,249)';
-    case 'tetA(BD)':
-      return 'rgb(123,44,49)';
-    case 'tetA(BCD)':
-      return 'rgb(231,173,121)';
-    case 'tetA(CD)':
-      return 'rgb(32,80,46)';
-    default:
-      return '#F5F4F6';
-  }
-};
+// Color variables
+export const lightGrey = '#D3D3D3';
+export const darkGrey = '#727272';
+export const zeroPercentColor = '#A20F17';
+export const zeroCountColor = '#F5F4F6';
+export const hoverColor = '#D2F1F6';

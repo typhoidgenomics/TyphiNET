@@ -1,45 +1,58 @@
-import React from 'react';
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link
-} from "react-router-dom";
 import './App.css';
-import DashboardPage from './pages/dashboard'
-import AdminPage from './pages/admin'
-// import typhinetLogoImg from './assets/img/logo-typhinet.png';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import registerServiceWorker from './registerServiceWorker';
+import reportWebVitals from './reportWebVitals';
+import { createTheme, ThemeProvider } from '@mui/material';
+import { Provider } from 'react-redux';
+import { DashboardPage } from './components/Dashboard';
+import { HashRouter, Route, Routes } from 'react-router-dom';
+import { store } from './stores/store.ts';
 
-function App() {
-  return (
-    <Router>
-      <div className="App">
-        <nav>
-          <Link to="/"></Link>
-          <Link to="/admin"></Link>
-        </nav>
-        <Switch>
-          <Route path="/admin">
-            <div>
-              <AdminPage/>
-            </div>
-          </Route>
-          <Route path="/">
-            <div className="App">
-              <div className="content">
-                <DashboardPage/>
-              </div>
-            </div>
-          </Route>
-        </Switch>
-      </div>
-    </Router>
-    // <div className="App">
-    //   <div className="content">
-    //     <DashboardPage/>
-    //   </div>
-    // </div>
-  );
-}
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#1fbbd3'
+    }
+  },
+  typography: {
+    fontFamily: [
+      'Montserrat',
+      '-apple-system',
+      'BlinkMacSystemFont',
+      '"Segoe UI"',
+      '"Roboto"',
+      '"Oxygen"',
+      '"Ubuntu"',
+      '"Cantarell"',
+      '"Fira Sans"',
+      '"Droid Sans"',
+      '"Helvetica Neue"',
+      'sans-serif'
+    ].join(',')
+  }
+});
 
-export default App;
+ReactDOM.render(
+  <React.StrictMode>
+    <HashRouter>
+      <Provider store={store}>
+        <ThemeProvider theme={theme}>
+          <div className="App">
+            <Routes>
+              <Route path="/" element={<DashboardPage />} />
+            </Routes>
+          </div>
+        </ThemeProvider>
+      </Provider>
+    </HashRouter>
+  </React.StrictMode>,
+  document.getElementById('root')
+);
+
+registerServiceWorker();
+
+// If you want to start measuring performance in your app, pass a function
+// to log results (for example: reportWebVitals(console.log))
+// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+reportWebVitals();
