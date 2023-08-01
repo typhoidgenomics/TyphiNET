@@ -538,20 +538,10 @@ router.get('/create', function (req, res) {
               data_to_write[d]['num_qrdr'] === 0 &&
               (data_to_write[d]['qnrS'] === '1' || data_to_write[d]['qnrB'] === '1')
             ) {
-              data_to_write[d]['cip_pred_pheno'] = 'CipR';
+              data_to_write[d]['cip_pred_pheno'] = 'CipNS';
             } else if (data_to_write[d]['num_qrdr'] === 0) {
               data_to_write[d]['cip_pred_pheno'] = 'CipS';
-            } else if (
-              data_to_write[d]['num_qrdr'] === 1 &&
-              (data_to_write[d]['qnrS'] === '1' || data_to_write[d]['qnrB'] === '1')
-            ) {
-              data_to_write[d]['cip_pred_pheno'] = 'CipR';
-            } else if (
-              data_to_write[d]['num_qrdr'] === 2 &&
-              (data_to_write[d]['qnrS'] === '1' || data_to_write[d]['qnrB'] === '1')
-            ) {
-              data_to_write[d]['cip_pred_pheno'] = 'CipR';
-            } else if (data_to_write[d]['num_qrdr'] === 1 || data_to_write[d]['num_qrdr'] === 2) {
+            } else if (data_to_write[d]['num_qrdr'] === 1) {
               data_to_write[d]['cip_pred_pheno'] = 'CipNS';
             } else {
               data_to_write[d]['cip_pred_pheno'] = 'CipR';
