@@ -101,6 +101,11 @@ export const DownloadData = () => {
           let line = csv[index].split(',');
           lines.push(line);
         }
+        lines[0].forEach((curr, index) => {
+          if (curr === 'cip_pred_pheno') {
+            lines[0][index] = 'Cip';
+          }
+        });
 
         for (let index = 0; index < columnsToRemove.length; index++) {
           let currentIndex = lines[0].indexOf(columnsToRemove[index]);
