@@ -47,7 +47,7 @@ const columnsToRemove = [
   'Matching Hashes',
   'p-Value',
   'Mash Distance',
-  'cip_pred_pheno',
+  // 'cip_pred_pheno',
   'dcs_category',
   'amr_category',
   'num_qrdr',
@@ -62,7 +62,11 @@ const columnsToRemove = [
   'sul_any',
   'co_trim',
   'GENOTYPE_SIMPLE',
-  'h58_genotypes'
+  'h58_genotypes',
+  'COUNTRY OF ORIGIN',
+  'AGE',
+  'TRAVEL COUNTRY',
+  'TRAVEL ASSOCIATED'
 ];
 
 export const DownloadData = () => {
@@ -399,3 +403,4 @@ export const DownloadData = () => {
     </div>
   );
 };
+
