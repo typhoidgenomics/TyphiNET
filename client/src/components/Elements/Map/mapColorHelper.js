@@ -15,16 +15,16 @@ export const samplesColorScale = (domain) => {
 };
 
 export const redColorScale = (percentage) => {
-  const p = parseInt(percentage);
-  if (p >= 51) {
+  const p = percentage;
+  if(p > 50){
     return '#A20F17';
-  } else if (p >= 11) {
+  }else if (p > 10 && p <= 50) {
     return '#DD2C24';
-  } else if (p >= 3) {
+  } else if (p > 2 && p <= 10) {
     return '#FA694A';
   } else {
     return '#FAAD8F';
-  }
+  } 
 };
 
 export const sensitiveColorScale = (percentage) => {

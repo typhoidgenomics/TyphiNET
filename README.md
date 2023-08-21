@@ -45,7 +45,9 @@ npm install -g yarn
 git clone https://github.com/zadyson/TyphiNET.git
 ```
 
+
 #### 4. Inside the project folder run this command to install the server dependencies
+
 
 ```sh
 npm install
@@ -53,7 +55,9 @@ npm install
 
 #### 5. Inside the folder `/client`, run the previous command to install the client dependencies
 
+
 #### 6. Inside the project folder, create a file named `.env`. Inside it, copy the following code.
+
 
 ```sh
 MONGO_URI= (see item 7 from the manual)

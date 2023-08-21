@@ -8,7 +8,7 @@ import { genotypes } from '../../../../util/genotypes';
 import { redColorScale, samplesColorScale, sensitiveColorScale } from '../mapColorHelper';
 import { mapLegends } from '../../../../util/mapLegends';
 
-const generalSteps = ['1 - 2%', '3 - 10%', '11 - 50%', '51 - 100%'];
+const generalSteps = ['>0 and ≤2%', '>2% and ≤10%', '>10% and ≤50%', '>50%'];
 const sensitiveSteps = ['0 - 10%', '10 - 20%', '20 - 50%', '50 - 90%', '90 - 100%'];
 const noSamplesSteps = ['1 - 9', '10 - 19', '20 - 99', '100 - 299', '>= 300'];
 const mapViewsWithZeroPercentOption = ['CipNS', 'CipR', 'AzithR', 'MDR', 'XDR', 'H58 / Non-H58'];
@@ -56,7 +56,8 @@ export const TopRightControls = () => {
       case 'Dominant Genotype':
         return getColorForGenotype(step);
       default:
-        return redColorScale(step);
+        const aux3 = ['0.01', '2.01', '10.01', '50.01'];
+        return redColorScale(aux3[index]);
     }
   }
 
