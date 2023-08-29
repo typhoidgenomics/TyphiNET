@@ -378,18 +378,24 @@ router.get('/create', function (req, res) {
                 obj_parser['azith_pred_pheno'] = 'AzithS';
               }
             }
-
+            obj_parser['CipR'] ="-";
+            obj_parser['CipNS'] ="-";
+            // obj_parser['Susceptible'] ="-";
             if (obj_parser['num_qrdr'] === 3) {
               obj_parser['cip_pred_pheno'] = 'CipR';
+              obj_parser['CipR'] = "CipR";
             }
             if (obj_parser['num_qrdr'] === 2) {
               obj_parser['cip_pred_pheno'] = 'CipR';
+              obj_parser['CipR'] = "CipR";
             }
             if (obj_parser['num_qrdr'] === 1) {
               obj_parser['cip_pred_pheno'] = 'CipNS';
+              obj_parser['CipNS'] = "CipNS";
             }
             if (obj_parser['num_qrdr'] === 0) {
               obj_parser['cip_pred_pheno'] = 'CipS';
+              // obj_parser['Susceptible'] = 'CipS';
             }
 
             if (obj_parser['cip_pheno_qrdr_gene'] != undefined) {
