@@ -47,7 +47,7 @@ const columnsToRemove = [
   'Matching Hashes',
   'p-Value',
   'Mash Distance',
-  // 'cip_pred_pheno',
+  'cip',
   'dcs_category',
   'amr_category',
   'num_qrdr',
@@ -101,11 +101,11 @@ export const DownloadData = () => {
           let line = csv[index].split(',');
           lines.push(line);
         }
-        lines[0].forEach((curr, index) => {
-          if (curr === 'cip_pred_pheno') {
-            lines[0][index] = 'Cip';
-          }
-        });
+        // lines[0].forEach((curr, index) => {
+        //   if (curr === 'cip') {
+        //     lines[0][index] = 'Cip';
+        //   }
+        // });
 
         for (let index = 0; index < columnsToRemove.length; index++) {
           let currentIndex = lines[0].indexOf(columnsToRemove[index]);
