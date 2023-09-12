@@ -144,7 +144,7 @@ export const DashboardPage = () => {
       <Graphs />
       <About />
       <Footer />
-      <ResetButton data={data} />
+      <ResetButton />
     </MainLayout>
   );
 };
