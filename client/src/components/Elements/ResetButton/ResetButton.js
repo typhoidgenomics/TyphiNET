@@ -10,23 +10,17 @@ import {
   setDeterminantsGraphView,
   setDistributionGraphView,
   setDrugResistanceGraphView,
-  setFrequenciesGraphView,
-  setFrequenciesGraphSelectedGenotypes
+  setFrequenciesGraphView
 } from '../../../stores/slices/graphSlice';
 import { defaultDrugsForDrugResistanceGraph } from '../../../util/drugs';
-import {
-  getGenotypesData
-} from '../../Dashboard/filters';
 
-export const ResetButton = (props) => {
+export const ResetButton = () => {
   const classes = useStyles();
   const matches500 = useMediaQuery('(max-width: 500px)');
 
   const dispatch = useAppDispatch();
   const timeInitial = useAppSelector((state) => state.dashboard.timeInitial);
   const timeFinal = useAppSelector((state) => state.dashboard.timeFinal);
-  const genotypes = useAppSelector((state) => state.dashboard.genotypesForFilter);
-  const actualCountry = useAppSelector((state) => state.dashboard.actualCountry);
 
   function handleClick() {
     dispatch(setCanGetData(false));
@@ -44,9 +38,6 @@ export const ResetButton = (props) => {
     dispatch(setDeterminantsGraphView('percentage'));
     dispatch(setDistributionGraphView('number'));
     dispatch(setCanGetData(true));
-    const genotypesData = getGenotypesData({ data: props.data, genotypes, actualCountry });
-    dispatch(setFrequenciesGraphSelectedGenotypes(genotypesData.genotypesDrugsData.slice(0, 5).map((x) => x.name)));
-
   }
 
   return (
