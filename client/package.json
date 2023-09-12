@@ -2,6 +2,10 @@
     "name": "typhinet",
     "version": "0.0.1",
     "private": true,
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/typhoidgenomics/TyphiNET"
+    },
     "dependencies": {
         "@emotion/react": "^11.10.6",
         "@emotion/styled": "^11.10.6",
@@ -25,8 +29,9 @@
         "react-router-dom": "^6.10.0",
         "react-scripts": "4.0.3",
         "react-simple-maps": "^2.3.0",
-        "react-tooltip": "^4.2.10",
         "recharts": "^2.5.0",
+        "react-dropdown-select": "^4.7.4",
+        "react-tooltip": "^4.2.10",
         "rodal": "^1.8.1",
         "save-svg-as-png": "^1.4.17",
         "swagger-ui-react": "^4.0.0-beta.4",
@@ -60,8 +65,9 @@
         ]
     },
     "devDependencies": {
+        "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
         "@types/react-simple-maps": "^3.0.0",
         "react-error-overlay": "^6.0.9",
-        "typescript": "^5.0.4"
+        "typescript": "^4.8.4"
     }
 }
