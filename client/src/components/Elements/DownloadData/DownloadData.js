@@ -186,6 +186,9 @@ export const DownloadData = () => {
     dispatch(setPosition({ coordinates: [0, 0], zoom: 1 }));
 
     try {
+      console.log("dataset", genotypesForFilter);
+      if(genotypesForFilter.length<=0)
+        return console.log("No data available to generate report");
       const doc = new jsPDF({ unit: 'px', format: 'a4' });
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageHeight = doc.internal.pageSize.getHeight();
