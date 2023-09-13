@@ -47,7 +47,7 @@ export const Footer = () => {
         <a href="https://pathogen.watch" rel="noreferrer" target="_blank">
           pathogen watch project
         </a>{' '}
-        on 21/02/2023.{' '}
+        on 12/09/2023.{' '}
         <a href="https://holtlab.net" rel="noreferrer" target="_blank">
           Holt Lab
         </a>

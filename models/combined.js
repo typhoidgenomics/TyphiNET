@@ -140,6 +140,9 @@ const CombinedSchema = mongoose.Schema({
   cip_pred_pheno: {
     type: String
   },
+  cip: {
+    type: String
+  },
   cip_pheno_qrdr_gene: {
     type: String
   },

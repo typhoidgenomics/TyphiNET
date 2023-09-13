@@ -18,7 +18,7 @@
 
 ## Description
 
-TyphiNET is a dashboard for visualising global _Salmonella_ Typhi genotype and antimicrobial resistance data. Our interface allows you to search for specific data on individual countries and over specific time periods. Data are regularly updated (last updated/curation on February 03th, 2023) from [Pathogenwatch](https://pathogen.watch/).
+TyphiNET is a dashboard for visualising global _Salmonella_ Typhi genotype and antimicrobial resistance data. Our interface allows you to search for specific data on individual countries and over specific time periods. Data are regularly updated (last updated/curation on September 12th, 2023) from [Pathogenwatch](https://pathogen.watch/).
 
 TyphiNET is available at: http://typhi.net
 
@@ -40,7 +40,9 @@ npm install -g yarn
 git clone https://github.com/zadyson/TyphiNET.git
 ```
 
-#### 4. Inside the project, folder run this command to install the server dependencies
+
+#### 4. Inside the project folder run this command to install the server dependencies
+
 
 ```sh
 npm install
@@ -48,7 +50,9 @@ npm install
 
 #### 5. Inside the folder `/client`, run the previous command to install the client dependencies
 
-#### 6. Inside the project folder, create a file named `.env`. Inside it, copy the following code
+
+#### 6. Inside the project folder, create a file named `.env`. Inside it, copy the following code.
+
 
 ```sh
 MONGO_URI= (see item 7 from the manual)
