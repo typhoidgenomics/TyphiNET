@@ -21,7 +21,7 @@ import { imgOnLoadPromise } from '../../../util/imgOnLoadPromise';
 import domtoimage from 'dom-to-image';
 import LogoImg from '../../../assets/img/logo-typhinet-prod.png';
 import download from 'downloadjs';
-import { drugs } from '../../../util/drugs';
+import { drugs, drugsForDrugResistanceGraph } from '../../../util/drugs';
 import { getColorForDrug } from './graphColorHelper';
 import { colorForDrugClasses, getColorForGenotype } from '../../../util/colorHelper';
 import { graphCards } from '../../../util/graphCards';
@@ -142,19 +142,31 @@ export const Graphs = () => {
       ctx.font = '12px Montserrat';
 
       const mobileFactor = matches500 ? 100 : 0;
-      if (['RFWG', 'DRT'].includes(card.id)) {
+      if (card.id === 'RFGW') {
         ctx.fillRect(0, 660 - mobileFactor, canvas.width, canvas.height);
 
         drawLegend({
           legendData: drugs,
           context: ctx,
-          factor: 5,
+          factor: 4,
           mobileFactor,
           yPosition: 670,
-          xSpace: 330,
+          xSpace: 200,
           isDrug: true
         });
-      } else if (card.id === 'RDWG') {
+      } else if (card.id === 'DRT') {
+        ctx.fillRect(0, 660 - mobileFactor, canvas.width, canvas.height);
+
+        drawLegend({
+          legendData: drugsForDrugResistanceGraph,
+          context: ctx,
+          factor: 4,
+          mobileFactor,
+          yPosition: 670,
+          xSpace: 200,
+          isDrug: true
+        });
+      }else if (card.id === 'RDWG') {
         ctx.fillRect(0, 660 - mobileFactor, canvas.width, canvas.height);
 
         drawLegend({
