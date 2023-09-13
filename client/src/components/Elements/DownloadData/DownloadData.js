@@ -17,7 +17,7 @@ import { mapLegends } from '../../../util/mapLegends';
 import { imgOnLoadPromise } from '../../../util/imgOnLoadPromise';
 import { graphCards } from '../../../util/graphCards';
 import domtoimage from 'dom-to-image';
-import { drugs } from '../../../util/drugs';
+import { drugs, drugsForDrugResistanceGraph } from '../../../util/drugs';
 import { getColorForDrug } from '../Graphs/graphColorHelper';
 import { colorForDrugClasses, getColorForGenotype } from '../../../util/colorHelper';
 import { getSalmonellaTexts } from '../../../util/reportInfoTexts';
@@ -341,13 +341,22 @@ export const DownloadData = () => {
         doc.rect(0, rectY, pageWidth, 200, 'F');
 
         doc.setFontSize(9);
-        if (['RFWG', 'DRT'].includes(graphCards[index].id)) {
+        if (graphCards[index].id === 'RFWG') {
           drawLegend({
             document: doc,
             legendData: drugs,
-            factor: 8,
+            factor: 4,
             rectY,
-            xSpace: 190,
+            xSpace: 100,
+            isDrug: true
+          });
+        }else if (graphCards[index].id === 'DRT') {
+          drawLegend({
+            document: doc,
+            legendData: drugsForDrugResistanceGraph,
+            factor: 4,
+            rectY,
+            xSpace: 100,
             isDrug: true
           });
         } else if (graphCards[index].id === 'RDWG') {
