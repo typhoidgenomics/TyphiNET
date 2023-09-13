@@ -121,21 +121,21 @@ export const Graphs = () => {
 
       ctx.drawImage(logo, 10, 10, 155, 65);
       ctx.drawImage(graphImg, canvas.width / 2 - graphImg.width / 2, 220);
-
+     
       ctx.font = 'bold 18px Montserrat';
       ctx.fillStyle = 'black';
-      ctx.textAlign = 'center';
-      ctx.fillText(card.title, canvas.width / 2, 50);
+      ctx.textAlign = 'right';
+      ctx.fillText(card.title, (canvas.width+graphImg.width)/2 ,50);
 
       ctx.font = '12px Montserrat';
-      ctx.fillText(card.description.join(' / '), canvas.width / 2, 72);
+      ctx.fillText(card.description.join(' / '), (canvas.width+graphImg.width)/2, 72);
 
       ctx.font = '14px Montserrat';
-      ctx.fillText(`Organism: ${globalOverviewLabel.fullLabel}`, canvas.width / 2, 110);
-      ctx.fillText(`Dataset: ${dataset}`, canvas.width / 2, 132);
-      ctx.fillText(`Time period: ${actualTimeInitial} to ${actualTimeFinal}`, canvas.width / 2, 154);
-      ctx.fillText(`Country: ${actualCountry}`, canvas.width / 2, 176);
-      if (card.id === 'RDWG') ctx.fillText(`Drug Class: ${determinantsGraphDrugClass}`, canvas.width / 2, 198);
+      ctx.fillText(`Organism: ${globalOverviewLabel.fullLabel}`, (canvas.width+graphImg.width)/2, 110);
+      ctx.fillText(`Dataset: ${dataset}`, (canvas.width+graphImg.width)/2, 132);
+      ctx.fillText(`Time period: ${actualTimeInitial} to ${actualTimeFinal}`, (canvas.width+graphImg.width)/2, 154);
+      ctx.fillText(`Country: ${actualCountry}`, (canvas.width+graphImg.width)/2, 176);
+      if (card.id === 'RDWG') ctx.fillText(`Drug Class: ${determinantsGraphDrugClass}`, (canvas.width+graphImg.width)/2, 198);
 
       ctx.fillStyle = 'white';
       ctx.textAlign = 'start';
