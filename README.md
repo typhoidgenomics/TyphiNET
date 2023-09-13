@@ -13,7 +13,6 @@
 ## Table of Contents
 
 - [Description](#Description)
-- [Video demonstration](#Demonstration)
 - [Installation](#Installation)
 - [Funding & acknowledgements](#Acknowledgements)
 
@@ -22,10 +21,6 @@
 TyphiNET is a dashboard for visualising global _Salmonella_ Typhi genotype and antimicrobial resistance data. Our interface allows you to search for specific data on individual countries and over specific time periods. Data are regularly updated (last updated/curation on February 03th, 2023) from [Pathogenwatch](https://pathogen.watch/).
 
 TyphiNET is available at: http://typhi.net
-
-## Demonstration
-
-https://user-images.githubusercontent.com/8507671/144901022-3017adcb-30d2-451e-b7b8-421054426d85.mp4
 
 ## Installation (for software development purposes only, please visit http://typhi.net for all other purposes)
 
