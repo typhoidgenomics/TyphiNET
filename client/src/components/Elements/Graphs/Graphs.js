@@ -131,11 +131,11 @@ export const Graphs = () => {
       ctx.fillText(card.description.join(' / '), (canvas.width+graphImg.width)/2, 72);
 
       ctx.font = '14px Montserrat';
-      ctx.fillText(`Organism: ${globalOverviewLabel.fullLabel}`, (canvas.width+graphImg.width)/2, 110);
-      ctx.fillText(`Dataset: ${dataset}`, (canvas.width+graphImg.width)/2, 132);
-      ctx.fillText(`Time period: ${actualTimeInitial} to ${actualTimeFinal}`, (canvas.width+graphImg.width)/2, 154);
-      ctx.fillText(`Country: ${actualCountry}`, (canvas.width+graphImg.width)/2, 176);
-      if (card.id === 'RDWG') ctx.fillText(`Drug Class: ${determinantsGraphDrugClass}`, (canvas.width+graphImg.width)/2, 198);
+      // ctx.fillText(`Organism: ${globalOverviewLabel.fullLabel}`, (canvas.width+graphImg.width)/2, 110);
+      ctx.fillText(`Dataset: ${dataset}`, (canvas.width+graphImg.width)/2, 110);
+      ctx.fillText(`Time period: ${actualTimeInitial} to ${actualTimeFinal}`, (canvas.width+graphImg.width)/2, 132);
+      ctx.fillText(`Country: ${actualCountry}`, (canvas.width+graphImg.width)/2, 154);
+      if (card.id === 'RDWG') ctx.fillText(`Drug Class: ${determinantsGraphDrugClass}`, (canvas.width+graphImg.width)/2, 176);
 
       ctx.fillStyle = 'white';
       ctx.textAlign = 'start';
