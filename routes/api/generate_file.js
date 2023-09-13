@@ -570,9 +570,11 @@ router.get('/create', function (req, res) {
             !empty.includes(data_to_write[d]['COUNTRY_ONLY']) &&
             data_to_write[d]['PURPOSE OF SAMPLING'].includes('Non Targeted')
           ) {
-            data_to_write[d]['Exclude'] = "Include";
+            data_to_write[d]['dashboard view'] = "Include";
             temp.push(data_to_write[d]);
           }
+          if(data_to_write[d]['dashboard view'] != "Include")
+            data_to_write[d]['dashboard view'] = "Exclude";
           tempAll.push(data_to_write[d]);
         }
         await Tools.CreateFile(temp, 'clean.csv');
