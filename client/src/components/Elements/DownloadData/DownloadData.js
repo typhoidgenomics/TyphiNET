@@ -155,7 +155,7 @@ export const DownloadData = () => {
   function drawFooter({ document, pageHeight, pageWidth, date }) {
     document.setFontSize(10);
     document.line(0, pageHeight - 26, pageWidth, pageHeight - 24);
-    document.text(`Source: amr.net [${date}]`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+    document.text(`Source: typhi.net [${date}]`, pageWidth / 2, pageHeight - 10, { align: 'center' });
   }
 
   function drawLegend({ id = null, legendData, document, factor, rectY, isGenotype = false, isDrug = false, xSpace }) {
