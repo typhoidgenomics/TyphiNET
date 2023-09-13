@@ -250,7 +250,7 @@ export const DownloadData = () => {
       doc.line(16, 76, pageWidth - 16, 76);
 
       doc.setFont(undefined, 'bold');
-      doc.text('Map Info', 16, 96);
+      doc.text('Map', 16, 96);
       doc.setFont(undefined, 'normal');
       const actualMapView = mapLegends.find((x) => x.value === mapView).label;
       doc.text(`Map View: ${actualMapView}`, 16, 108);
