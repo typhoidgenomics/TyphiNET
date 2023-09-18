@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from '../../../../stores/hooks';
 import { setCustomDropdownMapView } from '../../../../stores/slices/graphSlice';
 import { useStyles } from './TopRightControls2MUI';
 import TextField from '@mui/material/TextField';
+import { InfoOutlined } from '@mui/icons-material';
 
 
 export const TopRightControls2 = () => {
@@ -68,6 +69,12 @@ const filteredData = genotypesDrugsData.filter((genotype) =>
         <CardContent className={classes.frequenciesGraph}>
           <div className={classes.label}>
             <Typography variant="caption">Select genotype/s</Typography>
+            <Tooltip
+              title="Select upto 10 Genotypes"
+              placement="top"
+            >
+              <InfoOutlined color="action" fontSize="small" className={classes.labelTooltipIcon} />
+            </Tooltip>
           </div>
             <Select
               multiple
