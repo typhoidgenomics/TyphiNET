@@ -97,19 +97,31 @@ export const Map = () => {
           }
           break;
         case 'Genotype prevalence':
+          const countryData = mapData.find((item) => item.name === geo.properties.NAME);
+          console.log("frequenciesGraphSelectedGenotypes",frequenciesGraphSelectedGenotypes )
+            let percentCounter = 0;        
+            const genotypes1 = countryStats.GENOTYPE.items;
+
             let genotypes2 = [];
-            for (const item of countryStats.GENOTYPE.items) {
-              if (frequenciesGraphSelectedGenotypes.includes(item.name)) {
-                genotypes2.push(item);
-              }
-            }
+            genotypes1.forEach((genotype) => {
+               if (frequenciesGraphSelectedGenotypes.includes(genotype.name)){
+                tooltip.content[genotype.name] = genotype.count;
+                  genotypes2.push(genotype);}
+                percentCounter += genotype.count;
+            });
+            console.log("total genotype for %",percentCounter )
+
             if (genotypes2.length > 0) {
               let sumCount = 0;
               for (const genotype of genotypes2) {
-                tooltip.content[genotype.name] = genotype.count;
+                // tooltip.content[genotype.name] = genotype.count;
                 sumCount += genotype.count;
               }
-              tooltip.content['SumCount'] = sumCount;
+              // tooltip.content['SumCount'] = sumCount;
+              if(countryData.count>=20 && genotypes2.length > 0 )
+                tooltip.content['Total Genotypes'] = `${sumCount} (${((sumCount/percentCounter)*100).toFixed(2)} %)`;
+
+
             }
           break;
 
@@ -182,16 +194,37 @@ export const Map = () => {
                           fillColor = getColorForGenotype(genotypes[0].name);
                           break;
                         case 'Genotype prevalence':
-                          let genotypes2 = undefined;
-                          for (const item of countryStats.GENOTYPE.items) {
-                            if (frequenciesGraphSelectedGenotypes.includes(item.name)) {
-                              genotypes2 = item;
+                          let percentCounter = 0;        
+                          const genotypes1 = countryStats.GENOTYPE.items;
+                          // console.log("gencountryDataotypes1",countryData);
+                          let genotypes2 = [];
+                          genotypes1.forEach((genotype) => {
+                            if (frequenciesGraphSelectedGenotypes.includes(genotype.name))
+                                genotypes2.push(genotype);
+                              percentCounter += genotype.count;
+                          });
+                          // console.log("genotypes2",genotypes2.length );
+                
+                          let sumCount = 0;
+
+                          if (genotypes2.length > 0 ) {
+                            for (const genotype of genotypes2) {
+                              sumCount += genotype.count;
+
                             }
                           }
-                          
-                          if(genotypes2 !== undefined){
-                            fillColor = getColorForGenotype(genotypes2.name);
+                          if(countryData.count>=20 && genotypes2.length > 0 ){
+                            // console.log("count %",count );
+                            if(genotypes2 != undefined){
+                              fillColor = redColorScale(((sumCount/percentCounter)*100).toFixed(2));
+                            }
                           }
+                          else if (countryData.count>=20) {
+                            fillColor = darkGrey;
+                            smallerThan20 = true;
+                          }
+                          // console.log("frequenciesGraphSelectedGenotypes:", frequenciesGraphSelectedGenotypes);
+
                           break;
 
                         case 'Susceptible to all drugs': // case 'Sensitive to all drugs':

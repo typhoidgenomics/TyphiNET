@@ -13,7 +13,7 @@ const sensitiveSteps = ['0 - 10%', '10 - 20%', '20 - 50%', '50 - 90%', '90 - 100
 const noSamplesSteps = ['1 - 9', '10 - 19', '20 - 99', '100 - 299', '>= 300'];
 const gradientStyle = ['0.01% - 25.00% ', '25.01 - 50.00%', '50.01% - 75.00%', '75.01% - 100.00%'];
 const ExcludedView = ['Genotype prevalence'];
-const mapViewsWithZeroPercentOption = ['CipNS', 'CipR', 'AzithR', 'MDR', 'XDR', 'H58 / Non-H58'];
+const mapViewsWithZeroPercentOption = ['CipNS', 'CipR', 'AzithR', 'MDR', 'XDR', 'H58 / Non-H58', 'ESBL', 'Carb', 'Genotype prevalence'];
 
 export const TopRightControls = () => {
   const classes = useStyles();
@@ -45,6 +45,8 @@ export const TopRightControls = () => {
         return noSamplesSteps;
       case 'Dominant Genotype':
         return genotypes;
+      case 'Genotype prevalence':
+        return gradientStyle;
       default:
         return generalSteps;
     }
