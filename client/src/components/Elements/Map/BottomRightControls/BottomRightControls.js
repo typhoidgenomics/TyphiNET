@@ -87,7 +87,7 @@ export const BottomRightControls = () => {
             legendImg.src = 'legends/MapView_Others.png';
             break;
         }
-
+        if (mapView === 'Dominant Genotype') {
         await legendImgPromise;
         ctx.drawImage(
           legendImg,
@@ -96,7 +96,16 @@ export const BottomRightControls = () => {
           legendWidth,
           legendHeight
         );
-
+      } else {
+        await legendImgPromise;
+        ctx.drawImage(
+          legendImg,
+          canvas.width - (canvas.width / 6),
+          0,
+          legendWidth,
+          legendHeight
+        );
+      }
         const typhinetLogo = document.createElement('img');
         const typhinetLogoPromise = imgOnLoadPromise(typhinetLogo);
         typhinetLogo.src = LogoImg;
