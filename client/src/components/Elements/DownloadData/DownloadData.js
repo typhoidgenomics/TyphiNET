@@ -88,6 +88,7 @@ export const DownloadData = () => {
   const dataset = useAppSelector((state) => state.map.dataset);
   const determinantsGraphDrugClass = useAppSelector((state) => state.graph.determinantsGraphDrugClass);
   const genotypesForFilter = useAppSelector((state) => state.dashboard.genotypesForFilter);
+  const customDropdownMapView = useAppSelector((state) => state.graph.customDropdownMapView);
 
   async function handleClickDownloadDatabase() {
     setLoadingCSV(true);
@@ -255,6 +256,14 @@ export const DownloadData = () => {
       const actualMapView = mapLegends.find((x) => x.value === mapView).label;
       doc.text(`Map View: ${actualMapView}`, 16, 108);
       doc.text(`Dataset: ${dataset}${dataset === 'All' ? ' (local + travel)' : ''}`, 16, 120);
+      
+      doc.setFontSize(8);
+      if (customDropdownMapView.length === 1) {
+          doc.text('Selected Genotypes: ' + customDropdownMapView, 16, 140);
+      } else if (customDropdownMapView.length > 1) {
+          const genotypesText = customDropdownMapView.join(', ');
+          doc.text('Selected Genotypes: ' + genotypesText, 16, 140);
+      }
 
       await svgAsPngUri(document.getElementById('global-overview-map'), {
         scale: 4,
@@ -275,7 +284,7 @@ export const DownloadData = () => {
         ctx.drawImage(mapImg, 0, 0, canvas.width, canvas.height);
 
         const img = canvas.toDataURL('image/png');
-        doc.addImage(img, 'PNG', 0, 128, pageWidth, 223);
+        doc.addImage(img, 'PNG', 0, 160, pageWidth, 223);
       });
 
       const mapLegend = new Image();
