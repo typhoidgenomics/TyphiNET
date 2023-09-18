@@ -99,7 +99,7 @@ export const Map = () => {
           break;
         case 'Genotype prevalence':
           const countryData = mapData.find((item) => item.name === geo.properties.NAME);
-          console.log("frequenciesGraphSelectedGenotypes",frequenciesGraphSelectedGenotypes )
+          // console.log("frequenciesGraphSelectedGenotypes",frequenciesGraphSelectedGenotypes )
             let percentCounter = 0;        
             const genotypes1 = countryStats.GENOTYPE.items;
 

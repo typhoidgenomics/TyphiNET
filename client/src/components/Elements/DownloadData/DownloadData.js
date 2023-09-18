@@ -293,6 +293,9 @@ export const DownloadData = () => {
         case 'Susceptible to all drugs':
           mapLegend.src = 'legends/MapView_Sensitive.png';
           break;
+        case 'Genotype prevalence':
+          mapLegend.src = 'legends/MapView_prevalence.png';
+          break;
         default:
           mapLegend.src = 'legends/MapView_Others.png';
           break;

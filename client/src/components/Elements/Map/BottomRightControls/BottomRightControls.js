@@ -83,6 +83,9 @@ export const BottomRightControls = () => {
           case 'Susceptible to all drugs':
             legendImg.src = 'legends/MapView_Sensitive.png';
             break;
+          case 'Genotype prevalence':
+            legendImg.src = 'legends/MapView_prevalence.png';
+            break;
           default:
             legendImg.src = 'legends/MapView_Others.png';
             break;
