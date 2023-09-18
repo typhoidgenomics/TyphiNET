@@ -38,6 +38,8 @@ export const Map = () => {
   const tooltipContent = useAppSelector((state) => state.map.tooltipContent);
   const globalOverviewLabel = useAppSelector((state) => state.dashboard.globalOverviewLabel);
   const frequenciesGraphSelectedGenotypes = useAppSelector((state) => state.graph.frequenciesGraphSelectedGenotypes);
+  const ifCustom = useAppSelector((state) => state.map.ifCustom);
+
 
   function handleOnClick(countryData) {
     if (countryData !== undefined) {
@@ -265,8 +267,7 @@ export const Map = () => {
             <>
               <TopLeftControls />
               <TopRightControls />
-              <TopRightControls2/>
-
+              {ifCustom ? <TopRightControls2/> : null}
             </>
           )}
           <BottomLeftControls />
@@ -276,7 +277,7 @@ export const Map = () => {
           <div className={classes.topControls}>
             <TopRightControls />
             <TopLeftControls />
-            <TopRightControls2/>
+            {ifCustom ? <TopRightControls2/> : null}
 
           </div>
         )}
