@@ -86,17 +86,16 @@ const filteredData = genotypesDrugsData.filter((genotype) =>
               displayEmpty
               onClose={(e) => setSearchValue2("")}
               endAdornment={
-                <IconButton
-                  size='small'
-                  variant="outlined"
-                  className={classes.genotypesSelectButton}
-                  onClick={() => handleChangeSelectedGenotypes({ all: true })}
-                  disabled={ customDropdownMapView.length === 0}
-                  color="error"
-                  // startIcon={<DeleteIcon />}
-                >
-                  {/* CLEAR */}<DeleteIcon fontSize='small'/>
-                </IconButton>
+                <Button
+                size="small"
+                variant="outlined"
+                className={classes.genotypesSelectButton}
+                onClick={() => handleChangeSelectedGenotypes({ all: true })}
+                disabled={customDropdownMapView.length === 0}
+                color="error"
+              >
+                Clear
+              </Button>
               }
               inputProps={{ className: classes.genotypesSelectInput }}
               MenuProps={{ classes: { paper: classes.genotypesMenuPaper, list: classes.genotypesSelectMenu } }}

@@ -8,7 +8,7 @@ const useStyles = makeStyles((theme) => ({
     top: 0,
     right: 0,
     marginTop: '200px',
-    width:'209px',
+    minWidth:'209px',
     // width:'25%',
     '@media (max-width: 1000px)': {
       // width: 
@@ -90,7 +90,7 @@ const useStyles = makeStyles((theme) => ({
   genotypesSelectInput: {
     fontSize: '14px !important',
     fontWeight: '600 !important',
-    padding: '8px 100px 8px 15px !important',
+    padding: '8px 110px 8px 15px !important',
     marginRight: '-80px !important'
   },
   genotypesSelectButton: {
