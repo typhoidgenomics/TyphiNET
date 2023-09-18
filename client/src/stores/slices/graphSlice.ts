@@ -9,9 +9,11 @@ interface GraphState {
   frequenciesGraphView: string;
   frequenciesGraphSelectedGenotypes: Array<string>;
   genotypesDrugsData: Array<any>;
+  genotypesDrugsData2: Array<any>;
   genotypesDrugClassesData: Array<any>;
   determinantsGraphView: string;
   determinantsGraphDrugClass: string;
+  customDropdownMapView: Array<string>;
 }
 
 const initialState: GraphState = {
@@ -19,6 +21,7 @@ const initialState: GraphState = {
   genotypesYearData: [],
   drugsYearData: [],
   genotypesDrugsData: [],
+  genotypesDrugsData2: [],
   genotypesDrugClassesData: [],
   distributionGraphView: 'number',
   drugResistanceGraphView: defaultDrugsForDrugResistanceGraph,
@@ -26,6 +29,7 @@ const initialState: GraphState = {
   frequenciesGraphSelectedGenotypes: [],
   determinantsGraphView: 'percentage',
   determinantsGraphDrugClass: 'Ciprofloxacin NS',
+  customDropdownMapView: [],
 };
 
 export const graphSlice = createSlice({
@@ -56,6 +60,9 @@ export const graphSlice = createSlice({
     setGenotypesDrugsData: (state, action: PayloadAction<Array<any>>) => {
       state.genotypesDrugsData = action.payload;
     },
+    setGenotypesDrugsData2: (state, action: PayloadAction<Array<any>>) => {
+      state.genotypesDrugsData2 = action.payload;
+    },
     setDeterminantsGraphView: (state, action: PayloadAction<string>) => {
       state.determinantsGraphView = action.payload;
     },
@@ -64,6 +71,9 @@ export const graphSlice = createSlice({
     },
     setGenotypesDrugClassesData: (state, action: PayloadAction<Array<any>>) => {
       state.genotypesDrugClassesData = action.payload;
+    },
+    setCustomDropdownMapView: (state, action: PayloadAction<Array<string>>) => {
+      state.customDropdownMapView = action.payload;
     },
   }
 });
@@ -77,9 +87,11 @@ export const {
   setFrequenciesGraphView,
   setFrequenciesGraphSelectedGenotypes,
   setGenotypesDrugsData,
+  setGenotypesDrugsData2,
   setDeterminantsGraphView,
   setDeterminantsGraphDrugClass,
   setGenotypesDrugClassesData,
+  setCustomDropdownMapView
 } = graphSlice.actions;
 
 export default graphSlice.reducer;
