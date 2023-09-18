@@ -75,7 +75,7 @@ export const DashboardPage = () => {
     const genotypesData = getGenotypesData({ data: responseData, genotypes, actualCountry });
     dispatch(setGenotypesDrugsData(genotypesData.genotypesDrugsData));
     dispatch(setFrequenciesGraphSelectedGenotypes(genotypesData.genotypesDrugsData.slice(0, 5).map((x) => x.name)));
-    dispatch(setCustomDropdownMapView(genotypesData.genotypesDrugsData.slice(0, 5).map((x) => x.name)));
+    dispatch(setCustomDropdownMapView(genotypesData.genotypesDrugsData.slice(0, 1).map((x) => x.name)));
     dispatch(setGenotypesDrugClassesData(genotypesData.genotypesDrugClassesData));
 
     const yearsData = getYearsData({
