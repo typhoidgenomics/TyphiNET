@@ -7,7 +7,6 @@ import { useAppDispatch, useAppSelector } from '../../../../stores/hooks';
 import { setCustomDropdownMapView } from '../../../../stores/slices/graphSlice';
 import { useStyles } from './TopRightControls2MUI';
 import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/material/Autocomplete';
 
 
 export const TopRightControls2 = () => {
@@ -16,14 +15,14 @@ export const TopRightControls2 = () => {
   const [searchValue2, setSearchValue2] = useState("")
   const dispatch = useAppDispatch();
   const organism = useAppSelector((state) => state.dashboard.organism);
-  const genotypesDrugsData2 = useAppSelector((state) => state.graph.genotypesDrugsData2);
+  const genotypesDrugsData = useAppSelector((state) => state.graph.genotypesDrugsData);
   const customDropdownMapView = useAppSelector((state) => state.graph.customDropdownMapView);
   const genotypesForFilter = useAppSelector((state) => state.dashboard.genotypesForFilter);
 
-  useEffect(() => {
-    setCurrentTooltip(null);
-    // console.log("customDropdownMapView", customDropdownMapView);
-  }, [genotypesDrugsData2, customDropdownMapView]);
+  // useEffect(() => {
+  //   setCurrentTooltip(null);
+  //   // console.log("customDropdownMapView", customDropdownMapView);
+  // }, [genotypesDrugsData, customDropdownMapView]);
 
   function getSelectGenotypeLabel(genotype) {
     // console.log("genotype2",genotype.Susceptible );
@@ -32,10 +31,6 @@ export const TopRightControls2 = () => {
     return `${genotype.name} (total N=${genotype.totalCount}, ${percentage}% Susceptible)`;
   }
   
-  function getDataForGenotypeSelect() {
-    // console.log("getDataForGenotypeSelect",genotypesDrugsData2);
-    return genotypesDrugsData2;
-  }
 
   function handleChangeSelectedGenotypes({ event = null, all = false }) {
     if (all) {
@@ -63,12 +58,10 @@ export const TopRightControls2 = () => {
   setSearchValue2(event.target.value)
  }
 
-const filteredData = getDataForGenotypeSelect().filter((genotype) =>
+const filteredData = genotypesDrugsData.filter((genotype) =>
   genotype.name.includes(searchValue2.toLowerCase()) || genotype.name.includes(searchValue2.toUpperCase())
 );
 
-console.log("customDropdownMapView", customDropdownMapView.length);
- console.log("searchValue2", searchValue2);
   return (
     <div className={`${classes.topRightControls}`}>
       <Card elevation={3} className={classes.card}>
@@ -91,7 +84,7 @@ console.log("customDropdownMapView", customDropdownMapView.length);
                   variant="outlined"
                   className={classes.genotypesSelectButton}
                   onClick={() => handleChangeSelectedGenotypes({ all: true })}
-                  disabled={organism === 'none' || customDropdownMapView.length === 0}
+                  disabled={ customDropdownMapView.length === 0}
                   color="error"
                   // startIcon={<DeleteIcon />}
                 >

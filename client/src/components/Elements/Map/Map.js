@@ -4,7 +4,7 @@ import { ComposableMap, Geographies, Geography, Graticule, Sphere, ZoomableGroup
 import { useStyles } from './MapMUI';
 import geography from '../../../assets/world-50m.json';
 import { darkGrey, getColorForGenotype, lightGrey, zeroCountColor, zeroPercentColor } from '../../../util/colorHelper';
-import { redColorScale, samplesColorScale, sensitiveColorScale } from './mapColorHelper';
+import { redColorScale, samplesColorScale, sensitiveColorScale, redColorScale2 } from './mapColorHelper';
 import ReactTooltip from 'react-tooltip';
 import { BottomLeftControls } from './BottomLeftControls';
 import { useAppDispatch, useAppSelector } from '../../../stores/hooks';
@@ -106,22 +106,21 @@ export const Map = () => {
             let genotypes2 = [];
             genotypes1.forEach((genotype) => {
                if (customDropdownMapView.includes(genotype.name)){
-                tooltip.content[genotype.name] = genotype.count;
+                // tooltip.content[genotype.name] = `${genotype.count} `;
                   genotypes2.push(genotype);}
                 percentCounter += genotype.count;
             });
-            console.log("total genotype for %",percentCounter )
-
+            genotypes1.forEach((genotype) => {
+               if (customDropdownMapView.includes(genotype.name))
+                tooltip.content[genotype.name] = `${genotype.count} (${((genotype.count/percentCounter)*100).toFixed(2)} %)`;
+            });
             if (genotypes2.length > 0) {
               let sumCount = 0;
               for (const genotype of genotypes2) {
-                // tooltip.content[genotype.name] = genotype.count;
                 sumCount += genotype.count;
               }
-              // tooltip.content['SumCount'] = sumCount;
-              if(countryData.count>=20 && genotypes2.length > 0 )
-                tooltip.content['Total Genotypes'] = `${sumCount} (${((sumCount/percentCounter)*100).toFixed(2)} %)`;
-
+              if(countryData.count>=20 && genotypes2.length > 1 )
+                tooltip.content['All selected genotypes'] = `${sumCount} (${((sumCount/percentCounter)*100).toFixed(2)} %)`;
 
             }
           break;
@@ -217,7 +216,7 @@ export const Map = () => {
                           if(countryData.count>=20 && genotypes2.length > 0 ){
                             // console.log("count %",count );
                             if(genotypes2 != undefined){
-                              fillColor = redColorScale(((sumCount/percentCounter)*100).toFixed(2));
+                              fillColor = redColorScale2(((sumCount/percentCounter)*100).toFixed(2));
                             }
                           }
                           else if (countryData.count>=20) {

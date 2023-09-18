@@ -24,7 +24,6 @@ import {
   setFrequenciesGraphSelectedGenotypes,
   setGenotypesDrugClassesData,
   setGenotypesDrugsData,
-  setGenotypesDrugsData2,
   setGenotypesYearData,
   setCustomDropdownMapView,
 } from '../../stores/slices/graphSlice.ts';
@@ -129,7 +128,6 @@ export const DashboardPage = () => {
         actualCountry
       });
       dispatch(setGenotypesDrugsData(genotypesData.genotypesDrugsData));
-      dispatch(setGenotypesDrugsData2(genotypesData.genotypesDrugsData));
       dispatch(setFrequenciesGraphSelectedGenotypes(genotypesData.genotypesDrugsData.slice(0, 5).map((x) => x.name)));
       dispatch(setGenotypesDrugClassesData(genotypesData.genotypesDrugClassesData));
 
