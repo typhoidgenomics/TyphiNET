@@ -300,7 +300,7 @@ export const DownloadData = () => {
       if (mapView === 'Dominant Genotype') {
         doc.addImage(mapLegend, 'PNG', pageWidth / 2 - legendWidth / 2, 351, legendWidth, 47);
       } else {
-        doc.addImage(mapLegend, 'PNG', 16, 351, legendWidth, 47);
+        doc.addImage(mapLegend, 'PNG', pageWidth - pageWidth / 5 , 85, legendWidth, 47);
       }
 
       // Graphs
