@@ -16,7 +16,7 @@ import {
   setTotalGenotypes,
   setYears
 } from '../../stores/slices/dashboardSlice.ts';
-import { setMapData } from '../../stores/slices/mapSlice.ts';
+import { setDataset, setMapData, setMapView, setPosition, setIfCustom } from '../../stores/slices/mapSlice.ts';
 import { Graphs } from '../Elements/Graphs';
 import {
   setCountriesForFilter,
@@ -24,7 +24,8 @@ import {
   setFrequenciesGraphSelectedGenotypes,
   setGenotypesDrugClassesData,
   setGenotypesDrugsData,
-  setGenotypesYearData
+  setGenotypesYearData,
+  setCustomDropdownMapView,
 } from '../../stores/slices/graphSlice.ts';
 import { filterData, getYearsData, getMapData, getGenotypesData, getCountryDisplayName } from './filters';
 import { ResetButton } from '../Elements/ResetButton/ResetButton';
@@ -74,6 +75,7 @@ export const DashboardPage = () => {
     const genotypesData = getGenotypesData({ data: responseData, genotypes, actualCountry });
     dispatch(setGenotypesDrugsData(genotypesData.genotypesDrugsData));
     dispatch(setFrequenciesGraphSelectedGenotypes(genotypesData.genotypesDrugsData.slice(0, 5).map((x) => x.name)));
+    dispatch(setCustomDropdownMapView(genotypesData.genotypesDrugsData.slice(0, 5).map((x) => x.name)));
     dispatch(setGenotypesDrugClassesData(genotypesData.genotypesDrugClassesData));
 
     const yearsData = getYearsData({
@@ -106,6 +108,7 @@ export const DashboardPage = () => {
   // This useEffect is called once when the website starts to get info for the dashboard
   useEffect(() => {
     getData();
+    dispatch(setIfCustom(false));
   }, []);
 
   // This useEffect is called everytime the main filters are changed, it does not need to read the csv file again.

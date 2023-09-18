@@ -38,6 +38,7 @@ export const Map = () => {
   const tooltipContent = useAppSelector((state) => state.map.tooltipContent);
   const globalOverviewLabel = useAppSelector((state) => state.dashboard.globalOverviewLabel);
   const frequenciesGraphSelectedGenotypes = useAppSelector((state) => state.graph.frequenciesGraphSelectedGenotypes);
+  const customDropdownMapView = useAppSelector((state) => state.graph.customDropdownMapView);
   const ifCustom = useAppSelector((state) => state.map.ifCustom);
 
 
@@ -104,7 +105,7 @@ export const Map = () => {
 
             let genotypes2 = [];
             genotypes1.forEach((genotype) => {
-               if (frequenciesGraphSelectedGenotypes.includes(genotype.name)){
+               if (customDropdownMapView.includes(genotype.name)){
                 tooltip.content[genotype.name] = genotype.count;
                   genotypes2.push(genotype);}
                 percentCounter += genotype.count;
@@ -199,7 +200,7 @@ export const Map = () => {
                           // console.log("gencountryDataotypes1",countryData);
                           let genotypes2 = [];
                           genotypes1.forEach((genotype) => {
-                            if (frequenciesGraphSelectedGenotypes.includes(genotype.name))
+                            if (customDropdownMapView.includes(genotype.name))
                                 genotypes2.push(genotype);
                               percentCounter += genotype.count;
                           });
@@ -309,9 +310,8 @@ export const Map = () => {
         {matches && (
           <div className={classes.topControls}>
             <TopRightControls />
-            <TopLeftControls />
             {ifCustom ? <TopRightControls2/> : null}
-
+            <TopLeftControls />
           </div>
         )}
         <ReactTooltip>
