@@ -65,12 +65,13 @@ export const BottomRightControls = () => {
         ctx.fillText('Map View: ' + actualMapView, canvas.width / 2, 140);
         ctx.fillText('Dataset: ' + dataset, canvas.width / 2, 190);
         ctx.fillText('Time Period: ' + actualTimeInitial + ' to ' + actualTimeFinal, canvas.width / 2, 240);
-       
-        if (customDropdownMapView.length === 1) {
-          ctx.fillText('Selected Genotypes: ' + customDropdownMapView, canvas.width / 2, 290);
-        } else if (customDropdownMapView.length > 1) {
-          const genotypesText = customDropdownMapView.join(', ');
-          ctx.fillText('Selected Genotypes: ' + genotypesText, canvas.width / 2, 290);
+       if(mapView === 'Genotype prevalence'){
+          if (customDropdownMapView.length === 1) {
+            ctx.fillText('Selected Genotypes: ' + customDropdownMapView, canvas.width / 2, 290);
+          } else if (customDropdownMapView.length > 1) {
+            const genotypesText = customDropdownMapView.join(', ');
+            ctx.fillText('Selected Genotypes: ' + genotypesText, canvas.width / 2, 290);
+          }
         }
         ctx.drawImage(mapImg, 0, textHeight+50, canvas.width, cHeight);
         const legendImg = document.createElement('img');

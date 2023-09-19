@@ -257,11 +257,13 @@ export const DownloadData = () => {
       doc.text(`Dataset: ${dataset}${dataset === 'All' ? ' (local + travel)' : ''}`, 16, 120);
 
       doc.setFontSize(8);
-      if (customDropdownMapView.length === 1) {
-          doc.text('Selected Genotypes: ' + customDropdownMapView, 16, 140);
-      } else if (customDropdownMapView.length > 1) {
-          const genotypesText = customDropdownMapView.join(', ');
-          doc.text('Selected Genotypes: ' + genotypesText, 16, 140);
+      if(mapView === 'Genotype prevalence'){
+        if (customDropdownMapView.length === 1) {
+            doc.text('Selected Genotypes: ' + customDropdownMapView, 16, 140);
+        } else if (customDropdownMapView.length > 1) {
+            const genotypesText = customDropdownMapView.join(', ');
+            doc.text('Selected Genotypes: ' + genotypesText, 16, 140);
+        }
       }
 
       await svgAsPngUri(document.getElementById('global-overview-map'), {
