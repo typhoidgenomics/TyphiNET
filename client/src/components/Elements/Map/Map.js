@@ -98,10 +98,8 @@ export const Map = () => {
           }
           break;
         case 'Genotype prevalence':
-          const countryData = mapData.find((item) => item.name === geo.properties.NAME);
             let percentCounter = 0;        
             const genotypes1 = countryStats.GENOTYPE.items;
-
             let genotypes2 = [];
             genotypes1.forEach((genotype) => {
                if (customDropdownMapView.includes(genotype.name)){
