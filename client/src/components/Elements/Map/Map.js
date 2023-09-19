@@ -99,14 +99,12 @@ export const Map = () => {
           break;
         case 'Genotype prevalence':
           const countryData = mapData.find((item) => item.name === geo.properties.NAME);
-          // console.log("frequenciesGraphSelectedGenotypes",frequenciesGraphSelectedGenotypes )
             let percentCounter = 0;        
             const genotypes1 = countryStats.GENOTYPE.items;
 
             let genotypes2 = [];
             genotypes1.forEach((genotype) => {
                if (customDropdownMapView.includes(genotype.name)){
-                // tooltip.content[genotype.name] = `${genotype.count} `;
                   genotypes2.push(genotype);}
                 percentCounter += genotype.count;
             });
@@ -196,14 +194,12 @@ export const Map = () => {
                         case 'Genotype prevalence':
                           let percentCounter = 0;        
                           const genotypes1 = countryStats.GENOTYPE.items;
-                          // console.log("gencountryDataotypes1",countryData);
                           let genotypes2 = [];
                           genotypes1.forEach((genotype) => {
                             if (customDropdownMapView.includes(genotype.name))
                                 genotypes2.push(genotype);
                               percentCounter += genotype.count;
                           });
-                          // console.log("genotypes2",genotypes2.length );
                 
                           let sumCount = 0;
 
@@ -214,7 +210,6 @@ export const Map = () => {
                             }
                           }
                           if(countryData.count>=20 && genotypes2.length > 0 ){
-                            // console.log("count %",count );
                             if(genotypes2 != undefined){
                               fillColor = redColorScale2(((sumCount/percentCounter)*100).toFixed(2));
                             }
@@ -223,7 +218,6 @@ export const Map = () => {
                             fillColor = darkGrey;
                             smallerThan20 = true;
                           }
-                          // console.log("frequenciesGraphSelectedGenotypes:", frequenciesGraphSelectedGenotypes);
 
                           break;
 

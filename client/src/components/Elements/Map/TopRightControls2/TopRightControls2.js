@@ -22,11 +22,9 @@ export const TopRightControls2 = () => {
 
   // useEffect(() => {
   //   setCurrentTooltip(null);
-  //   // console.log("customDropdownMapView", customDropdownMapView);
   // }, [genotypesDrugsData, customDropdownMapView]);
 
   function getSelectGenotypeLabel(genotype) {
-    // console.log("genotype2",genotype.Susceptible );
     const percentage = Number(((genotype.Susceptible / genotype.totalCount) * 100).toFixed(2));
 
     return `${genotype.name} (total N=${genotype.totalCount}, ${percentage}% Susceptible)`;

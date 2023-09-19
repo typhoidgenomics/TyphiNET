@@ -187,7 +187,6 @@ export const DownloadData = () => {
     dispatch(setPosition({ coordinates: [0, 0], zoom: 1 }));
 
     try {
-      console.log("dataset", genotypesForFilter);
       if(genotypesForFilter.length<=0)
         return console.log("No data available to generate report");
       const doc = new jsPDF({ unit: 'px', format: 'a4' });
@@ -256,7 +255,7 @@ export const DownloadData = () => {
       const actualMapView = mapLegends.find((x) => x.value === mapView).label;
       doc.text(`Map View: ${actualMapView}`, 16, 108);
       doc.text(`Dataset: ${dataset}${dataset === 'All' ? ' (local + travel)' : ''}`, 16, 120);
-      
+
       doc.setFontSize(8);
       if (customDropdownMapView.length === 1) {
           doc.text('Selected Genotypes: ' + customDropdownMapView, 16, 140);
