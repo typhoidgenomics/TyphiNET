@@ -21,6 +21,7 @@ export const BottomRightControls = () => {
   const actualTimeInitial = useAppSelector((state) => state.dashboard.actualTimeInitial);
   const actualTimeFinal = useAppSelector((state) => state.dashboard.actualTimeFinal);
   const globalOverviewLabel = useAppSelector((state) => state.dashboard.globalOverviewLabel);
+  const customDropdownMapView = useAppSelector((state) => state.graph.customDropdownMapView);
 
   async function handleClick() {
     setLoading(true);
@@ -64,9 +65,15 @@ export const BottomRightControls = () => {
         ctx.fillText('Map View: ' + actualMapView, canvas.width / 2, 140);
         ctx.fillText('Dataset: ' + dataset, canvas.width / 2, 190);
         ctx.fillText('Time Period: ' + actualTimeInitial + ' to ' + actualTimeFinal, canvas.width / 2, 240);
-
-        ctx.drawImage(mapImg, 0, textHeight, canvas.width, cHeight);
-
+       if(mapView === 'Genotype prevalence'){
+          if (customDropdownMapView.length === 1) {
+            ctx.fillText('Selected Genotypes: ' + customDropdownMapView, canvas.width / 2, 290);
+          } else if (customDropdownMapView.length > 1) {
+            const genotypesText = customDropdownMapView.join(', ');
+            ctx.fillText('Selected Genotypes: ' + genotypesText, canvas.width / 2, 290);
+          }
+        }
+        ctx.drawImage(mapImg, 0, textHeight+50, canvas.width, cHeight);
         const legendImg = document.createElement('img');
         const legendImgPromise = imgOnLoadPromise(legendImg);
         let legendWidth = 439;
@@ -83,11 +90,14 @@ export const BottomRightControls = () => {
           case 'Susceptible to all drugs':
             legendImg.src = 'legends/MapView_Sensitive.png';
             break;
+          case 'Genotype prevalence':
+            legendImg.src = 'legends/MapView_prevalence.png';
+            break;
           default:
             legendImg.src = 'legends/MapView_Others.png';
             break;
         }
-
+        if (mapView === 'Dominant Genotype') {
         await legendImgPromise;
         ctx.drawImage(
           legendImg,
@@ -96,7 +106,16 @@ export const BottomRightControls = () => {
           legendWidth,
           legendHeight
         );
-
+      } else {
+        await legendImgPromise;
+        ctx.drawImage(
+          legendImg,
+          canvas.width - (canvas.width / 6),
+          0,
+          legendWidth,
+          legendHeight
+        );
+      }
         const typhinetLogo = document.createElement('img');
         const typhinetLogoPromise = imgOnLoadPromise(typhinetLogo);
         typhinetLogo.src = LogoImg;

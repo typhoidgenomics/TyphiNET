@@ -49,9 +49,9 @@ export const FrequenciesGraph = () => {
   const frequenciesGraphSelectedGenotypes = useAppSelector((state) => state.graph.frequenciesGraphSelectedGenotypes);
 
   function getSelectGenotypeLabel(genotype) {
-    const percentage = Number(((genotype.resistantCount / genotype.totalCount) * 100).toFixed(2));
+    const percentage = Number(((genotype.Susceptible / genotype.totalCount) * 100).toFixed(2));
 
-    return `${genotype.name} (total N=${genotype.totalCount}, ${percentage}% resistant)`;
+    return `${genotype.name} (total N=${genotype.totalCount}, ${percentage}% Susceptible)`;
   }
 
   function getDomain() {

@@ -42,6 +42,8 @@ interface MapState {
   tooltipContent: Object | null;
   dataset: string;
   mapData: Array<MapDataModel>;
+  ifCustom : boolean;
+
 }
 
 const initialState: MapState = {
@@ -53,7 +55,9 @@ const initialState: MapState = {
   mapView: 'CipNS',
   tooltipContent: null,
   dataset: 'All',
-  mapData: []
+  mapData: [],
+  ifCustom : false,
+
 };
 
 export const mapSlice = createSlice({
@@ -77,10 +81,13 @@ export const mapSlice = createSlice({
     },
     setMapData: (state, action: PayloadAction<Array<any>>) => {
       state.mapData = action.payload;
-    }
+    },
+    setIfCustom: (state, action: PayloadAction<boolean>) => {
+      state.ifCustom = action.payload;
+    },
   }
 });
 
-export const { setPosition, setMapView, setTooltipContent, setDataset, setLoadingMap, setMapData } = mapSlice.actions;
+export const { setPosition, setMapView, setTooltipContent, setDataset, setLoadingMap, setMapData,  setIfCustom } = mapSlice.actions;
 
 export default mapSlice.reducer;

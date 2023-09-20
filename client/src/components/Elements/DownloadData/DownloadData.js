@@ -88,6 +88,7 @@ export const DownloadData = () => {
   const dataset = useAppSelector((state) => state.map.dataset);
   const determinantsGraphDrugClass = useAppSelector((state) => state.graph.determinantsGraphDrugClass);
   const genotypesForFilter = useAppSelector((state) => state.dashboard.genotypesForFilter);
+  const customDropdownMapView = useAppSelector((state) => state.graph.customDropdownMapView);
 
   async function handleClickDownloadDatabase() {
     setLoadingCSV(true);
@@ -186,7 +187,6 @@ export const DownloadData = () => {
     dispatch(setPosition({ coordinates: [0, 0], zoom: 1 }));
 
     try {
-      console.log("dataset", genotypesForFilter);
       if(genotypesForFilter.length<=0)
         return console.log("No data available to generate report");
       const doc = new jsPDF({ unit: 'px', format: 'a4' });
@@ -256,6 +256,16 @@ export const DownloadData = () => {
       doc.text(`Map View: ${actualMapView}`, 16, 108);
       doc.text(`Dataset: ${dataset}${dataset === 'All' ? ' (local + travel)' : ''}`, 16, 120);
 
+      // doc.setFontSize(10);
+      if(mapView === 'Genotype prevalence'){
+        if (customDropdownMapView.length === 1) {
+            doc.text('Selected Genotypes: ' + customDropdownMapView, 16, 140);
+        } else if (customDropdownMapView.length > 1) {
+            const genotypesText = customDropdownMapView.join('\n');
+            doc.text('Selected Genotypes: \n' + genotypesText, 16, 140);
+        }
+      }
+      let mapY = 160 + (customDropdownMapView.length*9);
       await svgAsPngUri(document.getElementById('global-overview-map'), {
         scale: 4,
         backgroundColor: 'white',
@@ -275,7 +285,7 @@ export const DownloadData = () => {
         ctx.drawImage(mapImg, 0, 0, canvas.width, canvas.height);
 
         const img = canvas.toDataURL('image/png');
-        doc.addImage(img, 'PNG', 0, 128, pageWidth, 223);
+        doc.addImage(img, 'PNG', 0, mapY, pageWidth, 223);
       });
 
       const mapLegend = new Image();
@@ -293,6 +303,9 @@ export const DownloadData = () => {
         case 'Susceptible to all drugs':
           mapLegend.src = 'legends/MapView_Sensitive.png';
           break;
+        case 'Genotype prevalence':
+          mapLegend.src = 'legends/MapView_prevalence.png';
+          break;
         default:
           mapLegend.src = 'legends/MapView_Others.png';
           break;
@@ -300,7 +313,7 @@ export const DownloadData = () => {
       if (mapView === 'Dominant Genotype') {
         doc.addImage(mapLegend, 'PNG', pageWidth / 2 - legendWidth / 2, 351, legendWidth, 47);
       } else {
-        doc.addImage(mapLegend, 'PNG', 16, 351, legendWidth, 47);
+        doc.addImage(mapLegend, 'PNG', pageWidth - pageWidth / 5 , 85, legendWidth, 47);
       }
 
       // Graphs
