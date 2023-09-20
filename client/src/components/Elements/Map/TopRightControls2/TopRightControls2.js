@@ -66,9 +66,9 @@ const filteredData = genotypesDrugsData.filter((genotype) =>
       <Card elevation={3} className={classes.card}>
         <CardContent className={classes.frequenciesGraph}>
           <div className={classes.label}>
-            <Typography variant="caption">Select genotype/s</Typography>
+            <Typography variant="caption">Select genotype</Typography>
             <Tooltip
-              title="Select upto 10 Genotypes"
+              title="Select up to 10 Genotypes"
               placement="top"
             >
               <InfoOutlined color="action" fontSize="small" className={classes.labelTooltipIcon} />
