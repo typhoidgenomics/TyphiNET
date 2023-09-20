@@ -8,6 +8,7 @@ export const mapLegends = [
   // { value: 'Sensitive to all drugs', label: 'Sensitive to all drugs' },
   { value: 'Susceptible to all drugs', label: 'Susceptible to all drugs' },
   { value: 'Dominant Genotype', label: 'Dominant Genotype' },
+  { value: 'Genotype prevalence', label: 'Genotype prevalence' },
   { value: 'H58 / Non-H58', label: 'H58 genotype' },
   { value: 'No. Samples', label: 'No. Samples' }
 ];

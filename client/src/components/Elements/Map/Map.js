@@ -4,7 +4,7 @@ import { ComposableMap, Geographies, Geography, Graticule, Sphere, ZoomableGroup
 import { useStyles } from './MapMUI';
 import geography from '../../../assets/world-50m.json';
 import { darkGrey, getColorForGenotype, lightGrey, zeroCountColor, zeroPercentColor } from '../../../util/colorHelper';
-import { redColorScale, samplesColorScale, sensitiveColorScale } from './mapColorHelper';
+import { redColorScale, samplesColorScale, sensitiveColorScale, redColorScale2 } from './mapColorHelper';
 import ReactTooltip from 'react-tooltip';
 import { BottomLeftControls } from './BottomLeftControls';
 import { useAppDispatch, useAppSelector } from '../../../stores/hooks';
@@ -13,6 +13,8 @@ import { TopRightControls } from './TopRightControls';
 import { setActualCountry } from '../../../stores/slices/dashboardSlice.ts';
 import { TopLeftControls } from './TopLeftControls';
 import { BottomRightControls } from './BottomRightControls';
+import { TopRightControls2 } from './TopRightControls2';
+
 
 const statKey = {
   MDR: 'MDR',
@@ -35,6 +37,10 @@ export const Map = () => {
   const mapView = useAppSelector((state) => state.map.mapView);
   const tooltipContent = useAppSelector((state) => state.map.tooltipContent);
   const globalOverviewLabel = useAppSelector((state) => state.dashboard.globalOverviewLabel);
+  const frequenciesGraphSelectedGenotypes = useAppSelector((state) => state.graph.frequenciesGraphSelectedGenotypes);
+  const customDropdownMapView = useAppSelector((state) => state.graph.customDropdownMapView);
+  const ifCustom = useAppSelector((state) => state.map.ifCustom);
+
 
   function handleOnClick(countryData) {
     if (countryData !== undefined) {
@@ -91,6 +97,30 @@ export const Map = () => {
             };
           }
           break;
+        case 'Genotype prevalence':
+            let percentCounter = 0;        
+            const genotypes1 = countryStats.GENOTYPE.items;
+            let genotypes2 = [];
+            genotypes1.forEach((genotype) => {
+               if (customDropdownMapView.includes(genotype.name)){
+                  genotypes2.push(genotype);}
+                percentCounter += genotype.count;
+            });
+            genotypes1.forEach((genotype) => {
+               if (customDropdownMapView.includes(genotype.name))
+                tooltip.content[genotype.name] = `${genotype.count} (${((genotype.count/percentCounter)*100).toFixed(2)} %)`;
+            });
+            if (genotypes2.length > 0) {
+              let sumCount = 0;
+              for (const genotype of genotypes2) {
+                sumCount += genotype.count;
+              }
+              if(countryData.count>=20 && genotypes2.length > 1 )
+                tooltip.content['All selected genotypes'] = `${sumCount} (${((sumCount/percentCounter)*100).toFixed(2)} %)`;
+
+            }
+          break;
+
         default:
           break;
       }
@@ -104,7 +134,7 @@ export const Map = () => {
   }
 
   function showPercentage() {
-    return !['Dominant Genotype', 'No. Samples'].includes(mapView);
+    return !['Dominant Genotype','Genotype prevalence','No. Samples'].includes(mapView);
   }
 
   return (
@@ -159,6 +189,36 @@ export const Map = () => {
                           const genotypes = countryStats.GENOTYPE.items;
                           fillColor = getColorForGenotype(genotypes[0].name);
                           break;
+                        case 'Genotype prevalence':
+                          let percentCounter = 0;        
+                          const genotypes1 = countryStats.GENOTYPE.items;
+                          let genotypes2 = [];
+                          genotypes1.forEach((genotype) => {
+                            if (customDropdownMapView.includes(genotype.name))
+                                genotypes2.push(genotype);
+                              percentCounter += genotype.count;
+                          });
+                
+                          let sumCount = 0;
+
+                          if (genotypes2.length > 0 ) {
+                            for (const genotype of genotypes2) {
+                              sumCount += genotype.count;
+
+                            }
+                          }
+                          if(countryData.count>=20 && genotypes2.length > 0 ){
+                            if(genotypes2 != undefined){
+                              fillColor = redColorScale2(((sumCount/percentCounter)*100).toFixed(2));
+                            }
+                          }
+                          else if (countryData.count>=20) {
+                            fillColor = darkGrey;
+                            smallerThan20 = true;
+                          }
+
+                          break;
+
                         case 'Susceptible to all drugs': // case 'Sensitive to all drugs':
                         case 'H58 / Non-H58':
                         case 'MDR':
@@ -232,6 +292,7 @@ export const Map = () => {
             <>
               <TopLeftControls />
               <TopRightControls />
+              {ifCustom ? <TopRightControls2/> : null}
             </>
           )}
           <BottomLeftControls />
@@ -240,6 +301,7 @@ export const Map = () => {
         {matches && (
           <div className={classes.topControls}>
             <TopRightControls />
+            {ifCustom ? <TopRightControls2/> : null}
             <TopLeftControls />
           </div>
         )}

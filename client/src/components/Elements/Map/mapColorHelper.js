@@ -1,4 +1,5 @@
 // Helper for map color
+import chroma from 'chroma-js';
 
 export const samplesColorScale = (domain) => {
   if (domain >= 1 && domain <= 9) {
@@ -25,6 +26,21 @@ export const redColorScale = (percentage) => {
   } else {
     return '#FAAD8F';
   } 
+};
+
+export const redColorScale2 = (percentage) => {
+  const p = parseInt(percentage);
+  
+  // Define the color scale using chroma.scale
+  const colorScale = chroma.scale(['#FAAD8F', '#FA694A', '#DD2C24', '#A20F17']);
+  
+  // Map the percentage to the color scale range (0 to 1)
+  const normalizedPercentage = p / 100;
+
+  // Use the color scale to interpolate the color based on the percentage
+  const color = colorScale(normalizedPercentage).hex();
+
+  return color;
 };
 
 export const sensitiveColorScale = (percentage) => {

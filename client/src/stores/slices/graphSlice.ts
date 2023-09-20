@@ -12,6 +12,7 @@ interface GraphState {
   genotypesDrugClassesData: Array<any>;
   determinantsGraphView: string;
   determinantsGraphDrugClass: string;
+  customDropdownMapView: Array<string>;
 }
 
 const initialState: GraphState = {
@@ -26,6 +27,7 @@ const initialState: GraphState = {
   frequenciesGraphSelectedGenotypes: [],
   determinantsGraphView: 'percentage',
   determinantsGraphDrugClass: 'Ciprofloxacin NS',
+  customDropdownMapView: [],
 };
 
 export const graphSlice = createSlice({
@@ -65,6 +67,9 @@ export const graphSlice = createSlice({
     setGenotypesDrugClassesData: (state, action: PayloadAction<Array<any>>) => {
       state.genotypesDrugClassesData = action.payload;
     },
+    setCustomDropdownMapView: (state, action: PayloadAction<Array<string>>) => {
+      state.customDropdownMapView = action.payload;
+    },
   }
 });
 
@@ -80,6 +85,7 @@ export const {
   setDeterminantsGraphView,
   setDeterminantsGraphDrugClass,
   setGenotypesDrugClassesData,
+  setCustomDropdownMapView
 } = graphSlice.actions;
 
 export default graphSlice.reducer;
