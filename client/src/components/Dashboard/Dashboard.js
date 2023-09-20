@@ -16,7 +16,7 @@ import {
   setTotalGenotypes,
   setYears
 } from '../../stores/slices/dashboardSlice.ts';
-import { setMapData, setIfCustom } from '../../stores/slices/mapSlice.ts';
+import { setDataset, setMapData, setMapView, setPosition, setIfCustom } from '../../stores/slices/mapSlice.ts';
 import { Graphs } from '../Elements/Graphs';
 import {
   setCountriesForFilter,
