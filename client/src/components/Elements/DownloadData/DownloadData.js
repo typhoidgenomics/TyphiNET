@@ -256,7 +256,7 @@ export const DownloadData = () => {
       doc.text(`Map View: ${actualMapView}`, 16, 108);
       doc.text(`Dataset: ${dataset}${dataset === 'All' ? ' (local + travel)' : ''}`, 16, 120);
 
-      doc.setFontSize(8);
+      // doc.setFontSize(10);
       if(mapView === 'Genotype prevalence'){
         if (customDropdownMapView.length === 1) {
             doc.text('Selected Genotypes: ' + customDropdownMapView, 16, 140);
@@ -265,7 +265,7 @@ export const DownloadData = () => {
             doc.text('Selected Genotypes: \n' + genotypesText, 16, 140);
         }
       }
-      // let mapY = 160 + (customDropdownMapView.length*9);
+      let mapY = 160 + (customDropdownMapView.length*9);
       await svgAsPngUri(document.getElementById('global-overview-map'), {
         scale: 4,
         backgroundColor: 'white',
@@ -285,8 +285,7 @@ export const DownloadData = () => {
         ctx.drawImage(mapImg, 0, 0, canvas.width, canvas.height);
 
         const img = canvas.toDataURL('image/png');
-        doc.addImage(img, 'PNG', 0, 160, pageWidth, 223);
-        // doc.addImage(img, 'PNG', 0, mapY, pageWidth, 223);
+        doc.addImage(img, 'PNG', 0, mapY, pageWidth, 223);
       });
 
       const mapLegend = new Image();
@@ -415,7 +414,7 @@ export const DownloadData = () => {
         startIcon={<TableChart />}
         loadingPosition="start"
       >
-        Download database (CSV format, 3.8MB)
+        Download database (CSV format, 7.2MB)
       </LoadingButton>
       <LoadingButton
         className={classes.button}

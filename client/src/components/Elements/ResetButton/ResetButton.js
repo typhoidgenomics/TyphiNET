@@ -11,6 +11,7 @@ import {
   setDistributionGraphView,
   setDrugResistanceGraphView,
   setFrequenciesGraphView,
+  setFrequenciesGraphSelectedGenotype,
   setCustomDropdownMapView
 } from '../../../stores/slices/graphSlice';
 import { defaultDrugsForDrugResistanceGraph } from '../../../util/drugs';
