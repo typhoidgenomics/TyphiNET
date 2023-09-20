@@ -37,6 +37,7 @@ export const Map = () => {
   const mapView = useAppSelector((state) => state.map.mapView);
   const tooltipContent = useAppSelector((state) => state.map.tooltipContent);
   const globalOverviewLabel = useAppSelector((state) => state.dashboard.globalOverviewLabel);
+  const frequenciesGraphSelectedGenotypes = useAppSelector((state) => state.graph.frequenciesGraphSelectedGenotypes);
   const customDropdownMapView = useAppSelector((state) => state.graph.customDropdownMapView);
   const ifCustom = useAppSelector((state) => state.map.ifCustom);
 
