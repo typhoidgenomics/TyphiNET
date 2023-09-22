@@ -568,7 +568,10 @@ router.get('/create', function (req, res) {
           if (
             !empty.includes(data_to_write[d]['DATE']) &&
             !empty.includes(data_to_write[d]['COUNTRY_ONLY']) &&
-            data_to_write[d]['PURPOSE OF SAMPLING'].includes('Non Targeted')
+            data_to_write[d]['PURPOSE OF SAMPLING'].includes('Non Targeted')&&
+            !data_to_write[d]['SYMPTOM STATUS'].includes('Asymptomatic')&&
+            !data_to_write[d]['SOURCE'].includes('Gallbladder')&&
+            !data_to_write[d]['SOURCE'].includes('Environment')
           ) {
             data_to_write[d]['dashboard view'] = "Include";
             temp.push(data_to_write[d]);
