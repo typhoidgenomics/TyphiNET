@@ -66,7 +66,8 @@ const columnsToRemove = [
   'COUNTRY OF ORIGIN',
   'AGE',
   'TRAVEL COUNTRY',
-  'TRAVEL ASSOCIATED'
+  'TRAVEL ASSOCIATED',
+  'Inc Types'
 ];
 
 export const DownloadData = () => {
