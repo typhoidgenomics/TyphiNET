@@ -89,13 +89,24 @@ export const Map = () => {
         case 'XDR':
         case 'AzithR':
         case 'CipR':
-        case 'CipNS':
           if (showTooltip) {
             tooltip.content[statKey[mapView]] = {
               count: countryStats[statKey[mapView]].count,
               percentage: `${countryStats[statKey[mapView]].percentage}%`
             };
           }
+          break;
+        case 'CipNS':
+          if (showTooltip) {
+            const combinedCount = (countryStats[statKey["CipR"]].count || 0) + (countryStats[statKey["CipNS"]].count || 0);
+            const combinedPercentage = (
+              (countryStats[statKey["CipR"]].percentage || 0) + (countryStats[statKey["CipNS"]].percentage || 0));
+            tooltip.content['CipNS'] = {
+              count: combinedCount,
+              percentage: `${combinedPercentage.toFixed(2)}%`
+            };
+          }
+
           break;
         case 'Genotype prevalence':
             let percentCounter = 0;        
@@ -225,13 +236,35 @@ export const Map = () => {
                         case 'XDR':
                         case 'AzithR':
                         case 'CipR':
-                        case 'CipNS':
                           count = countryStats[statKey[mapView]]?.count;
                           if (countryData.count >= 20 && count > 0) {
                             if (mapView === 'Susceptible to all drugs') {
                               fillColor = sensitiveColorScale(countryStats[statKey[mapView]].percentage);
                             } else {
                               fillColor = redColorScale(countryStats[statKey[mapView]].percentage);
+                            }
+                            showTooltip = true;
+                          } else if (countryData.count >= 20) {
+                            if (mapView === 'Susceptible to all drugs') {
+                              fillColor = zeroPercentColor;
+                            } else {
+                              fillColor = darkGrey;
+                            }
+                            smallerThan20 = true;
+                          }
+                          break;
+                        case 'CipNS':
+                          let countCipR = countryStats[statKey["CipR"]]?.count;
+                          let countCipNS = countryStats[statKey["CipNS"]]?.count;
+                          count = countCipR + countCipNS;
+                          // count = countryStats[statKey[mapView]]?.count;
+                          let per = countryStats[statKey["CipNS"]].percentage + countryStats[statKey["CipNS"]].percentage;
+                          console.log("per", countryStats[statKey["CipNS"]], per)
+                          if (countryData.count >= 20 && count > 0) {
+                            if (mapView === 'Susceptible to all drugs') {
+                              fillColor = sensitiveColorScale(per);
+                            } else {
+                              fillColor = redColorScale(per);
                             }
                             showTooltip = true;
                           } else if (countryData.count >= 20) {
