@@ -258,7 +258,7 @@ export const Map = () => {
                           let countCipNS = countryStats[statKey["CipNS"]]?.count;
                           count = countCipR + countCipNS;
                           // count = countryStats[statKey[mapView]]?.count;
-                          let per = countryStats[statKey["CipNS"]].percentage + countryStats[statKey["CipNS"]].percentage;
+                          let per = countryStats[statKey["CipNS"]].percentage + countryStats[statKey["CipR"]].percentage;
                           console.log("per", countryStats[statKey["CipNS"]], per)
                           if (countryData.count >= 20 && count > 0) {
                             if (mapView === 'Susceptible to all drugs') {
