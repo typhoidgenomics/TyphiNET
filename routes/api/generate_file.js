@@ -382,34 +382,31 @@ router.get('/create', function (req, res) {
             obj_parser['CipNS'] ="-";
             // obj_parser['Susceptible'] ="-";
             if (obj_parser['num_qrdr'] === 3) {
-              // obj_parser['cip_pred_pheno'] = 'CipR'; Flag
               obj_parser['cip_pred_pheno'] = 'CipR';
               obj_parser['CipR'] = "CipR";
             }
             if (obj_parser['num_qrdr'] === 2) {
-              // obj_parser['cip_pred_pheno'] = 'CipR'; Flag
               obj_parser['cip_pred_pheno'] = 'CipR';
               obj_parser['CipR'] = "CipR";
             }
             if (obj_parser['num_qrdr'] === 1) {
-              // obj_parser['cip_pred_pheno'] = 'CipNS'; Flag
               obj_parser['cip_pred_pheno'] = 'CipNS';
               obj_parser['CipNS'] = "CipNS";
             }
             if (obj_parser['num_qrdr'] === 0) {
-              // obj_parser['cip_pred_pheno'] = 'CipS'; Flag
               obj_parser['cip_pred_pheno'] = 'CipS';
             }
 
             if (obj_parser['cip_pheno_qrdr_gene'] != undefined) {
-              let cid_pred_pheno =
-                // obj_parser['cip_pred_pheno'].toString() + obj_parser['cip_pheno_qrdr_gene'].toString();
+              let cid_pred_pheno=
                 obj_parser['cip_pred_pheno'].toString() + obj_parser['cip_pheno_qrdr_gene'].toString();
-              obj_parser['cip_pheno_qrdr_gene'] = cid_pred_pheno;
+                obj_parser['cip_pheno_qrdr_gene'] = cid_pred_pheno;
               if (cid_pred_pheno == 'CipS10' || cid_pred_pheno == 'CipS11' || cid_pred_pheno == 'CipS01') {
-                // obj_parser['cip_pred_pheno'] = 'CipNS';
-                obj_parser['cip_pred_pheno'] = 'CipNS';
+                obj_parser['cip_pred_pheno'] = 'CipS';
               }
+              if (cid_pred_pheno== 'CipNS10' || cid_pred_pheno == 'CipNS11' || cid_pred_pheno == 'CipNS01') {
+                obj_parser['cip_pred_pheno'] = 'CipNS';
+              } 
               if (cid_pred_pheno == 'CipNS10' || cid_pred_pheno == 'CipNS11' || cid_pred_pheno == 'CipNS01') {
                 obj_parser['cip_pred_pheno'] = 'CipR';
               }
@@ -450,11 +447,13 @@ router.get('/create', function (req, res) {
             } else if (
               MDR == 'MDR' &&
               dcs_category == 'DCS' &&
-              // cip_pred_pheno == 'CipNS' && Flag
+              cip_pred_pheno == 'CipNS' &&
               cip == 'CipNS' &&
               cip_pheno_qrdr_gene == 'CipNS00' &&
               azith_pred_pheno == 'AzithR'
-            ) {
+              ) {
+              obj_parser['amr_category'] = 'DCS';
+            }
               obj_parser['amr_category'] = 'AzithR_DCS_MDR';
             } else if (
               MDR == 'MDR' &&
@@ -529,7 +528,7 @@ router.get('/create', function (req, res) {
             data_to_write[index] = obj_parser;
           }
           obj_parser = {};
-        }
+        
       })
 
       .on('end', async () => {

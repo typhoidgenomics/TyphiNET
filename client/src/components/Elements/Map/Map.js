@@ -207,8 +207,8 @@ export const Map = () => {
 
                             }
                           }
-                          if(countryData.count>=20 && genotypes2.length > 0 ){
-                            if(genotypes2 != undefined){
+                          if (countryData.count >= 20 && genotypes2.length > 0) {
+                            if (genotypes2 !== undefined) {
                               fillColor = redColorScale2(((sumCount/percentCounter)*100).toFixed(2));
                             }
                           }
