@@ -378,36 +378,28 @@ router.get('/create', function (req, res) {
                 obj_parser['azith_pred_pheno'] = 'AzithS';
               }
             }
-            obj_parser['CipR'] ="-";
-            obj_parser['CipNS'] ="-";
-            // obj_parser['Susceptible'] ="-";
+
             if (obj_parser['num_qrdr'] === 3) {
               obj_parser['cip_pred_pheno'] = 'CipR';
-              obj_parser['CipR'] = "CipR";
             }
             if (obj_parser['num_qrdr'] === 2) {
               obj_parser['cip_pred_pheno'] = 'CipR';
-              obj_parser['CipR'] = "CipR";
             }
             if (obj_parser['num_qrdr'] === 1) {
               obj_parser['cip_pred_pheno'] = 'CipNS';
-              obj_parser['CipNS'] = "CipNS";
             }
             if (obj_parser['num_qrdr'] === 0) {
               obj_parser['cip_pred_pheno'] = 'CipS';
             }
 
             if (obj_parser['cip_pheno_qrdr_gene'] != undefined) {
-              let cid_pred_pheno=
+              let cid_pred_pheno =
                 obj_parser['cip_pred_pheno'].toString() + obj_parser['cip_pheno_qrdr_gene'].toString();
-                obj_parser['cip_pheno_qrdr_gene'] = cid_pred_pheno;
+              obj_parser['cip_pheno_qrdr_gene'] = cid_pred_pheno;
               if (cid_pred_pheno == 'CipS10' || cid_pred_pheno == 'CipS11' || cid_pred_pheno == 'CipS01') {
-                obj_parser['cip_pred_pheno'] = 'CipS';
+                obj_parser['cip_pred_pheno'] = 'CipNS';
               }
               if (cid_pred_pheno== 'CipNS10' || cid_pred_pheno == 'CipNS11' || cid_pred_pheno == 'CipNS01') {
-                obj_parser['cip_pred_pheno'] = 'CipNS';
-              } 
-              if (cid_pred_pheno == 'CipNS10' || cid_pred_pheno == 'CipNS11' || cid_pred_pheno == 'CipNS01') {
                 obj_parser['cip_pred_pheno'] = 'CipR';
               }
             } else {
@@ -437,7 +429,7 @@ router.get('/create', function (req, res) {
             let XDR = obj_parser['XDR'];
             let dcs_category = obj_parser['dcs_category'];
             let cip_pheno_qrdr_gene = obj_parser['cip_pheno_qrdr_gene'];
-            let cip = obj_parser['cip_pred_pheno'];
+            let cip_pred_pheno = obj_parser['cip_pred_pheno'];
             let azith_pred_pheno = obj_parser['azith_pred_pheno'];
             let MDR = obj_parser['MDR'];
             let num_amr_genes = obj_parser['num_amr_genes'];
@@ -448,17 +440,14 @@ router.get('/create', function (req, res) {
               MDR == 'MDR' &&
               dcs_category == 'DCS' &&
               cip_pred_pheno == 'CipNS' &&
-              cip == 'CipNS' &&
               cip_pheno_qrdr_gene == 'CipNS00' &&
               azith_pred_pheno == 'AzithR'
               ) {
-              obj_parser['amr_category'] = 'DCS';
-            }
               obj_parser['amr_category'] = 'AzithR_DCS_MDR';
             } else if (
               MDR == 'MDR' &&
               dcs_category == 'DCS' &&
-              (cip == 'CipNS' || cip == 'CipR') &&
+              (cip_pred_pheno == 'CipNS' || cip_pred_pheno == 'CipR') &&
               (cip_pheno_qrdr_gene == 'CipNS00' ||
                 cip_pheno_qrdr_gene == 'CipNS01' ||
                 cip_pheno_qrdr_gene == 'CipS10' ||
@@ -468,14 +457,14 @@ router.get('/create', function (req, res) {
               obj_parser['amr_category'] = 'MDR_DCS';
             } else if (
               dcs_category == 'DCS' &&
-              (cip == 'CipR' || cip == 'CipS' || cip == 'CipNS') &&
+              (cip_pred_pheno == 'CipR' || cip_pred_pheno == 'CipS' || cip_pred_pheno == 'CipNS') &&
               (cip_pheno_qrdr_gene == 'CipNS00' || cip_pheno_qrdr_gene == 'CipR00') &&
               azith_pred_pheno == 'AzithR'
             ) {
               obj_parser['amr_category'] = 'AzithR_DCS';
             } else if (
               dcs_category == 'DCS' &&
-              (cip == 'CipR' || cip == 'CipNS') &&
+              (cip_pred_pheno == 'CipR' || cip_pred_pheno == 'CipNS') &&
               num_amr_genes != '0' &&
               azith_pred_pheno == 'AzithS'
             ) {
@@ -484,14 +473,14 @@ router.get('/create', function (req, res) {
               dcs_category == 'DCS' &&
               MDR == '-' &&
               azith_pred_pheno == 'AzithS' &&
-              (cip == 'CipNS' || cip == 'CipR') &&
+              (cip_pred_pheno == 'CipNS' || cip_pred_pheno == 'CipR') &&
               (cip_pheno_qrdr_gene == 'CipNS00' || cip_pheno_qrdr_gene == 'CipR00')
             ) {
               obj_parser['amr_category'] = 'DCS';
             } else if (
               MDR == 'MDR' &&
               dcs_category != 'DCS' &&
-              cip == 'CipS' &&
+              cip_pred_pheno == 'CipS' &&
               azith_pred_pheno == 'AzithR' &&
               cip_pheno_qrdr_gene == 'CipS00'
             ) {
@@ -500,21 +489,21 @@ router.get('/create', function (req, res) {
               MDR == 'MDR' &&
               dcs_category == 'CipS' &&
               azith_pred_pheno == 'AzithS' &&
-              cip == 'CipS' &&
+              cip_pred_pheno  == 'CipS' &&
               cip_pheno_qrdr_gene == 'CipS00'
             ) {
               obj_parser['amr_category'] = 'MDR';
             } else if (
               MDR == '-' &&
               dcs_category != 'DCS' &&
-              cip == 'CipS' &&
+              cip_pred_pheno  == 'CipS' &&
               cip_pheno_qrdr_gene == 'CipS00' &&
               num_amr_genes != '0' &&
               azith_pred_pheno == 'AzithS'
             ) {
               obj_parser['amr_category'] = 'AMR';
             } else if (
-              cip == 'CipS' &&
+              cip_pred_pheno  == 'CipS' &&
               azith_pred_pheno == 'AzithS' &&
               cip_pheno_qrdr_gene == 'CipS00' &&
               num_amr_genes == '0'
@@ -529,6 +518,7 @@ router.get('/create', function (req, res) {
           }
           obj_parser = {};
         
+        }
       })
 
       .on('end', async () => {
@@ -552,8 +542,10 @@ router.get('/create', function (req, res) {
               data_to_write[d]['cip_pred_pheno'] = 'CipNS';
             } else if (data_to_write[d]['num_qrdr'] === 0) {
               data_to_write[d]['cip_pred_pheno'] = 'CipS';
+            } else if (data_to_write[d]['num_qrdr'] === 1 && (data_to_write[d]['qnrS'] === '1' || data_to_write[d]['qnrB'] === '1')) {
+              data_to_write[d]['cip_pred_pheno'] = 'CipR';
             } else if (data_to_write[d]['num_qrdr'] === 1) {
-              data_to_write[d]['cip_pred_pheno'] = 'CipNS';
+            data_to_write[d]['cip_pred_pheno'] = 'CipNS';
             } else {
               data_to_write[d]['cip_pred_pheno'] = 'CipR';
             }
