@@ -399,7 +399,6 @@ router.get('/create', function (req, res) {
             if (obj_parser['num_qrdr'] === 0) {
               // obj_parser['cip_pred_pheno'] = 'CipS'; Flag
               obj_parser['cip_pred_pheno'] = 'CipS';
-              // obj_parser['Susceptible'] ='CipS'; Flag
             }
 
             if (obj_parser['cip_pheno_qrdr_gene'] != undefined) {
