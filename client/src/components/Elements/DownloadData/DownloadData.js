@@ -47,7 +47,7 @@ const columnsToRemove = [
   'Matching Hashes',
   'p-Value',
   'Mash Distance',
-  'cip_pred_pheno',
+  // 'cip_pred_pheno',
   'dcs_category',
   'amr_category',
   'num_qrdr',

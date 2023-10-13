@@ -141,6 +141,8 @@ router.get('/create', function (req, res) {
       .on('data', (data) => {
         let column_names = Object.keys(data);
         let data_name;
+        obj_parser['CipNS'] = '-';
+        obj_parser['CipR'] = '-';
 
         if (file === 'pw_species-prediction.csv') {
           data_name = data['Genome Name'].toString();
@@ -555,6 +557,14 @@ router.get('/create', function (req, res) {
           } else {
             data_to_write[d]['dcs_category'] = 'CipS';
           }
+
+          if(data_to_write[d]['cip_pred_pheno'] === 'CipNS'){
+            data_to_write[d]['CipNS'] = '1';
+          }else if (data_to_write[d]['cip_pred_pheno'] === 'CipR'){
+            data_to_write[d]['CipNS'] = '1';
+            data_to_write[d]['CipR'] = '1';
+          }
+
           if (
             !empty.includes(data_to_write[d]['DATE']) &&
             !empty.includes(data_to_write[d]['COUNTRY_ONLY']) &&
@@ -564,9 +574,9 @@ router.get('/create', function (req, res) {
             !data_to_write[d]['SOURCE'].includes('Environment')
           ) {
             data_to_write[d]['dashboard view'] = "Include";
+
             temp.push(data_to_write[d]);
-          }
-          if(data_to_write[d]['dashboard view'] != "Include")
+          }else 
             data_to_write[d]['dashboard view'] = "Exclude";
           tempAll.push(data_to_write[d]);
         }
