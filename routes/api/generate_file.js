@@ -141,8 +141,6 @@ router.get('/create', function (req, res) {
       .on('data', (data) => {
         let column_names = Object.keys(data);
         let data_name;
-        obj_parser['CipNS'] = '-';
-        obj_parser['CipR'] = '-';
 
         if (file === 'pw_species-prediction.csv') {
           data_name = data['Genome Name'].toString();
@@ -518,8 +516,9 @@ router.get('/create', function (req, res) {
           } else {
             data_to_write[index] = obj_parser;
           }
+          obj_parser['CipNS'] = '-';
+          obj_parser['CipR'] = '-';
           obj_parser = {};
-        
         }
       })
 
