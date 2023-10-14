@@ -9,7 +9,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const router = express.Router();
 
 //Route GET to create the clean.csv
-router.get('/create', function (req, res) {
+router.get('/create', async function (req, res) {
   //All files that read require to generate the combine.csv
   const read_files = [
     'pw_metadata.csv',
@@ -136,6 +136,7 @@ router.get('/create', function (req, res) {
   let data_to_write = [];
 
   for (let file of read_files) {
+    await new Promise((resolve) => {
     fs.createReadStream(path.join(__dirname, `../../assets/webscrap/raw_data/${file}`), { start: 0 })
       .pipe(csv())
       .on('data', (data) => {
@@ -581,8 +582,11 @@ router.get('/create', function (req, res) {
         }
         await Tools.CreateFile(temp, 'clean.csv');
         await Tools.CreateFile(tempAll, 'cleanAll.csv');
+        resolve();
       });
+    });
   }
+
   return res.json({ Finished: 'All done!' });
 });
 
