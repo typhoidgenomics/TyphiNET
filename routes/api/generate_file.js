@@ -9,7 +9,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const router = express.Router();
 
 //Route GET to create the clean.csv
-router.get('/create', function (req, res) {
+router.get('/create', async function (req, res) {
   //All files that read require to generate the combine.csv
   const read_files = [
     'pw_metadata.csv',
@@ -136,6 +136,7 @@ router.get('/create', function (req, res) {
   let data_to_write = [];
 
   for (let file of read_files) {
+    await new Promise((resolve) => {
     fs.createReadStream(path.join(__dirname, `../../assets/webscrap/raw_data/${file}`), { start: 0 })
       .pipe(csv())
       .on('data', (data) => {
@@ -516,8 +517,9 @@ router.get('/create', function (req, res) {
           } else {
             data_to_write[index] = obj_parser;
           }
+          obj_parser['CipNS'] = '-';
+          obj_parser['CipR'] = '-';
           obj_parser = {};
-        
         }
       })
 
@@ -555,6 +557,14 @@ router.get('/create', function (req, res) {
           } else {
             data_to_write[d]['dcs_category'] = 'CipS';
           }
+
+          if(data_to_write[d]['cip_pred_pheno'] === 'CipNS'){
+            data_to_write[d]['CipNS'] = '1';
+          }else if (data_to_write[d]['cip_pred_pheno'] === 'CipR'){
+            data_to_write[d]['CipNS'] = '1';
+            data_to_write[d]['CipR'] = '1';
+          }
+
           if (
             !empty.includes(data_to_write[d]['DATE']) &&
             !empty.includes(data_to_write[d]['COUNTRY_ONLY']) &&
@@ -564,16 +574,19 @@ router.get('/create', function (req, res) {
             !data_to_write[d]['SOURCE'].includes('Environment')
           ) {
             data_to_write[d]['dashboard view'] = "Include";
+
             temp.push(data_to_write[d]);
-          }
-          if(data_to_write[d]['dashboard view'] != "Include")
+          }else 
             data_to_write[d]['dashboard view'] = "Exclude";
           tempAll.push(data_to_write[d]);
         }
         await Tools.CreateFile(temp, 'clean.csv');
         await Tools.CreateFile(tempAll, 'cleanAll.csv');
+        resolve();
       });
+    });
   }
+
   return res.json({ Finished: 'All done!' });
 });
 
