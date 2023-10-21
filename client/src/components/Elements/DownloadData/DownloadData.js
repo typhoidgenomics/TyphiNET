@@ -246,7 +246,7 @@ export const DownloadData = () => {
       doc.setFontSize(12).setFont(undefined, 'normal');
       doc.text(`Total: ${actualGenomes} genomes`, pageWidth / 2, 40, { align: 'center' });
       doc.text(`Country: ${actualCountry}`, pageWidth / 2, 52, { align: 'center' });
-      doc.text(`Time Period: ${actualTimeInitial} to ${actualTimeFinal}`, pageWidth / 2, 64, { align: 'center' });
+      doc.text(`Time period: ${actualTimeInitial} to ${actualTimeFinal}`, pageWidth / 2, 64, { align: 'center' });
       doc.line(16, 76, pageWidth - 16, 76);
 
       doc.setFont(undefined, 'bold');
@@ -337,7 +337,7 @@ export const DownloadData = () => {
         doc.setFontSize(12);
         doc.text(`Total: ${actualGenomes} genomes`, 16, 54);
         doc.text(`Country: ${actualCountry}`, 16, 66);
-        doc.text(`Time Period: ${actualTimeInitial} to ${actualTimeFinal}`, 16, 78);
+        doc.text(`Time period: ${actualTimeInitial} to ${actualTimeFinal}`, 16, 78);
         doc.text(`Dataset: ${dataset}${dataset === 'All' ? ' (local + travel)' : ''}`, 16, 90);
 
         const graphImg = document.createElement('img');

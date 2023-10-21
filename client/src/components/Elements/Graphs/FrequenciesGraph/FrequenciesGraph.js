@@ -261,7 +261,7 @@ export const FrequenciesGraph = () => {
                 disabled={frequenciesGraphSelectedGenotypes.length === 0}
                 color="error"
               >
-                Clear All
+                Clear
               </Button>
             }
             inputProps={{ className: classes.genotypesSelectInput }}

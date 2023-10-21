@@ -64,7 +64,7 @@ export const BottomRightControls = () => {
 
         ctx.fillText('Map View: ' + actualMapView, canvas.width / 2, 140);
         ctx.fillText('Dataset: ' + dataset, canvas.width / 2, 190);
-        ctx.fillText('Time Period: ' + actualTimeInitial + ' to ' + actualTimeFinal, canvas.width / 2, 240);
+        ctx.fillText('Time period: ' + actualTimeInitial + ' to ' + actualTimeFinal, canvas.width / 2, 240);
        if(mapView === 'Genotype prevalence'){
           if (customDropdownMapView.length === 1) {
             ctx.fillText('Selected Genotypes: ' + customDropdownMapView, canvas.width / 2, 290);
