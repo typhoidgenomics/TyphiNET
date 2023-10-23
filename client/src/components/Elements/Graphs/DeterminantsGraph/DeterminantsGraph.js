@@ -144,7 +144,8 @@ export const DeterminantsGraph = () => {
                           </Typography>
                           <Typography variant="subtitle1">{`N = ${payload[0].payload.totalCount}`}</Typography>
                         </div>
-                        <div className={classes.tooltipContent}>
+                        {payload[0].payload.totalCount > 0?
+                          <div className={classes.tooltipContent}>
                           {data.map((item, index) => {
                             return (
                               <div key={`tooltip-content-${index}`} className={classes.tooltipItemWrapper}>
@@ -171,7 +172,7 @@ export const DeterminantsGraph = () => {
                               </div>
                             );
                           })}
-                        </div>
+                        </div>: null}
                       </div>
                     );
                   }
