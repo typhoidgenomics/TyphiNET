@@ -110,13 +110,28 @@ const CombinedSchema = mongoose.Schema({
   gyrB_S464Y: {
     type: String
   },
+  gyrB_Q465L: {
+    type: String
+  },
+  gyrB_Q465R: {
+    type: String
+  },
   parC_S80I: {
+    type: String
+  },
+  parC_S80R: {
     type: String
   },
   parC_E84G: {
     type: String
   },
   parC_E84K: {
+    type: String
+  },
+  parE_D420N: {
+    type: String
+  },
+  parE_L416F: {
     type: String
   },
   acrB_R717Q: {
@@ -138,6 +153,15 @@ const CombinedSchema = mongoose.Schema({
     type: String
   },
   cip_pred_pheno: {
+    type: String
+  },
+  CipNS: {
+    type: String
+  },
+  'dashboard view': {
+    type: String
+  },
+  CipR: {
     type: String
   },
   cip: {
@@ -191,7 +215,7 @@ const CombinedSchema = mongoose.Schema({
   'blaOXA-7': {
     type: String
   },
-  blaOXA134_2: {
+  'blaOXA134_2': {
     type: String
   },
   'blaSHV-12': {

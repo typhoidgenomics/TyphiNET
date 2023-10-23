@@ -202,6 +202,7 @@ function FilterAmrGenes(Title, data, obj_parser, headers) {
     } else {
       obj_parser['MDR'] = '-';
     }
+    //instead ctx-m-15 it should be ESBL
     if (obj_parser['MDR'] == 'MDR' && data['blaCTX-M-15_23'] == '1' && data['qnrS'] == '1') {
       obj_parser['XDR'] = 'XDR';
     } else {
@@ -210,7 +211,7 @@ function FilterAmrGenes(Title, data, obj_parser, headers) {
     // if (data["ereA"] == "1") {
     //     obj_parser["azith_pred_pheno"] = "AzithR"
     // }
-    if (data['blaCTX-M'] == '1' || data['blaOX-7'] == '1' || data['blaSHV-12'] == '1') {
+    if (data['blaCTX-M-12'] == '1' || data['blaCTX-M-55'] == '1' || data['blaOXA-7'] == '1' || data['blaSHV-12'] == '1') {
       obj_parser['ESBL'] = 'ESBL';
     } else {
       obj_parser['ESBL'] = 'Non-ESBL';
@@ -249,9 +250,14 @@ function FilterAmrSNPS(Title, data, obj_parser, headers) {
       'gyrA_D87Y',
       'gyrB_S464F',
       'gyrB_S464Y',
+      'gyrB_Q465R',
+      'gyrB_Q465L',
       'parC_S80I',
+      'parC_S80R',
       'parC_E84G',
-      'parC_E84K'
+      'parC_E84K',
+      'parE_D420N',
+      'parE_L416F'
     ];
     obj_parser['num_qrdr'] = 0;
     for (qrdr of list_qrdr) {
@@ -272,10 +278,10 @@ function FilterAmrSNPS(Title, data, obj_parser, headers) {
       obj_parser['cip_pred_pheno'] = 'CipR';
     }
     if (obj_parser['num_qrdr'] == 2) {
-      obj_parser['cip_pred_pheno'] = 'CipI';
+      obj_parser['cip_pred_pheno'] = 'CipNS';
     }
     if (obj_parser['num_qrdr'] == 1) {
-      obj_parser['cip_pred_pheno'] = 'CipI';
+      obj_parser['cip_pred_pheno'] = 'CipNS';
     }
     if (obj_parser['num_qrdr'] == 0) {
       obj_parser['cip_pred_pheno'] = 'CipS';
@@ -284,19 +290,19 @@ function FilterAmrSNPS(Title, data, obj_parser, headers) {
       cid_pred_pheno = obj_parser['cip_pred_pheno'].toString() + obj_parser['cip_pheno_qrdr_gene'].toString();
       obj_parser['cip_pheno_qrdr_gene'] = cid_pred_pheno;
       if (cid_pred_pheno == 'CipS10') {
-        obj_parser['cip_pred_pheno'] = 'CipI';
+        obj_parser['cip_pred_pheno'] = 'CipNS';
       }
-      if (cid_pred_pheno == 'CipI10') {
+      if (cid_pred_pheno == 'CipNS10') {
         obj_parser['cip_pred_pheno'] = 'CipR';
       }
-      if (cid_pred_pheno == 'CipI01') {
+      if (cid_pred_pheno == 'CipNS01') {
         obj_parser['cip_pred_pheno'] = 'CipR';
       }
     } else {
       obj_parser['cip_pheno_qrdr_gene'] = obj_parser['cip_pred_pheno'].toString();
     }
     obj_parser['dcs_category'] = obj_parser['cip_pred_pheno'];
-    if (obj_parser['cip_pred_pheno'] == 'CipI') {
+    if (obj_parser['cip_pred_pheno'] == 'CipNS') {
       obj_parser['dcs_category'] = 'DCS';
     }
     if (obj_parser['cip_pred_pheno'] == 'CipR') {
@@ -304,8 +310,12 @@ function FilterAmrSNPS(Title, data, obj_parser, headers) {
     }
     if (data['qnrB'] == '1' && data['qnrS'] == '1') {
       obj_parser['dcs_mechanisms'] = `${obj_parser['num_qrdr']}_QRDR + qnrS + qnrB`;
+    } else if (data['qnrS'] == '1' && data['qnrD'] == '1') {
+    obj_parser['dcs_mechanisms'] = `${obj_parser['num_qrdr']}_QRDR + qnrS + qnrD`; 
     } else if (data['qnrB'] == '1') {
       obj_parser['dcs_mechanisms'] = `${obj_parser['num_qrdr']}_QRDR + qnrB`;
+    } else if (data['qnrD'] == '1') {
+      obj_parser['dcs_mechanisms'] = `${obj_parser['num_qrdr']}_QRDR + qnrD`;
     } else if (data['qnrS'] == '1') {
       obj_parser['dcs_mechanisms'] = `${obj_parser['num_qrdr']}_QRDR + qnrS`;
     } else {
@@ -344,17 +354,17 @@ function FilterAmrCategory(obj_parser) {
     } else if (
       MDR == 'MDR' &&
       dcs_category == 'DCS' &&
-      cip_pred_pheno == 'CipI' &&
-      cip_pheno_qrdr_gene == 'CipI00' &&
+      cip_pred_pheno == 'CipNS' &&
+      cip_pheno_qrdr_gene == 'CipNS00' &&
       azith_pred_pheno == 'AzithR'
     ) {
       obj_parser['amr_category'] = 'AzithR_DCS_MDR';
     } else if (
       MDR == 'MDR' &&
       dcs_category == 'DCS' &&
-      (cip_pred_pheno == 'CipI' || cip_pred_pheno == 'CipR') &&
-      (cip_pheno_qrdr_gene == 'CipI00' ||
-        cip_pheno_qrdr_gene == 'CipI01' ||
+      (cip_pred_pheno == 'CipNS' || cip_pred_pheno == 'CipR') &&
+      (cip_pheno_qrdr_gene == 'CipNS00' ||
+        cip_pheno_qrdr_gene == 'CipNS01' ||
         cip_pheno_qrdr_gene == 'CipS10' ||
         cip_pheno_qrdr_gene == 'CipR00') &&
       azith_pred_pheno == 'AzithS'
@@ -362,14 +372,14 @@ function FilterAmrCategory(obj_parser) {
       obj_parser['amr_category'] = 'MDR_DCS';
     } else if (
       dcs_category == 'DCS' &&
-      (cip_pred_pheno == 'CipR' || cip_pred_pheno == 'CipS' || cip_pred_pheno == 'CipI') &&
-      (cip_pheno_qrdr_gene == 'CipI00' || cip_pheno_qrdr_gene == 'CipR00') &&
+      (cip_pred_pheno == 'CipR' || cip_pred_pheno == 'CipS' || cip_pred_pheno == 'CipNS') &&
+      (cip_pheno_qrdr_gene == 'CipNS00' || cip_pheno_qrdr_gene == 'CipR00') &&
       azith_pred_pheno == 'AzithR'
     ) {
       obj_parser['amr_category'] = 'AzithR_DCS';
     } else if (
       dcs_category == 'DCS' &&
-      (cip_pred_pheno == 'CipR' || cip_pred_pheno == 'CipI') &&
+      (cip_pred_pheno == 'CipR' || cip_pred_pheno == 'CipNS') &&
       num_amr_genes != '0' &&
       azith_pred_pheno == 'AzithS'
     ) {
@@ -378,8 +388,8 @@ function FilterAmrCategory(obj_parser) {
       dcs_category == 'DCS' &&
       MDR == '-' &&
       azith_pred_pheno == 'AzithS' &&
-      (cip_pred_pheno == 'CipI' || cip_pred_pheno == 'CipR') &&
-      (cip_pheno_qrdr_gene == 'CipI00' || cip_pheno_qrdr_gene == 'CipR00')
+      (cip_pred_pheno == 'CipNS' || cip_pred_pheno == 'CipR') &&
+      (cip_pheno_qrdr_gene == 'CipNS00' || cip_pheno_qrdr_gene == 'CipR00')
     ) {
       obj_parser['amr_category'] = 'DCS';
     } else if (
