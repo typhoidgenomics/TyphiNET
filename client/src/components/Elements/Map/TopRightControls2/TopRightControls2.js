@@ -81,18 +81,18 @@ const filteredData = genotypesDrugsData.filter((genotype) =>
               disabled={organism === 'none'}
               displayEmpty
               onClose={(e) => setSearchValue2("")}
-              // endAdornment={
-              // //   <Button
-              // //   size="small"
-              // //   variant="outlined"
-              // //   className={classes.genotypesSelectButton}
-              // //   onClick={() => handleChangeSelectedGenotypes({ all: true })}
-              // //   disabled={customDropdownMapView.length === 0}
-              // //   color="error"
-              // // >
-              // //   Clear
-              // // </Button>
-              // }
+              endAdornment={
+                <Button
+                size="small"
+                variant="outlined"
+                className={classes.genotypesSelectButton}
+                onClick={() => handleChangeSelectedGenotypes({ all: true })}
+                disabled={customDropdownMapView.length === 0}
+                color="error"
+              >
+                Clear
+              </Button>
+              }
               inputProps={{ className: classes.genotypesSelectInput }}
               MenuProps={{ classes: { paper: classes.genotypesMenuPaper, list: classes.genotypesSelectMenu } }}
               renderValue={(selected) => (
