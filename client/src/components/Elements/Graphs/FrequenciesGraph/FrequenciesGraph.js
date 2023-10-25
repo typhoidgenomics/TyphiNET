@@ -176,6 +176,7 @@ export const FrequenciesGraph = () => {
                           </Typography>
                           <Typography variant="subtitle1">{`N = ${payload[0].payload.totalCount}`}</Typography>
                         </div>
+                        {payload[0].payload.totalCount > 0?
                         <div className={classes.tooltipContent}>
                           {data.map((item, index) => {
                             return (
@@ -203,7 +204,7 @@ export const FrequenciesGraph = () => {
                               </div>
                             );
                           })}
-                        </div>
+                        </div>: null}
                       </div>
                     );
                   }
