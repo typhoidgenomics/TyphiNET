@@ -50,8 +50,8 @@ export const FrequenciesGraph = () => {
 
   function getSelectGenotypeLabel(genotype) {
     const percentage = Number(((genotype.Susceptible / genotype.totalCount) * 100).toFixed(2));
+    return `${genotype.name} (total N=${genotype.totalCount===0 ? 0:`${genotype.totalCount},${percentage}% Susceptible`})`;
 
-    return `${genotype.name} (total N=${genotype.totalCount}, ${percentage}% Susceptible)`;
   }
 
   function getDomain() {
