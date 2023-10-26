@@ -50,7 +50,8 @@ export const DeterminantsGraph = () => {
       const keys = Object.keys(item).filter((x) => !exclusions.includes(x));
 
       keys.forEach((key) => {
-        item[key] = Number(((item[key] / item.totalCount) * 100).toFixed(2));
+        if(item.totalCount>0)
+          item[key] = Number(((item[key] / item.totalCount) * 100).toFixed(2));
       });
 
       return item;
