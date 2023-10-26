@@ -50,7 +50,7 @@ export const DeterminantsGraph = () => {
       const keys = Object.keys(item).filter((x) => !exclusions.includes(x));
 
       keys.forEach((key) => {
-        if(item.totalCount>0)
+        // if(item.totalCount>0)
           item[key] = Number(((item[key]/item.totalCount)*100).toFixed(2));
       });
 
@@ -145,7 +145,7 @@ export const DeterminantsGraph = () => {
                           </Typography>
                           <Typography variant="subtitle1">{`N = ${payload[0].payload.totalCount}`}</Typography>
                         </div>
-                        {payload[0].payload.totalCount > 0?
+                        {/* {payload[0].payload.totalCount > 0? */}
                           <div className={classes.tooltipContent}>
                           {data.map((item, index) => {
                             return (
@@ -173,7 +173,7 @@ export const DeterminantsGraph = () => {
                               </div>
                             );
                           })}
-                        </div>: null}
+                        </div>
                       </div>
                     );
                   }
