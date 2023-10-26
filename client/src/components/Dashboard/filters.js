@@ -1,8 +1,7 @@
-import { drugClassesRules, drugRules, drugRulesForDrugResistanceGraph } from '../../util/drugClassesRules';
-
 // This filter is called after either dataset, initialYear, finalYear or country changes and if reset button is pressed.
 // And it returns the data filtered by the variables said before, also the list of unique genotypes, count of genotypes
 
+import { drugClassesRules, drugRules, drugRulesForDrugResistanceGraph } from '../../util/drugClassesRules';
 
 // and count of genomes.
 export function filterData({ data, dataset, actualTimeInitial, actualTimeFinal, actualCountry }) {
@@ -145,16 +144,10 @@ export function getMapData({ data, countries }) {
 }
 
 // Get data for distribution and drug resistance graphs
-// export function getYearsData({ data, years, actualCountry, getUniqueGenotypes = false }) {
-  export function getYearsData({ data, years, actualCountry }) {
+export function getYearsData({ data, years, actualCountry }) {
   const drugsData = [];
-  // const genotypesAndDrugsData = {};
-  // let uniqueGenotypes = [];
-  // const genotypesAndDrugsDataUniqueGenotypes = {};
 
   const genotypesData = years.map((year) => {
-//     const yearData = data.filter((x) => x.DATE === year && (actualCountry === 'All' || getCountryDisplayName(x.COUNTRY_ONLY) === actualCountry)
-// );
     const yearData = data.filter((x) => x.DATE === year && (actualCountry === 'All' || getCountryDisplayName(x.COUNTRY_ONLY) === actualCountry)
 );
     const response = {
@@ -190,7 +183,6 @@ export function getMapData({ data, countries }) {
           const drugData = yearData.filter((x) => rule.values.includes(x[rule.columnID]));
           drugStats[rule.key] = drugData.length;
         });
-        
         drugsData.push({ ...response, ...drugStats });
       }
     }
@@ -214,11 +206,11 @@ export function getGenotypesData({ data, genotypes, actualCountry }) {
     }
   });
 
-  const genotypeData = data.filter(
-    (x) =>
-      x.GENOTYPE === genotype && (actualCountry === 'All' || getCountryDisplayName(x.COUNTRY_ONLY) === actualCountry)
-
-  );
+  const genotypesDrugsData = genotypes.map((genotype) => {
+    const genotypeData = data.filter(
+      (x) =>
+        x.GENOTYPE === genotype && (actualCountry === 'All' || getCountryDisplayName(x.COUNTRY_ONLY) === actualCountry)
+    );
 
     const response = {
       name: genotype,
