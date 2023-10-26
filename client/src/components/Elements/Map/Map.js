@@ -23,7 +23,6 @@ const statKey = {
   AzithR: 'AzithR',
   CipNS: 'CipNS',
   CipR: 'CipR',
-  // Sensitive to all drugs': 'Susceptible'
   'Susceptible to all drugs': 'Susceptible'
 };
 
@@ -37,7 +36,7 @@ export const Map = () => {
   const mapView = useAppSelector((state) => state.map.mapView);
   const tooltipContent = useAppSelector((state) => state.map.tooltipContent);
   const globalOverviewLabel = useAppSelector((state) => state.dashboard.globalOverviewLabel);
-  // const frequenciesGraphSelectedGenotypes = useAppSelector((state) => state.graph.frequenciesGraphSelectedGenotypes);
+  const frequenciesGraphSelectedGenotypes = useAppSelector((state) => state.graph.frequenciesGraphSelectedGenotypes);
   const customDropdownMapView = useAppSelector((state) => state.graph.customDropdownMapView);
   const ifCustom = useAppSelector((state) => state.map.ifCustom);
 
@@ -219,7 +218,7 @@ export const Map = () => {
                             }
                           }
                           if (countryData.count >= 20 && genotypes2.length > 0) {
-                            if (genotypes2 !== undefined) {
+                            if (genotypes2 != undefined) {
                               fillColor = redColorScale2(((sumCount/percentCounter)*100).toFixed(2));
                             }
                           }

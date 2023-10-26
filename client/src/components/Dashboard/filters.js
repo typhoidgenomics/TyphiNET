@@ -13,7 +13,7 @@ export function filterData({ data, dataset, actualTimeInitial, actualTimeFinal, 
 
   const newData = data.filter((x) => checkDataset(x) && checkTime(x));
   const genotypes = [...new Set(newData.map((x) => x.GENOTYPE))];
-  // genotypes.sort((a, b) => a.localeCompare(b));
+  genotypes.sort((a, b) => a.localeCompare(b));
 
   let genomesCount = newData.length;
   let genotypesCount = genotypes.length;
@@ -145,13 +145,16 @@ export function getMapData({ data, countries }) {
 }
 
 // Get data for distribution and drug resistance graphs
-export function getYearsData({ data, years, actualCountry, getUniqueGenotypes = false }) {
+// export function getYearsData({ data, years, actualCountry, getUniqueGenotypes = false }) {
+  export function getYearsData({ data, years, actualCountry }) {
   const drugsData = [];
-  const genotypesAndDrugsData = {};
-  let uniqueGenotypes = [];
-  const genotypesAndDrugsDataUniqueGenotypes = {};
+  // const genotypesAndDrugsData = {};
+  // let uniqueGenotypes = [];
+  // const genotypesAndDrugsDataUniqueGenotypes = {};
 
   const genotypesData = years.map((year) => {
+//     const yearData = data.filter((x) => x.DATE === year && (actualCountry === 'All' || getCountryDisplayName(x.COUNTRY_ONLY) === actualCountry)
+// );
     const yearData = data.filter((x) => x.DATE === year && (actualCountry === 'All' || getCountryDisplayName(x.COUNTRY_ONLY) === actualCountry)
 );
     const response = {
@@ -188,9 +191,6 @@ export function getYearsData({ data, years, actualCountry, getUniqueGenotypes = 
           drugStats[rule.key] = drugData.length;
         });
         
-        const susceptible = yearData.filter((x) => x.num_resistance_classes === '0');
-        drugStats['Susceptible'] = susceptible.length;
-
         drugsData.push({ ...response, ...drugStats });
       }
     }
@@ -199,22 +199,6 @@ export function getYearsData({ data, years, actualCountry, getUniqueGenotypes = 
       ...response,
       ...stats
     };
-  });
-  if (getUniqueGenotypes) {
-    uniqueGenotypes = [...new Set(uniqueGenotypes.map((x) => x))];
-    uniqueGenotypes.sort((a, b) => a - b);
-  }
-
-  Object.keys(genotypesAndDrugsDataUniqueGenotypes).forEach((key) => {
-    const unique = [...new Set(genotypesAndDrugsDataUniqueGenotypes[key])];
-
-    genotypesAndDrugsData[key].forEach((item) => {
-      const keys = Object.keys(item);
-      const filtered = unique.filter((x) => !keys.includes(x));
-      filtered.forEach((x) => {
-        item[x] = 0;
-      });
-    });
   });
 
   return { genotypesData: genotypesData.filter((x) => x.count > 0), drugsData };
@@ -230,9 +214,11 @@ export function getGenotypesData({ data, genotypes, actualCountry }) {
     }
   });
 
-  const genotypesDrugsData = genotypes.map((genotype) => {
-    const genotypeData = data.filter((x) => x.GENOTYPE === genotype && (actualCountry === 'All' || getCountryDisplayName(x.COUNTRY_ONLY) === actualCountry)
-    );
+  const genotypeData = data.filter(
+    (x) =>
+      x.GENOTYPE === genotype && (actualCountry === 'All' || getCountryDisplayName(x.COUNTRY_ONLY) === actualCountry)
+
+  );
 
     const response = {
       name: genotype,
