@@ -22,7 +22,7 @@ export const About = () => {
           AMR determinants identified in the genome assemblies using Pathogenwatch are used to define drug resistance
           variables as follows.Multidrug resistance(MDR): resistance determinants for chloramphenicol (<i>catA1</i> or{' '}
           <i>cmlA</i>), ampicillin (<i>bla</i>TEM-1D, <i>bla</i>OXA-7), and co-trimoxazole (at least one <i>dfrA</i>{' '}
-          gene and at least one <i>sul</i> gene). Ciprofloxacin non-susceptible (CipNS/R): one or more of the quinolone
+          gene and at least one <i>sul</i> gene). Ciprofloxacin non-susceptible (CipNS): one or more of the quinolone
           resistance determining region(QRDR) mutations at <i>gyrA</i>-83, <i>gyrA</i>
           -87, <i>parC</i>-80, <i>parC</i>-84, <i>gyrB</i>-464 or presence of a plasmid - mediated quinolone
           resistance(PMQR) gene(<i>qnrB</i>, <i>qnrD</i> , <i>qnrS</i>). Ciprofloxacin resistant (CipR): QRDR triple
