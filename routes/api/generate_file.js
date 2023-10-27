@@ -185,9 +185,6 @@ router.get('/create', async function (req, res) {
 
             obj_parser['COUNTRY_ONLY'] = empty.includes(data['COUNTRY OF ORIGIN']) ? '-' : data['COUNTRY OF ORIGIN'];
             obj_parser['REGION_IN_COUNTRY'] = empty.includes(data['LOCATION']) ? '-' : data['LOCATION'];
-            obj_parser['COUNTRY_ORIGIN'] = empty.includes(data['COUNTRY OF ORIGIN']) ? '-' : data['COUNTRY OF ORIGIN'];
-            obj_parser['TRAVEL_LOCATION'] = empty.includes(data['TRAVEL COUNTRY']) ? '-' : data['TRAVEL COUNTRY'];
-            obj_parser['TRAVEL_ASSOCIATED'] = empty.includes(data['TRAVEL ASSOCIATED']) ? '-' : data['TRAVEL ASSOCIATED'];
 
             if (data['TRAVEL ASSOCIATED'] === 'Yes') {
               obj_parser['TRAVEL'] = 'travel';
@@ -196,6 +193,9 @@ router.get('/create', async function (req, res) {
             } else {
               obj_parser['TRAVEL'] = data['TRAVEL ASSOCIATED'];
             }
+
+            obj_parser['COUNTRY_ORIGIN'] = empty.includes(data['COUNTRY OF ORIGIN']) ? '-' : data['COUNTRY OF ORIGIN'];
+            obj_parser['TRAVEL_LOCATION'] = empty.includes(data['TRAVEL COUNTRY']) ? '-' : data['TRAVEL COUNTRY'];
 
             const keys = Object.keys(data);
 
