@@ -188,8 +188,8 @@ export function getYearsData({ data, years, actualCountry, getUniqueGenotypes = 
           drugStats[rule.key] = drugData.length;
         });
         
-        const susceptible = yearData.filter((x) => x.num_resistance_classes === '0');
-        drugStats['Susceptible'] = susceptible.length;
+        // const susceptible = yearData.filter((x) => x.num_resistance_classes === '0');
+        // drugStats['Susceptible'] = susceptible.length;
 
         drugsData.push({ ...response, ...drugStats });
       }
