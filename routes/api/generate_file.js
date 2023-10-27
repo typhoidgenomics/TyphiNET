@@ -202,7 +202,7 @@ router.get('/create', async function (req, res) {
             for (let i = 0; i < headers_metadata.length; i++) {
               const index = keys.findIndex((x) => x === headers_metadata[i]);
               if (headers_metadata[i] === 'ACCESSION') {
-                obj_parser['ACCESSION'] = empty.includes(data[keys[0]]) ? '-' : data[keys[0]];
+                obj_parser['ACCESSION'] = empty.includes(data['ACCESSION']) ? '-' : data['ACCESSION'];
               } else if (!['DATE'].includes(headers_metadata[i]) && index != -1) {
                 obj_parser[keys[index].toUpperCase()] = empty.includes(data[keys[index]]) ? '-' : data[keys[index]];
               }
