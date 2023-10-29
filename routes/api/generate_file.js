@@ -413,7 +413,7 @@ router.get('/create', async function (req, res) {
             if (obj_parser['num_qrdr'] === 0) {
               obj_parser['cip_pred_pheno'] = 'CipS';
             }
-
+// TODO: cip_pheno_qrdr_gene value need to be calculated and check
             if (obj_parser['cip_pheno_qrdr_gene'] != undefined) {
               let cid_pred_pheno = obj_parser['cip_pred_pheno'].toString() + obj_parser['cip_pheno_qrdr_gene'].toString();
               obj_parser['cip_pheno_qrdr_gene'] = cid_pred_pheno;
@@ -461,7 +461,7 @@ router.get('/create', async function (req, res) {
               MDR == 'MDR' &&
               dcs_category == 'DCS' &&
               cip_pred_pheno == 'CipNS' &&
-              cip_pheno_qrdr_gene == 'CipNS000' &&
+              // cip_pheno_qrdr_gene == 'CipNS000' &&
               azith_pred_pheno == 'AzithR'
               ) {
               obj_parser['amr_category'] = 'AzithR_DCS_MDR';
