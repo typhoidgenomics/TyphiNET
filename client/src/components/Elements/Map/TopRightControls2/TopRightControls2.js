@@ -136,12 +136,12 @@ const filteredData = genotypesDrugsData.filter((genotype) =>
                 onChange={e => setSearchValue(e)}
                 onKeyDown={(e) => e.stopPropagation()}
               />
-              {filteredData.map((genotype, index) => (
+              {filteredData.map((genotype, index) => genotype.totalCount >=20?(
                 <MenuItem key={`frequencies-option-${index}`} value={genotype.name} className={classes.dropdown}>
                   <Checkbox disableRipple sx={{padding: '0px', marginRight:'5px'}} checked={customDropdownMapView.indexOf(genotype.name) > -1} />
                   <ListItemText primary={getSelectGenotypeLabel(genotype)}   />
                 </MenuItem>
-              ))}
+              ):null)}
             </Select>
         </CardContent>
      </Card>
