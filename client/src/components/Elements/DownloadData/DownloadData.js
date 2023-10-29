@@ -24,7 +24,8 @@ import { getSalmonellaTexts } from '../../../util/reportInfoTexts';
 
 const columnsToRemove = [
   'azith_pred_pheno',
-  'ACCESSION',
+  // 'ACCESSION',
+  'PROJECT ACCESSION',
   'COUNTRY_ONLY',
   'REGION_IN_COUNTRY',
   'LOCATION',
