@@ -216,14 +216,14 @@ export const DownloadData = () => {
         align: 'justify',
         maxWidth: pageWidth - 36
       });
-      doc.text(texts[3], 16, 169, { align: 'justify', maxWidth: pageWidth - 36 });
-      doc.text(texts[4], 16, 197, { align: 'justify', maxWidth: pageWidth - 36 });
-      doc.text(texts[5], 16, 225, { align: 'justify', maxWidth: pageWidth - 36 });
-      doc.text(texts[6], 16, 277, { align: 'justify', maxWidth: pageWidth - 36 });
+      doc.text(texts[3], 16, 179, { align: 'justify', maxWidth: pageWidth - 36 });
+      doc.text(texts[4], 16, 207, { align: 'justify', maxWidth: pageWidth - 36 });
+      doc.text(texts[5], 16, 245, { align: 'justify', maxWidth: pageWidth - 36 });
+      doc.text(texts[6], 16, 297, { align: 'justify', maxWidth: pageWidth - 36 });
 
       const euFlag = new Image();
       euFlag.src = EUFlagImg;
-      doc.addImage(euFlag, 'JPG', 208, 290, 12, 8);
+      doc.addImage(euFlag, 'JPG', 208, 310, 12, 8);
 
       if (actualCountry !== 'All') {
         doc.text(
