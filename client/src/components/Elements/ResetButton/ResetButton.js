@@ -11,7 +11,8 @@ import {
   setDistributionGraphView,
   setDrugResistanceGraphView,
   setFrequenciesGraphView,
-  setCustomDropdownMapView
+  setCustomDropdownMapView,
+  setFrequenciesGraphSelectedGenotypes
 } from '../../../stores/slices/graphSlice';
 import { defaultDrugsForDrugResistanceGraph } from '../../../util/drugs';
 import {
@@ -48,6 +49,8 @@ export const ResetButton = (props) => {
     dispatch(setIfCustom(false));
     const genotypesData = getGenotypesData({ data: props.data, genotypes, actualCountry });
     dispatch(setCustomDropdownMapView(genotypesData.genotypesDrugsData.slice(0, 1).map((x) => x.name)));
+    dispatch(setFrequenciesGraphSelectedGenotypes(genotypesData.genotypesDrugsData.slice(0, 5).map((x) => x.name)));
+
   }
 
   return (
