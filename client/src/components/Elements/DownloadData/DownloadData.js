@@ -202,7 +202,7 @@ export const DownloadData = () => {
       doc.addImage(logo, 'PNG', 16, 16, logoWidth, 34);
 
       // Title and Date
-      doc.setFontSize(16).setFont(undefined, 'bold');
+      doc.setFontSize(16).setFont(undefined, 'bolditalic');
       doc.text(`TyphiNET Report - ${globalOverviewLabel.fullLabel}`, pageWidth / 2, 34, { align: 'center' });
       doc.setFontSize(12).setFont(undefined, 'normal');
       doc.text(date, pageWidth / 2, 48, { align: 'center' });
