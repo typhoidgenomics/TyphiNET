@@ -348,7 +348,7 @@ export const DownloadData = () => {
         if (graphImg.width <= 741) {
           doc.addImage(graphImg, 'PNG', 16, 110);
         } else {
-          doc.addImage(graphImg, 'PNG', 16, 110, pageWidth - 32, 271);
+          doc.addImage(graphImg, 'PNG', 16, 110, pageWidth - 80, 271);
         }
 
         doc.setFillColor(255, 255, 255);
