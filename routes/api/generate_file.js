@@ -191,7 +191,7 @@ router.get('/create', async function (req, res) {
             } else if (data['TRAVEL ASSOCIATED'] === 'No') {
               obj_parser['TRAVEL'] = 'local';
             } else {
-              obj_parser['TRAVEL'] = data['TRAVEL ASSOCIATED'];
+              obj_parser['TRAVEL'] = 'Not Provided';
             }
 
             obj_parser['COUNTRY_ORIGIN'] = empty.includes(data['COUNTRY OF ORIGIN']) ? '-' : data['COUNTRY OF ORIGIN'];
