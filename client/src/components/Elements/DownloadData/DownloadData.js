@@ -224,14 +224,15 @@ export const DownloadData = () => {
       const euFlag = new Image();
       euFlag.src = EUFlagImg;
       doc.addImage(euFlag, 'JPG', 208, 310, 12, 8);
+      const list = listPIMD.filter((value)=> value !== "-")
 
       if (actualCountry !== 'All') {
         doc.text(
-          `Studies contributing genomes representing infections originating from ${actualCountry} have the following PubMed IDs (PMIDs): ${listPIMD.join(
+          `Studies contributing genomes representing infections originating from ${actualCountry} have the following PubMed IDs (PMIDs): ${list.join(
             ', '
           )}.`,
           16,
-          317,
+          337,
           { align: 'justify', maxWidth: pageWidth - 36 }
         );
       }
