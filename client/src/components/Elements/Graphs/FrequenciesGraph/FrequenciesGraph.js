@@ -52,6 +52,11 @@ export const FrequenciesGraph = () => {
   const frequenciesGraphView = useAppSelector((state) => state.graph.frequenciesGraphView);
   const frequenciesGraphSelectedGenotypes = useAppSelector((state) => state.graph.frequenciesGraphSelectedGenotypes);
 
+  let data = genotypesDrugsData.filter((genotype) => genotype.totalCount > 0);
+  useEffect(()=>{
+  dispatch(setFrequenciesGraphSelectedGenotypes(data.slice(0, 5).map((x) => x.name)));
+  },[data.length])
+ 
   function getSelectGenotypeLabel(genotype) {
     const percentage = Number(((genotype.Susceptible / genotype.totalCount) * 100).toFixed(2));
     return `${genotype.name} (total N=${genotype.totalCount===0 ? 0:`${genotype.totalCount},${percentage}% Susceptible`})`;
@@ -63,7 +68,7 @@ export const FrequenciesGraph = () => {
   }
 
   function getData() {
-    const data = genotypesDrugsData.filter((genotype) => frequenciesGraphSelectedGenotypes.includes(genotype.name));
+    data = data.filter((genotype) => frequenciesGraphSelectedGenotypes.includes(genotype.name));
 
     if (frequenciesGraphView === 'number') {
       return data;
@@ -135,7 +140,7 @@ export const FrequenciesGraph = () => {
     setSearchValue2(event.target.value)
   }
 
-  const filteredData = genotypesDrugsData.filter((genotype) =>
+  const filteredData = data.filter((genotype) =>
     genotype.name.includes(searchValue2.toLowerCase()) || genotype.name.includes(searchValue2.toUpperCase())
   );
 
@@ -280,7 +285,7 @@ export const FrequenciesGraph = () => {
             // }
             inputProps={{ className: classes.genotypesSelectInput }}
             MenuProps={{ classes: { paper: classes.genotypesMenuPaper, list: classes.genotypesSelectMenu } }}
-            renderValue={(selected) => <div>{`${selected.length} of ${genotypesDrugsData.length} selected`}</div>}
+            renderValue={(selected) => (<div>{`Select genotypes (currently showing ${selected.length} )`}</div>)}
           >
             <TextField 
                 size="small"
