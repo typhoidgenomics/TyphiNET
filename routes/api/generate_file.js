@@ -539,8 +539,8 @@ router.get('/create', async function (req, res) {
             data_to_write[index] = obj_parser;
           }
           obj_parser['cip_pred_pheno'] = '-';
-          obj_parser['CipNS'] = '-';
-          obj_parser['CipR'] = '-';
+          obj_parser['CipNS'] = '0';
+          obj_parser['CipR'] = '0';
           obj_parser = {};
         }
       })
