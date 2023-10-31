@@ -81,6 +81,7 @@ export const DownloadData = () => {
   const dispatch = useAppDispatch();
   const actualCountry = useAppSelector((state) => state.dashboard.actualCountry);
   const listPIMD = useAppSelector((state) => state.dashboard.listPMID);
+  const PIMD = useAppSelector((state) => state.dashboard.PMID);
   const globalOverviewLabel = useAppSelector((state) => state.dashboard.globalOverviewLabel);
   const actualGenomes = useAppSelector((state) => state.dashboard.actualGenomes);
   const actualTimeInitial = useAppSelector((state) => state.dashboard.actualTimeInitial);
@@ -224,9 +225,10 @@ export const DownloadData = () => {
       const euFlag = new Image();
       euFlag.src = EUFlagImg;
       doc.addImage(euFlag, 'JPG', 208, 310, 12, 8);
-      const list = listPIMD.filter((value)=> value !== "-")
+      let list = PIMD.filter((value)=> value !== "-")
 
-      if (actualCountry !== 'All') {
+      if (actualCountry !== 'All') 
+        list = listPIMD.filter((value)=> value !== "-")
         doc.text(
           `Studies contributing genomes representing infections originating from ${actualCountry} have the following PubMed IDs (PMIDs): ${list.join(
             ', '
@@ -235,7 +237,7 @@ export const DownloadData = () => {
           337,
           { align: 'justify', maxWidth: pageWidth - 36 }
         );
-      }
+      
 
       drawFooter({ document: doc, pageHeight, pageWidth, date });
 

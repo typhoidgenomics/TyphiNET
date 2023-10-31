@@ -4,7 +4,7 @@ import { Fab, Tooltip, useMediaQuery } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../../../stores/hooks';
 import { setActualTimeFinal, setActualTimeInitial, setCanGetData } from '../../../stores/slices/dashboardSlice';
 import { setDataset, setMapView, setPosition, setIfCustom} from '../../../stores/slices/mapSlice';
-import { setActualCountry } from '../../../stores/slices/dashboardSlice';
+import { setActualCountry,setPMID } from '../../../stores/slices/dashboardSlice';
 import {
   setDeterminantsGraphDrugClass,
   setDeterminantsGraphView,
@@ -28,6 +28,7 @@ export const ResetButton = (props) => {
   const timeFinal = useAppSelector((state) => state.dashboard.timeFinal);
   const genotypes = useAppSelector((state) => state.dashboard.genotypesForFilter);
   const actualCountry = useAppSelector((state) => state.dashboard.actualCountry);
+  const PMID = useAppSelector((state) => state.dashboard.PMID);
 
   function handleClick() {
     dispatch(setCanGetData(false));
@@ -47,6 +48,7 @@ export const ResetButton = (props) => {
     dispatch(setDistributionGraphView('number'));
     dispatch(setCanGetData(true));
     dispatch(setIfCustom(false));
+    dispatch(setPMID(PMID));
     const genotypesData = getGenotypesData({ data: props.data, genotypes, actualCountry });
     dispatch(setCustomDropdownMapView(genotypesData.genotypesDrugsData.slice(0, 1).map((x) => x.name)));
     dispatch(setFrequenciesGraphSelectedGenotypes(genotypesData.genotypesDrugsData.slice(0, 5).map((x) => x.name)));
