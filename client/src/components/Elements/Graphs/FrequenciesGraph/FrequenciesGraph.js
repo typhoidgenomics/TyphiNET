@@ -51,11 +51,15 @@ export const FrequenciesGraph = () => {
   const genotypesDrugsData = useAppSelector((state) => state.graph.genotypesDrugsData);
   const frequenciesGraphView = useAppSelector((state) => state.graph.frequenciesGraphView);
   const frequenciesGraphSelectedGenotypes = useAppSelector((state) => state.graph.frequenciesGraphSelectedGenotypes);
+  const actualCountry = useAppSelector((state) => state.dashboard.actualCountry);
 
   let data = genotypesDrugsData.filter((genotype) => genotype.totalCount > 0);
+
   useEffect(()=>{
-  dispatch(setFrequenciesGraphSelectedGenotypes(data.slice(0, 5).map((x) => x.name)));
-  },[data.length])
+  dispatch(setFrequenciesGraphSelectedGenotypes(genotypesDrugsData.filter((genotype) => genotype.totalCount > 0).slice(0, 5).map((x) => x.name)));
+  },[genotypesDrugsData ])
+
+    
  
   function getSelectGenotypeLabel(genotype) {
     const percentage = Number(((genotype.Susceptible / genotype.totalCount) * 100).toFixed(2));
@@ -69,6 +73,7 @@ export const FrequenciesGraph = () => {
 
   function getData() {
     data = data.filter((genotype) => frequenciesGraphSelectedGenotypes.includes(genotype.name));
+    console.log("getData",data)
 
     if (frequenciesGraphView === 'number') {
       return data;
@@ -131,7 +136,7 @@ export const FrequenciesGraph = () => {
     if (frequenciesGraphSelectedGenotypes.length === 7 && value.length > 7) {
       return;
     }
-
+console.log("frequenciesGraphSelectedGenotypes", frequenciesGraphSelectedGenotypes);
     dispatch(setFrequenciesGraphSelectedGenotypes(value));
   }
 
