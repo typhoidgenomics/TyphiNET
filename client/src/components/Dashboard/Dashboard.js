@@ -132,7 +132,9 @@ export const DashboardPage = () => {
         genotypes: genotypesForFilter,
         actualCountry
       });
-      dispatch(setGenotypesDrugsData(genotypesData.genotypesDrugsData));
+      // dispatch(setGenotypesDrugsData(genotypesData.genotypesDrugsData));
+      const genotypesDatasetDrugsData = genotypesData.genotypesDrugsData.filter((gen) => filters.genotypes.includes(gen.name));
+      dispatch(setGenotypesDrugsData(genotypesDatasetDrugsData));
       dispatch(setFrequenciesGraphSelectedGenotypes(genotypesData.genotypesDrugsData.slice(0, 5).map((x) => x.name)));
       dispatch(setGenotypesDrugClassesData(genotypesData.genotypesDrugClassesData));
 
