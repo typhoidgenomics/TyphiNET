@@ -218,7 +218,7 @@ export const DownloadData = () => {
         maxWidth: pageWidth - 36
       });
       doc.text(texts[3], 16, 179, { align: 'justify', maxWidth: pageWidth - 36 });
-      doc.text(texts[4], 16, 207, { align: 'justify', maxWidth: pageWidth - 36 });
+      doc.text(texts[4], 16, 207, { align: 'left', maxWidth: pageWidth - 36 });
       doc.text(texts[5], 16, 245, { align: 'justify', maxWidth: pageWidth - 36 });
       doc.text(texts[6], 16, 297, { align: 'justify', maxWidth: pageWidth - 36 });
 
@@ -235,7 +235,7 @@ export const DownloadData = () => {
           )}.`,
           16,
           337,
-          { align: 'justify', maxWidth: pageWidth - 36 }
+          { align: 'left', maxWidth: pageWidth - 36 }
         );
       
 
