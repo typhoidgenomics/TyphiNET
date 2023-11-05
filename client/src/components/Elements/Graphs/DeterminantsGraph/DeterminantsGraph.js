@@ -35,6 +35,12 @@ export const DeterminantsGraph = () => {
   const determinantsGraphView = useAppSelector((state) => state.graph.determinantsGraphView);
   const determinantsGraphDrugClass = useAppSelector((state) => state.graph.determinantsGraphDrugClass);
 
+  let data = 0;
+  useEffect(()=>{
+    if(genotypesDrugClassesData[determinantsGraphDrugClass] !== undefined){
+      data = genotypesDrugClassesData[determinantsGraphDrugClass].filter((x)=>x.totalCount>0).length;
+    }
+  },[genotypesDrugClassesData, determinantsGraphDrugClass])
   function getDomain() {
     return determinantsGraphView === 'number' ? undefined : [0, 100];
   }
@@ -42,7 +48,6 @@ export const DeterminantsGraph = () => {
     if (determinantsGraphView === 'number') {
       return genotypesDrugClassesData[determinantsGraphDrugClass].filter((x)=>x.totalCount>0);
     }
-
     const exclusions = ['name', 'totalCount', 'resistantCount'];
     let genotypeDrugClassesDataPercentage = structuredClone(genotypesDrugClassesData[determinantsGraphDrugClass] ?? []);
     genotypeDrugClassesDataPercentage = genotypeDrugClassesDataPercentage.filter((x)=>x.totalCount>0).map((item) => {
@@ -130,7 +135,7 @@ export const DeterminantsGraph = () => {
 
               <ChartTooltip
                 position={{ x: matches500 ? 0 : 60, y: matches500 ? 310 : 410 }}
-                cursor={genotypesDrugClassesData[determinantsGraphDrugClass]===undefined?{ fill: hoverColor }:false}
+                cursor={data > 0 ? { fill: hoverColor }:false}
                 wrapperStyle={{ outline: 'none', zIndex: 1 }}
                 content={({ payload, active, label }) => {
                   if (payload !== null && active) {
