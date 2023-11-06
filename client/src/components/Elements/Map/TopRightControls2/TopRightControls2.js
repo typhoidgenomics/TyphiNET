@@ -55,9 +55,10 @@ export const TopRightControls2 = () => {
   setSearchValue2(event.target.value)
  }
 
-const filteredData = genotypesDrugsData.filter((genotype) =>
-  genotype.name.includes(searchValue2.toLowerCase()) || genotype.name.includes(searchValue2.toUpperCase())
-);
+const filteredData = genotypesDrugsData
+    .filter((genotype) => genotype.name.includes(searchValue2.toLowerCase()) || genotype.name.includes(searchValue2.toUpperCase()))
+    .filter(x => x.totalCount >= 20)
+  ;
 
   return (
     <div className={`${classes.topRightControls}`}>
@@ -136,12 +137,12 @@ const filteredData = genotypesDrugsData.filter((genotype) =>
                 onChange={e => setSearchValue(e)}
                 onKeyDown={(e) => e.stopPropagation()}
               />
-              {filteredData.map((genotype, index) => genotype.totalCount >=20?(
+              {filteredData.map((genotype, index) => 
                 <MenuItem key={`frequencies-option-${index}`} value={genotype.name} className={classes.dropdown}>
                   <Checkbox disableRipple sx={{padding: '0px', marginRight:'5px'}} checked={customDropdownMapView.indexOf(genotype.name) > -1} />
                   <ListItemText primary={getSelectGenotypeLabel(genotype)}   />
                 </MenuItem>
-              ):null)}
+              )}
             </Select>
         </CardContent>
      </Card>

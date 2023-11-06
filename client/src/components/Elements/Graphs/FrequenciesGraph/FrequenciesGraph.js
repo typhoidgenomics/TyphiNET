@@ -51,12 +51,11 @@ export const FrequenciesGraph = () => {
   const genotypesDrugsData = useAppSelector((state) => state.graph.genotypesDrugsData);
   const frequenciesGraphView = useAppSelector((state) => state.graph.frequenciesGraphView);
   const frequenciesGraphSelectedGenotypes = useAppSelector((state) => state.graph.frequenciesGraphSelectedGenotypes);
-  const actualCountry = useAppSelector((state) => state.dashboard.actualCountry);
 
-  let data = genotypesDrugsData.filter((genotype) => genotype.totalCount > 0);
+  let data = genotypesDrugsData;
 
   useEffect(()=>{
-  dispatch(setFrequenciesGraphSelectedGenotypes(genotypesDrugsData.filter((genotype) => genotype.totalCount > 0).slice(0, 5).map((x) => x.name)));
+  dispatch(setFrequenciesGraphSelectedGenotypes(genotypesDrugsData.slice(0, 5).map((x) => x.name)));
   },[genotypesDrugsData ])
 
     

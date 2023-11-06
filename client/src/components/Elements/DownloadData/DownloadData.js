@@ -203,8 +203,14 @@ export const DownloadData = () => {
       doc.addImage(logo, 'PNG', 16, 16, logoWidth, 34);
 
       // Title and Date
-      doc.setFontSize(16).setFont(undefined, 'bolditalic');
-      doc.text(`TyphiNET Report - ${globalOverviewLabel.fullLabel}`, pageWidth / 2, 34, { align: 'center' });
+      doc.setFontSize(16).setFont(undefined, 'bold');
+      // doc.text(`TyphiNET Report - ${globalOverviewLabel.fullLabel}`, pageWidth / 2, 34, { align: 'center' });
+      doc.text("Global Overview of", 177, 34, { align: 'center' });
+      doc.setFont(undefined, "bolditalic");
+      doc.text("Salmonella", 264, 34, { align: 'center' });
+      doc.setFont(undefined, "bold");
+      doc.text("Typhi", 315, 34, { align: 'center' });
+      
       doc.setFontSize(12).setFont(undefined, 'normal');
       doc.text(date, pageWidth / 2, 48, { align: 'center' });
 
@@ -218,7 +224,7 @@ export const DownloadData = () => {
         maxWidth: pageWidth - 36
       });
       doc.text(texts[3], 16, 179, { align: 'justify', maxWidth: pageWidth - 36 });
-      doc.text(texts[4], 16, 207, { align: 'justify', maxWidth: pageWidth - 36 });
+      doc.text(texts[4], 16, 207, { align: 'left', maxWidth: pageWidth - 36 });
       doc.text(texts[5], 16, 245, { align: 'justify', maxWidth: pageWidth - 36 });
       doc.text(texts[6], 16, 297, { align: 'justify', maxWidth: pageWidth - 36 });
 
@@ -235,7 +241,7 @@ export const DownloadData = () => {
           )}.`,
           16,
           337,
-          { align: 'justify', maxWidth: pageWidth - 36 }
+          { align: 'left', maxWidth: pageWidth - 36 }
         );
       
 
