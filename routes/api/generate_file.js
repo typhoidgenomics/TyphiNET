@@ -191,7 +191,7 @@ router.get('/create', async function (req, res) {
             } else if (data['TRAVEL ASSOCIATED'] === 'No') {
               obj_parser['TRAVEL'] = 'local';
             } else {
-              obj_parser['TRAVEL'] = data['TRAVEL ASSOCIATED'];
+              obj_parser['TRAVEL'] = 'Not Provided';
             }
 
             obj_parser['COUNTRY_ORIGIN'] = empty.includes(data['COUNTRY OF ORIGIN']) ? '-' : data['COUNTRY OF ORIGIN'];
@@ -202,7 +202,7 @@ router.get('/create', async function (req, res) {
             for (let i = 0; i < headers_metadata.length; i++) {
               const index = keys.findIndex((x) => x === headers_metadata[i]);
               if (headers_metadata[i] === 'ACCESSION') {
-                obj_parser['ACCESSION'] = empty.includes(data['ACCESSION']) ? '-' : data['ACCESSION'];
+                obj_parser['ACCESSION'] = empty.includes(data[keys[3]]) ? '-' : data[keys[3]];
               } else if (!['DATE'].includes(headers_metadata[i]) && index != -1) {
                 obj_parser[keys[index].toUpperCase()] = empty.includes(data[keys[index]]) ? '-' : data[keys[index]];
               }
@@ -413,7 +413,7 @@ router.get('/create', async function (req, res) {
             if (obj_parser['num_qrdr'] === 0) {
               obj_parser['cip_pred_pheno'] = 'CipS';
             }
-
+// TODO: cip_pheno_qrdr_gene value need to be calculated and check
             if (obj_parser['cip_pheno_qrdr_gene'] != undefined) {
               let cid_pred_pheno = obj_parser['cip_pred_pheno'].toString() + obj_parser['cip_pheno_qrdr_gene'].toString();
               obj_parser['cip_pheno_qrdr_gene'] = cid_pred_pheno;
@@ -461,7 +461,7 @@ router.get('/create', async function (req, res) {
               MDR == 'MDR' &&
               dcs_category == 'DCS' &&
               cip_pred_pheno == 'CipNS' &&
-              cip_pheno_qrdr_gene == 'CipNS000' &&
+              // cip_pheno_qrdr_gene == 'CipNS000' &&
               azith_pred_pheno == 'AzithR'
               ) {
               obj_parser['amr_category'] = 'AzithR_DCS_MDR';
@@ -538,8 +538,9 @@ router.get('/create', async function (req, res) {
           } else {
             data_to_write[index] = obj_parser;
           }
-          obj_parser['CipNS'] = '-';
-          obj_parser['CipR'] = '-';
+          obj_parser['cip_pred_pheno'] = '-';
+          obj_parser['CipNS'] = '0';
+          obj_parser['CipR'] = '0';
           obj_parser = {};
         }
       })

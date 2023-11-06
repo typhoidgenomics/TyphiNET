@@ -24,7 +24,8 @@ import { getSalmonellaTexts } from '../../../util/reportInfoTexts';
 
 const columnsToRemove = [
   'azith_pred_pheno',
-  'ACCESSION',
+  // 'ACCESSION',
+  'PROJECT ACCESSION',
   'COUNTRY_ONLY',
   'REGION_IN_COUNTRY',
   'LOCATION',
@@ -80,6 +81,7 @@ export const DownloadData = () => {
   const dispatch = useAppDispatch();
   const actualCountry = useAppSelector((state) => state.dashboard.actualCountry);
   const listPIMD = useAppSelector((state) => state.dashboard.listPMID);
+  const PIMD = useAppSelector((state) => state.dashboard.PMID);
   const globalOverviewLabel = useAppSelector((state) => state.dashboard.globalOverviewLabel);
   const actualGenomes = useAppSelector((state) => state.dashboard.actualGenomes);
   const actualTimeInitial = useAppSelector((state) => state.dashboard.actualTimeInitial);
@@ -202,7 +204,13 @@ export const DownloadData = () => {
 
       // Title and Date
       doc.setFontSize(16).setFont(undefined, 'bold');
-      doc.text(`TyphiNET Report - ${globalOverviewLabel.fullLabel}`, pageWidth / 2, 34, { align: 'center' });
+      // doc.text(`TyphiNET Report - ${globalOverviewLabel.fullLabel}`, pageWidth / 2, 34, { align: 'center' });
+      doc.text("Global Overview of", 177, 34, { align: 'center' });
+      doc.setFont(undefined, "bolditalic");
+      doc.text("Salmonella", 264, 34, { align: 'center' });
+      doc.setFont(undefined, "bold");
+      doc.text("Typhi", 315, 34, { align: 'center' });
+      
       doc.setFontSize(12).setFont(undefined, 'normal');
       doc.text(date, pageWidth / 2, 48, { align: 'center' });
 
@@ -215,25 +223,27 @@ export const DownloadData = () => {
         align: 'justify',
         maxWidth: pageWidth - 36
       });
-      doc.text(texts[3], 16, 169, { align: 'justify', maxWidth: pageWidth - 36 });
-      doc.text(texts[4], 16, 197, { align: 'justify', maxWidth: pageWidth - 36 });
-      doc.text(texts[5], 16, 225, { align: 'justify', maxWidth: pageWidth - 36 });
-      doc.text(texts[6], 16, 277, { align: 'justify', maxWidth: pageWidth - 36 });
+      doc.text(texts[3], 16, 179, { align: 'justify', maxWidth: pageWidth - 36 });
+      doc.text(texts[4], 16, 207, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.text(texts[5], 16, 245, { align: 'justify', maxWidth: pageWidth - 36 });
+      doc.text(texts[6], 16, 297, { align: 'justify', maxWidth: pageWidth - 36 });
 
       const euFlag = new Image();
       euFlag.src = EUFlagImg;
-      doc.addImage(euFlag, 'JPG', 208, 290, 12, 8);
+      doc.addImage(euFlag, 'JPG', 208, 310, 12, 8);
+      let list = PIMD.filter((value)=> value !== "-")
 
-      if (actualCountry !== 'All') {
+      if (actualCountry !== 'All') 
+        list = listPIMD.filter((value)=> value !== "-")
         doc.text(
-          `Studies contributing genomes representing infections originating from ${actualCountry} have the following PubMed IDs (PMIDs): ${listPIMD.join(
+          `Studies contributing genomes representing infections originating from ${actualCountry} have the following PubMed IDs (PMIDs): ${list.join(
             ', '
           )}.`,
           16,
-          317,
-          { align: 'justify', maxWidth: pageWidth - 36 }
+          337,
+          { align: 'left', maxWidth: pageWidth - 36 }
         );
-      }
+      
 
       drawFooter({ document: doc, pageHeight, pageWidth, date });
 
@@ -347,7 +357,7 @@ export const DownloadData = () => {
         if (graphImg.width <= 741) {
           doc.addImage(graphImg, 'PNG', 16, 110);
         } else {
-          doc.addImage(graphImg, 'PNG', 16, 110, pageWidth - 32, 271);
+          doc.addImage(graphImg, 'PNG', 16, 110, pageWidth - 80, 271);
         }
 
         doc.setFillColor(255, 255, 255);
