@@ -204,7 +204,6 @@ export const DownloadData = () => {
 
       // Title and Date
       doc.setFontSize(16).setFont(undefined, 'bold');
-      // doc.text(`TyphiNET Report - ${globalOverviewLabel.fullLabel}`, pageWidth / 2, 34, { align: 'center' });
       doc.text("Global Overview of", 177, 34, { align: 'center' });
       doc.setFont(undefined, "bolditalic");
       doc.text("Salmonella", 264, 34, { align: 'center' });
@@ -252,7 +251,11 @@ export const DownloadData = () => {
       drawFooter({ document: doc, pageHeight, pageWidth, date });
 
       doc.setFontSize(16).setFont(undefined, 'bold');
-      doc.text(`Global Overview of ${globalOverviewLabel.fullLabel}`, pageWidth / 2, 24, { align: 'center' });
+      doc.text("Global Overview of", 177, 24, { align: 'center' });
+      doc.setFont(undefined, "bolditalic");
+      doc.text("Salmonella", 264, 24, { align: 'center' });
+      doc.setFont(undefined, "bold");
+      doc.text("Typhi", 315, 24, { align: 'center' });
       doc.setFontSize(12).setFont(undefined, 'normal');
       doc.text(`Total: ${actualGenomes} genomes`, pageWidth / 2, 40, { align: 'center' });
       doc.text(`Country: ${actualCountry}`, pageWidth / 2, 52, { align: 'center' });
