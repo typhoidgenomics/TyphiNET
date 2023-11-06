@@ -413,19 +413,18 @@ router.get('/create', async function (req, res) {
             if (obj_parser['num_qrdr'] === 0) {
               obj_parser['cip_pred_pheno'] = 'CipS';
             }
-// TODO: cip_pheno_qrdr_gene value need to be calculated and check
-            if (obj_parser['cip_pheno_qrdr_gene'] != undefined) {
-              let cid_pred_pheno = obj_parser['cip_pred_pheno'].toString() + obj_parser['cip_pheno_qrdr_gene'].toString();
-              obj_parser['cip_pheno_qrdr_gene'] = cid_pred_pheno;
-              if (cid_pred_pheno == 'CipS101' || cid_pred_pheno == 'CipS110' || cid_pred_pheno == 'CipS010') {
-                obj_parser['cip_pred_pheno'] = 'CipNS';
-              }
-              if (cid_pred_pheno== 'CipNS100' || cid_pred_pheno == 'CipNS110' || cid_pred_pheno == 'CipNS010') {
-                obj_parser['cip_pred_pheno'] = 'CipR';
-              }
-            } else {
-              obj_parser['cip_pheno_qrdr_gene'] = obj_parser['cip_pred_pheno'].toString();
-            }
+            // if (obj_parser['cip_pheno_qrdr_gene'] != undefined) {
+            //   let cid_pred_pheno = obj_parser['cip_pred_pheno'].toString() + obj_parser['cip_pheno_qrdr_gene'].toString();
+            //   obj_parser['cip_pheno_qrdr_gene'] = cid_pred_pheno;
+            //   if (cid_pred_pheno == 'CipS101' || cid_pred_pheno == 'CipS110' || cid_pred_pheno == 'CipS010') {
+            //     obj_parser['cip_pred_pheno'] = 'CipNS';
+            //   }
+            //   if (cid_pred_pheno== 'CipNS100' || cid_pred_pheno == 'CipNS110' || cid_pred_pheno == 'CipNS010') {
+            //     obj_parser['cip_pred_pheno'] = 'CipR';
+            //   }
+            // } else {
+            //   obj_parser['cip_pheno_qrdr_gene'] = obj_parser['cip_pred_pheno'].toString();
+            // }
             obj_parser['dcs_category'] = obj_parser['cip_pred_pheno'];
             if (obj_parser['cip_pred_pheno'] == 'CipNS') {
               obj_parser['dcs_category'] = 'DCS';
