@@ -56,7 +56,20 @@ export const BottomRightControls = () => {
         ctx.font = 'bolder 50px Montserrat';
         ctx.fillStyle = 'black';
         ctx.textAlign = 'center';
-        ctx.fillText(`Global Overview of ${globalOverviewLabel.fullLabel}`, canvas.width / 2, 80);
+
+        // Draw the entire text with the original font style
+        ctx.fillText("Global Overview of ", canvas.width * 0.44 , 80);
+
+        // Set the font style for "Salmonella" to italic
+        ctx.font = 'italic bold 50px Montserrat';
+
+        // Draw only "Salmonella" with the italic style
+        ctx.fillText("Salmonella", canvas.width * 0.555, 80);
+
+        // Revert to the original font style for the remaining text
+        ctx.font = 'bolder 50px Montserrat';
+        ctx.fillText(" Typhi", canvas.width * 0.62, 80);
+
         ctx.font = '35px Montserrat';
         ctx.textAlign = 'center';
 
