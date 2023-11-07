@@ -413,6 +413,7 @@ router.get('/create', async function (req, res) {
             if (obj_parser['num_qrdr'] === 0) {
               obj_parser['cip_pred_pheno'] = 'CipS';
             }
+
             if (obj_parser['cip_pheno_qrdr_gene'] != undefined) {
               let cid_pred_pheno = obj_parser['cip_pred_pheno'].toString() + obj_parser['cip_pheno_qrdr_gene'].toString();
               obj_parser['cip_pheno_qrdr_gene'] = cid_pred_pheno;
@@ -425,6 +426,7 @@ router.get('/create', async function (req, res) {
             } else {
               obj_parser['cip_pheno_qrdr_gene'] = obj_parser['cip_pred_pheno'].toString();
             }
+
             obj_parser['dcs_category'] = obj_parser['cip_pred_pheno'];
             if (obj_parser['cip_pred_pheno'] == 'CipNS') {
               obj_parser['dcs_category'] = 'DCS';
