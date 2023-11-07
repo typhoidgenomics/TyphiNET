@@ -9,11 +9,13 @@ import ReactTooltip from 'react-tooltip';
 import { BottomLeftControls } from './BottomLeftControls';
 import { useAppDispatch, useAppSelector } from '../../../stores/hooks';
 import { setPosition, setTooltipContent } from '../../../stores/slices/mapSlice.ts';
+import { setCountriesForFilter } from '../../../stores/slices/graphSlice.ts';
 import { TopRightControls } from './TopRightControls';
 import { setActualCountry } from '../../../stores/slices/dashboardSlice.ts';
 import { TopLeftControls } from './TopLeftControls';
 import { BottomRightControls } from './BottomRightControls';
 import { TopRightControls2 } from './TopRightControls2';
+import countries from '../../../util/countries';
 
 
 const statKey = {
@@ -42,9 +44,9 @@ export const Map = () => {
   const ifCustom = useAppSelector((state) => state.map.ifCustom);
 
 
-  function handleOnClick(countryData) {
-    if (countryData !== undefined) {
-      dispatch(setActualCountry(countryData.name));
+  function handleOnClick(NAME) {
+    if (NAME !== undefined) {
+      dispatch(setActualCountry(NAME));
     }
   }
 
@@ -259,7 +261,6 @@ export const Map = () => {
                           count = countCipR + countCipNS;
                           // count = countryStats[statKey[mapView]]?.count;
                           let per = countryStats[statKey["CipNS"]].percentage + countryStats[statKey["CipR"]].percentage;
-                          console.log("per", countryStats[statKey["CipNS"]], per)
                           if (countryData.count >= 20 && count > 0) {
                             if (mapView === 'Susceptible to all drugs') {
                               fillColor = sensitiveColorScale(per);
@@ -287,7 +288,7 @@ export const Map = () => {
                         geography={geo}
                         cursor="pointer"
                         fill={fillColor}
-                        onClick={() => handleOnClick(countryData)}
+                        onClick={() => handleOnClick(geo.properties.NAME)}
                         onMouseLeave={handleOnMouseLeave}
                         onMouseEnter={() =>
                           handleOnMouseEnter({
