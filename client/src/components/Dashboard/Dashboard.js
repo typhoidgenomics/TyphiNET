@@ -31,6 +31,7 @@ import {
 import { filterData, getYearsData, getMapData, getGenotypesData, getCountryDisplayName } from './filters';
 import { ResetButton } from '../Elements/ResetButton/ResetButton';
 import { About } from '../About';
+import countries from '../../util/countries';
 
 export const DashboardPage = () => {
   const [data, setData] = useState([]);
@@ -57,7 +58,7 @@ export const DashboardPage = () => {
     dispatch(setGenotypesForFilter(genotypes));
 
     const years = [...new Set(responseData.map((x) => x.DATE))];
-    const countries = [...new Set(responseData.map((x) => getCountryDisplayName(x.COUNTRY_ONLY)))];
+    // const countries = [...new Set(responseData.map((x) => getCountryDisplayName(x.COUNTRY_ONLY)))];
     // const listPMID = [...new Set(responseData.map((x) => x.PMID))];
     const PMID = [...new Set(responseData.map((x) => x.PMID))];
 
