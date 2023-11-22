@@ -428,7 +428,7 @@ export const DownloadData = () => {
         startIcon={<TableChart />}
         loadingPosition="start"
       >
-        Download database (CSV format, 3.8MB)
+        Download database (CSV format, 3.5MB)
       </LoadingButton>
       <LoadingButton
         className={classes.button}

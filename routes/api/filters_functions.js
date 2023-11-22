@@ -250,14 +250,14 @@ function FilterAmrSNPS(Title, data, obj_parser, headers) {
       'gyrA_D87Y',
       'gyrB_S464F',
       'gyrB_S464Y',
-      'gyrB_Q465R',
-      'gyrB_Q465L',
+      // 'gyrB_Q465R',
+      // 'gyrB_Q465L',
       'parC_S80I',
       'parC_S80R',
       'parC_E84G',
-      'parC_E84K',
-      'parE_D420N',
-      'parE_L416F'
+      'parC_E84K'
+      // 'parE_D420N',
+      // 'parE_L416F'
     ];
     obj_parser['num_qrdr'] = 0;
     for (qrdr of list_qrdr) {
