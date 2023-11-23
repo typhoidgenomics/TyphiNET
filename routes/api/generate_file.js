@@ -405,7 +405,7 @@ router.get('/create', async function (req, res) {
               obj_parser['cip_pred_pheno'] = 'CipR';
             }
             if (obj_parser['num_qrdr'] === 2) {
-              obj_parser['cip_pred_pheno'] = 'CipR';
+              obj_parser['cip_pred_pheno'] = 'CipNS';
             }
             if (obj_parser['num_qrdr'] === 1) {
               obj_parser['cip_pred_pheno'] = 'CipNS';
@@ -570,6 +570,10 @@ router.get('/create', async function (req, res) {
             } else if (data_to_write[d]['num_qrdr'] === 1 && (data_to_write[d]['qnrS'] === '1' || data_to_write[d]['qnrB'] === '1' || data_to_write[d]['qnrD'] === '1')) {
               data_to_write[d]['cip_pred_pheno'] = 'CipR';
             } else if (data_to_write[d]['num_qrdr'] === 1) {
+              data_to_write[d]['cip_pred_pheno'] = 'CipNS';
+            } else if (data_to_write[d]['num_qrdr'] === 2 && (data_to_write[d]['qnrS'] === '1' || data_to_write[d]['qnrB'] === '1' || data_to_write[d]['qnrD'] === '1')){
+              data_to_write[d]['cip_pred_pheno'] = 'CipR';
+            } else if (data_to_write[d]['num_qrdr'] === 2) {
               data_to_write[d]['cip_pred_pheno'] = 'CipNS';
             } else {
               data_to_write[d]['cip_pred_pheno'] = 'CipR';
