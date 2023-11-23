@@ -61,7 +61,7 @@ export const Map = () => {
       content: {},
       smallerThan20
     };
-
+    // TODO: fix the formulae that calculates the CipNS
     if (countryData !== undefined) {
       switch (mapView) {
         case 'No. Samples':
@@ -74,7 +74,7 @@ export const Map = () => {
               XDR: `${countryStats.XDR.percentage}%`,
               AzithR: `${countryStats.AzithR.percentage}%`,
               CipR: `${countryStats.CipR.percentage}%`,
-              CipNS: `${countryStats.CipNS.percentage}%`,
+              // CipNS: `${countryStats.CipNS.percentage}%`,
               Susceptible: `${countryStats.Susceptible.percentage}%`
             }
           });
