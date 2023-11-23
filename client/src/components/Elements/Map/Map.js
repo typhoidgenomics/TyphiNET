@@ -61,10 +61,11 @@ export const Map = () => {
       content: {},
       smallerThan20
     };
-    // TODO: fix the formulae that calculates the CipNS
+   
     if (countryData !== undefined) {
       switch (mapView) {
         case 'No. Samples':
+          const combinedPercentage = ((countryStats[statKey["CipR"]].percentage || 0) + (countryStats[statKey["CipNS"]].percentage || 0));
           Object.assign(tooltip, {
             content: {
               Samples: countryData.count,
@@ -75,6 +76,7 @@ export const Map = () => {
               AzithR: `${countryStats.AzithR.percentage}%`,
               CipR: `${countryStats.CipR.percentage}%`,
               // CipNS: `${countryStats.CipNS.percentage}%`,
+              CipNS: `${combinedPercentage}%`,
               Susceptible: `${countryStats.Susceptible.percentage}%`
             }
           });
