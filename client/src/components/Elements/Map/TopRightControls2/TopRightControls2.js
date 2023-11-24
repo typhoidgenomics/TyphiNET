@@ -15,7 +15,7 @@ export const TopRightControls2 = () => {
   const [searchValue2, setSearchValue2] = useState("")
   const dispatch = useAppDispatch();
   const organism = useAppSelector((state) => state.dashboard.organism);
-  const genotypesDrugsData = useAppSelector((state) => state.graph.genotypesDrugsData);
+  const genotypesDrugsData = useAppSelector((state) => state.graph.genotypesDrugsData2);
   const customDropdownMapView = useAppSelector((state) => state.graph.customDropdownMapView);
 
   // useEffect(() => {
@@ -57,7 +57,7 @@ export const TopRightControls2 = () => {
 
 const filteredData = genotypesDrugsData
     .filter((genotype) => genotype.name.includes(searchValue2.toLowerCase()) || genotype.name.includes(searchValue2.toUpperCase()))
-    .filter(x => x.totalCount >= 20)
+    // .filter(x => x.totalCount >= 20)
   ;
 
   return (
