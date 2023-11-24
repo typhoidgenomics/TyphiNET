@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Button, Card, CardContent, Checkbox, ListItemText, MenuItem, Select, Tooltip, Typography, InputAdornment} from '@mui/material';
+import { Button, Card, CardContent, Checkbox, ListItemText, MenuItem, Select, Tooltip, Typography, InputAdornment, FormControl, ListSubheader} from '@mui/material';
 import SearchIcon from "@mui/icons-material/Search";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../../stores/hooks';
 import { setCustomDropdownMapView } from '../../../../stores/slices/graphSlice';
 import { useStyles } from './TopRightControls2MUI';
@@ -76,10 +76,12 @@ const filteredData = genotypesDrugsData2
               <InfoOutlined color="action" fontSize="small" className={classes.labelTooltipIcon} />
             </Tooltip>
           </div>
+          <FormControl fullWidth>
             <Select
               multiple
               // labelId="search-select-label"
               id="search-select"
+              MenuProps={{ autoFocus: false }}
               value={customDropdownMapView}
               onChange={(event) => handleChangeSelectedGenotypes({ event })}
               disabled={organism === 'none'}
@@ -107,6 +109,7 @@ const filteredData = genotypesDrugsData2
                 ))
               }
             >
+              <ListSubheader>
               <TextField 
                 size="small"
                 autoFocus
@@ -136,10 +139,12 @@ const filteredData = genotypesDrugsData2
                     </InputAdornment>
                   )
                 }}
-                sx={{ width:'90%', margin:'0% 5%'}}
+                sx={{ width:'100%'}}
                 onChange={e => setSearchValue(e)}
                 onKeyDown={(e) => e.stopPropagation()}
               />
+              </ListSubheader>
+              {console.log("customDropdownMapView", customDropdownMapView)}
               {filteredData.map((genotype, index) => 
                 <MenuItem key={`frequencies-option-${index}`} value={genotype.name} className={classes.dropdown}>
                   <Checkbox disableRipple sx={{padding: '0px', marginRight:'5px'}} checked={customDropdownMapView.indexOf(genotype.name) > -1} />
@@ -147,6 +152,7 @@ const filteredData = genotypesDrugsData2
                 </MenuItem>
               )}
             </Select>
+          </FormControl>
         </CardContent>
      </Card>
     </div>
