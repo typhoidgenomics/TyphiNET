@@ -15,18 +15,21 @@ export const TopRightControls2 = () => {
   const [searchValue2, setSearchValue2] = useState("")
   const dispatch = useAppDispatch();
   const organism = useAppSelector((state) => state.dashboard.organism);
-  const genotypesDrugsData = useAppSelector((state) => state.graph.genotypesDrugsData2);
+  const genotypesDrugsData2 = useAppSelector((state) => state.graph.genotypesDrugsData2);
+  const genotypesDrugsData = useAppSelector((state) => state.graph.genotypesDrugsData);
   const customDropdownMapView = useAppSelector((state) => state.graph.customDropdownMapView);
 
   // useEffect(() => {
   //   setCurrentTooltip(null);
   // }, [genotypesDrugsData, customDropdownMapView]);
-
   function getSelectGenotypeLabel(genotype) {
-    const percentage = Number(((genotype.Susceptible / genotype.totalCount) * 100).toFixed(2));
+    const matchingGenotype = genotypesDrugsData.find(g => g.name === genotype.name);
+    const totalCount = matchingGenotype?.totalCount ?? 0;
+    const susceptiblePercentage = (matchingGenotype?.Susceptible / totalCount || 0) * 100;
 
-    return `${genotype.name} (total N=${genotype.totalCount===0 ? 0:`${genotype.totalCount},${percentage}% Susceptible`})`;
-  }
+    return `${genotype.name} (total N=${totalCount}, ${susceptiblePercentage.toFixed(2)}% Susceptible)`;
+}
+
   
 
   function handleChangeSelectedGenotypes({ event = null, all = false }) {
@@ -55,7 +58,7 @@ export const TopRightControls2 = () => {
   setSearchValue2(event.target.value)
  }
 
-const filteredData = genotypesDrugsData
+const filteredData = genotypesDrugsData2
     .filter((genotype) => genotype.name.includes(searchValue2.toLowerCase()) || genotype.name.includes(searchValue2.toUpperCase()))
     // .filter(x => x.totalCount >= 20)
   ;
