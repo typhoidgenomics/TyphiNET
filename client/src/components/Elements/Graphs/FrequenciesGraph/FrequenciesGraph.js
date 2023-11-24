@@ -187,7 +187,7 @@ console.log("frequenciesGraphSelectedGenotypes", frequenciesGraphSelectedGenotyp
                 cursor={frequenciesGraphSelectedGenotypes!=0?{ fill: hoverColor }:false}
                 wrapperStyle={{ outline: 'none', zIndex: 1 }}
                 content={({ payload, active, label }) => {
-                  if (payload !== null && active) {
+                  if (payload.length !== 0 && active) {
                     const data = getTooltipData(label, payload);
 
                     return (
@@ -198,7 +198,7 @@ console.log("frequenciesGraphSelectedGenotypes", frequenciesGraphSelectedGenotyp
                           </Typography>
                           <Typography variant="subtitle1">{`N = ${payload[0].payload.totalCount}`}</Typography>
                         </div>
-                        {payload[0].payload.totalCount > 0?
+                        {/* {payload[0].payload.totalCount > 0? */}
                         <div className={classes.tooltipContent}>
                           {data.map((item, index) => {
                             return (
@@ -226,7 +226,8 @@ console.log("frequenciesGraphSelectedGenotypes", frequenciesGraphSelectedGenotyp
                               </div>
                             );
                           })}
-                        </div>: null}
+                        </div>
+                        {/* : null} */}
                       </div>
                     );
                   }

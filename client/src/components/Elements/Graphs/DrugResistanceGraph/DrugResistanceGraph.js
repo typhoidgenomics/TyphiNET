@@ -160,7 +160,7 @@ export const DrugResistanceGraph = () => {
                 cursor={{ fill: hoverColor }}
                 wrapperStyle={{ outline: 'none', zIndex: 1 }}
                 content={({ payload, active, label }) => {
-                  if (payload !== null && active) {
+                  if (payload.length !== 0 && active) {
                     const data = getTooltipData(label, payload);
 
                     return (
