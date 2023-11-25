@@ -81,7 +81,7 @@ const filteredData = genotypesDrugsData2
           </div>
           <FormControl fullWidth>
             <Autocomplete
-            sx={{ m: 1, width: 500 }}
+            sx={{ m: 1, width: 165 }}
             multiple
             id="tags-standard"
             options={filteredData.map((data) => data.name)}

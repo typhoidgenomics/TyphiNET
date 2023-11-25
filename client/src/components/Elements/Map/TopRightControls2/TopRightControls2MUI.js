@@ -8,7 +8,8 @@ const useStyles = makeStyles((theme) => ({
     top: 0,
     right: 0,
     marginTop: '200px',
-    minWidth:'209px',
+    maxWidth:'209px',
+    alignItems:"normal",
     // width:'25%',
     '@media (max-width: 1000px)': {
       // width: 
