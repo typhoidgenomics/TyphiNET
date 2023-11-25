@@ -28,6 +28,10 @@ export const TopRightControls2 = () => {
     setSelectedValues(newValue);
   };
 
+ useEffect(()=>{
+  dispatch(setCustomDropdownMapView(genotypesDrugsData.slice(0, 1).map((x) => x.name)));
+  },[genotypesDrugsData ])
+
   function getSelectGenotypeLabel(genotype) {
     const matchingGenotype = genotypesDrugsData.find(g => g.name === genotype);
     const totalCount = matchingGenotype?.totalCount ?? 0;
