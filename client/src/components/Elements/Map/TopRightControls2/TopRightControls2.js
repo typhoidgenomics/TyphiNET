@@ -27,12 +27,13 @@ export const TopRightControls2 = () => {
   //   setCurrentTooltip(null);
   // }, [genotypesDrugsData, customDropdownMapView]);
   function getSelectGenotypeLabel(genotype) {
-    const matchingGenotype = genotypesDrugsData.find(g => g.name === genotype.name);
+    const matchingGenotype = genotypesDrugsData.find(g => g.name === genotype);
     const totalCount = matchingGenotype?.totalCount ?? 0;
     const susceptiblePercentage = (matchingGenotype?.Susceptible / totalCount || 0) * 100;
-    return `${genotype.name} (total N=${totalCount}, ${susceptiblePercentage.toFixed(2)}% Susceptible)`;
+    return `${genotype} (total N=${totalCount}, ${susceptiblePercentage.toFixed(2)}% Susceptible)`;
 }
 
+  console.log("customDropdownMapView",customDropdownMapView )
 
   function handleChangeSelectedGenotypes({ event = null, all = false }) {
     if (all) {
@@ -95,7 +96,7 @@ const filteredData = genotypesDrugsData2
                 sx={{ justifyContent: "space-between" }}
                 {...props}
               >
-                {option}
+                {getSelectGenotypeLabel(option)}
               </MenuItem>
             )}
             renderInput={(params) => (
