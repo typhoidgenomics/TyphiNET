@@ -12,18 +12,20 @@ import { InfoOutlined } from '@mui/icons-material';
 export const TopRightControls2 = () => {
   const classes = useStyles();
   const [, setCurrentTooltip] = useState(null);
-  const [searchValue2, setSearchValue2] = useState("")
+  const [searchValue2, setSearchValue2] = useState("");
   const dispatch = useAppDispatch();
   const organism = useAppSelector((state) => state.dashboard.organism);
   const genotypesDrugsData2 = useAppSelector((state) => state.graph.genotypesDrugsData2);
   const genotypesDrugsData = useAppSelector((state) => state.graph.genotypesDrugsData);
   const customDropdownMapView = useAppSelector((state) => state.graph.customDropdownMapView);
+  const [selectedValues, setSelectedValues] = useState([customDropdownMapView[0]]);
   const handleAutocompleteChange = (event, newValue) => {
    
     if (customDropdownMapView.length === 10 && newValue.length > 10) {
       return;
     }
     dispatch(setCustomDropdownMapView(newValue));
+    setSelectedValues(newValue);
   };
 
   // useEffect(() => {
@@ -64,6 +66,16 @@ export const TopRightControls2 = () => {
   setSearchValue2(event.target.value)
  }
 
+ const getDynamicOptionLabel = (option, customDropdownMapView) => {
+  if (customDropdownMapView.length <= 10) {
+    // Implement your dynamic label logic here
+    return ;
+  }
+  // Fallback to the default label logic
+  return option;
+};
+
+
 const filteredData = genotypesDrugsData2
     .filter((genotype) => genotype.name.includes(searchValue2.toLowerCase()) || genotype.name.includes(searchValue2.toUpperCase()))
     // .filter(x => x.totalCount >= 20)
@@ -88,9 +100,10 @@ const filteredData = genotypesDrugsData2
             multiple
             limitTags={1}
             id="tags-standard"
-            options={filteredData.map((data) => data.name)}
-            getOptionLabel={(option) => option}
-            defaultValue={[customDropdownMapView[0]]}
+            options={filteredData.map((data) => data.name) }
+            freeSolo={customDropdownMapView.length >= 3 ? false : true}
+            getOptionDisabled={(options) => (customDropdownMapView.length >=3 ? true : false)}
+            value={selectedValues}
             disableCloseOnSelect
             onChange={handleAutocompleteChange}
             renderOption={(props, option, { selected }) => (
@@ -100,7 +113,7 @@ const filteredData = genotypesDrugsData2
                 sx={{ justifyContent: "space-between"}}
                 {...props}
               ><Checkbox checked={customDropdownMapView.indexOf(option) > -1} />
-                <ListItemText primary={getSelectGenotypeLabel(option)} />{getSelectGenotypeLabel(option)}
+                <ListItemText primary={getSelectGenotypeLabel(option)} />
               </MenuItem>
             )}
             renderInput={(params) => (
