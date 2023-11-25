@@ -18,7 +18,7 @@ export const TopRightControls2 = () => {
   const genotypesDrugsData2 = useAppSelector((state) => state.graph.genotypesDrugsData2);
   const genotypesDrugsData = useAppSelector((state) => state.graph.genotypesDrugsData);
   const customDropdownMapView = useAppSelector((state) => state.graph.customDropdownMapView);
-
+  const [isTextFieldVisible, setIsTextFieldVisible] = useState(false);
   const handleAutocompleteChange = (event, newValue) => {
     dispatch(setCustomDropdownMapView(newValue));
   };
@@ -81,8 +81,9 @@ const filteredData = genotypesDrugsData2
           </div>
           <FormControl fullWidth>
             <Autocomplete
-            sx={{ m: 1, width: 165 }}
+            sx={{ m: 1, maxHeight: 200}}
             multiple
+            limitTags={1}
             id="tags-standard"
             options={filteredData.map((data) => data.name)}
             getOptionLabel={(option) => option}
@@ -93,7 +94,7 @@ const filteredData = genotypesDrugsData2
               <MenuItem
                 key={option}
                 value={option}
-                sx={{ justifyContent: "space-between" }}
+                sx={{ justifyContent: "space-between"}}
                 {...props}
               >
                 {getSelectGenotypeLabel(option)}
@@ -103,7 +104,7 @@ const filteredData = genotypesDrugsData2
               <TextField
                 {...params}
                 variant="outlined"
-                placeholder="Type to search..."
+                placeholder={customDropdownMapView.length>0?"Type to search...":"0 genotype selected"}
               />
             )}
           />
