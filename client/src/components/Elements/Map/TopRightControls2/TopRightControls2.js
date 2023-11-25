@@ -145,6 +145,7 @@ const filteredData = genotypesDrugsData2
               />
               </ListSubheader>
               {/* {console.log("customDropdownMapView", customDropdownMapView)} */}
+              {console.log("customDropdownMapView", customDropdownMapView)}
               {filteredData.map((genotype, index) => 
                 <MenuItem key={`frequencies-option-${index}`} value={genotype.name} className={classes.dropdown}>
                   <Checkbox disableRipple sx={{padding: '0px', marginRight:'5px'}} checked={customDropdownMapView.indexOf(genotype.name) > -1} />

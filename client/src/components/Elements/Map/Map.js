@@ -76,7 +76,7 @@ export const Map = () => {
               AzithR: `${countryStats.AzithR.percentage}%`,
               CipR: `${countryStats.CipR.percentage}%`,
               // CipNS: `${countryStats.CipNS.percentage}%`,
-              CipNS: `${combinedPercentage}%`,
+              CipNS: `${combinedPercentage.toFixed(2)}%`,
               Susceptible: `${countryStats.Susceptible.percentage}%`
             }
           });
