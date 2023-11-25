@@ -10,7 +10,9 @@ import {
   Tooltip,
   Typography,
   useMediaQuery,
-  InputAdornment
+  InputAdornment,
+  FormControl,
+  ListSubheader
 } from '@mui/material';
 import { useStyles } from './FrequenciesGraphMUI';
 import { InfoOutlined } from '@mui/icons-material';
@@ -72,7 +74,7 @@ export const FrequenciesGraph = () => {
 
   function getData() {
     data = data.filter((genotype) => frequenciesGraphSelectedGenotypes.includes(genotype.name));
-    console.log("getData",data)
+    // console.log("getData",data)
 
     if (frequenciesGraphView === 'number') {
       return data;
@@ -135,7 +137,7 @@ export const FrequenciesGraph = () => {
     if (frequenciesGraphSelectedGenotypes.length === 7 && value.length > 7) {
       return;
     }
-console.log("frequenciesGraphSelectedGenotypes", frequenciesGraphSelectedGenotypes);
+// console.log("frequenciesGraphSelectedGenotypes", value);
     dispatch(setFrequenciesGraphSelectedGenotypes(value));
   }
 
@@ -256,6 +258,7 @@ console.log("frequenciesGraphSelectedGenotypes", frequenciesGraphSelectedGenotyp
           </Tooltip>
         </div>
         <div className={classes.selectWrapper}>
+          {/* <FormControl fullWidth> */}
           <Select
             className={classes.select}
             value={frequenciesGraphView}
@@ -271,6 +274,7 @@ console.log("frequenciesGraphSelectedGenotypes", frequenciesGraphSelectedGenotyp
               );
             })}
           </Select>
+          
           <Select
             className={classes.select}
             multiple
@@ -288,10 +292,12 @@ console.log("frequenciesGraphSelectedGenotypes", frequenciesGraphSelectedGenotyp
             //     Clear All
             //   </Button>
             // }
+            onClose={(e) => setSearchValue2("")}
             inputProps={{ className: classes.genotypesSelectInput }}
             MenuProps={{ classes: { paper: classes.genotypesMenuPaper, list: classes.genotypesSelectMenu } }}
             renderValue={(selected) => (<div>{`Select genotypes (currently showing ${selected.length} )`}</div>)}
           >
+            <ListSubheader>
             <TextField 
                 size="small"
                 autoFocus
@@ -322,6 +328,7 @@ console.log("frequenciesGraphSelectedGenotypes", frequenciesGraphSelectedGenotyp
                 onChange={e => setSearchValue(e)}
                 onKeyDown={(e) => e.stopPropagation()}
               />
+              </ListSubheader>
             {filteredData.map((genotype, index) => (
               <MenuItem key={`frequencies-option-${index}`} value={genotype.name}>
                 <Checkbox checked={frequenciesGraphSelectedGenotypes.indexOf(genotype.name) > -1} />
@@ -329,6 +336,7 @@ console.log("frequenciesGraphSelectedGenotypes", frequenciesGraphSelectedGenotyp
               </MenuItem>
             ))}
           </Select>
+          {/* </FormControl> */}
         </div>
       </div>
       <div className={classes.graphWrapper}>

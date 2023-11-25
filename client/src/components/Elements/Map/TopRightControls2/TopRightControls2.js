@@ -144,6 +144,7 @@ const filteredData = genotypesDrugsData2
                 onKeyDown={(e) => e.stopPropagation()}
               />
               </ListSubheader>
+              {/* {console.log("customDropdownMapView", customDropdownMapView)} */}
               {console.log("customDropdownMapView", customDropdownMapView)}
               {filteredData.map((genotype, index) => 
                 <MenuItem key={`frequencies-option-${index}`} value={genotype.name} className={classes.dropdown}>
