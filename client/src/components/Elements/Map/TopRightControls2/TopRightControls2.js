@@ -18,8 +18,11 @@ export const TopRightControls2 = () => {
   const genotypesDrugsData2 = useAppSelector((state) => state.graph.genotypesDrugsData2);
   const genotypesDrugsData = useAppSelector((state) => state.graph.genotypesDrugsData);
   const customDropdownMapView = useAppSelector((state) => state.graph.customDropdownMapView);
-  const [isTextFieldVisible, setIsTextFieldVisible] = useState(false);
   const handleAutocompleteChange = (event, newValue) => {
+   
+    if (customDropdownMapView.length === 10 && newValue.length > 10) {
+      return;
+    }
     dispatch(setCustomDropdownMapView(newValue));
   };
 
@@ -96,8 +99,8 @@ const filteredData = genotypesDrugsData2
                 value={option}
                 sx={{ justifyContent: "space-between"}}
                 {...props}
-              >
-                {getSelectGenotypeLabel(option)}
+              ><Checkbox checked={customDropdownMapView.indexOf(option) > -1} />
+                <ListItemText primary={getSelectGenotypeLabel(option)} />{getSelectGenotypeLabel(option)}
               </MenuItem>
             )}
             renderInput={(params) => (
