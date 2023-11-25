@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Button, Card, CardContent, Checkbox, ListItemText, MenuItem, Select, Tooltip, Typography, InputAdornment, FormControl, ListSubheader} from '@mui/material';
+import { Button, Card, CardContent, Checkbox, ListItemText, MenuItem, Select, Tooltip, Typography, InputAdornment, FormControl, ListSubheader, Autocomplete} from '@mui/material';
 import SearchIcon from "@mui/icons-material/Search";
 import { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../../stores/hooks';
@@ -30,7 +30,7 @@ export const TopRightControls2 = () => {
     return `${genotype.name} (total N=${totalCount}, ${susceptiblePercentage.toFixed(2)}% Susceptible)`;
 }
 
-  
+  console.log("customDropdownMapView", )
 
   function handleChangeSelectedGenotypes({ event = null, all = false }) {
     if (all) {
@@ -77,81 +77,92 @@ const filteredData = genotypesDrugsData2
             </Tooltip>
           </div>
           <FormControl fullWidth>
-            <Select
-              multiple
-              // labelId="search-select-label"
-              id="search-select"
-              MenuProps={{ autoFocus: false }}
-              value={customDropdownMapView}
-              onChange={(event) => handleChangeSelectedGenotypes({ event })}
-              disabled={organism === 'none'}
-              displayEmpty
-              onClose={(e) => setSearchValue2("")}
-              // endAdornment={
-              //   <Button
-              //   size="small"
-              //   variant="outlined"
-              //   className={classes.genotypesSelectButton}
-              //   onClick={() => handleChangeSelectedGenotypes({ all: true })}
-              //   disabled={customDropdownMapView.length === 0}
-              //   color="error"
-              // >
-              //   Clear
-              // </Button>
-              // }
-              inputProps={{ className: classes.genotypesSelectInput }}
-              MenuProps={{ classes: { paper: classes.genotypesMenuPaper, list: classes.genotypesSelectMenu } }}
-              renderValue={(selected) => (
-                selected.length === 1 ? (
-                  <Typography variant="caption">{selected}</Typography>
-                ) : (
-                  <Typography variant="caption">{`${selected.length} genotypes`}</Typography>
-                ))
-              }
-            >
-              <ListSubheader>
-              <TextField 
-                size="small"
-                autoFocus
+            <Autocomplete
+            sx={{ m: 1, width: 500 }}
+            multiple
+            id="tags-standard"
+            options={filteredData.map((data) => data.name)}
+            getOptionLabel={(option) => option}
+            defaultValue={[customDropdownMapView[0]]}
+            disableCloseOnSelect
+            renderOption={(props, option, { selected }) => (
+              <MenuItem
+                key={option}
+                value={option}
+                sx={{ justifyContent: "space-between" }}
+                {...props}
+              >
+                {option}
+              </MenuItem>
+            )}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                variant="outlined"
                 placeholder="Type to search..."
-                label="Search genotype" 
-                variant="standard" 
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon />
-                    </InputAdornment>
-                  ),
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <Button
-                        size="small"
-                        variant="outlined"
-                        className={classes.genotypesSelectButton}
-                        onClick={(e) => {
-                          handleChangeSelectedGenotypes({ all: true });
-                        }}
-                        disabled={customDropdownMapView.length === 0}
-                        color="error"
-                      >
-                        Clear
-                      </Button>
-                    </InputAdornment>
-                  )
-                }}
-                sx={{ width:'100%'}}
-                onChange={e => setSearchValue(e)}
-                onKeyDown={(e) => e.stopPropagation()}
               />
-              </ListSubheader>
-              {/* {console.log("customDropdownMapView", customDropdownMapView)} */}
-              {filteredData.map((genotype, index) => 
-                <MenuItem key={`frequencies-option-${index}`} value={genotype.name} className={classes.dropdown}>
-                  <Checkbox disableRipple sx={{padding: '0px', marginRight:'5px'}} checked={customDropdownMapView.indexOf(genotype.name) > -1} />
-                  <ListItemText primary={getSelectGenotypeLabel(genotype)}   />
-                </MenuItem>
-              )}
-            </Select>
+            )}
+          />
+          {/* <Autocomplete
+          multiple
+          id="genotypes-autocomplete"
+          options={filteredData.map((data) => data.name)}
+          // value={customDropdownMapView}
+          defaultValue={[customDropdownMapView[0]]}
+          onChange={(_, newValue) => handleChangeSelectedGenotypes({ event: { target: { value: newValue } } })}
+          disableCloseOnSelect
+          getOptionLabel={(option) => option}
+          isOptionEqualToValue={(option, value) => option.name === value.name}
+          renderOption={(props, option, { selected }) => (
+            <MenuItem
+                key={option}
+                value={option}
+                sx={{ justifyContent: "space-between" }}
+                // {...props}
+              >
+                <li {...props}>
+              <Checkbox checked={selected} />
+              <ListItemText primary={getSelectGenotypeLabel(option)} />
+            </li>
+              </MenuItem>
+            
+          )}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              size="small"
+              autoFocus
+              placeholder="Type to search..."
+              // label="Search genotype"
+              variant="standard"
+              // InputProps={{
+              //   ...params.InputProps,
+              //   startAdornment: (
+              //     <InputAdornment position="start">
+              //       <SearchIcon />
+              //     </InputAdornment>
+              //   ),
+                // endAdornment: (
+                //   <InputAdornment position="end">
+                //     <Button
+                //       variant="outlined"
+                //       className={classes.genotypesSelectButton}
+                //       onClick={() => handleChangeSelectedGenotypes({ all: true })}
+                //       disabled={customDropdownMapView.length === 0}
+                //       color="error"
+                //     >
+                //       Clear All
+                //     </Button>
+                //   </InputAdornment>
+                // ),
+              // }}
+              onChange={(e) => {
+                setSearchValue(e.target.value);
+                // setSearchValue2(""); // Assuming setSearchValue2 is a function to update the second search value
+              }}
+              onKeyDown={(e) => e.stopPropagation()}
+            />
+          )} */}
           </FormControl>
         </CardContent>
      </Card>
