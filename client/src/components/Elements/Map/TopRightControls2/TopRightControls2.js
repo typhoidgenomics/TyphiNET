@@ -19,6 +19,10 @@ export const TopRightControls2 = () => {
   const genotypesDrugsData = useAppSelector((state) => state.graph.genotypesDrugsData);
   const customDropdownMapView = useAppSelector((state) => state.graph.customDropdownMapView);
 
+  const handleAutocompleteChange = (event, newValue) => {
+    dispatch(setCustomDropdownMapView(newValue));
+  };
+
   // useEffect(() => {
   //   setCurrentTooltip(null);
   // }, [genotypesDrugsData, customDropdownMapView]);
@@ -26,11 +30,9 @@ export const TopRightControls2 = () => {
     const matchingGenotype = genotypesDrugsData.find(g => g.name === genotype.name);
     const totalCount = matchingGenotype?.totalCount ?? 0;
     const susceptiblePercentage = (matchingGenotype?.Susceptible / totalCount || 0) * 100;
-
     return `${genotype.name} (total N=${totalCount}, ${susceptiblePercentage.toFixed(2)}% Susceptible)`;
 }
 
-  console.log("customDropdownMapView", )
 
   function handleChangeSelectedGenotypes({ event = null, all = false }) {
     if (all) {
@@ -85,6 +87,7 @@ const filteredData = genotypesDrugsData2
             getOptionLabel={(option) => option}
             defaultValue={[customDropdownMapView[0]]}
             disableCloseOnSelect
+            onChange={handleAutocompleteChange}
             renderOption={(props, option, { selected }) => (
               <MenuItem
                 key={option}
