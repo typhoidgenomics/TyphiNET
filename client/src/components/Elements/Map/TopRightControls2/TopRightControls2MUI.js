@@ -8,7 +8,10 @@ const useStyles = makeStyles((theme) => ({
     top: 0,
     right: 0,
     marginTop: '200px',
-    minWidth:'209px',
+    width:'450px',
+    maxHeight:'300px',
+    alignItems:"normal",
+    // overflowY: 'auto',
     // width:'25%',
     '@media (max-width: 1000px)': {
       // width: 
