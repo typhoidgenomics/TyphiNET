@@ -287,11 +287,16 @@ router.get('/create', async function (req, res) {
               obj_parser['MDR'] = '-';
             }
             // TODO: check if we need to add qnrSBD in this isConditionalExpression
-            if (obj_parser['MDR'] == 'MDR' && data['blaCTX-M-15_23'] == '1' && data['qnrS'] == '1') {
+            if (obj_parser['MDR'] == 'MDR' && data['blaCTX-M-15_23'] == '1' && data['qnrS'] == '1' || obj_parser['MDR'] == 'MDR' && data['blaCTX-M-55'] == '1' && data['qnrS'] == '1') {
               obj_parser['XDR'] = 'XDR';
             } else {
               obj_parser['XDR'] = '-';
             }
+            // if (obj_parser['MDR'] == 'MDR' && data['blaCTX-M-55'] == '1' && data['qnrS'] == '1') {
+            //   obj_parser['XDR'] = 'XDR';
+            // } else {
+            //   obj_parser['XDR'] = '-';
+            // }
             // if (data['ereA'] == '1') {
             //   obj_parser['azith_pred_pheno'] = 'AzithR';
             // }
@@ -306,6 +311,11 @@ router.get('/create', async function (req, res) {
             } else {
               obj_parser['ESBL_category'] = 'Non-ESBL';
             }
+            // if (obj_parser['MDR'] == 'MDR' && data['ESBL_category'] == 'ESBL' && data['qnrS'] == 'CipR') {
+            //   obj_parser['XDR'] = 'XDR';
+            // } else {
+            //   obj_parser['XDR'] = '-';
+            // }
             if (data['catA1'] == '1' || data['cmlA'] == '1') {
               obj_parser['chloramphenicol_category'] = 'ChlR';
             } else {
