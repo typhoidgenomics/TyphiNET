@@ -2,13 +2,13 @@
 
 # TyphiNET web dashboard
 
-![Code Count](https://img.shields.io/github/languages/count/typhoidgenomics/TyphiNET/)
-![Main Code Base](https://img.shields.io/github/languages/top/typhoidgenomics/TyphiNET/)
+![Code Count](https://img.shields.io/github/languages/count/typhoidgenomics/TyphiNET)
+![Main Code Base](https://img.shields.io/github/languages/top/typhoidgenomics/TyphiNET)
 ![Version](https://img.shields.io/badge/version-1.2-red)
 ![License](https://img.shields.io/badge/license-GPLv3-blue)
-![Last Commit](https://img.shields.io/github/last-commit/typhoidgenomics/TyphiNET/)
-![Open Issues](https://img.shields.io/github/issues-raw/typhoidgenomics/TyphiNET/)
-![Repo Size](https://img.shields.io/github/repo-size/typhoidgenomics/TyphiNET/)
+![Last Commit](https://img.shields.io/github/last-commit/typhoidgenomics/TyphiNET)
+![Open Issues](https://img.shields.io/github/issues-raw/typhoidgenomics/TyphiNET)
+![Repo Size](https://img.shields.io/github/repo-size/typhoidgenomics/TyphiNET)
 
 ## Table of Contents
 
