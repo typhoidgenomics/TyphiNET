@@ -292,11 +292,6 @@ router.get('/create', async function (req, res) {
             } else {
               obj_parser['XDR'] = '-';
             }
-            // if (obj_parser['MDR'] == 'MDR' && data['blaCTX-M-55'] == '1' && data['qnrS'] == '1') {
-            //   obj_parser['XDR'] = 'XDR';
-            // } else {
-            //   obj_parser['XDR'] = '-';
-            // }
             // if (data['ereA'] == '1') {
             //   obj_parser['azith_pred_pheno'] = 'AzithR';
             // }
@@ -552,6 +547,7 @@ router.get('/create', async function (req, res) {
           obj_parser['cip_pred_pheno'] = '-';
           obj_parser['CipNS'] = '0';
           obj_parser['CipR'] = '0';
+          obj_parser['CefR'] = '0';
           obj_parser = {};
         }
       })
@@ -600,6 +596,12 @@ router.get('/create', async function (req, res) {
           }else if (data_to_write[d]['cip_pred_pheno'] === 'CipR'){
             data_to_write[d]['CipNS'] = '1';
             data_to_write[d]['CipR'] = '1';
+          }
+
+          if(data_to_write[d]['ESBL_category'] === 'ESBL'){
+            data_to_write[d]['CefR'] = '1';
+          } else { 
+            data_to_write[d]['CefR'] = '0';
           }
 
           if (
