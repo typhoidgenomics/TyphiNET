@@ -5,7 +5,7 @@ import path from 'path';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import * as Tools from '../../services/services.js';
-// import { isConditionalExpression } from 'typescript';
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const router = express.Router();
 
@@ -626,8 +626,11 @@ router.get('/create', async function (req, res) {
         }
         await Tools.CreateFile(temp, 'clean.csv');
         await Tools.CreateFile(tempAll, 'cleanAll.csv');
+        resolve();
       });
+    });
   }
+
   return res.json({ Finished: 'All done!' });
 });
 
