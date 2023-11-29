@@ -292,6 +292,11 @@ router.get('/create', async function (req, res) {
             } else {
               obj_parser['XDR'] = '-';
             }
+            // if (obj_parser['MDR'] == 'MDR' && data['blaCTX-M-55'] == '1' && data['qnrS'] == '1') {
+            //   obj_parser['XDR'] = 'XDR';
+            // } else {
+            //   obj_parser['XDR'] = '-';
+            // }
             // if (data['ereA'] == '1') {
             //   obj_parser['azith_pred_pheno'] = 'AzithR';
             // }
@@ -621,11 +626,8 @@ router.get('/create', async function (req, res) {
         }
         await Tools.CreateFile(temp, 'clean.csv');
         await Tools.CreateFile(tempAll, 'cleanAll.csv');
-        resolve();
       });
-    });
   }
-
   return res.json({ Finished: 'All done!' });
 });
 
