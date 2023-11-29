@@ -5,7 +5,7 @@ import path from 'path';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import * as Tools from '../../services/services.js';
-// import { isConditionalExpression } from 'typescript';
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const router = express.Router();
 
@@ -552,6 +552,7 @@ router.get('/create', async function (req, res) {
           obj_parser['cip_pred_pheno'] = '-';
           obj_parser['CipNS'] = '0';
           obj_parser['CipR'] = '0';
+          obj_parser['CefR'] = '0';
           obj_parser = {};
         }
       })
@@ -602,6 +603,12 @@ router.get('/create', async function (req, res) {
             data_to_write[d]['CipR'] = '1';
           }
 
+          if(data_to_write[d]['ESBL_category'] === 'ESBL'){
+            data_to_write[d]['CefR'] = '1';
+          } else { 
+            data_to_write[d]['CefR'] = '0';
+          }
+
           if (
             !empty.includes(data_to_write[d]['DATE']) &&
             !empty.includes(data_to_write[d]['COUNTRY_ONLY']) &&
@@ -623,7 +630,7 @@ router.get('/create', async function (req, res) {
       });
     });
   }
-
+  
   return res.json({ Finished: 'All done!' });
 });
 

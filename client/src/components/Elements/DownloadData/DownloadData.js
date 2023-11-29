@@ -144,7 +144,7 @@ export const DownloadData = () => {
           newCSV += aux;
         }
 
-        download(newCSV, 'TyphiNET - Database.csv');
+        download(newCSV, 'TyphiNET Database.csv');
       })
       .finally(() => {
         setLoadingCSV(false);
