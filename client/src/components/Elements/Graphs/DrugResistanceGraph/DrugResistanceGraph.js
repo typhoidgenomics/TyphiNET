@@ -125,7 +125,7 @@ export const DrugResistanceGraph = () => {
                 allowDecimals={false}
                 padding={{ left: 20, right: 20 }}
                 dataKey="name"
-                domain={['dataMin', 'dataMax']}
+                // domain={['dataMin', 'dataMax']}
                 interval={'preserveStartEnd'}
                 tick={{ fontSize: 14 }}
               />
@@ -160,7 +160,7 @@ export const DrugResistanceGraph = () => {
                 cursor={{ fill: hoverColor }}
                 wrapperStyle={{ outline: 'none', zIndex: 1 }}
                 content={({ payload, active, label }) => {
-                  if (payload !== null && active) {
+                  if (payload.length !== 0 && active) {
                     const data = getTooltipData(label, payload);
 
                     return (

@@ -2,7 +2,7 @@
 node_modules/
 /.pnp
 .pnp.js
-/build
+client/build/
 .DS_Store
 .env.local
 .env.development.local

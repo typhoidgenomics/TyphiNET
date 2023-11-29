@@ -35,22 +35,27 @@ export const DeterminantsGraph = () => {
   const determinantsGraphView = useAppSelector((state) => state.graph.determinantsGraphView);
   const determinantsGraphDrugClass = useAppSelector((state) => state.graph.determinantsGraphDrugClass);
 
+  let data = 0;
+  useEffect(()=>{
+    if(genotypesDrugClassesData[determinantsGraphDrugClass] !== undefined){
+      data = genotypesDrugClassesData[determinantsGraphDrugClass].filter((x)=>x.totalCount>0).length;
+    }
+  },[genotypesDrugClassesData, determinantsGraphDrugClass])
   function getDomain() {
     return determinantsGraphView === 'number' ? undefined : [0, 100];
   }
-
   function getData() {
     if (determinantsGraphView === 'number') {
-      return genotypesDrugClassesData[determinantsGraphDrugClass];
+      return genotypesDrugClassesData[determinantsGraphDrugClass].filter((x)=>x.totalCount>0);
     }
-
     const exclusions = ['name', 'totalCount', 'resistantCount'];
     let genotypeDrugClassesDataPercentage = structuredClone(genotypesDrugClassesData[determinantsGraphDrugClass] ?? []);
-    genotypeDrugClassesDataPercentage = genotypeDrugClassesDataPercentage.map((item) => {
+    genotypeDrugClassesDataPercentage = genotypeDrugClassesDataPercentage.filter((x)=>x.totalCount>0).map((item) => {
       const keys = Object.keys(item).filter((x) => !exclusions.includes(x));
 
       keys.forEach((key) => {
-        item[key] = Number(((item[key] / item.totalCount) * 100).toFixed(2));
+        if(item.totalCount>0)
+          item[key] = Number(((item[key] / item.totalCount) * 100).toFixed(2));
       });
 
       return item;
@@ -130,10 +135,10 @@ export const DeterminantsGraph = () => {
 
               <ChartTooltip
                 position={{ x: matches500 ? 0 : 60, y: matches500 ? 310 : 410 }}
-                cursor={{ fill: hoverColor }}
+                cursor={data > 0 ? { fill: hoverColor }:false}
                 wrapperStyle={{ outline: 'none', zIndex: 1 }}
                 content={({ payload, active, label }) => {
-                  if (payload !== null && active) {
+                  if (payload.length !== 0 && active) {
                     const data = getTooltipData(label, payload);
 
                     return (
@@ -144,7 +149,8 @@ export const DeterminantsGraph = () => {
                           </Typography>
                           <Typography variant="subtitle1">{`N = ${payload[0].payload.totalCount}`}</Typography>
                         </div>
-                        <div className={classes.tooltipContent}>
+                        {/* {payload[0].payload.totalCount > 0? */}
+                          <div className={classes.tooltipContent}>
                           {data.map((item, index) => {
                             return (
                               <div key={`tooltip-content-${index}`} className={classes.tooltipItemWrapper}>
@@ -172,6 +178,7 @@ export const DeterminantsGraph = () => {
                             );
                           })}
                         </div>
+                        {/* : null} */}
                       </div>
                     );
                   }

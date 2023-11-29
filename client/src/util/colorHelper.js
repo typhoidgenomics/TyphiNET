@@ -13,6 +13,7 @@ export const getColorForGenotype = (genotype) => {
     case '0.1.2':
     case '0.1.3':
       return '#808080';
+    case '1':
     case '1.1':
     case '1.1.1':
     case '1.1.2':
@@ -141,6 +142,8 @@ export const colorForDrugClasses = {
   'Ciprofloxacin NS': [
     { name: '0_QRDR + qnrB (CipNS)', color: '#0066cc' },
     { name: '0_QRDR + qnrS (CipNS)', color: '#009999' },
+    // { name: '0_QRDR + qnrD (CipNS)', color: '#54278f' },
+    { name: '0_QRDR + qnrS + qnrD (CipNS)', color: '#a8ddb5' },
     { name: '1_QRDR (CipNS)', color: '#ffcc00' },
     { name: '1_QRDR + qnrB (CipNS)', color: '#993399' },
     { name: '1_QRDR + qnrS (CipNS)', color: '#660066' },
@@ -150,7 +153,7 @@ export const colorForDrugClasses = {
     { name: '3_QRDR (CipR)', color: '#cc0000' },
     { name: '3_QRDR + qnrB (CipR)', color: '#660000' },
     { name: '3_QRDR + qnrS (CipR)', color: 'black' },
-    { name: 'None (CipS)', color: '#B9B9B9' }
+    { name: 'None', color: '#B9B9B9' }
   ],
   Chloramphenicol: [
     { name: 'catA1', color: '#9e9ac8' },
@@ -186,21 +189,14 @@ export const colorForDrugClasses = {
     { name: 'tetA(D)', color: '#FCB469' },
     { name: 'None', color: '#B9B9B9' }
   ],
-  // ESBL: [
-  //   { name: 'blaCTX-M-15', color: '#6baed6' },
-  //   { name: 'blaCTX-M-55', color: '#FBCFE5' },
-  //   { name: 'blaOXA-7', color: '#9e9ac8' },
-  //   { name: 'blaSHV-12', color: '#addd8e' },
-  //   { name: 'None', color: '#B9B9B9' }
-  // ],
   Ceftriaxone: [
+    { name: 'blaCTX-M-12', color: '#fd8d3c' },
     { name: 'blaCTX-M-15', color: '#6baed6' },
     { name: 'blaCTX-M-55', color: '#FBCFE5' },
     { name: 'blaOXA-7', color: '#9e9ac8' },
     { name: 'blaSHV-12', color: '#addd8e' },
     { name: 'None', color: '#B9B9B9' }
   ],
-  // 'Co-trimoxazole': [
   'Trimethoprim-sulfamethoxazole': [
     { name: 'dfrA1 + sul1', color: '#ffeda0' },
     { name: 'dfrA1 + sul2', color: '#a50f15' },

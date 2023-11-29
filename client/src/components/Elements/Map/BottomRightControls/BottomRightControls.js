@@ -56,7 +56,20 @@ export const BottomRightControls = () => {
         ctx.font = 'bolder 50px Montserrat';
         ctx.fillStyle = 'black';
         ctx.textAlign = 'center';
-        ctx.fillText(`Global Overview of ${globalOverviewLabel.fullLabel}`, canvas.width / 2, 80);
+
+        // Draw the entire text with the original font style
+        ctx.fillText("Global Overview of ", canvas.width * 0.44 , 80);
+
+        // Set the font style for "Salmonella" to italic
+        ctx.font = 'italic bold 50px Montserrat';
+
+        // Draw only "Salmonella" with the italic style
+        ctx.fillText("Salmonella", canvas.width * 0.555, 80);
+
+        // Revert to the original font style for the remaining text
+        ctx.font = 'bolder 50px Montserrat';
+        ctx.fillText(" Typhi", canvas.width * 0.62, 80);
+
         ctx.font = '35px Montserrat';
         ctx.textAlign = 'center';
 
@@ -64,7 +77,7 @@ export const BottomRightControls = () => {
 
         ctx.fillText('Map View: ' + actualMapView, canvas.width / 2, 140);
         ctx.fillText('Dataset: ' + dataset, canvas.width / 2, 190);
-        ctx.fillText('Time Period: ' + actualTimeInitial + ' to ' + actualTimeFinal, canvas.width / 2, 240);
+        ctx.fillText('Time period: ' + actualTimeInitial + ' to ' + actualTimeFinal, canvas.width / 2, 240);
        if(mapView === 'Genotype prevalence'){
           if (customDropdownMapView.length === 1) {
             ctx.fillText('Selected Genotypes: ' + customDropdownMapView, canvas.width / 2, 290);

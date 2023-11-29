@@ -24,7 +24,8 @@ import { getSalmonellaTexts } from '../../../util/reportInfoTexts';
 
 const columnsToRemove = [
   'azith_pred_pheno',
-  'ACCESSION',
+  // 'ACCESSION',
+  'PROJECT ACCESSION',
   'COUNTRY_ONLY',
   'REGION_IN_COUNTRY',
   'LOCATION',
@@ -47,8 +48,7 @@ const columnsToRemove = [
   'Matching Hashes',
   'p-Value',
   'Mash Distance',
-  // 'cip_pred_pheno',
-  'cip',
+  'cip_pred_pheno',
   'dcs_category',
   'amr_category',
   'num_qrdr',
@@ -67,7 +67,8 @@ const columnsToRemove = [
   'COUNTRY OF ORIGIN',
   'AGE',
   'TRAVEL COUNTRY',
-  'TRAVEL ASSOCIATED'
+  'TRAVEL ASSOCIATED',
+  'Inc Types'
 ];
 
 export const DownloadData = () => {
@@ -80,6 +81,7 @@ export const DownloadData = () => {
   const dispatch = useAppDispatch();
   const actualCountry = useAppSelector((state) => state.dashboard.actualCountry);
   const listPIMD = useAppSelector((state) => state.dashboard.listPMID);
+  const PIMD = useAppSelector((state) => state.dashboard.PMID);
   const globalOverviewLabel = useAppSelector((state) => state.dashboard.globalOverviewLabel);
   const actualGenomes = useAppSelector((state) => state.dashboard.actualGenomes);
   const actualTimeInitial = useAppSelector((state) => state.dashboard.actualTimeInitial);
@@ -103,11 +105,11 @@ export const DownloadData = () => {
           let line = csv[index].split(',');
           lines.push(line);
         }
-        // lines[0].forEach((curr, index) => {
-        //   if (curr === 'cip_pred_pheno') {
-        //     lines[0][index] = 'Cip';
-        //   }
-        // });
+        lines[0].forEach((curr, index) => {
+          if (curr === 'cip_pred_pheno') {
+            lines[0][index] = 'Cip';
+          }
+        });
 
         for (let index = 0; index < columnsToRemove.length; index++) {
           let currentIndex = lines[0].indexOf(columnsToRemove[index]);
@@ -202,7 +204,12 @@ export const DownloadData = () => {
 
       // Title and Date
       doc.setFontSize(16).setFont(undefined, 'bold');
-      doc.text(`TyphiNET Report - ${globalOverviewLabel.fullLabel}`, pageWidth / 2, 34, { align: 'center' });
+      doc.text("Global Overview of", 177, 34, { align: 'center' });
+      doc.setFont(undefined, "bolditalic");
+      doc.text("Salmonella", 264, 34, { align: 'center' });
+      doc.setFont(undefined, "bold");
+      doc.text("Typhi", 315, 34, { align: 'center' });
+      
       doc.setFontSize(12).setFont(undefined, 'normal');
       doc.text(date, pageWidth / 2, 48, { align: 'center' });
 
@@ -215,25 +222,27 @@ export const DownloadData = () => {
         align: 'justify',
         maxWidth: pageWidth - 36
       });
-      doc.text(texts[3], 16, 169, { align: 'justify', maxWidth: pageWidth - 36 });
-      doc.text(texts[4], 16, 197, { align: 'justify', maxWidth: pageWidth - 36 });
-      doc.text(texts[5], 16, 225, { align: 'justify', maxWidth: pageWidth - 36 });
-      doc.text(texts[6], 16, 277, { align: 'justify', maxWidth: pageWidth - 36 });
+      doc.text(texts[3], 16, 179, { align: 'justify', maxWidth: pageWidth - 36 });
+      doc.text(texts[4], 16, 207, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.text(texts[5], 16, 245, { align: 'justify', maxWidth: pageWidth - 36 });
+      doc.text(texts[6], 16, 297, { align: 'justify', maxWidth: pageWidth - 36 });
 
       const euFlag = new Image();
       euFlag.src = EUFlagImg;
-      doc.addImage(euFlag, 'JPG', 208, 290, 12, 8);
+      doc.addImage(euFlag, 'JPG', 208, 310, 12, 8);
+      let list = PIMD.filter((value)=> value !== "-")
 
-      if (actualCountry !== 'All') {
+      if (actualCountry !== 'All') 
+        list = listPIMD.filter((value)=> value !== "-")
         doc.text(
-          `Studies contributing genomes representing infections originating from ${actualCountry} have the following PubMed IDs (PMIDs): ${listPIMD.join(
+          `Studies contributing genomes representing infections originating from ${actualCountry} have the following PubMed IDs (PMIDs) or Digital Object Identifier (DOI): ${list.join(
             ', '
           )}.`,
           16,
-          317,
-          { align: 'justify', maxWidth: pageWidth - 36 }
+          337,
+          { align: 'left', maxWidth: pageWidth - 36 }
         );
-      }
+      
 
       drawFooter({ document: doc, pageHeight, pageWidth, date });
 
@@ -242,11 +251,15 @@ export const DownloadData = () => {
       drawFooter({ document: doc, pageHeight, pageWidth, date });
 
       doc.setFontSize(16).setFont(undefined, 'bold');
-      doc.text(`Global Overview of ${globalOverviewLabel.fullLabel}`, pageWidth / 2, 24, { align: 'center' });
+      doc.text("Global Overview of", 177, 24, { align: 'center' });
+      doc.setFont(undefined, "bolditalic");
+      doc.text("Salmonella", 264, 24, { align: 'center' });
+      doc.setFont(undefined, "bold");
+      doc.text("Typhi", 315, 24, { align: 'center' });
       doc.setFontSize(12).setFont(undefined, 'normal');
       doc.text(`Total: ${actualGenomes} genomes`, pageWidth / 2, 40, { align: 'center' });
       doc.text(`Country: ${actualCountry}`, pageWidth / 2, 52, { align: 'center' });
-      doc.text(`Time Period: ${actualTimeInitial} to ${actualTimeFinal}`, pageWidth / 2, 64, { align: 'center' });
+      doc.text(`Time period: ${actualTimeInitial} to ${actualTimeFinal}`, pageWidth / 2, 64, { align: 'center' });
       doc.line(16, 76, pageWidth - 16, 76);
 
       doc.setFont(undefined, 'bold');
@@ -256,7 +269,7 @@ export const DownloadData = () => {
       doc.text(`Map View: ${actualMapView}`, 16, 108);
       doc.text(`Dataset: ${dataset}${dataset === 'All' ? ' (local + travel)' : ''}`, 16, 120);
 
-      // doc.setFontSize(10);
+      doc.setFontSize(8);
       if(mapView === 'Genotype prevalence'){
         if (customDropdownMapView.length === 1) {
             doc.text('Selected Genotypes: ' + customDropdownMapView, 16, 140);
@@ -265,7 +278,7 @@ export const DownloadData = () => {
             doc.text('Selected Genotypes: \n' + genotypesText, 16, 140);
         }
       }
-      let mapY = 160 + (customDropdownMapView.length*9);
+      // let mapY = 160 + (customDropdownMapView.length*9);
       await svgAsPngUri(document.getElementById('global-overview-map'), {
         scale: 4,
         backgroundColor: 'white',
@@ -285,7 +298,8 @@ export const DownloadData = () => {
         ctx.drawImage(mapImg, 0, 0, canvas.width, canvas.height);
 
         const img = canvas.toDataURL('image/png');
-        doc.addImage(img, 'PNG', 0, mapY, pageWidth, 223);
+        doc.addImage(img, 'PNG', 0, 160, pageWidth, 223);
+        // doc.addImage(img, 'PNG', 0, mapY, pageWidth, 223);
       });
 
       const mapLegend = new Image();
@@ -336,7 +350,7 @@ export const DownloadData = () => {
         doc.setFontSize(12);
         doc.text(`Total: ${actualGenomes} genomes`, 16, 54);
         doc.text(`Country: ${actualCountry}`, 16, 66);
-        doc.text(`Time Period: ${actualTimeInitial} to ${actualTimeFinal}`, 16, 78);
+        doc.text(`Time period: ${actualTimeInitial} to ${actualTimeFinal}`, 16, 78);
         doc.text(`Dataset: ${dataset}${dataset === 'All' ? ' (local + travel)' : ''}`, 16, 90);
 
         const graphImg = document.createElement('img');
@@ -346,7 +360,7 @@ export const DownloadData = () => {
         if (graphImg.width <= 741) {
           doc.addImage(graphImg, 'PNG', 16, 110);
         } else {
-          doc.addImage(graphImg, 'PNG', 16, 110, pageWidth - 32, 271);
+          doc.addImage(graphImg, 'PNG', 16, 110, pageWidth - 80, 271);
         }
 
         doc.setFillColor(255, 255, 255);
@@ -414,7 +428,7 @@ export const DownloadData = () => {
         startIcon={<TableChart />}
         loadingPosition="start"
       >
-        Download database (CSV format, 7.2MB)
+        Download database (CSV format, 3.5MB)
       </LoadingButton>
       <LoadingButton
         className={classes.button}
