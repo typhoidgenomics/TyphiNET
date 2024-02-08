@@ -24,7 +24,7 @@ export const SelectCountry = () => {
             actualTimeInitial || 'year'
           } to ${actualTimeFinal || 'year'}`}
         </Typography>
-        <Typography className={classes.selectLabel} variant="subtitle1" fontWeight={500}>
+        {/* <Typography className={classes.selectLabel} variant="subtitle1" fontWeight={500}>
           Select country (or click map)
         </Typography>
         <Select
@@ -42,7 +42,7 @@ export const SelectCountry = () => {
               </MenuItem>
             );
           })}
-        </Select>
+        </Select> */}
       </CardContent>
     </Card>
   );

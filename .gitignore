@@ -3,6 +3,9 @@ node_modules/
 /.pnp
 .pnp.js
 client/build/
+client/node_modules/
+client/yarn.lock
+client/package-lock.json
 .DS_Store
 .env.local
 .env.development.local

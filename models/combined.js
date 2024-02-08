@@ -155,6 +155,9 @@ const CombinedSchema = mongoose.Schema({
   cip_pred_pheno: {
     type: String
   },
+  CefR: {
+    type: String
+  },
   CipNS: {
     type: String
   },

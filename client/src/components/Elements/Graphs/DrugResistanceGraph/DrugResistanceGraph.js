@@ -145,7 +145,10 @@ export const DrugResistanceGraph = () => {
                         const { dataKey, color } = entry;
                         return (
                           <div key={`drug-resistance-legend-${index}`} className={classes.legendItemWrapper}>
-                            <Box className={classes.colorCircle} style={{ backgroundColor: color }} />
+                            <Box
+                            className={classes.colorCircle}
+                            style={{ backgroundColor: color }}
+                            />
                             <Typography variant="caption">{dataKey}</Typography>
                           </div>
                         );
@@ -229,7 +232,7 @@ export const DrugResistanceGraph = () => {
     <CardContent className={classes.drugResistanceGraph}>
       <div className={classes.selectWrapper}>
         <div className={classes.labelWrapper}>
-          <Typography variant="caption">Drugs view</Typography>
+          <Typography variant="caption">Select drugs/classes to display</Typography>
           <Tooltip
             title="The resistance frequencies are only shown for years with N≥10 genomes. When the data is insufficent per year to calculate annual frequencies, there are no data points to show."
             placement="top"

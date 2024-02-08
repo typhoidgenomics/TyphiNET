@@ -2,13 +2,13 @@
 
 # TyphiNET web dashboard
 
-![Code Count](https://img.shields.io/github/languages/count/typhoidgenomics/TyphiNET/
-![Main Code Base](https://img.shields.io/github/languages/top/typhoidgenomics/TyphiNET/)
+![Code Count](https://img.shields.io/github/languages/count/typhoidgenomics/TyphiNET)
+![Main Code Base](https://img.shields.io/github/languages/top/typhoidgenomics/TyphiNET)
 ![Version](https://img.shields.io/badge/version-1.2-red)
 ![License](https://img.shields.io/badge/license-GPLv3-blue)
-![Last Commit](https://img.shields.io/github/last-commit/typhoidgenomics/TyphiNET/)
-![Open Issues](https://img.shields.io/github/issues-raw/typhoidgenomics/TyphiNET/)
-![Repo Size](https://img.shields.io/github/repo-size/typhoidgenomics/TyphiNET/)
+![Last Commit](https://img.shields.io/github/last-commit/typhoidgenomics/TyphiNET)
+![Open Issues](https://img.shields.io/github/issues-raw/typhoidgenomics/TyphiNET)
+![Repo Size](https://img.shields.io/github/repo-size/typhoidgenomics/TyphiNET)
 
 ## Table of Contents
 
@@ -18,11 +18,11 @@
 
 ## Description
 
-TyphiNET is a dashboard for visualising global _Salmonella_ Typhi genotype and antimicrobial resistance data. Our interface allows you to search for specific data on individual countries and over specific time periods. Data are regularly updated (last updated/curation on September 12th, 2023) from [Pathogenwatch](https://pathogen.watch/).
+TyphiNET is a dashboard for visualising global _Salmonella_ Typhi genotype and antimicrobial resistance data. Our interface allows you to search for specific data on individual countries and over specific time periods. Data are regularly updated (last updated/curation on January 24th, 2024) from [Pathogenwatch](https://pathogen.watch/).
 
-TyphiNET is available at: http://typhi.net
+TyphiNET is available at: https://www.typhi.net
 
-## Installation (for software development purposes only, please visit http://typhi.net for all other purposes)
+## Installation (for software development purposes only, please visit https://www.typhi.net for all other purposes)
 
 #### 1. Install <a href="https://git-scm.com/">GIT</a>, <a href="https://www.npmjs.com/get-npm">NPM</a> and <a href="https://www.mongodb.com/try/download/community?tck=docs_server">MongoDB</a>
 
