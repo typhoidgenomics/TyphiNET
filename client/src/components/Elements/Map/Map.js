@@ -161,6 +161,7 @@ export const Map = () => {
             of <i>{globalOverviewLabel.italicLabel}</i> {globalOverviewLabel.label}
           </span>
         </Typography>
+        <Typography variant="caption">Click on a country to view details in the plots below</Typography>
         <div className={classes.mapWrapper}>
           <ComposableMap
             className={classes.composableMap}
