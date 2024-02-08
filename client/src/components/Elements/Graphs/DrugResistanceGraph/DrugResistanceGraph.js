@@ -209,7 +209,7 @@ export const DrugResistanceGraph = () => {
                 }}
               />
 
-              {drugsForDrugResistanceGraph.map((option, index) => (
+              {drugResistanceGraphView.map((option, index) => (
                 <Line
                   key={`drug-resistance-bar-${index}`}
                   dataKey={option}
