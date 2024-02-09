@@ -20,7 +20,7 @@ import domtoimage from 'dom-to-image';
 import { drugs, drugsForDrugResistanceGraph } from '../../../util/drugs';
 import { getColorForDrug } from '../Graphs/graphColorHelper';
 import { colorForDrugClasses, getColorForGenotype } from '../../../util/colorHelper';
-import { getSalmonellaTexts } from '../../../util/reportInfoTexts';
+import { getSalmonellaTexts, abbrivations } from '../../../util/reportInfoTexts';
 
 const columnsToRemove = [
   'azith_pred_pheno',
@@ -156,10 +156,18 @@ export const DownloadData = () => {
     return moment(date).format('ddd MMM DD YYYY HH:mm');
   }
 
-  function drawFooter({ document, pageHeight, pageWidth, date }) {
+  function drawFooter({ document, pageHeight, pageWidth, date, page1=false }) {
+    const ab = abbrivations();
     document.setFontSize(10);
-    document.line(0, pageHeight - 26, pageWidth, pageHeight - 24);
-    document.text(`Source: typhi.net [${date}]`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+    if(page1){
+      document.line(0, pageHeight - 80, pageWidth, pageHeight - 80);
+      document.text(ab[0], 20, pageHeight -70, { align: 'left', maxWidth: pageWidth - 36  });
+      document.text(ab[1], 20, pageHeight -60, { align: 'left', maxWidth: pageWidth - 36  });
+      document.text(ab[2], 20, pageHeight -50, { align: 'left' , maxWidth: pageWidth - 36 });
+      document.text(ab[3], 20, pageHeight -30, { align: 'left' , maxWidth: pageWidth - 36 });
+    }else
+      document.line(0, pageHeight - 26, pageWidth, pageHeight - 26);
+      document.text(`Source: typhi.net [${date}]`, pageWidth / 2, pageHeight - 10, { align: 'center' });
   }
 
   function drawLegend({ id = null, legendData, document, factor, rectY, isGenotype = false, isDrug = false, xSpace }) {
@@ -245,7 +253,7 @@ export const DownloadData = () => {
         );
       
 
-      drawFooter({ document: doc, pageHeight, pageWidth, date });
+      drawFooter({ document: doc, pageHeight, pageWidth, date, page1: true });
 
       // Map
       doc.addPage();

@@ -10,3 +10,13 @@ export function getSalmonellaTexts(date = new Date().toLocaleDateString()) {
     'This project has received funding from the Wellcome Trust (Open Research Fund, 219692/Z/19/Z and AMRnet project, 226432/Z/22/Z) and the  European Union Horizon 2020 research and innovation programme under the Marie Sklodowska-Curie grant agreement No 845681.',
   ]
   }
+
+  export function abbrivations() {
+  return [
+    `* MDR, multi-drug resistant (resistant to ampicillin, chloramphenicol, and trimethoprim-sulfamethoxazole)`,
+    `* XDR, is extensively drug resistant (MDR plus resistant to ciprofloxacin and ceftriaxone)`,
+    `* Ciprofloxacin NS, ciprofloxacin non-susceptible (MIC >=0.06 mg/L, due to presence of one or more qnr genes or mutations in gyrA/parC/gyrB)`,
+    `* Ciprofloxacin R, ciprofloxacin resistant (MIC >=0.5 mg/L, due to presence of multiple mutations and/or genes, see Carey et al, 2023 https://doi.org/10.7554/eLife.85867)`,
+  ]
+}
+
