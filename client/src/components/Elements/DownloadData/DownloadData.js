@@ -218,19 +218,19 @@ export const DownloadData = () => {
 
       // Info
       doc.text(texts[0], 16, 85, { align: 'justify', maxWidth: pageWidth - 36 });
-      doc.text(texts[1], 16, 125, { align: 'justify', maxWidth: pageWidth - 36 });
-      doc.text(texts[2], 16, 153, {
+      doc.text(texts[1], 16, 135, { align: 'justify', maxWidth: pageWidth - 36 });
+      doc.text(texts[2], 16, 165, {
         align: 'justify',
         maxWidth: pageWidth - 36
       });
-      doc.text(texts[3], 16, 179, { align: 'justify', maxWidth: pageWidth - 36 });
-      doc.text(texts[4], 16, 207, { align: 'left', maxWidth: pageWidth - 36 });
-      doc.text(texts[5], 16, 245, { align: 'justify', maxWidth: pageWidth - 36 });
-      doc.text(texts[6], 16, 297, { align: 'justify', maxWidth: pageWidth - 36 });
+      doc.text(texts[3], 16, 195, { align: 'justify', maxWidth: pageWidth - 36 });
+      doc.text(texts[4], 16, 225, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.text(texts[5], 16, 255, { align: 'justify', maxWidth: pageWidth - 36 });
+      doc.text(texts[6], 16, 305, { align: 'justify', maxWidth: pageWidth - 36 });
 
       const euFlag = new Image();
       euFlag.src = EUFlagImg;
-      doc.addImage(euFlag, 'JPG', 208, 310, 12, 8);
+      doc.addImage(euFlag, 'JPG',320, 319, 12, 7);
       let list = PIMD.filter((value)=> value !== "-")
 
       if (actualCountry !== 'All') 
@@ -240,7 +240,7 @@ export const DownloadData = () => {
             ', '
           )}.`,
           16,
-          337,
+          345,
           { align: 'left', maxWidth: pageWidth - 36 }
         );
       
