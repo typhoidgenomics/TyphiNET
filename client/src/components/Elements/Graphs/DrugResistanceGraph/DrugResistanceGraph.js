@@ -111,8 +111,9 @@ export const DrugResistanceGraph = () => {
       const lines = doc.getElementsByClassName('recharts-line');
 
       for (let index = 0; index < lines.length; index++) {
-        const hasValue = drugResistanceGraphView.some((value) => drugsForDrugResistanceGraph.indexOf(value) === index);
-        lines[index].style.display = hasValue ? 'block' : 'none';
+          const drug = drugResistanceGraphView[index];
+          const hasValue = drugsForDrugResistanceGraph.includes(drug);
+          lines[index].style.display = hasValue ? 'block' : 'none';
       }
 
       setPlotChart(() => {
