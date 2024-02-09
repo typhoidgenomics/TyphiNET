@@ -50,6 +50,7 @@ export const getColorForDrug = (drug) => {
       return 'rgb(251,207,229)';
 
     case 'Trimethoprim':
+    case 'Amoxicillin':
       return 'rgb(102,102,255)';
 
     case 'Penicillins + β-lactamase inhibitors':
