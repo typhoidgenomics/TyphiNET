@@ -20,7 +20,7 @@ export const BottomRightControls = () => {
   const dataset = useAppSelector((state) => state.map.dataset);
   const actualTimeInitial = useAppSelector((state) => state.dashboard.actualTimeInitial);
   const actualTimeFinal = useAppSelector((state) => state.dashboard.actualTimeFinal);
-  const globalOverviewLabel = useAppSelector((state) => state.dashboard.globalOverviewLabel);
+  // const globalOverviewLabel = useAppSelector((state) => state.dashboard.globalOverviewLabel);
   const customDropdownMapView = useAppSelector((state) => state.graph.customDropdownMapView);
 
   async function handleClick() {

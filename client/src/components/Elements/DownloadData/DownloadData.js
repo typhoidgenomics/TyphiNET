@@ -82,7 +82,7 @@ export const DownloadData = () => {
   const actualCountry = useAppSelector((state) => state.dashboard.actualCountry);
   const listPIMD = useAppSelector((state) => state.dashboard.listPMID);
   const PIMD = useAppSelector((state) => state.dashboard.PMID);
-  const globalOverviewLabel = useAppSelector((state) => state.dashboard.globalOverviewLabel);
+  // const globalOverviewLabel = useAppSelector((state) => state.dashboard.globalOverviewLabel);
   const actualGenomes = useAppSelector((state) => state.dashboard.actualGenomes);
   const actualTimeInitial = useAppSelector((state) => state.dashboard.actualTimeInitial);
   const actualTimeFinal = useAppSelector((state) => state.dashboard.actualTimeFinal);
@@ -144,7 +144,7 @@ export const DownloadData = () => {
           newCSV += aux;
         }
 
-        download(newCSV, 'TyphiNET Database.csv');
+        download(newCSV, 'TyphiNET-database.csv');
       })
       .finally(() => {
         setLoadingCSV(false);
@@ -406,7 +406,7 @@ export const DownloadData = () => {
         }
       }
 
-      doc.save('TyphiNET - Report.pdf');
+      doc.save('TyphiNET-report.pdf');
     } catch (error) {
       setShowAlert(true);
     } finally {

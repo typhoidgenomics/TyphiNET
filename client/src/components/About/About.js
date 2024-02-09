@@ -20,15 +20,15 @@ export const About = () => {
 
         <div className={classes.paragraph}>
           AMR determinants identified in the genome assemblies using Pathogenwatch are used to define drug resistance
-          variables as follows.Multidrug resistant (MDR): resistance determinants for chloramphenicol (<i>catA1</i> or{' '}
-          <i>cmlA</i>), ampicillin (<i>bla</i>genes), and trimethoprim-sulfamethoxazole (at least one <i>dfrA</i>{' '}
+          variables as follows. Multidrug resistant (MDR): resistance determinants for chloramphenicol (<i>catA1</i> or{' '}
+          <i>cmlA</i>), ampicillin (<i>bla</i> genes), and trimethoprim-sulfamethoxazole (at least one <i>dfrA</i>{' '}
           gene and at least one <i>sul</i> gene). Ciprofloxacin non-susceptible (CipNS): one or more of the quinolone
-          resistance determining region(QRDR) mutations at <i>gyrA</i>-83, <i>gyrA</i>
+          resistance determining region (QRDR) mutations at <i>gyrA</i>-83, <i>gyrA</i>
           -87, <i>parC</i>-80, <i>parC</i>-84, <i>gyrB</i>-464 or presence of a plasmid-mediated quinolone
-          resistance(PMQR) gene(<i>qnrB</i>, <i>qnrD</i>, <i>qnrS</i>). Ciprofloxacin resistant (CipR): QRDR triple
+          resistance (PMQR) gene (<i>qnrB</i>, <i>qnrD</i>, <i>qnrS</i>). Ciprofloxacin resistant (CipR): QRDR triple
           mutant (<i>gyrA</i>-83 and <i>gyrA</i>-87, together with either <i>parC</i>-80 or <i>parC</i>-84), or (PMQR gene)
           together with <i>gyrA</i>-83, <i>gyrA</i>-87 and/or <i>gyrB</i>-464. Ceftriaxone resistant: presence of an extended
-           - spectrum beta-lactamase(ESBL) gene. Extensively drug resistant(XDR): MDR plus CipR plus ESBL. Azithromycin
+           - spectrum beta-lactamase (ESBL) gene. Extensively drug resistant (XDR): MDR plus CipR plus ESBL. Azithromycin
           resistant: mutation at <i>acrB</i>-717. See{' '} 
           <a href="https://www.nature.com/articles/s41467-021-23091-2" target="_blank" rel="noreferrer">
             Argimon et al, 2021
@@ -66,7 +66,7 @@ export const About = () => {
             <b>Documentation:</b> Full documentation for the dashboard is available{' '}
             <a href="https://github.com/typhoidgenomics/TyphiNET/wiki" target="_blank" rel="noreferrer">
               here
-            </a> .
+            </a>.
           </p>
         </div>
         <div className={classes.paragraph}>
@@ -83,11 +83,11 @@ export const About = () => {
           </a>
           , with support from the Wellcome Trust (Open Research Fund 219692/Z/19/Z; AMRnet project 226432/Z/22/Z), the European Union's Horizon 2020
           research and innovation programme under the Marie Sklodowska-Curie grant agreement No 845681
-          <img className="euFlagImage" src={euFlagImg} alt="EU_FLAG" height="20" /> , the{' '}
+          <img className="euFlagImage" src={euFlagImg} alt="EU_FLAG" height="20" /> the{' '}
           <a href="https://www.lshtm.ac.uk/" target="_blank" rel="noreferrer">
             London School of Hygiene & Tropical Medicine
           </a>{' '}
-          , and{' '}
+          and{' '}
           <a href="https://www.monash.edu/" target="_blank" rel="noreferrer">
             Monash University
           </a>

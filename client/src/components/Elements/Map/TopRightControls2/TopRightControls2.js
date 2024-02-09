@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Button, Card, CardContent, Checkbox, ListItemText, MenuItem, Select, Tooltip, Typography, InputAdornment, FormControl, ListSubheader, Autocomplete} from '@mui/material';
-import SearchIcon from "@mui/icons-material/Search";
+import { Card, CardContent, Checkbox, ListItemText, MenuItem, Tooltip, Typography, FormControl, Autocomplete} from '@mui/material';
+// Select, ListSubheader, InputAdornment,  and Button were removed from statement above
+// import SearchIcon from "@mui/icons-material/Search";
 import { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../../stores/hooks';
 import { setCustomDropdownMapView } from '../../../../stores/slices/graphSlice';
@@ -11,10 +12,11 @@ import { InfoOutlined } from '@mui/icons-material';
 
 export const TopRightControls2 = () => {
   const classes = useStyles();
-  const [, setCurrentTooltip] = useState(null);
-  const [searchValue2, setSearchValue2] = useState("");
+  // const [, setCurrentTooltip] = useState(null);
+  const [searchValue2] = useState("");
+  // setSearchValue2 was removed from statement above
   const dispatch = useAppDispatch();
-  const organism = useAppSelector((state) => state.dashboard.organism);
+  // const organism = useAppSelector((state) => state.dashboard.organism);
   const genotypesDrugsData2 = useAppSelector((state) => state.graph.genotypesDrugsData2);
   const genotypesDrugsData = useAppSelector((state) => state.graph.genotypesDrugsData);
   const customDropdownMapView = useAppSelector((state) => state.graph.customDropdownMapView);

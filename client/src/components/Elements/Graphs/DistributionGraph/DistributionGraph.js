@@ -122,6 +122,7 @@ export const DistributionGraph = () => {
 
               <ChartTooltip
                 position={{ x: matches500 ? 0 : 60, y: matches500 ? 310 : 410 }}
+                // eslint-disable-next-line eqeqeq
                 cursor={genotypesYearData!=0?{ fill: hoverColor }:false}
                 wrapperStyle={{ outline: 'none', zIndex: 1 }}
                 content={({ payload, active, label }) => {
