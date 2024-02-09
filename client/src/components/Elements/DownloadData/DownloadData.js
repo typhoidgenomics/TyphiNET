@@ -91,6 +91,7 @@ export const DownloadData = () => {
   const determinantsGraphDrugClass = useAppSelector((state) => state.graph.determinantsGraphDrugClass);
   const genotypesForFilter = useAppSelector((state) => state.dashboard.genotypesForFilter);
   const customDropdownMapView = useAppSelector((state) => state.graph.customDropdownMapView);
+  const drugResistanceGraphView = useAppSelector((state) => state.graph.drugResistanceGraphView);
 
   async function handleClickDownloadDatabase() {
     setLoadingCSV(true);
@@ -380,7 +381,7 @@ export const DownloadData = () => {
         }else if (graphCards[index].id === 'DRT') {
           drawLegend({
             document: doc,
-            legendData: drugsForDrugResistanceGraph,
+            legendData: drugResistanceGraphView,
             factor: 4,
             rectY,
             xSpace: 100,
