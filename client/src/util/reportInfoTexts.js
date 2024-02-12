@@ -7,7 +7,7 @@ export function getSalmonellaTexts(date = new Date().toLocaleDateString()) {
     'Antimicrobial resistance determinants are described in the Typhi Pathogenwatch paper, Argimón et al. 2021, Nat. Commun., please see: (https://doi.org/10.1038/s41467-021-23091-2).',
     'Travel-associated cases are attributed to the country of travel, not the country of isolation, Ingle et al. 2019, PLoS NTDs., please see: (https://doi.org/10.1371/journal.pntd.0007620).',
     'TyphiNET presents data aggregated from >100 studies. Individual genome information, including derived genotype and AMR calls, sequence data accession numbers, and source information (PubMedID for citation) can be downloaded as a spreadsheet from the TyphiNET website (https://typhi.net).',
-    'This project has received funding from the Wellcome Trust (Open Research Fund, 219692/Z/19/Z and AMRnet project, 226432/Z/22/Z) and the  European Union Horizon 2020 research and innovation programme under the Marie Sklodowska-Curie grant agreement No 845681.',
+    'This project has received funding from the Wellcome Trust (Open Research Fund, 219692/Z/19/Z and AMRnet project, 226432/Z/22/Z) and the  European Union Horizon 2020 research and innovation programme under the Marie Sklodowska-Curie grant agreement No 845681',
   ]
   }
 
