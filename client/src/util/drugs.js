@@ -1,6 +1,6 @@
 // List of Salmonella drugs
 export const drugs = [
-  'Ampicillin',
+  'Ampicillin/Amoxicillin',
   'Azithromycin',
   'Chloramphenicol',
   // 'Co-trimoxazole',
@@ -32,7 +32,7 @@ export const defaultDrugsForDrugResistanceGraph = [
 
 // List of Salmonella drug classes
 export const drugClasses = [
-  'Ampicillin',
+  'Ampicillin/Amoxicillin',
   'Azithromycin',
   'Chloramphenicol',
   // 'Co-trimoxazole',
