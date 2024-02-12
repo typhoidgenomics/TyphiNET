@@ -198,8 +198,6 @@ export const DownloadData = () => {
     dispatch(setPosition({ coordinates: [0, 0], zoom: 1 }));
 
     try {
-      if(genotypesForFilter.length<=0)
-        return console.log("No data available to generate report");
       const doc = new jsPDF({ unit: 'px', format: 'a4' });
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageHeight = doc.internal.pageSize.getHeight();
@@ -345,9 +343,11 @@ export const DownloadData = () => {
       const genotypesFactor = Math.ceil(genotypesForFilter.length / 6);
 
       for (let index = 0; index < graphCards.length; index++) {
-        doc.addPage();
-        drawFooter({ document: doc, pageHeight, pageWidth, date });
-
+        if (graphCards[index].id === 'DRT' && drugResistanceGraphView.length === 0 ){
+            continue;
+        }
+          doc.addPage();
+          drawFooter({ document: doc, pageHeight, pageWidth, date });
         const title = `${graphCards[index].title}${
           graphCards[index].id === 'RDWG' ? `: ${determinantsGraphDrugClass}` : ''
         }`;
