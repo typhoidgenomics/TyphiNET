@@ -147,13 +147,13 @@ export const DrugResistanceGraph = () => {
                                   let dataKeyElement;
                                   if (dataKey === "XDR") {
                                       dataKeyElement = (
-                                        <Tooltip title="Extensively drug resistant(XDR): MDR plus CipR plus ESBL. Azithromycin resistant: mutation at acrB-717" placement="top">
+                                        <Tooltip title="Extensively drug resistant(XDR): MDR plus CipR plus ESBL." placement="top">
                                           <span>XDR</span>
                                           </Tooltip>
                                       );
                                   } else if(dataKey === "MDR"){
                                       dataKeyElement = (
-                                        <Tooltip title="Multidrug resistant (MDR): resistance determinants for chloramphenicol (catA1 or cmlA), ampicillin (blagenes), and trimethoprim-sulfamethoxazole (at least one dfrA gene and at least one sul gene)" placement="top">
+                                        <Tooltip title="Multidrug resistant (MDR): resistance determinants for chloramphenicol (catA1 or cmlA), ampicillin (bla genes), and trimethoprim-sulfamethoxazole (at least one dfrA gene and at least one sul gene)" placement="top">
                                           <span>MDR</span>
                                           </Tooltip>
                                       );
