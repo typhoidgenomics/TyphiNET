@@ -46,6 +46,7 @@ export const Graphs = () => {
   const determinantsGraphDrugClass = useAppSelector((state) => state.graph.determinantsGraphDrugClass);
   const globalOverviewLabel = useAppSelector((state) => state.dashboard.globalOverviewLabel);
   const genotypesForFilter = useAppSelector((state) => state.dashboard.genotypesForFilter);
+  const drugResistanceGraphView = useAppSelector((state) => state.graph.drugResistanceGraphView);
 
   function drawLegend({
     legendData,
@@ -147,7 +148,7 @@ export const Graphs = () => {
         ctx.fillRect(0, 660 - mobileFactor, canvas.width, canvas.height);
 
         drawLegend({
-          legendData: ((['RFWG'].includes(card.id))? drugs: drugsForDrugResistanceGraph),
+          legendData: ((['RFWG'].includes(card.id))? drugs: drugResistanceGraphView),
           context: ctx,
           factor: 4,
           mobileFactor,

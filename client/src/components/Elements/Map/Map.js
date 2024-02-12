@@ -25,6 +25,7 @@ const statKey = {
   AzithR: 'AzithR',
   CipNS: 'CipNS',
   CipR: 'CipR',
+  ESBL_category: 'ESBL',
   // Sensitive to all drugs': 'Susceptible'
   'Susceptible to all drugs': 'Susceptible'
 };
@@ -93,6 +94,7 @@ export const Map = () => {
         case 'XDR':
         case 'AzithR':
         case 'CipR':
+        case 'ESBL_category':
           if (showTooltip) {
             tooltip.content[statKey[mapView]] = {
               count: countryStats[statKey[mapView]].count,
@@ -234,7 +236,7 @@ export const Map = () => {
                           }
 
                           break;
-
+                        case 'ESBL_category':
                         case 'Susceptible to all drugs': // case 'Sensitive to all drugs':
                         case 'H58 / Non-H58':
                         case 'MDR':

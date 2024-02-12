@@ -111,8 +111,9 @@ export const DrugResistanceGraph = () => {
       const lines = doc.getElementsByClassName('recharts-line');
 
       for (let index = 0; index < lines.length; index++) {
-        const hasValue = drugResistanceGraphView.some((value) => drugsForDrugResistanceGraph.indexOf(value) === index);
-        lines[index].style.display = hasValue ? 'block' : 'none';
+          const drug = drugResistanceGraphView[index];
+          const hasValue = drugsForDrugResistanceGraph.includes(drug);
+          lines[index].style.display = hasValue ? 'block' : 'none';
       }
 
       setPlotChart(() => {
@@ -137,26 +138,44 @@ export const DrugResistanceGraph = () => {
               {drugsYearData.length > 0 && <Brush dataKey="name" height={20} stroke={'rgb(31, 187, 211)'} />}
 
               <Legend
-                content={(props) => {
-                  const { payload } = props;
-                  return (
-                    <div className={classes.legendWrapper}>
-                      {payload.map((entry, index) => {
-                        const { dataKey, color } = entry;
-                        return (
-                          <div key={`drug-resistance-legend-${index}`} className={classes.legendItemWrapper}>
-                            <Box
-                            className={classes.colorCircle}
-                            style={{ backgroundColor: color }}
-                            />
-                            <Typography variant="caption">{dataKey}</Typography>
+                  content={(props) => {
+                      const { payload } = props;
+                      return (
+                          <div className={classes.legendWrapper}>
+                              {payload.map((entry, index) => {
+                                  const { dataKey, color } = entry;
+                                  let dataKeyElement;
+                                  if (dataKey === "XDR") {
+                                      dataKeyElement = (
+                                        <Tooltip title="Extensively drug resistant(XDR): MDR plus CipR plus ESBL. Azithromycin resistant: mutation at acrB-717" placement="top">
+                                          <span>XDR</span>
+                                          </Tooltip>
+                                      );
+                                  } else if(dataKey === "MDR"){
+                                      dataKeyElement = (
+                                        <Tooltip title="Multidrug resistant (MDR): resistance determinants for chloramphenicol (catA1 or cmlA), ampicillin (blagenes), and trimethoprim-sulfamethoxazole (at least one dfrA gene and at least one sul gene)" placement="top">
+                                          <span>MDR</span>
+                                          </Tooltip>
+                                      );
+                                  }else{
+                                      dataKeyElement = dataKey;
+                                  }
+                                  return (
+                                      <div key={`drug-resistance-legend-${index}`} className={classes.legendItemWrapper}>
+                                          <Box
+                                              className={classes.colorCircle}
+                                              style={{ backgroundColor: color }}
+                                          />
+                                          <Typography variant="caption">{dataKeyElement}</Typography>
+                                      </div>
+                                  );
+                              })}
                           </div>
-                        );
-                      })}
-                    </div>
-                  );
-                }}
+                      );
+                  }}
               />
+
+
 
               <ChartTooltip
                 position={{ x: matches500 ? 0 : 60, y: matches500 ? 310 : 410 }}
@@ -209,7 +228,7 @@ export const DrugResistanceGraph = () => {
                 }}
               />
 
-              {drugsForDrugResistanceGraph.map((option, index) => (
+              {drugResistanceGraphView.map((option, index) => (
                 <Line
                   key={`drug-resistance-bar-${index}`}
                   dataKey={option}

@@ -8,7 +8,15 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'flex-end',
     height: '100%',
     maxWidth: '920px',
-    width: '-webkit-fill-available'
+    width: '100%', // Default width
+    '@supports (-webkit-appearance:none)': {
+      // Safari and Chrome
+      width: '100%',
+    },
+    '@supports (-moz-appearance:none)': {
+      // Firefox
+      width: '100%',
+    },
   },
   selectWrapper: {
     display: 'flex',

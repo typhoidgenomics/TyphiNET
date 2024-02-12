@@ -20,7 +20,7 @@ import domtoimage from 'dom-to-image';
 import { drugs, drugsForDrugResistanceGraph } from '../../../util/drugs';
 import { getColorForDrug } from '../Graphs/graphColorHelper';
 import { colorForDrugClasses, getColorForGenotype } from '../../../util/colorHelper';
-import { getSalmonellaTexts } from '../../../util/reportInfoTexts';
+import { getSalmonellaTexts, abbrivations } from '../../../util/reportInfoTexts';
 
 const columnsToRemove = [
   'azith_pred_pheno',
@@ -91,6 +91,7 @@ export const DownloadData = () => {
   const determinantsGraphDrugClass = useAppSelector((state) => state.graph.determinantsGraphDrugClass);
   const genotypesForFilter = useAppSelector((state) => state.dashboard.genotypesForFilter);
   const customDropdownMapView = useAppSelector((state) => state.graph.customDropdownMapView);
+  const drugResistanceGraphView = useAppSelector((state) => state.graph.drugResistanceGraphView);
 
   async function handleClickDownloadDatabase() {
     setLoadingCSV(true);
@@ -155,10 +156,18 @@ export const DownloadData = () => {
     return moment(date).format('ddd MMM DD YYYY HH:mm');
   }
 
-  function drawFooter({ document, pageHeight, pageWidth, date }) {
+  function drawFooter({ document, pageHeight, pageWidth, date, page1=false }) {
+    const ab = abbrivations();
     document.setFontSize(10);
-    document.line(0, pageHeight - 26, pageWidth, pageHeight - 24);
-    document.text(`Source: typhi.net [${date}]`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+    if(page1){
+      document.line(0, pageHeight - 80, pageWidth, pageHeight - 80);
+      document.text(ab[0], 20, pageHeight -70, { align: 'left', maxWidth: pageWidth - 36  });
+      document.text(ab[1], 20, pageHeight -60, { align: 'left', maxWidth: pageWidth - 36  });
+      document.text(ab[2], 20, pageHeight -50, { align: 'left' , maxWidth: pageWidth - 36 });
+      document.text(ab[3], 20, pageHeight -30, { align: 'left' , maxWidth: pageWidth - 36 });
+    }else
+      document.line(0, pageHeight - 26, pageWidth, pageHeight - 26);
+      document.text(`Source: typhi.net [${date}]`, pageWidth / 2, pageHeight - 10, { align: 'center' });
   }
 
   function drawLegend({ id = null, legendData, document, factor, rectY, isGenotype = false, isDrug = false, xSpace }) {
@@ -217,19 +226,19 @@ export const DownloadData = () => {
 
       // Info
       doc.text(texts[0], 16, 85, { align: 'justify', maxWidth: pageWidth - 36 });
-      doc.text(texts[1], 16, 125, { align: 'justify', maxWidth: pageWidth - 36 });
-      doc.text(texts[2], 16, 153, {
+      doc.text(texts[1], 16, 135, { align: 'justify', maxWidth: pageWidth - 36 });
+      doc.text(texts[2], 16, 165, {
         align: 'justify',
         maxWidth: pageWidth - 36
       });
-      doc.text(texts[3], 16, 179, { align: 'justify', maxWidth: pageWidth - 36 });
-      doc.text(texts[4], 16, 207, { align: 'left', maxWidth: pageWidth - 36 });
-      doc.text(texts[5], 16, 245, { align: 'justify', maxWidth: pageWidth - 36 });
-      doc.text(texts[6], 16, 297, { align: 'justify', maxWidth: pageWidth - 36 });
+      doc.text(texts[3], 16, 195, { align: 'justify', maxWidth: pageWidth - 36 });
+      doc.text(texts[4], 16, 225, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.text(texts[5], 16, 255, { align: 'justify', maxWidth: pageWidth - 36 });
+      doc.text(texts[6], 16, 305, { align: 'justify', maxWidth: pageWidth - 36 });
 
       const euFlag = new Image();
       euFlag.src = EUFlagImg;
-      doc.addImage(euFlag, 'JPG', 208, 310, 12, 8);
+      doc.addImage(euFlag, 'JPG',320, 319, 12, 7);
       let list = PIMD.filter((value)=> value !== "-")
 
       if (actualCountry !== 'All') 
@@ -239,12 +248,12 @@ export const DownloadData = () => {
             ', '
           )}.`,
           16,
-          337,
+          345,
           { align: 'left', maxWidth: pageWidth - 36 }
         );
       
 
-      drawFooter({ document: doc, pageHeight, pageWidth, date });
+      drawFooter({ document: doc, pageHeight, pageWidth, date, page1: true });
 
       // Map
       doc.addPage();
@@ -380,7 +389,7 @@ export const DownloadData = () => {
         }else if (graphCards[index].id === 'DRT') {
           drawLegend({
             document: doc,
-            legendData: drugsForDrugResistanceGraph,
+            legendData: drugResistanceGraphView,
             factor: 4,
             rectY,
             xSpace: 100,
