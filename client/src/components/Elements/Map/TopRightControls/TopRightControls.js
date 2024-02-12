@@ -92,9 +92,25 @@ export const TopRightControls = () => {
             MenuProps={{ classes: { list: classes.selectMenu } }}
           >
             {mapLegends.map((legend, index) => {
+              let legendLabel;
+              if (legend.label === 'Extensively drug resistant (XDR)') {
+                  legendLabel = (
+                    <Tooltip title="Extensively drug resistant(XDR): MDR plus CipR plus ESBL. Azithromycin resistant: mutation at acrB-717" placement="top">
+                      <span>Extensively drug resistant (XDR)</span>
+                      </Tooltip>
+                  );
+              } else if(legend.label === 'Multidrug resistant (MDR)'){
+                  legendLabel = (
+                    <Tooltip title="Multidrug resistant (MDR): resistance determinants for chloramphenicol (catA1 or cmlA), ampicillin (blagenes), and trimethoprim-sulfamethoxazole (at least one dfrA gene and at least one sul gene)" placement="top">
+                      <span>Multidrug resistant (MDR)</span>
+                      </Tooltip>
+                  );
+              }else{
+                  legendLabel = legend.label;
+              }
               return (
                 <MenuItem key={index + 'mapview'} value={legend.value}>
-                  {legend.label}
+                  {legendLabel}
                 </MenuItem>
               );
             })}
