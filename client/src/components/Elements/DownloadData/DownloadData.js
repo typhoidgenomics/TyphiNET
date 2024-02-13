@@ -239,18 +239,26 @@ export const DownloadData = () => {
       doc.addImage(euFlag, 'JPG',320, 319, 12, 7);
       let list = PIMD.filter((value)=> value !== "-")
 
-      if (actualCountry !== 'All') 
-        list = listPIMD.filter((value)=> value !== "-")
+      if (actualCountry === 'All'){
         doc.text(
-          `Studies contributing genomes representing infections originating from ${actualCountry} have the following PubMed IDs (PMIDs) or Digital Object Identifier (DOI): ${list.join(
+          `Data are drawn from studies with the following PubMed IDs (PMIDs) or Digital Object Identifier (DOI): ${list.join(
             ', '
           )}.`,
           16,
           345,
           { align: 'left', maxWidth: pageWidth - 36 }
         );
-      
-
+      }else{
+        list = listPIMD.filter((value)=> value !== "-")
+        doc.text(
+          `Data for country ${actualCountry} are drawn from studies with the following PubMed IDs (PMIDs) or Digital Object Identifier (DOI): ${list.join(
+            ', '
+          )}.`,
+          16,
+          345,
+          { align: 'left', maxWidth: pageWidth - 36 }
+        );
+      }
       drawFooter({ document: doc, pageHeight, pageWidth, date, page1: true });
 
       // Map
