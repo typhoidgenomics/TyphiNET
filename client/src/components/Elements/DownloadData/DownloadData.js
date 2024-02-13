@@ -214,48 +214,10 @@ export const DownloadData = () => {
       doc.setFontSize(12).setFont(undefined, 'normal');
       doc.text(date, pageWidth / 2, 48, { align: 'center' });
 
-      const texts = getSalmonellaTexts(date);
-
-      // Info
-      doc.text(texts[0], 16, 85, { align: 'left', maxWidth: pageWidth - 36 });
-      doc.setFont(undefined, 'bold');
-      doc.text(texts[1], 16, 135, { align: 'left', maxWidth: pageWidth - 36 });
-      doc.setFont(undefined, 'normal');
-      doc.text(texts[2], 16, 155, { align: 'left', maxWidth: pageWidth - 36});
-      doc.text(texts[3], 16, 265, { align: 'left', maxWidth: pageWidth - 36 });
-      doc.setFont(undefined, 'bold');
-      doc.text(texts[4], 16, 305, { align: 'left', maxWidth: pageWidth - 36 });
-      doc.setFont(undefined, 'normal');
-      doc.text(texts[5], 16, 325, { align: 'left', maxWidth: pageWidth - 36 });
-      doc.text(texts[6], 16, 355, { align: 'left', maxWidth: pageWidth - 36 });
-      doc.text(texts[7], 16, 385, { align: 'left', maxWidth: pageWidth - 36 });
-      doc.setFont(undefined, 'bold');
-      doc.text(texts[8], 16, 415, { align: 'left', maxWidth: pageWidth - 36 });
-      doc.setFont(undefined, 'normal');
-      doc.text(texts[9], 16, 435, { align: 'left', maxWidth: pageWidth - 36 });
-      doc.text(texts[10], 16, 465, { align: 'left', maxWidth: pageWidth - 36 });
-      doc.text(texts[11], 16, 485, { align: 'left', maxWidth: pageWidth - 36 });
-      doc.setFont(undefined, "italic");
-      doc.text("qnr", 16, 495, { align: 'left', maxWidth: pageWidth - 36 });
-      doc.setFont(undefined, 'normal');
-      doc.text(texts[12], 32, 495, { align: 'left', maxWidth: pageWidth - 36 });
-      doc.setFont(undefined, "italic");
-      doc.text("gyrA/parC/gyrB", 122, 495, { align: 'left', maxWidth: pageWidth - 36 });
-      doc.setFont(undefined, 'normal');
-      doc.text(texts[13], 185, 495, { align: 'left', maxWidth: pageWidth - 36 });
-      doc.text(texts[14], 16, 515, { align: 'left', maxWidth: pageWidth - 36 });
-      doc.setFont(undefined, 'bold');
-      doc.text(texts[15], 16, 545, { align: 'left', maxWidth: pageWidth - 36 });
-      doc.setFont(undefined, 'normal');
-      doc.text(texts[16], 16, 565, { align: 'left', maxWidth: pageWidth - 36 });
-  
-
-      const euFlag = new Image();
-      euFlag.src = EUFlagImg;
-      doc.addImage(euFlag, 'JPG',320,579, 12, 7);
       let list = PIMD.filter((value)=> value !== "-")
-
+      let pmidSpace;
       if (actualCountry === 'All'){
+        pmidSpace = 0;
         doc.text(
           `TyphiNET presents data aggregated from >100 studies. Data are drawn from studies with the following PubMed IDs (PMIDs) or Digital Object Identifier (DOI): ${list.join(
             ', '
@@ -266,6 +228,7 @@ export const DownloadData = () => {
         );
       }else{
         list = listPIMD.filter((value)=> value !== "-")
+        pmidSpace = -30;
         doc.text(
           `TyphiNET presents data aggregated from >100 studies. Data for country ${actualCountry} are drawn from studies with the following PubMed IDs (PMIDs) or Digital Object Identifier (DOI): ${list.join(
             ', '
@@ -275,6 +238,47 @@ export const DownloadData = () => {
           { align: 'left', maxWidth: pageWidth - 36 }
         );
       }
+
+      const texts = getSalmonellaTexts(date);
+
+      // Info
+      doc.text(texts[0], 16, 85, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.setFont(undefined, 'bold');
+      doc.text(texts[1], 16, 135, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.setFont(undefined, 'normal');
+      doc.text(texts[2], 16, 155, { align: 'left', maxWidth: pageWidth - 36});
+      doc.text(texts[3], 16, 265+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.setFont(undefined, 'bold');
+      doc.text(texts[4], 16, 305+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.setFont(undefined, 'normal');
+      doc.text(texts[5], 16, 325+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.text(texts[6], 16, 355+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.text(texts[7], 16, 385+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.setFont(undefined, 'bold');
+      doc.text(texts[8], 16, 415+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.setFont(undefined, 'normal');
+      doc.text(texts[9], 16, 435+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.text(texts[10], 16, 465+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.text(texts[11], 16, 485+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.setFont(undefined, "italic");
+      doc.text("qnr", 16, 495+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.setFont(undefined, 'normal');
+      doc.text(texts[12], 32, 495+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.setFont(undefined, "italic");
+      doc.text("gyrA/parC/gyrB", 122, 495+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.setFont(undefined, 'normal');
+      doc.text(texts[13], 185, 495+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.text(texts[14], 16, 515+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.setFont(undefined, 'bold');
+      doc.text(texts[15], 16, 545+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.setFont(undefined, 'normal');
+      doc.text(texts[16], 16, 565+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
+  
+
+      const euFlag = new Image();
+      euFlag.src = EUFlagImg;
+      doc.addImage(euFlag, 'JPG',320,579+pmidSpace, 12, 7);
+      
       drawFooter({ document: doc, pageHeight, pageWidth, date, page1: true });
 
       // Map
