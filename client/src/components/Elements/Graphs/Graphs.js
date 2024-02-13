@@ -102,8 +102,17 @@ export const Graphs = () => {
         drugClassesFactor,
         genotypesFactor;
 
-      if (['RFWG', 'DRT'].includes(card.id)) {
+      if (['RFWG'].includes(card.id)) {
         heightFactor = 250;
+      }
+      if (['DRT'].includes(card.id)  && drugResistanceGraphView.length!==0 ) {
+        heightFactor = 250;
+      } else{
+        (
+          <Tooltip title="Extensively drug resistant(XDR): MDR plus CipR plus ESBL." placement="top">
+            <span>XDR</span>
+            </Tooltip>
+        );
       }
       if (card.id === 'RDWG') {
         drugClassesBars = colorForDrugClasses[determinantsGraphDrugClass];
