@@ -159,13 +159,7 @@ export const DownloadData = () => {
   function drawFooter({ document, pageHeight, pageWidth, date, page1=false }) {
     const ab = abbrivations();
     document.setFontSize(10);
-    if(page1){
-      document.line(0, pageHeight - 80, pageWidth, pageHeight - 80);
-      document.text(ab[0], 20, pageHeight -70, { align: 'left', maxWidth: pageWidth - 36  });
-      document.text(ab[1], 20, pageHeight -60, { align: 'left', maxWidth: pageWidth - 36  });
-      document.text(ab[2], 20, pageHeight -50, { align: 'left' , maxWidth: pageWidth - 36 });
-      document.text(ab[3], 20, pageHeight -30, { align: 'left' , maxWidth: pageWidth - 36 });
-    }else
+ 
       document.line(0, pageHeight - 26, pageWidth, pageHeight - 26);
       document.text(`Source: typhi.net [${date}]`, pageWidth / 2, pageHeight - 10, { align: 'center' });
   }
@@ -223,39 +217,61 @@ export const DownloadData = () => {
       const texts = getSalmonellaTexts(date);
 
       // Info
-      doc.text(texts[0], 16, 85, { align: 'justify', maxWidth: pageWidth - 36 });
-      doc.text(texts[1], 16, 135, { align: 'justify', maxWidth: pageWidth - 36 });
-      doc.text(texts[2], 16, 165, {
-        align: 'justify',
-        maxWidth: pageWidth - 36
-      });
-      doc.text(texts[3], 16, 195, { align: 'justify', maxWidth: pageWidth - 36 });
-      doc.text(texts[4], 16, 225, { align: 'left', maxWidth: pageWidth - 36 });
-      doc.text(texts[5], 16, 255, { align: 'justify', maxWidth: pageWidth - 36 });
-      doc.text(texts[6], 16, 305, { align: 'justify', maxWidth: pageWidth - 36 });
+      doc.text(texts[0], 16, 85, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.setFont(undefined, 'bold');
+      doc.text(texts[1], 16, 135, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.setFont(undefined, 'normal');
+      doc.text(texts[2], 16, 155, { align: 'left', maxWidth: pageWidth - 36});
+      doc.text(texts[3], 16, 265, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.setFont(undefined, 'bold');
+      doc.text(texts[4], 16, 305, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.setFont(undefined, 'normal');
+      doc.text(texts[5], 16, 325, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.text(texts[6], 16, 355, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.text(texts[7], 16, 385, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.setFont(undefined, 'bold');
+      doc.text(texts[8], 16, 415, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.setFont(undefined, 'normal');
+      doc.text(texts[9], 16, 435, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.text(texts[10], 16, 465, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.text(texts[11], 16, 485, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.setFont(undefined, "italic");
+      doc.text("qnr", 16, 495, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.setFont(undefined, 'normal');
+      doc.text(texts[12], 32, 495, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.setFont(undefined, "italic");
+      doc.text("gyrA/parC/gyrB", 122, 495, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.setFont(undefined, 'normal');
+      doc.text(texts[13], 185, 495, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.text(texts[14], 16, 515, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.setFont(undefined, 'bold');
+      doc.text(texts[15], 16, 545, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.setFont(undefined, 'normal');
+      doc.text(texts[16], 16, 565, { align: 'left', maxWidth: pageWidth - 36 });
+  
 
       const euFlag = new Image();
       euFlag.src = EUFlagImg;
-      doc.addImage(euFlag, 'JPG',320, 319, 12, 7);
+      doc.addImage(euFlag, 'JPG',320,579, 12, 7);
       let list = PIMD.filter((value)=> value !== "-")
 
       if (actualCountry === 'All'){
         doc.text(
-          `Data are drawn from studies with the following PubMed IDs (PMIDs) or Digital Object Identifier (DOI): ${list.join(
+          `TyphiNET presents data aggregated from >100 studies. Data are drawn from studies with the following PubMed IDs (PMIDs) or Digital Object Identifier (DOI): ${list.join(
             ', '
           )}.`,
           16,
-          345,
+          185,
           { align: 'left', maxWidth: pageWidth - 36 }
         );
       }else{
         list = listPIMD.filter((value)=> value !== "-")
         doc.text(
-          `Data for country ${actualCountry} are drawn from studies with the following PubMed IDs (PMIDs) or Digital Object Identifier (DOI): ${list.join(
+          `TyphiNET presents data aggregated from >100 studies. Data for country ${actualCountry} are drawn from studies with the following PubMed IDs (PMIDs) or Digital Object Identifier (DOI): ${list.join(
             ', '
           )}.`,
           16,
-          345,
+          185,
           { align: 'left', maxWidth: pageWidth - 36 }
         );
       }
