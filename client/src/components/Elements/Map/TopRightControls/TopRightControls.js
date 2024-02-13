@@ -95,13 +95,13 @@ export const TopRightControls = () => {
               let legendLabel;
               if (legend.label === 'Extensively drug resistant (XDR)') {
                   legendLabel = (
-                    <Tooltip title="Extensively drug resistant(XDR): MDR plus CipR plus ESBL." placement="top">
+                    <Tooltip title="XDR, extensively drug resistant (MDR plus resistant to ciprofloxacin and ceftriaxone)." placement="top">
                       <span>Extensively drug resistant (XDR)</span>
                       </Tooltip>
                   );
               } else if(legend.label === 'Multidrug resistant (MDR)'){
                   legendLabel = (
-                    <Tooltip title="Multidrug resistant (MDR): resistance determinants for chloramphenicol (catA1 or cmlA), ampicillin (bla genes), and trimethoprim-sulfamethoxazole (at least one dfrA gene and at least one sul gene)" placement="top">
+                    <Tooltip title="MDR, multi-drug resistant (resistant to ampicillin, chloramphenicol, and trimethoprim-sulfamethoxazole)" placement="top">
                       <span>Multidrug resistant (MDR)</span>
                       </Tooltip>
                   );
