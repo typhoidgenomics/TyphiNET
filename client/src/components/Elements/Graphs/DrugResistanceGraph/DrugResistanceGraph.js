@@ -67,9 +67,9 @@ export const DrugResistanceGraph = () => {
       const tooltipData = [];
 
       payload.forEach((item) => {
-        if (item.value === 0) {
-          return;
-        }
+        // if (item.value === 0) {
+        //   return;
+        // }
 
         const count = data[item.name];
         tooltipData.push({
