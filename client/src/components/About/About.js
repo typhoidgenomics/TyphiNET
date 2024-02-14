@@ -68,8 +68,8 @@ export const About = () => {
               here
             </a>.
           </p>
-        </div>
-        <div className={classes.paragraph}>
+        {/* </div> */}
+        {/* <div className={classes.paragraph}> */}
           <b>Team:</b> The TyphiNET dashboard is coordinated by{' '}
           <a href="https://scholar.google.com.au/citations?hl=en&user=klhFnE0AAAAJ" target="_blank" rel="noreferrer">
             Dr Zoe Dyson

@@ -125,7 +125,7 @@ export function getMapData({ data, countries }) {
       };
     });
     stats.GENOTYPE.items.sort((a, b) => (a.count <= b.count ? 1 : -1));
-    stats.ESBL = getMapStatsData({ countryData, columnKey: 'ESBL_category', statsKey: 'ESBL' });
+    stats.Ceftriaxone = getMapStatsData({ countryData, columnKey: 'ESBL_category', statsKey: 'ESBL' });
     stats.H58 = getMapStatsData({ countryData, columnKey: 'GENOTYPE_SIMPLE', statsKey: 'H58' });
     stats.MDR = getMapStatsData({ countryData, columnKey: 'MDR', statsKey: 'MDR' });
     stats.XDR = getMapStatsData({ countryData, columnKey: 'XDR', statsKey: 'XDR' });

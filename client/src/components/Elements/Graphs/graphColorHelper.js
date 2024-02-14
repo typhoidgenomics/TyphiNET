@@ -2,7 +2,7 @@ import { lightGrey } from '../../../util/colorHelper';
 
 export const getColorForDrug = (drug) => {
   switch (drug) {
-    case 'Ampicillin':
+    case 'Ampicillin/Amoxicillin':
     case 'Aminoglycosides':
       return 'rgb(129,178,210)';
 
