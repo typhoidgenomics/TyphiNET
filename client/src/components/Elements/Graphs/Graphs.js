@@ -198,7 +198,7 @@ export const Graphs = () => {
       }
 
       const base64 = canvas.toDataURL();
-      await download(base64, `TyphiNET-${globalOverviewLabel}-${card.title}.png`);
+      await download(base64, `TyphiNET-${globalOverviewLabel.fullLabel}-${card.title}.png`);
     } catch {
       setShowAlert(true);
     } finally {
