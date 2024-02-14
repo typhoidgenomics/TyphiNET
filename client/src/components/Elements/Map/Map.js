@@ -25,7 +25,7 @@ const statKey = {
   AzithR: 'AzithR',
   CipNS: 'CipNS',
   CipR: 'CipR',
-  ESBL_category: 'ESBL',
+  ESBL_category: 'Ceftriaxone',
   // Sensitive to all drugs': 'Susceptible'
   'Susceptible to all drugs': 'Susceptible'
 };
