@@ -157,7 +157,6 @@ export const DownloadData = () => {
   }
 
   function drawFooter({ document, pageHeight, pageWidth, date, page1=false }) {
-    const ab = abbrivations();
     document.setFontSize(10);
  
       document.line(0, pageHeight - 26, pageWidth, pageHeight - 26);
@@ -269,15 +268,15 @@ export const DownloadData = () => {
       doc.setFont(undefined, 'normal');
       doc.text(texts[13], 185, 495+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
       doc.text(texts[14], 16, 515+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
-      doc.setFont(undefined, 'bold');
-      doc.text(texts[15], 16, 545+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.setFontSize(10).setFont(undefined, 'bold');
+      doc.text(texts[15], 16, pageHeight-60, { align: 'left', maxWidth: pageWidth - 36 });
       doc.setFont(undefined, 'normal');
-      doc.text(texts[16], 16, 565+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.text(texts[16], 16, pageHeight-50, { align: 'left', maxWidth: pageWidth - 36 });
   
 
       const euFlag = new Image();
       euFlag.src = EUFlagImg;
-      doc.addImage(euFlag, 'JPG',320,579+pmidSpace, 12, 7);
+      doc.addImage(euFlag, 'JPG',173,pageHeight-38, 12, 7);
       
       drawFooter({ document: doc, pageHeight, pageWidth, date, page1: true });
 
