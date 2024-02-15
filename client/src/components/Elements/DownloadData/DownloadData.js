@@ -214,30 +214,23 @@ export const DownloadData = () => {
       doc.text(date, pageWidth / 2, 48, { align: 'center' });
 
       let list = PIMD.filter((value)=> value !== "-")
-      let pmidSpace;
+      let pmidSpace, dynamicText;
       if (actualCountry === 'All'){
         pmidSpace = 0;
-        doc.text(
-          `TyphiNET presents data aggregated from >100 studies. Data are drawn from studies with the following PubMed IDs (PMIDs) or Digital Object Identifier (DOI): ${list.join(
-            ', '
-          )}.`,
-          16,
-          185,
-          { align: 'left', maxWidth: pageWidth - 36 }
-        );
+        dynamicText = `TyphiNET presents data aggregated from >100 studies. Data are drawn from studies with the following PubMed IDs (PMIDs) or Digital Object Identifier (DOI): ${list.join(', ')}.`
       }else{
         list = listPIMD.filter((value)=> value !== "-")
-        pmidSpace = -30;
-        doc.text(
-          `TyphiNET presents data aggregated from >100 studies. Data for country ${actualCountry} are drawn from studies with the following PubMed IDs (PMIDs) or Digital Object Identifier (DOI): ${list.join(
-            ', '
-          )}.`,
-          16,
-          185,
-          { align: 'left', maxWidth: pageWidth - 36 }
-        );
-      }
+        dynamicText = `TyphiNET presents data aggregated from >100 studies. Data for country ${actualCountry} are drawn from studies with the following PubMed IDs (PMIDs) or Digital Object Identifier (DOI): ${list.join(', ')}.`
+        const textWidth = doc.getTextWidth(dynamicText);
 
+        const widthRanges = [815, 1200, 1600, 2000, 2400];
+        const pmidSpaces = [-50, -40, -30, -20, -10, 0];
+
+        // Find the appropriate pmidSpace based on textWidth
+        pmidSpace = pmidSpaces.find((space, index) => textWidth <= widthRanges[index]) || pmidSpaces[pmidSpaces.length - 1];
+      }
+      doc.text(dynamicText,16, 185,{ align: 'left', maxWidth: pageWidth - 36 });
+      
       const texts = getSalmonellaTexts(date);
 
       // Info
