@@ -28,7 +28,6 @@ export default function register() {
     //   // serve assets; see https://github.com/facebookincubator/create-react-app/issues/2374
     //   return;
     // }
-
     // window.addEventListener("load", () => {
     //   const swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
 
@@ -41,7 +40,7 @@ export default function register() {
     //   }
     // });
   }
-}
+// }
 
 function registerValidSW(swUrl) {
   navigator.serviceWorker
