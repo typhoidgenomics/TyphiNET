@@ -436,6 +436,7 @@ export const DownloadData = () => {
       }
 
       doc.save('TyphiNET-report.pdf');
+      
     } catch (error) {
       setShowAlert(true);
     } finally {
@@ -467,7 +468,7 @@ export const DownloadData = () => {
         startIcon={<PictureAsPdf />}
         loadingPosition="start"
       >
-        Download report from current view
+        Download report from current view (PDF, approx 1MB)
       </LoadingButton>
       <Snackbar open={showAlert} autoHideDuration={5000} onClose={handleCloseAlert}>
         <Alert onClose={handleCloseAlert} severity="error" sx={{ width: '100%' }}>
