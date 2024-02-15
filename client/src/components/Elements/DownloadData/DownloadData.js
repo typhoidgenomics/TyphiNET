@@ -468,7 +468,7 @@ export const DownloadData = () => {
         startIcon={<PictureAsPdf />}
         loadingPosition="start"
       >
-        Download report from current view (PDF, approx 1MB)
+        Download report from current view (PDF, 1MB)
       </LoadingButton>
       <Snackbar open={showAlert} autoHideDuration={5000} onClose={handleCloseAlert}>
         <Alert onClose={handleCloseAlert} severity="error" sx={{ width: '100%' }}>
