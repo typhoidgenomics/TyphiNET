@@ -387,9 +387,9 @@ export const DownloadData = () => {
         graphImg.src = await domtoimage.toPng(document.getElementById(graphCards[index].id), { bgcolor: 'white' });
         await graphImgPromise;
         if (graphImg.width <= 741) {
-          doc.addImage(graphImg, 'PNG', 16, 110, undefined,'FAST');
+          doc.addImage(graphImg, 'PNG', 16, 110,undefined,undefined, undefined, 'FAST');
         } else {
-          doc.addImage(graphImg, 'PNG', 16, 110, pageWidth - 80, 271, undefined,'FAST');
+          doc.addImage(graphImg, 'PNG', 16, 110, pageWidth - 80, 271, undefined, 'FAST');
         }
 
         doc.setFillColor(255, 255, 255);
@@ -468,7 +468,7 @@ export const DownloadData = () => {
         startIcon={<PictureAsPdf />}
         loadingPosition="start"
       >
-        Download report from current view (PDF, 1MB)
+        Download report from current view (PDF, 2MB)
       </LoadingButton>
       <Snackbar open={showAlert} autoHideDuration={5000} onClose={handleCloseAlert}>
         <Alert onClose={handleCloseAlert} severity="error" sx={{ width: '100%' }}>
