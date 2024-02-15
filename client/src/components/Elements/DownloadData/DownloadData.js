@@ -200,7 +200,7 @@ export const DownloadData = () => {
       const logo = new Image();
       logo.src = LogoImg;
       const logoWidth = 80;
-      doc.addImage(logo, 'PNG', 16, 16, logoWidth, 34);
+      doc.addImage(logo, 'PNG', 16, 16, logoWidth, 34, undefined,'FAST');
 
       // Title and Date
       doc.setFontSize(16).setFont(undefined, 'bold');
@@ -269,7 +269,7 @@ export const DownloadData = () => {
 
       const euFlag = new Image();
       euFlag.src = EUFlagImg;
-      doc.addImage(euFlag, 'JPG',173,pageHeight-38, 12, 7);
+      doc.addImage(euFlag, 'JPG',173,pageHeight-38, 12, 7, undefined,'FAST');
       
       drawFooter({ document: doc, pageHeight, pageWidth, date, page1: true });
 
@@ -325,7 +325,7 @@ export const DownloadData = () => {
         ctx.drawImage(mapImg, 0, 0, canvas.width, canvas.height);
 
         const img = canvas.toDataURL('image/png');
-        doc.addImage(img, 'PNG', 0, 160, pageWidth, 223);
+        doc.addImage(img, 'PNG', 0, 160, pageWidth, 223, undefined,'FAST');
         // doc.addImage(img, 'PNG', 0, mapY, pageWidth, 223);
       });
 
@@ -352,9 +352,9 @@ export const DownloadData = () => {
           break;
       }
       if (mapView === 'Dominant Genotype') {
-        doc.addImage(mapLegend, 'PNG', pageWidth / 2 - legendWidth / 2, 351, legendWidth, 47);
+        doc.addImage(mapLegend, 'PNG', pageWidth / 2 - legendWidth / 2, 351, legendWidth, 47, undefined,'FAST');
       } else {
-        doc.addImage(mapLegend, 'PNG', pageWidth - pageWidth / 5 , 85, legendWidth, 47);
+        doc.addImage(mapLegend, 'PNG', pageWidth - pageWidth / 5 , 85, legendWidth, 47, undefined,'FAST');
       }
 
       // Graphs
@@ -387,9 +387,9 @@ export const DownloadData = () => {
         graphImg.src = await domtoimage.toPng(document.getElementById(graphCards[index].id), { bgcolor: 'white' });
         await graphImgPromise;
         if (graphImg.width <= 741) {
-          doc.addImage(graphImg, 'PNG', 16, 110);
+          doc.addImage(graphImg, 'PNG', 16, 110, undefined,'FAST');
         } else {
-          doc.addImage(graphImg, 'PNG', 16, 110, pageWidth - 80, 271);
+          doc.addImage(graphImg, 'PNG', 16, 110, pageWidth - 80, 271, undefined,'FAST');
         }
 
         doc.setFillColor(255, 255, 255);
