@@ -67,9 +67,9 @@ export const DrugResistanceGraph = () => {
       const tooltipData = [];
 
       payload.forEach((item) => {
-        if (item.value === 0) {
-          return;
-        }
+        // if (item.value === 0) {
+        //   return;
+        // }
 
         const count = data[item.name];
         tooltipData.push({
@@ -253,7 +253,7 @@ export const DrugResistanceGraph = () => {
         <div className={classes.labelWrapper}>
           <Typography variant="caption">Select drugs/classes to display</Typography>
           <Tooltip
-            title="The resistance frequencies are only shown for years with N≥10 genomes. When the data is insufficent per year to calculate annual frequencies, there are no data points to show."
+            title="The resistance frequencies are only shown for years with N≥10 genomes. When the data is insufficient per year to calculate annual frequencies, there are no data points to show."
             placement="top"
           >
             <InfoOutlined color="action" fontSize="small" className={classes.labelTooltipIcon} />

@@ -2,7 +2,7 @@
 export const mapLegends = [
   { value: 'MDR', label: 'Multidrug resistant (MDR)' },
   { value: 'XDR', label: 'Extensively drug resistant (XDR)' },
-  { value: 'ESBL_category', label: 'Ceftriaxone resistance' },
+  { value: 'ESBL_category', label: 'Ceftriaxone resistant' },
   { value: 'AzithR', label: 'Azithromycin resistant' },
   { value: 'CipNS', label: 'Ciprofloxacin non-susceptible (CipNS)' },
   { value: 'CipR', label: 'Ciprofloxacin resistant (CipR)' },
