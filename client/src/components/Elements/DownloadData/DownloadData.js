@@ -20,7 +20,7 @@ import domtoimage from 'dom-to-image';
 import { drugs, drugsForDrugResistanceGraph } from '../../../util/drugs';
 import { getColorForDrug } from '../Graphs/graphColorHelper';
 import { colorForDrugClasses, getColorForGenotype } from '../../../util/colorHelper';
-import { getSalmonellaTexts } from '../../../util/reportInfoTexts';
+import { getSalmonellaTexts, abbrivations } from '../../../util/reportInfoTexts';
 
 const columnsToRemove = [
   'azith_pred_pheno',
@@ -82,7 +82,7 @@ export const DownloadData = () => {
   const actualCountry = useAppSelector((state) => state.dashboard.actualCountry);
   const listPIMD = useAppSelector((state) => state.dashboard.listPMID);
   const PIMD = useAppSelector((state) => state.dashboard.PMID);
-  const globalOverviewLabel = useAppSelector((state) => state.dashboard.globalOverviewLabel);
+  // const globalOverviewLabel = useAppSelector((state) => state.dashboard.globalOverviewLabel);
   const actualGenomes = useAppSelector((state) => state.dashboard.actualGenomes);
   const actualTimeInitial = useAppSelector((state) => state.dashboard.actualTimeInitial);
   const actualTimeFinal = useAppSelector((state) => state.dashboard.actualTimeFinal);
@@ -91,6 +91,7 @@ export const DownloadData = () => {
   const determinantsGraphDrugClass = useAppSelector((state) => state.graph.determinantsGraphDrugClass);
   const genotypesForFilter = useAppSelector((state) => state.dashboard.genotypesForFilter);
   const customDropdownMapView = useAppSelector((state) => state.graph.customDropdownMapView);
+  const drugResistanceGraphView = useAppSelector((state) => state.graph.drugResistanceGraphView);
 
   async function handleClickDownloadDatabase() {
     setLoadingCSV(true);
@@ -144,7 +145,7 @@ export const DownloadData = () => {
           newCSV += aux;
         }
 
-        download(newCSV, 'TyphiNET Database.csv');
+        download(newCSV, 'TyphiNET-database.csv');
       })
       .finally(() => {
         setLoadingCSV(false);
@@ -155,10 +156,11 @@ export const DownloadData = () => {
     return moment(date).format('ddd MMM DD YYYY HH:mm');
   }
 
-  function drawFooter({ document, pageHeight, pageWidth, date }) {
+  function drawFooter({ document, pageHeight, pageWidth, date, page1=false }) {
     document.setFontSize(10);
-    document.line(0, pageHeight - 26, pageWidth, pageHeight - 24);
-    document.text(`Source: typhi.net [${date}]`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+ 
+      document.line(0, pageHeight - 26, pageWidth, pageHeight - 26);
+      document.text(`Source: typhi.net [${date}]`, pageWidth / 2, pageHeight - 10, { align: 'center' });
   }
 
   function drawLegend({ id = null, legendData, document, factor, rectY, isGenotype = false, isDrug = false, xSpace }) {
@@ -189,8 +191,6 @@ export const DownloadData = () => {
     dispatch(setPosition({ coordinates: [0, 0], zoom: 1 }));
 
     try {
-      if(genotypesForFilter.length<=0)
-        return console.log("No data available to generate report");
       const doc = new jsPDF({ unit: 'px', format: 'a4' });
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageHeight = doc.internal.pageSize.getHeight();
@@ -200,7 +200,7 @@ export const DownloadData = () => {
       const logo = new Image();
       logo.src = LogoImg;
       const logoWidth = 80;
-      doc.addImage(logo, 'PNG', 16, 16, logoWidth, 34);
+      doc.addImage(logo, 'PNG', 16, 16, logoWidth, 34, undefined,'FAST');
 
       // Title and Date
       doc.setFontSize(16).setFont(undefined, 'bold');
@@ -213,38 +213,65 @@ export const DownloadData = () => {
       doc.setFontSize(12).setFont(undefined, 'normal');
       doc.text(date, pageWidth / 2, 48, { align: 'center' });
 
+      let list = PIMD.filter((value)=> value !== "-")
+      let pmidSpace, dynamicText;
+      if (actualCountry === 'All'){
+        pmidSpace = 0;
+        dynamicText = `TyphiNET presents data aggregated from >100 studies. Data are drawn from studies with the following PubMed IDs (PMIDs) or Digital Object Identifier (DOI): ${list.join(', ')}.`
+      }else{
+        list = listPIMD.filter((value)=> value !== "-")
+        dynamicText = `TyphiNET presents data aggregated from >100 studies. Data for country ${actualCountry} are drawn from studies with the following PubMed IDs (PMIDs) or Digital Object Identifier (DOI): ${list.join(', ')}.`
+        const textWidth = doc.getTextWidth(dynamicText);
+
+        const widthRanges = [815, 1200, 1600, 2000, 2400];
+        const pmidSpaces = [-50, -40, -30, -20, -10, 0];
+
+        // Find the appropriate pmidSpace based on textWidth
+        pmidSpace = pmidSpaces.find((space, index) => textWidth <= widthRanges[index]) || pmidSpaces[pmidSpaces.length - 1];
+      }
+      doc.text(dynamicText,16, 185,{ align: 'left', maxWidth: pageWidth - 36 });
+      
       const texts = getSalmonellaTexts(date);
 
       // Info
-      doc.text(texts[0], 16, 85, { align: 'justify', maxWidth: pageWidth - 36 });
-      doc.text(texts[1], 16, 125, { align: 'justify', maxWidth: pageWidth - 36 });
-      doc.text(texts[2], 16, 153, {
-        align: 'justify',
-        maxWidth: pageWidth - 36
-      });
-      doc.text(texts[3], 16, 179, { align: 'justify', maxWidth: pageWidth - 36 });
-      doc.text(texts[4], 16, 207, { align: 'left', maxWidth: pageWidth - 36 });
-      doc.text(texts[5], 16, 245, { align: 'justify', maxWidth: pageWidth - 36 });
-      doc.text(texts[6], 16, 297, { align: 'justify', maxWidth: pageWidth - 36 });
+      doc.text(texts[0], 16, 85, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.setFont(undefined, 'bold');
+      doc.text(texts[1], 16, 135, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.setFont(undefined, 'normal');
+      doc.text(texts[2], 16, 155, { align: 'left', maxWidth: pageWidth - 36});
+      doc.text(texts[3], 16, 265+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.setFont(undefined, 'bold');
+      doc.text(texts[4], 16, 305+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.setFont(undefined, 'normal');
+      doc.text(texts[5], 16, 325+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.text(texts[6], 16, 355+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.text(texts[7], 16, 385+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.setFont(undefined, 'bold');
+      doc.text(texts[8], 16, 415+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.setFont(undefined, 'normal');
+      doc.text(texts[9], 16, 435+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.text(texts[10], 16, 465+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.text(texts[11], 16, 485+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.setFont(undefined, "italic");
+      doc.text("qnr", 16, 495+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.setFont(undefined, 'normal');
+      doc.text(texts[12], 32, 495+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.setFont(undefined, "italic");
+      doc.text("gyrA/parC/gyrB", 122, 495+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.setFont(undefined, 'normal');
+      doc.text(texts[13], 185, 495+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.text(texts[14], 16, 515+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.setFontSize(10).setFont(undefined, 'bold');
+      doc.text(texts[15], 16, pageHeight-60, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.setFont(undefined, 'normal');
+      doc.text(texts[16], 16, pageHeight-50, { align: 'left', maxWidth: pageWidth - 36 });
+  
 
       const euFlag = new Image();
       euFlag.src = EUFlagImg;
-      doc.addImage(euFlag, 'JPG', 208, 310, 12, 8);
-      let list = PIMD.filter((value)=> value !== "-")
-
-      if (actualCountry !== 'All') 
-        list = listPIMD.filter((value)=> value !== "-")
-        doc.text(
-          `Studies contributing genomes representing infections originating from ${actualCountry} have the following PubMed IDs (PMIDs) or Digital Object Identifier (DOI): ${list.join(
-            ', '
-          )}.`,
-          16,
-          337,
-          { align: 'left', maxWidth: pageWidth - 36 }
-        );
+      doc.addImage(euFlag, 'JPG',173,pageHeight-38, 12, 7, undefined,'FAST');
       
-
-      drawFooter({ document: doc, pageHeight, pageWidth, date });
+      drawFooter({ document: doc, pageHeight, pageWidth, date, page1: true });
 
       // Map
       doc.addPage();
@@ -298,7 +325,7 @@ export const DownloadData = () => {
         ctx.drawImage(mapImg, 0, 0, canvas.width, canvas.height);
 
         const img = canvas.toDataURL('image/png');
-        doc.addImage(img, 'PNG', 0, 160, pageWidth, 223);
+        doc.addImage(img, 'PNG', 0, 160, pageWidth, 223, undefined,'FAST');
         // doc.addImage(img, 'PNG', 0, mapY, pageWidth, 223);
       });
 
@@ -325,9 +352,9 @@ export const DownloadData = () => {
           break;
       }
       if (mapView === 'Dominant Genotype') {
-        doc.addImage(mapLegend, 'PNG', pageWidth / 2 - legendWidth / 2, 351, legendWidth, 47);
+        doc.addImage(mapLegend, 'PNG', pageWidth / 2 - legendWidth / 2, 351, legendWidth, 47, undefined,'FAST');
       } else {
-        doc.addImage(mapLegend, 'PNG', pageWidth - pageWidth / 5 , 85, legendWidth, 47);
+        doc.addImage(mapLegend, 'PNG', pageWidth - pageWidth / 5 , 85, legendWidth, 47, undefined,'FAST');
       }
 
       // Graphs
@@ -336,9 +363,11 @@ export const DownloadData = () => {
       const genotypesFactor = Math.ceil(genotypesForFilter.length / 6);
 
       for (let index = 0; index < graphCards.length; index++) {
-        doc.addPage();
-        drawFooter({ document: doc, pageHeight, pageWidth, date });
-
+        if (graphCards[index].id === 'DRT' && drugResistanceGraphView.length === 0 ){
+            continue;
+        }
+          doc.addPage();
+          drawFooter({ document: doc, pageHeight, pageWidth, date });
         const title = `${graphCards[index].title}${
           graphCards[index].id === 'RDWG' ? `: ${determinantsGraphDrugClass}` : ''
         }`;
@@ -358,9 +387,9 @@ export const DownloadData = () => {
         graphImg.src = await domtoimage.toPng(document.getElementById(graphCards[index].id), { bgcolor: 'white' });
         await graphImgPromise;
         if (graphImg.width <= 741) {
-          doc.addImage(graphImg, 'PNG', 16, 110);
+          doc.addImage(graphImg, 'PNG', 16, 110, undefined,'FAST');
         } else {
-          doc.addImage(graphImg, 'PNG', 16, 110, pageWidth - 80, 271);
+          doc.addImage(graphImg, 'PNG', 16, 110, pageWidth - 80, 271, undefined,'FAST');
         }
 
         doc.setFillColor(255, 255, 255);
@@ -380,7 +409,7 @@ export const DownloadData = () => {
         }else if (graphCards[index].id === 'DRT') {
           drawLegend({
             document: doc,
-            legendData: drugsForDrugResistanceGraph,
+            legendData: drugResistanceGraphView,
             factor: 4,
             rectY,
             xSpace: 100,
@@ -406,7 +435,8 @@ export const DownloadData = () => {
         }
       }
 
-      doc.save('TyphiNET - Report.pdf');
+      doc.save('TyphiNET-report.pdf');
+      
     } catch (error) {
       setShowAlert(true);
     } finally {
@@ -428,7 +458,7 @@ export const DownloadData = () => {
         startIcon={<TableChart />}
         loadingPosition="start"
       >
-        Download database (CSV format, 3.5MB)
+        Download database (CSV format, 3.3MB)
       </LoadingButton>
       <LoadingButton
         className={classes.button}
@@ -438,7 +468,7 @@ export const DownloadData = () => {
         startIcon={<PictureAsPdf />}
         loadingPosition="start"
       >
-        Download report from current view
+        Download report from current view (PDF, 1MB)
       </LoadingButton>
       <Snackbar open={showAlert} autoHideDuration={5000} onClose={handleCloseAlert}>
         <Alert onClose={handleCloseAlert} severity="error" sx={{ width: '100%' }}>

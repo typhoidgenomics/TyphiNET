@@ -6,15 +6,15 @@ export const Footer = () => {
   const classes = useStyles();
 
   function handleClickContact() {
-    window.open('mailto:dashboard@typhi.net', '_blank');
+    window.open('mailto:info@typhi.net', '_blank');
   }
 
   function handleClickDocumentation() {
-    window.open('https://github.com/zadyson/TyphiNET/wiki', '_blank');
+    window.open('https://github.com/typhoidgenomics/TyphiNET/wiki', '_blank');
   }
 
   function handleClickGitHub() {
-    window.open('https://github.com/zadyson/TyphiNET', '_blank');
+    window.open('https://github.com/typhoidgenomics/TyphiNET', '_blank');
   }
 
   function handleClickTwitter() {
@@ -43,14 +43,10 @@ export const Footer = () => {
         </Button>
       </div>
       <Typography className={classes.text}>
-        Data obtained from:{' '}
+        Data last pulled from{' '}
         <a href="https://pathogen.watch" rel="noreferrer" target="_blank">
-          pathogen watch project
-        </a>{' '}
-        on 12/09/2023.{' '}
-        <a href="https://holtlab.net" rel="noreferrer" target="_blank">
-          Holt Lab
-        </a>
+          Pathogen Watch
+        </a>{' '} on 24/01/2024.
       </Typography>
     </div>
   );

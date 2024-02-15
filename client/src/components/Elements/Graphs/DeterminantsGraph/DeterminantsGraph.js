@@ -208,7 +208,7 @@ export const DeterminantsGraph = () => {
       <div className={classes.selectsWrapper}>
         <div className={classes.selectWrapper}>
           <Typography variant="caption" className={classes.selectLabel}>
-            Select drug class
+            Select drug/class
           </Typography>
           <Select
             className={classes.select}

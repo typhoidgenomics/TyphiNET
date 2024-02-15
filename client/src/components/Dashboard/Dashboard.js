@@ -29,7 +29,8 @@ import {
   setGenotypesYearData,
   setCustomDropdownMapView,
 } from '../../stores/slices/graphSlice.ts';
-import { filterData, getYearsData, getMapData, getGenotypesData, getCountryDisplayName } from './filters';
+import { filterData, getYearsData, getMapData, getGenotypesData } from './filters';
+//getCountryDisplayName removed from statement above
 import { ResetButton } from '../Elements/ResetButton/ResetButton';
 import { About } from '../About';
 import countries from '../../util/countries';

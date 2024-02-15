@@ -92,9 +92,25 @@ export const TopRightControls = () => {
             MenuProps={{ classes: { list: classes.selectMenu } }}
           >
             {mapLegends.map((legend, index) => {
+              let legendLabel;
+              if (legend.label === 'Extensively drug resistant (XDR)') {
+                  legendLabel = (
+                    <Tooltip title="XDR, extensively drug resistant (MDR plus resistant to ciprofloxacin and ceftriaxone)." placement="top">
+                      <span>Extensively drug resistant (XDR)</span>
+                      </Tooltip>
+                  );
+              } else if(legend.label === 'Multidrug resistant (MDR)'){
+                  legendLabel = (
+                    <Tooltip title="MDR, multi-drug resistant (resistant to ampicillin, chloramphenicol, and trimethoprim-sulfamethoxazole)" placement="top">
+                      <span>Multidrug resistant (MDR)</span>
+                      </Tooltip>
+                  );
+              }else{
+                  legendLabel = legend.label;
+              }
               return (
                 <MenuItem key={index + 'mapview'} value={legend.value}>
-                  {legend.label}
+                  {legendLabel}
                 </MenuItem>
               );
             })}

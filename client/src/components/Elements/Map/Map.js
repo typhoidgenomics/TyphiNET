@@ -9,13 +9,13 @@ import ReactTooltip from 'react-tooltip';
 import { BottomLeftControls } from './BottomLeftControls';
 import { useAppDispatch, useAppSelector } from '../../../stores/hooks';
 import { setPosition, setTooltipContent } from '../../../stores/slices/mapSlice.ts';
-import { setCountriesForFilter } from '../../../stores/slices/graphSlice.ts';
+// import { setCountriesForFilter } from '../../../stores/slices/graphSlice.ts';
 import { TopRightControls } from './TopRightControls';
 import { setActualCountry } from '../../../stores/slices/dashboardSlice.ts';
 import { TopLeftControls } from './TopLeftControls';
 import { BottomRightControls } from './BottomRightControls';
 import { TopRightControls2 } from './TopRightControls2';
-import countries from '../../../util/countries';
+// import countries from '../../../util/countries';
 
 
 const statKey = {
@@ -25,6 +25,7 @@ const statKey = {
   AzithR: 'AzithR',
   CipNS: 'CipNS',
   CipR: 'CipR',
+  ESBL_category: 'Ceftriaxone',
   // Sensitive to all drugs': 'Susceptible'
   'Susceptible to all drugs': 'Susceptible'
 };
@@ -93,6 +94,7 @@ export const Map = () => {
         case 'XDR':
         case 'AzithR':
         case 'CipR':
+        case 'ESBL_category':
           if (showTooltip) {
             tooltip.content[statKey[mapView]] = {
               count: countryStats[statKey[mapView]].count,
@@ -161,6 +163,7 @@ export const Map = () => {
             of <i>{globalOverviewLabel.italicLabel}</i> {globalOverviewLabel.label}
           </span>
         </Typography>
+        <Typography variant="caption">Click on a country to view details in the plots below</Typography>
         <div className={classes.mapWrapper}>
           <ComposableMap
             className={classes.composableMap}
@@ -233,7 +236,7 @@ export const Map = () => {
                           }
 
                           break;
-
+                        case 'ESBL_category':
                         case 'Susceptible to all drugs': // case 'Sensitive to all drugs':
                         case 'H58 / Non-H58':
                         case 'MDR':

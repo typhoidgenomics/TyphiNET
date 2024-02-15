@@ -161,7 +161,7 @@ export const colorForDrugClasses = {
     { name: 'cmlA', color: '#addd8e' },
     { name: 'None', color: '#B9B9B9' }
   ],
-  Ampicillin: [
+  "Ampicillin/Amoxicillin": [
     { name: 'blaTEM-1D', color: '#addd8e' },
     { name: 'None', color: '#B9B9B9' }
   ],

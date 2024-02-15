@@ -67,9 +67,9 @@ export const DrugResistanceGraph = () => {
       const tooltipData = [];
 
       payload.forEach((item) => {
-        if (item.value === 0) {
-          return;
-        }
+        // if (item.value === 0) {
+        //   return;
+        // }
 
         const count = data[item.name];
         tooltipData.push({
@@ -111,8 +111,9 @@ export const DrugResistanceGraph = () => {
       const lines = doc.getElementsByClassName('recharts-line');
 
       for (let index = 0; index < lines.length; index++) {
-        const hasValue = drugResistanceGraphView.some((value) => drugsForDrugResistanceGraph.indexOf(value) === index);
-        lines[index].style.display = hasValue ? 'block' : 'none';
+          const drug = drugResistanceGraphView[index];
+          const hasValue = drugsForDrugResistanceGraph.includes(drug);
+          lines[index].style.display = hasValue ? 'block' : 'none';
       }
 
       setPlotChart(() => {
@@ -137,23 +138,44 @@ export const DrugResistanceGraph = () => {
               {drugsYearData.length > 0 && <Brush dataKey="name" height={20} stroke={'rgb(31, 187, 211)'} />}
 
               <Legend
-                content={(props) => {
-                  const { payload } = props;
-                  return (
-                    <div className={classes.legendWrapper}>
-                      {payload.map((entry, index) => {
-                        const { dataKey, color } = entry;
-                        return (
-                          <div key={`drug-resistance-legend-${index}`} className={classes.legendItemWrapper}>
-                            <Box className={classes.colorCircle} style={{ backgroundColor: color }} />
-                            <Typography variant="caption">{dataKey}</Typography>
+                  content={(props) => {
+                      const { payload } = props;
+                      return (
+                          <div className={classes.legendWrapper}>
+                              {payload.map((entry, index) => {
+                                  const { dataKey, color } = entry;
+                                  let dataKeyElement;
+                                  if (dataKey === "XDR") {
+                                      dataKeyElement = (
+                                        <Tooltip title="XDR, extensively drug resistant (MDR plus resistant to ciprofloxacin and ceftriaxone)." placement="top">
+                                          <span>XDR</span>
+                                          </Tooltip>
+                                      );
+                                  } else if(dataKey === "MDR"){
+                                      dataKeyElement = (
+                                        <Tooltip title="MDR, multi-drug resistant (resistant to ampicillin, chloramphenicol, and trimethoprim-sulfamethoxazole)" placement="top">
+                                          <span>MDR</span>
+                                          </Tooltip>
+                                      );
+                                  }else{
+                                      dataKeyElement = dataKey;
+                                  }
+                                  return (
+                                      <div key={`drug-resistance-legend-${index}`} className={classes.legendItemWrapper}>
+                                          <Box
+                                              className={classes.colorCircle}
+                                              style={{ backgroundColor: color }}
+                                          />
+                                          <Typography variant="caption">{dataKeyElement}</Typography>
+                                      </div>
+                                  );
+                              })}
                           </div>
-                        );
-                      })}
-                    </div>
-                  );
-                }}
+                      );
+                  }}
               />
+
+
 
               <ChartTooltip
                 position={{ x: matches500 ? 0 : 60, y: matches500 ? 310 : 410 }}
@@ -206,7 +228,7 @@ export const DrugResistanceGraph = () => {
                 }}
               />
 
-              {drugsForDrugResistanceGraph.map((option, index) => (
+              {drugResistanceGraphView.map((option, index) => (
                 <Line
                   key={`drug-resistance-bar-${index}`}
                   dataKey={option}
@@ -229,9 +251,9 @@ export const DrugResistanceGraph = () => {
     <CardContent className={classes.drugResistanceGraph}>
       <div className={classes.selectWrapper}>
         <div className={classes.labelWrapper}>
-          <Typography variant="caption">Drugs view</Typography>
+          <Typography variant="caption">Select drugs/classes to display</Typography>
           <Tooltip
-            title="The resistance frequencies are only shown for years with N≥10 genomes. When the data is insufficent per year to calculate annual frequencies, there are no data points to show."
+            title="The resistance frequencies are only shown for years with N≥10 genomes. When the data is insufficient per year to calculate annual frequencies, there are no data points to show."
             placement="top"
           >
             <InfoOutlined color="action" fontSize="small" className={classes.labelTooltipIcon} />

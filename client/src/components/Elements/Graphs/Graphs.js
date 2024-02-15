@@ -46,6 +46,7 @@ export const Graphs = () => {
   const determinantsGraphDrugClass = useAppSelector((state) => state.graph.determinantsGraphDrugClass);
   const globalOverviewLabel = useAppSelector((state) => state.dashboard.globalOverviewLabel);
   const genotypesForFilter = useAppSelector((state) => state.dashboard.genotypesForFilter);
+  const drugResistanceGraphView = useAppSelector((state) => state.graph.drugResistanceGraphView);
 
   function drawLegend({
     legendData,
@@ -78,6 +79,12 @@ export const Graphs = () => {
   async function handleClickDownload(event, card) {
     event.stopPropagation();
     handleLoading(card.id, true);
+    if(card.id==='DRT' && drugResistanceGraphView.length === 0){
+      handleLoading(card.id, false);
+      return(
+        alert("No drugs/classes selected to download")
+      )
+    }
 
     try {
       const canvas = document.createElement('canvas');
@@ -95,8 +102,17 @@ export const Graphs = () => {
         drugClassesFactor,
         genotypesFactor;
 
-      if (['RFWG', 'DRT'].includes(card.id)) {
+      if (['RFWG'].includes(card.id)) {
         heightFactor = 250;
+      }
+      if (['DRT'].includes(card.id)  && drugResistanceGraphView.length!==0 ) {
+        heightFactor = 250;
+      } else{
+        (
+          <Tooltip title="Extensively drug resistant(XDR): MDR plus CipR plus ESBL." placement="top">
+            <span>XDR</span>
+            </Tooltip>
+        );
       }
       if (card.id === 'RDWG') {
         drugClassesBars = colorForDrugClasses[determinantsGraphDrugClass];
@@ -147,7 +163,7 @@ export const Graphs = () => {
         ctx.fillRect(0, 660 - mobileFactor, canvas.width, canvas.height);
 
         drawLegend({
-          legendData: ((['RFWG'].includes(card.id))? drugs: drugsForDrugResistanceGraph),
+          legendData: ((['RFWG'].includes(card.id))? drugs: drugResistanceGraphView),
           context: ctx,
           factor: 4,
           mobileFactor,
@@ -182,7 +198,7 @@ export const Graphs = () => {
       }
 
       const base64 = canvas.toDataURL();
-      await download(base64, `TyphiNET - ${globalOverviewLabel.fullLabel} - ${card.title}.png`);
+      await download(base64, `TyphiNET-${globalOverviewLabel.fullLabel}-${card.title}.png`);
     } catch {
       setShowAlert(true);
     } finally {
