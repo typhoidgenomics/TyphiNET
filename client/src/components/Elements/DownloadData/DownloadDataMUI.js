@@ -19,9 +19,11 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: '8px !important',
     paddingBottom: '8px !important',
     borderRadius: '100px !important',
+    fontSize: '10px',
 
     '@media (max-width: 750px)': {
-      width: '100%'
+      width: '100%',
+      fontSize: '12px !important'
     }
   }
 }));
