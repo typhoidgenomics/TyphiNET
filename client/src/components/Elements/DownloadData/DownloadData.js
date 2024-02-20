@@ -307,7 +307,7 @@ export const DownloadData = () => {
       }
       // let mapY = 160 + (customDropdownMapView.length*9);
       await svgAsPngUri(document.getElementById('global-overview-map'), {
-        scale: 4,
+        // scale: 4,
         backgroundColor: 'white',
         width: 1200,
         left: -200
