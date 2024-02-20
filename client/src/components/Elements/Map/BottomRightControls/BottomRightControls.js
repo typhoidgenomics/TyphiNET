@@ -29,7 +29,7 @@ export const BottomRightControls = () => {
 
     try {
       await svgAsPngUri(document.getElementById('global-overview-map'), {
-        scale: 4,
+        // scale: 4,
         backgroundColor: 'white',
         width: 1200,
         left: -200
