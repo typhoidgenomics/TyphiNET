@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+      - "8080:8080"
+    volumes:
+      - ./assets/webscrap/clean:/app/assets/webscrap/clean
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:7.0.5
+    ports:
+      - "27017:27017"
+      
