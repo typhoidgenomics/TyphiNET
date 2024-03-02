@@ -7,7 +7,7 @@ services:
       - "3000:3000"
       - "8080:8080"
     volumes:
-      - ./assets/webscrap/clean:/app/assets/webscrap/clean
+      - .:/app
     depends_on:
       - mongo
 
