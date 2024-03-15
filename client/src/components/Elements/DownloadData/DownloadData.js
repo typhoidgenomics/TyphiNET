@@ -111,6 +111,15 @@ export const DownloadData = () => {
             lines[0][index] = 'Cip';
           } 
           });
+        const replacements = {
+          'COUNTRY_ONLY': 'Country',
+          'cip_pred_pheno': 'Cip',
+          'dashboard view': 'Dashboard view'
+        };
+
+        lines[0].forEach((curr, index) => {
+          lines[0][index] = replacements[curr] || curr;
+        });
         
         for (let index = 0; index < columnsToRemove.length; index++) {
           let currentIndex = lines[0].indexOf(columnsToRemove[index]);
