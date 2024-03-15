@@ -31,6 +31,8 @@ import { useEffect, useState } from 'react';
 import { hoverColor } from '../../../../util/colorHelper';
 import { getColorForDrug } from '../graphColorHelper';
 import { InfoOutlined } from '@mui/icons-material';
+import { setCaptureDRT, setCaptureRFWG, setCaptureRDWG, setCaptureGD } from '../../../../stores/slices/dashboardSlice';
+
 
 export const DrugResistanceGraph = () => {
   const classes = useStyles();
@@ -44,6 +46,14 @@ export const DrugResistanceGraph = () => {
   const timeInitial = useAppSelector((state) => state.dashboard.timeInitial);
   const timeFinal = useAppSelector((state) => state.dashboard.timeFinal);
 
+  useEffect(() => {
+    if (drugsYearData.length <= 0) {
+      dispatch(setCaptureDRT(false));
+    } else {
+      dispatch(setCaptureDRT(true));
+    }
+  }, [drugsYearData]);
+  
   function getData() {
     const exclusions = ['name', 'count'];
     let drugDataPercentage = structuredClone(drugsYearData);

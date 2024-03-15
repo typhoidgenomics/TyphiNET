@@ -18,6 +18,8 @@ import { setDeterminantsGraphDrugClass, setDeterminantsGraphView } from '../../.
 import { drugClasses } from '../../../../util/drugs';
 import { useEffect, useState } from 'react';
 import { colorForDrugClasses, hoverColor } from '../../../../util/colorHelper';
+import { setCaptureDRT, setCaptureRFWG, setCaptureRDWG, setCaptureGD } from '../../../../stores/slices/dashboardSlice';
+
 
 const dataViewOptions = [
   { label: 'Number of genomes', value: 'number', graphLabel: 'Number of occurrences' },
@@ -34,6 +36,21 @@ export const DeterminantsGraph = () => {
   const genotypesDrugClassesData = useAppSelector((state) => state.graph.genotypesDrugClassesData);
   const determinantsGraphView = useAppSelector((state) => state.graph.determinantsGraphView);
   const determinantsGraphDrugClass = useAppSelector((state) => state.graph.determinantsGraphDrugClass);
+
+  useEffect(() => {
+    let genotypeDrugClassesData = structuredClone(genotypesDrugClassesData[determinantsGraphDrugClass] ?? []);
+    let cnt = 0;
+    genotypeDrugClassesData.map((item) => {
+      cnt += item.totalCount;
+    });
+    console.log(" genotypeDrugClassesData.length", genotypeDrugClassesData.length, cnt)
+    if (cnt <= 0) {
+      dispatch(setCaptureRDWG(false));
+    } else {
+      dispatch(setCaptureRDWG(true));
+    }
+  }, [genotypesDrugClassesData, determinantsGraphDrugClass]);
+
 
   let data = 0;
   useEffect(()=>{

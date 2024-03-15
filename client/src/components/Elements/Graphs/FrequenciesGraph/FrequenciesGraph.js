@@ -36,6 +36,8 @@ import { useEffect, useState } from 'react';
 import { hoverColor } from '../../../../util/colorHelper';
 import { getColorForDrug } from '../graphColorHelper';
 import { drugs } from '../../../../util/drugs';
+import { setCaptureDRT, setCaptureRFWG, setCaptureRDWG, setCaptureGD } from '../../../../stores/slices/dashboardSlice';
+
 
 const dataViewOptions = [
   { label: 'Number of genomes', value: 'number' },
@@ -54,13 +56,25 @@ export const FrequenciesGraph = () => {
   const frequenciesGraphView = useAppSelector((state) => state.graph.frequenciesGraphView);
   const frequenciesGraphSelectedGenotypes = useAppSelector((state) => state.graph.frequenciesGraphSelectedGenotypes);
 
+
   let data = genotypesDrugsData;
 
   useEffect(()=>{
   dispatch(setFrequenciesGraphSelectedGenotypes(genotypesDrugsData.slice(0, 5).map((x) => x.name)));
   },[genotypesDrugsData ])
 
-    
+  useEffect(() => {
+    data = data.filter((genotype) => frequenciesGraphSelectedGenotypes.includes(genotype.name));
+    let cnt = 0;
+    data.map((item) => {
+      cnt += item.totalCount;
+    });
+    if (frequenciesGraphSelectedGenotypes.length <= 0 || cnt === 0) {
+      dispatch(setCaptureRFWG(false));
+    } else {
+      dispatch(setCaptureRFWG(true));
+    }
+  }, [frequenciesGraphSelectedGenotypes]);
  
   function getSelectGenotypeLabel(genotype) {
     const percentage = Number(((genotype.Susceptible / genotype.totalCount) * 100).toFixed(2));
