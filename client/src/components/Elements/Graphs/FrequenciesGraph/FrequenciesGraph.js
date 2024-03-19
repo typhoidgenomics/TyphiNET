@@ -63,13 +63,14 @@ export const FrequenciesGraph = () => {
   dispatch(setFrequenciesGraphSelectedGenotypes(genotypesDrugsData.slice(0, 5).map((x) => x.name)));
   },[genotypesDrugsData ])
 
+  let sumOfBarDataToShowOnPlot = 0;
   useEffect(() => {
     data = data.filter((genotype) => frequenciesGraphSelectedGenotypes.includes(genotype.name));
-    let cnt = 0;
+    
     data.map((item) => {
-      cnt += item.totalCount;
+      sumOfBarDataToShowOnPlot += item.totalCount;
     });
-    if (frequenciesGraphSelectedGenotypes.length <= 0 || cnt === 0) {
+    if (frequenciesGraphSelectedGenotypes.length <= 0 || sumOfBarDataToShowOnPlot === 0) {
       dispatch(setCaptureRFWG(false));
     } else {
       dispatch(setCaptureRFWG(true));
@@ -186,6 +187,8 @@ export const FrequenciesGraph = () => {
                     <div className={classes.legendWrapper}>
                       {payload.map((entry, index) => {
                         const { dataKey, color } = entry;
+                        if(!sumOfBarDataToShowOnPlot)
+                          return null;
                         return (
                           <div key={`frequencies-legend-${index}`} className={classes.legendItemWrapper}>
                             <Box className={classes.colorCircle} style={{ backgroundColor: color }} />

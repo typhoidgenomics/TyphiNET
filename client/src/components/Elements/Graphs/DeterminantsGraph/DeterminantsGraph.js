@@ -137,7 +137,6 @@ export const DeterminantsGraph = () => {
                   return (
                     <div className={classes.legendWrapper}>
                       {payload.map((entry, index) => {
-                        console.log("list",sumOfBarDataToShowOnPlot)
                         if(!sumOfBarDataToShowOnPlot)
                           return null;
                         const { dataKey, color } = entry;
