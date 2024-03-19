@@ -43,7 +43,7 @@ export const DeterminantsGraph = () => {
     genotypeDrugClassesData.map((item) => {
       cnt += item.totalCount;
     });
-    console.log(" genotypeDrugClassesData.length", genotypeDrugClassesData.length, cnt)
+    // console.log(" genotypeDrugClassesData.length", genotypeDrugClassesData.length, cnt)
     if (cnt <= 0) {
       dispatch(setCaptureRDWG(false));
     } else {

@@ -153,6 +153,8 @@ export const DrugResistanceGraph = () => {
                       return (
                           <div className={classes.legendWrapper}>
                               {payload.map((entry, index) => {
+                                if(!drugsYearData.length)
+                                  return null;
                                   const { dataKey, color } = entry;
                                   let dataKeyElement;
                                   if (dataKey === "XDR") {
