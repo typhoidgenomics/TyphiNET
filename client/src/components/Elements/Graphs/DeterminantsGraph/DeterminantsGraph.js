@@ -36,15 +36,15 @@ export const DeterminantsGraph = () => {
   const genotypesDrugClassesData = useAppSelector((state) => state.graph.genotypesDrugClassesData);
   const determinantsGraphView = useAppSelector((state) => state.graph.determinantsGraphView);
   const determinantsGraphDrugClass = useAppSelector((state) => state.graph.determinantsGraphDrugClass);
-
+  let sumOfBarDataToShowOnPlot = 0;
   useEffect(() => {
     let genotypeDrugClassesData = structuredClone(genotypesDrugClassesData[determinantsGraphDrugClass] ?? []);
-    let cnt = 0;
+    
     genotypeDrugClassesData.map((item) => {
-      cnt += item.totalCount;
+      sumOfBarDataToShowOnPlot += item.totalCount;
     });
-    // console.log(" genotypeDrugClassesData.length", genotypeDrugClassesData.length, cnt)
-    if (cnt <= 0) {
+    // console.log(" genotypeDrugClassesData.length", genotypeDrugClassesData.length, sumOfBarDataToShowOnPlot)
+    if (sumOfBarDataToShowOnPlot <= 0) {
       dispatch(setCaptureRDWG(false));
     } else {
       dispatch(setCaptureRDWG(true));
@@ -137,6 +137,9 @@ export const DeterminantsGraph = () => {
                   return (
                     <div className={classes.legendWrapper}>
                       {payload.map((entry, index) => {
+                        console.log("list",sumOfBarDataToShowOnPlot)
+                        if(!sumOfBarDataToShowOnPlot)
+                          return null;
                         const { dataKey, color } = entry;
                         return (
                           <div key={`distribution-legend-${index}`} className={classes.legendItemWrapper}>
