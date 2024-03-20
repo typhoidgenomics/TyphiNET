@@ -29,7 +29,7 @@ import {
   setGenotypesYearData,
   setCustomDropdownMapView,
 } from '../../stores/slices/graphSlice.ts';
-import { filterData, getYearsData, getMapData, getGenotypesData } from './filters';
+import { filterData, getYearsData, getMapData, getGenotypesData, getYears} from './filters';
 //getCountryDisplayName removed from statement above
 import { ResetButton } from '../Elements/ResetButton/ResetButton';
 import { About } from '../About';
@@ -121,6 +121,12 @@ export const DashboardPage = () => {
     getData();
     dispatch(setIfCustom(false));
   }, []);
+
+  // This useEffect is called once dataset changes
+  useEffect(() => {
+    const getYearsForLocalAndTravel = getYears({data,dataset});
+    dispatch(setYears(getYearsForLocalAndTravel));
+  }, [dataset]);
 
   // This useEffect is called everytime the main filters are changed, it does not need to read the csv file again.
   // It filters accordingly to the filters give. Is also called when the reset button is pressed.

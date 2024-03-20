@@ -2,29 +2,38 @@ import { makeStyles } from '@mui/styles';
 
 const useStyles = makeStyles((theme) => ({
   topRightControls: {
-    display: 'flex',
+    // display: 'flex'
+    textAlign: 'end',
     flexDirection: 'column',
     position: 'absolute',
     top: 0,
     right: 0,
     marginTop: '200px',
-    width:'450px',
-    maxHeight:'300px',
-    alignItems:"normal",
+    width: '450px',
+    maxHeight: '300px',
+    alignItems: 'normal',
+
     // overflowY: 'auto',
     // width:'25%',
     '@media (max-width: 1000px)': {
-      // width: 
+      // width:
     },
     '@media (max-width: 700px)': {
       position: 'relative',
       marginTop: '0px',
-      width:'100%',
+      width: '100%',
     },
     // '&$bp700': {
     //   position: 'relative'
     // }
-    
+  },
+
+  font: {
+    // '&.MuiFormControlLabel-root': {
+    //   // borderRadius: '16px',
+    // },
+    fontSize: 'small !important',
+    marginRight: '0px !important',
   },
 
   dropdown:{
