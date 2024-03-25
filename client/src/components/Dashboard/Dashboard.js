@@ -123,10 +123,13 @@ export const DashboardPage = () => {
   }, []);
 
   // This useEffect is called once dataset changes
-  useEffect(() => {
-    const getYearsForLocalAndTravel = getYears({data,dataset});
-    dispatch(setYears(getYearsForLocalAndTravel));
-  }, [dataset]);
+   useEffect(() => {
+    // Check if dataset and data are defined before proceeding
+    if (dataset !== undefined && data !== undefined && data.length > 0) {
+      const getYearsForLocalAndTravel = getYears({data, dataset});
+      dispatch(setYears(getYearsForLocalAndTravel));
+    }
+  }, [dataset, data]);
 
   // This useEffect is called everytime the main filters are changed, it does not need to read the csv file again.
   // It filters accordingly to the filters give. Is also called when the reset button is pressed.
