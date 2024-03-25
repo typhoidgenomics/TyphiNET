@@ -18,6 +18,8 @@ import { setDeterminantsGraphDrugClass, setDeterminantsGraphView } from '../../.
 import { drugClasses } from '../../../../util/drugs';
 import { useEffect, useState } from 'react';
 import { colorForDrugClasses, hoverColor } from '../../../../util/colorHelper';
+import { setCaptureDRT, setCaptureRFWG, setCaptureRDWG, setCaptureGD } from '../../../../stores/slices/dashboardSlice';
+
 
 const dataViewOptions = [
   { label: 'Number of genomes', value: 'number', graphLabel: 'Number of occurrences' },
@@ -34,6 +36,21 @@ export const DeterminantsGraph = () => {
   const genotypesDrugClassesData = useAppSelector((state) => state.graph.genotypesDrugClassesData);
   const determinantsGraphView = useAppSelector((state) => state.graph.determinantsGraphView);
   const determinantsGraphDrugClass = useAppSelector((state) => state.graph.determinantsGraphDrugClass);
+  let sumOfBarDataToShowOnPlot = 0;
+  useEffect(() => {
+    let genotypeDrugClassesData = structuredClone(genotypesDrugClassesData[determinantsGraphDrugClass] ?? []);
+    
+    genotypeDrugClassesData.map((item) => {
+      sumOfBarDataToShowOnPlot += item.totalCount;
+    });
+    // console.log(" genotypeDrugClassesData.length", genotypeDrugClassesData.length, sumOfBarDataToShowOnPlot)
+    if (sumOfBarDataToShowOnPlot <= 0) {
+      dispatch(setCaptureRDWG(false));
+    } else {
+      dispatch(setCaptureRDWG(true));
+    }
+  }, [genotypesDrugClassesData, determinantsGraphDrugClass]);
+
 
   let data = 0;
   useEffect(()=>{
@@ -120,6 +137,8 @@ export const DeterminantsGraph = () => {
                   return (
                     <div className={classes.legendWrapper}>
                       {payload.map((entry, index) => {
+                        if(!sumOfBarDataToShowOnPlot)
+                          return null;
                         const { dataKey, color } = entry;
                         return (
                           <div key={`distribution-legend-${index}`} className={classes.legendItemWrapper}>

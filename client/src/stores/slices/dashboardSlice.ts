@@ -22,7 +22,11 @@ interface DashboardState {
   years: Array<number>;
   genotypesForFilter: Array<string>;
   listPMID: Array<string>;
-  PMID: Array<string>
+  PMID: Array<string>;
+  captureDRT: boolean;
+  captureRFWG: boolean;
+  captureRDWG: boolean;
+  captureGD: boolean;
 }
 
 const initialState: DashboardState = {
@@ -41,7 +45,11 @@ const initialState: DashboardState = {
   years: [],
   genotypesForFilter: [],
   listPMID: [],
-  PMID: []
+  PMID: [],
+  captureDRT: true,
+  captureRFWG: true,
+  captureRDWG: true,
+  captureGD: true,
 };
 
 export const dashboardSlice = createSlice({
@@ -102,6 +110,18 @@ export const dashboardSlice = createSlice({
     setPMID: (state, action: PayloadAction<Array<string>>) => {
       state.PMID = action.payload;
     },
+    setCaptureDRT: (state, action: PayloadAction<boolean>) => {
+      state.captureDRT = action.payload;
+    },
+    setCaptureRFWG: (state, action: PayloadAction<boolean>) => {
+      state.captureRFWG = action.payload;
+    },
+    setCaptureRDWG: (state, action: PayloadAction<boolean>) => {
+      state.captureRDWG = action.payload;
+    },
+    setCaptureGD: (state, action: PayloadAction<boolean>) => {
+      state.captureGD = action.payload;
+    },
   }
 });
 
@@ -121,7 +141,11 @@ export const {
   setYears,
   setGenotypesForFilter,
   setListPMID,
-  setPMID
+  setPMID,
+  setCaptureDRT,
+  setCaptureRFWG,
+  setCaptureRDWG,
+  setCaptureGD,
 } = dashboardSlice.actions;
 
 export default dashboardSlice.reducer;

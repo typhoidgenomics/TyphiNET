@@ -16,6 +16,8 @@ import { useAppDispatch, useAppSelector } from '../../../../stores/hooks';
 import { setDistributionGraphView } from '../../../../stores/slices/graphSlice';
 import { getColorForGenotype, hoverColor } from '../../../../util/colorHelper';
 import { useEffect, useState } from 'react';
+import { setCaptureDRT, setCaptureRFWG, setCaptureRDWG, setCaptureGD } from '../../../../stores/slices/dashboardSlice';
+
 
 const dataViewOptions = [
   { label: 'Number of genomes', value: 'number' },
@@ -36,6 +38,15 @@ export const DistributionGraph = () => {
   function getDomain() {
     return distributionGraphView === 'number' ? undefined : [0, 100];
   }
+
+    useEffect(() => {
+
+    if (genotypesYearData.length <= 0) {
+      dispatch(setCaptureGD(false));
+    } else {
+      dispatch(setCaptureGD(true));
+    }
+  }, [genotypesForFilter, genotypesYearData]);
 
   function getData() {
     if (distributionGraphView === 'number') {
@@ -107,6 +118,8 @@ export const DistributionGraph = () => {
                   return (
                     <div className={classes.legendWrapper}>
                       {payload.map((entry, index) => {
+                        if(!genotypesYearData.length)
+                          return null;
                         const { dataKey, color } = entry;
                         return (
                           <div key={`distribution-legend-${index}`} className={classes.legendItemWrapper}>
