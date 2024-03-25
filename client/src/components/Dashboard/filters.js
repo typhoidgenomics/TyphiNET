@@ -44,7 +44,16 @@ export function filterData({ data, dataset, actualTimeInitial, actualTimeFinal, 
 export function getCountryDisplayName(country) {
   switch (country) {
     case 'Democratic Republic of the Congo':
+    case 'Democratic Republic of Congo':
+    case 'Congo':
+    case 'DRC':
+    case 'DR Congo':
+    case 'Congo Republic':
       return 'Dem. Rep. Congo';
+    case 'Channel Islands':
+      return 'Jersey';
+    case 'Czech Republic':
+      return 'Czechia';
     case 'Central African Republic':
       return 'Central African Rep.';
     case 'Ivory Coast':
@@ -58,7 +67,15 @@ export function getCountryDisplayName(country) {
       return 'Dominican Rep.';
     case 'Viet Nam':
       return 'Vietnam';
+    case 'Myanmar [Burma]':
+      return 'Myanmar';
+    case 'French Polynesia':
+      return 'Fr. Polynesia';
+    case 'The Netherlands':
+      return 'Netherlands';
     case 'USA':
+    case 'United States':
+    case 'United States?':
       return 'United States of America';
     case 'Cape Verde':
       return 'Cabo Verde';
@@ -66,10 +83,29 @@ export function getCountryDisplayName(country) {
       return 'Turks and Caicos Is.';
     case 'United Kingdom (England/Wales/N. Ireland)':
     case 'United Kingdom (Scotland)':
+    case 'United Kingdom?':
+    case 'Northern Ireland':
+    case 'England':
+    case 'Scotland':
+    case 'Wales':
     case 'UK':
       return 'United Kingdom';
     case 'The Gambia':
       return 'Gambia';
+    case 'Canada?':
+      return 'Canada';
+    case 'Cayman Islands':
+      return 'Cayman Is.';
+    case 'Madeira':
+      return 'Portugal';
+    case 'SriLanka':
+      return 'Sri Lanka';
+    case 'Saint Vincent and the Grenadines':
+      return 'St. Vin. and Gren';
+    case 'Philipines':
+      return 'Philippines';
+    case 'Metropolitan France':
+      return 'France';
     default:
       return country;
   }
