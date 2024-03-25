@@ -1,4 +1,4 @@
-import CombinedModel from '../models/combined.js';
+import typhinetdb from '../models/combined.js';
 import * as Tools from '../services/services.js';
 import express from 'express';
 import csv from 'csv-parser';
@@ -10,7 +10,7 @@ const router = express.Router();
 
 // Downloads data from MongoDB and creates the clean_db file
 router.get('/download', (req, res) => {
-  CombinedModel.find().then(async (comb) => {
+  typhinetdb.find().then(async (comb) => {
     let send_comb = [];
     for (let data of comb) {
       let aux_data = JSON.parse(JSON.stringify(data));
@@ -33,14 +33,14 @@ router.get('/upload', (req, res) => {
       data_to_send.push(data);
     })
     .on('end', () => {
-      CombinedModel.countDocuments(function (err, count) {
+      typhinetdb.countDocuments(function (err, count) {
         if (err) {
           return res.json({ Status: `Error! ${err}` });
         }
         if (count > 0) {
-          CombinedModel.collection.drop();
+          typhinetdb.collection.drop();
         }
-        CombinedModel.insertMany(data_to_send, (error) => {
+        typhinetdb.insertMany(data_to_send, (error) => {
           if (error) return res.json({ Status: `Error! ${error}` });
           console.log('Success ! Combined data sent to MongoDB!');
         });
@@ -67,14 +67,14 @@ router.post('/upload/admin', (req, res) => {
   fs.writeFileSync(path, JSON.stringify(aux));
 
   if (req.body.current === req.body.parts) {
-    CombinedModel.countDocuments(function (err, count) {
+    typhinetdb.countDocuments(function (err, count) {
       if (err) {
         return res.json({ Status: `Error! ${err}` });
       }
       if (count > 0) {
-        CombinedModel.collection.drop();
+        typhinetdb.collection.drop();
       }
-      CombinedModel.insertMany(aux.data, (error) => {
+      typhinetdb.insertMany(aux.data, (error) => {
         if (error) return res.json({ Status: `Error! ${error}` });
         res.json({ Status: 'Uploaded' });
       });
@@ -88,7 +88,7 @@ router.post('/upload/admin', (req, res) => {
 router.get('/checkForChanges', async (req, res) => {
   let response = [];
 
-  response = await CombinedModel.find().then(async (comb) => {
+  response = await typhinetdb.find().then(async (comb) => {
     let send_comb = [];
     for (let data of comb) {
       let aux_data = JSON.parse(JSON.stringify(data));
