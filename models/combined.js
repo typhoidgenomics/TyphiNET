@@ -352,6 +352,6 @@ const CombinedSchema = mongoose.Schema({
   }
 });
 
-const CombinedModel = mongoose.model('CombinedModel', CombinedSchema);
+const typhinetdb = mongoose.model('typhinetdb', CombinedSchema);
 
-export default CombinedModel;
+export default typhinetdb;
