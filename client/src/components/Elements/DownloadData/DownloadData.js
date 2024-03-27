@@ -173,7 +173,13 @@ export const DownloadData = () => {
     document.setFontSize(10);
  
       document.line(0, pageHeight - 26, pageWidth, pageHeight - 26);
-      document.text(`Source: typhi.net [${date}]`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+      document.text(`Source: www.typhi.net`, 16, pageHeight - 10, { align: 'left' });
+  }
+
+  function drawHeader({ document, pageWidth }) {
+    document.setFontSize(8);
+    document.line(0, 26, pageWidth, 26);
+    document.setFontSize(12);
   }
 
   function drawLegend({ id = null, legendData, document, factor, rectY, isGenotype = false, isDrug = false, xSpace }) {
@@ -213,23 +219,23 @@ export const DownloadData = () => {
       const logo = new Image();
       logo.src = LogoImg;
       const logoWidth = 80;
-      doc.addImage(logo, 'PNG', 16, 16, logoWidth, 34, undefined,'FAST');
+      doc.addImage(logo, 'PNG', 16, 36, logoWidth, 34, undefined,'FAST');
 
       // Title and Date
       doc.setFontSize(16).setFont(undefined, 'bold');
-      doc.text("Global Overview of", 177, 34, { align: 'center' });
+      doc.text("TyphiNET Reoprt for", 173, 54, { align: 'center' });
       doc.setFont(undefined, "bolditalic");
-      doc.text("Salmonella", 264, 34, { align: 'center' });
+      doc.text("Salmonella", 264, 54, { align: 'center' });
       doc.setFont(undefined, "bold");
-      doc.text("Typhi", 315, 34, { align: 'center' });
+      doc.text("Typhi", 315, 54, { align: 'center' });
       
       doc.setFontSize(12).setFont(undefined, 'normal');
-      doc.text(date, pageWidth / 2, 48, { align: 'center' });
+      doc.text(date, pageWidth / 2, 78, { align: 'center' });
 
       let list = PIMD.filter((value)=> value !== "-")
       let pmidSpace, dynamicText;
       if (actualCountry === 'All'){
-        pmidSpace = 0;
+        pmidSpace = 20;
         dynamicText = `TyphiNET presents data aggregated from >100 studies. Data are drawn from studies with the following PubMed IDs (PMIDs) or Digital Object Identifier (DOI): ${list.join(', ')}.`
       }else{
         list = listPIMD.filter((value)=> value !== "-")
@@ -242,16 +248,16 @@ export const DownloadData = () => {
         // Find the appropriate pmidSpace based on textWidth
         pmidSpace = pmidSpaces.find((space, index) => textWidth <= widthRanges[index]) || pmidSpaces[pmidSpaces.length - 1];
       }
-      doc.text(dynamicText,16, 185,{ align: 'left', maxWidth: pageWidth - 36 });
+      doc.text(dynamicText,16, 205,{ align: 'left', maxWidth: pageWidth - 36 });
       
       const texts = getSalmonellaTexts(date);
 
       // Info
-      doc.text(texts[0], 16, 85, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.text(texts[0], 16, 105, { align: 'left', maxWidth: pageWidth - 36 });
       doc.setFont(undefined, 'bold');
-      doc.text(texts[1], 16, 135, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.text(texts[1], 16, 155, { align: 'left', maxWidth: pageWidth - 36 });
       doc.setFont(undefined, 'normal');
-      doc.text(texts[2], 16, 155, { align: 'left', maxWidth: pageWidth - 36});
+      doc.text(texts[2], 16, 175, { align: 'left', maxWidth: pageWidth - 36});
       doc.text(texts[3], 16, 265+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
       doc.setFont(undefined, 'bold');
       doc.text(texts[4], 16, 305+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
@@ -275,15 +281,15 @@ export const DownloadData = () => {
       doc.text(texts[13], 185, 495+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
       doc.text(texts[14], 16, 515+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
       doc.setFontSize(10).setFont(undefined, 'bold');
-      doc.text(texts[15], 16, pageHeight-60, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.text(texts[15], 16, pageHeight-70, { align: 'left', maxWidth: pageWidth - 36 });
       doc.setFont(undefined, 'normal');
-      doc.text(texts[16], 16, pageHeight-50, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.text(texts[16], 16, pageHeight-60, { align: 'left', maxWidth: pageWidth - 36 });
   
 
       const euFlag = new Image();
       euFlag.src = EUFlagImg;
-      doc.addImage(euFlag, 'JPG',173,pageHeight-38, 12, 7, undefined,'FAST');
-      
+      doc.addImage(euFlag, 'JPG',173,pageHeight-48, 12, 7, undefined,'FAST');
+      drawHeader({ document: doc, pageWidth });
       drawFooter({ document: doc, pageHeight, pageWidth, date, page1: true });
 
       // Map
