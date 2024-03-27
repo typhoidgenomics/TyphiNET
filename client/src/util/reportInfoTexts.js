@@ -3,7 +3,7 @@ export function getSalmonellaTexts(date = new Date().toLocaleDateString()) {
       // eslint-disable-next-line no-template-curly-in-string
       `This report was generated at ${date}, using TyphiNET (https://www.typhi.net), a data visualisation platform that draws genome-derived data on antimicrobial resistance and genotypes from Typhi Pathogenwatch (https://pathogen.watch), curated by the Global Typhoid Genomics Consortium (https://www.typhoidgenomics.org).`,
       `Source Data`,
-      `TyphiNET data were last updated on March 24th 2024. For code and further details please see: (https://github.com/typhoidgenomics/TyphiNET).`,
+      `TyphiNET data were last updated on 24 March 2024. For code and further details please see: (https://github.com/typhoidgenomics/TyphiNET).`,
       `Individual genome information, including derived genotype and AMR calls, sequence data accession numbers, and source information (PubMed ID for citation) can be downloaded as a spreadsheet from the TyphiNET website (https://www.typhi.net).`,
       `Variable definitions`,  
       `The genotypes reported here are defined in Dyson & Holt (2021), J. Infect. Dis. (https://doi.org/10.1093/infdis/jiab414).`,
