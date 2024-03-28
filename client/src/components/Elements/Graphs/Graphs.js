@@ -203,7 +203,7 @@ export const Graphs = () => {
         drawLegend({
           legendData: genotypesForFilterSelected,
           context: ctx,
-          factor: genotypesFactor,
+          factor: Math.ceil(genotypesForFilterSelected.length / 9),
           mobileFactor,
           yPosition: 670,
           isGenotype: true,

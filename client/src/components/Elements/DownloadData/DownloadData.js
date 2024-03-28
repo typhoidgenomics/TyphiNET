@@ -452,7 +452,7 @@ export const DownloadData = () => {
           drawLegend({
             document: doc,
             legendData: genotypesForFilterSelected,
-            factor: genotypesFactor,
+            factor: Math.ceil(genotypesForFilterSelected.length / 6),
             rectY,
             xSpace: 65,
             isGenotype: true
