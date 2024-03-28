@@ -14,6 +14,8 @@ interface GraphState {
   determinantsGraphView: string;
   determinantsGraphDrugClass: string;
   customDropdownMapView: Array<string>;
+  currentSliderValue: Number;
+  genotypesForFilterSelected: Array<string>;
 }
 
 const initialState: GraphState = {
@@ -30,6 +32,8 @@ const initialState: GraphState = {
   determinantsGraphView: 'percentage',
   determinantsGraphDrugClass: 'Ciprofloxacin NS',
   customDropdownMapView: [],
+  currentSliderValue: 20,
+  genotypesForFilterSelected: [],
 };
 
 export const graphSlice = createSlice({
@@ -75,6 +79,12 @@ export const graphSlice = createSlice({
     setCustomDropdownMapView: (state, action: PayloadAction<Array<string>>) => {
       state.customDropdownMapView = action.payload;
     },
+      setCurrentSliderValue: (state, action: PayloadAction<Number>) => {
+      state.currentSliderValue = action.payload;
+    },
+    setGenotypesForFilterSelected: (state, action: PayloadAction<Array<string>>) => {
+      state.genotypesForFilterSelected = action.payload;
+    },
   }
 });
 
@@ -91,7 +101,9 @@ export const {
   setDeterminantsGraphView,
   setDeterminantsGraphDrugClass,
   setGenotypesDrugClassesData,
-  setCustomDropdownMapView
+  setCustomDropdownMapView,
+  setCurrentSliderValue,
+  setGenotypesForFilterSelected
 } = graphSlice.actions;
 
 export default graphSlice.reducer;
