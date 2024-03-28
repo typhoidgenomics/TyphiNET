@@ -96,6 +96,7 @@ export const DownloadData = () => {
   const captureRFWG = useAppSelector((state) => state.dashboard.captureRFWG);
   const captureRDWG = useAppSelector((state) => state.dashboard.captureRDWG);
   const captureGD = useAppSelector((state) => state.dashboard.captureGD);
+  const genotypesForFilterSelected = useAppSelector((state) => state.graph.genotypesForFilterSelected);
 
   async function handleClickDownloadDatabase() {
     setLoadingCSV(true);
@@ -450,7 +451,7 @@ export const DownloadData = () => {
         } else if (graphCards[index].id === 'GD') {
           drawLegend({
             document: doc,
-            legendData: genotypesForFilter,
+            legendData: genotypesForFilterSelected,
             factor: genotypesFactor,
             rectY,
             xSpace: 65,

@@ -43,18 +43,18 @@ export const DistributionGraph = () => {
     return distributionGraphView === 'number' ? undefined : [0, 100];
   }
 
-  // useEffect(() => {
-  //   let cnt = 0;
-  //   newArray.map((item) => {
-  //     cnt += item.count;
-  //   });
+  useEffect(() => {
+    let cnt = 0;
+    newArray.map((item) => {
+      cnt += item.count;
+    });
 
-  //   if (cnt <= 0) {
-  //     dispatch(setCaptureGD(false));
-  //   } else {
-  //     dispatch(setCaptureGD(true));
-  //   }
-  // }, [genotypesForFilter, genotypesYearData, currentSliderValue]);
+    if (cnt <= 0) {
+      dispatch(setCaptureGD(false));
+    } else {
+      dispatch(setCaptureGD(true));
+    }
+  }, [genotypesForFilter, genotypesYearData, currentSliderValue]);
 
 
 
