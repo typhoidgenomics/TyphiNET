@@ -92,6 +92,10 @@ export const DownloadData = () => {
   const genotypesForFilter = useAppSelector((state) => state.dashboard.genotypesForFilter);
   const customDropdownMapView = useAppSelector((state) => state.graph.customDropdownMapView);
   const drugResistanceGraphView = useAppSelector((state) => state.graph.drugResistanceGraphView);
+  const captureDRT = useAppSelector((state) => state.dashboard.captureDRT);
+  const captureRFWG = useAppSelector((state) => state.dashboard.captureRFWG);
+  const captureRDWG = useAppSelector((state) => state.dashboard.captureRDWG);
+  const captureGD = useAppSelector((state) => state.dashboard.captureGD);
 
   async function handleClickDownloadDatabase() {
     setLoadingCSV(true);
@@ -111,6 +115,15 @@ export const DownloadData = () => {
             lines[0][index] = 'Cip';
           } 
           });
+        const replacements = {
+          'COUNTRY_ONLY': 'Country',
+          'cip_pred_pheno': 'Cip',
+          'dashboard view': 'Dashboard view'
+        };
+
+        lines[0].forEach((curr, index) => {
+          lines[0][index] = replacements[curr] || curr;
+        });
         
         for (let index = 0; index < columnsToRemove.length; index++) {
           let currentIndex = lines[0].indexOf(columnsToRemove[index]);
@@ -296,13 +309,13 @@ export const DownloadData = () => {
       doc.text(`Map View: ${actualMapView}`, 16, 108);
       doc.text(`Dataset: ${dataset}${dataset === 'All' ? ' (local + travel)' : ''}`, 16, 120);
 
-      doc.setFontSize(8);
+      // doc.setFontSize(8);
       if(mapView === 'Genotype prevalence'){
         if (customDropdownMapView.length === 1) {
             doc.text('Selected Genotypes: ' + customDropdownMapView, 16, 140);
         } else if (customDropdownMapView.length > 1) {
-            const genotypesText = customDropdownMapView.join('\n');
-            doc.text('Selected Genotypes: \n' + genotypesText, 16, 140);
+            const genotypesText = customDropdownMapView.join(', ');
+            doc.text('Selected Genotypes: ' + genotypesText, 16, 140);
         }
       }
       // let mapY = 160 + (customDropdownMapView.length*9);
@@ -363,8 +376,13 @@ export const DownloadData = () => {
       const genotypesFactor = Math.ceil(genotypesForFilter.length / 6);
 
       for (let index = 0; index < graphCards.length; index++) {
-        if (graphCards[index].id === 'DRT' && drugResistanceGraphView.length === 0 ){
-            continue;
+        if (
+          (graphCards[index].id === 'DRT' && (drugResistanceGraphView.length === 0 || captureDRT === false)) ||
+          (graphCards[index].id === 'RFWG' && captureRFWG === false) ||
+          (graphCards[index].id === 'RDWG' && captureRDWG === false) ||
+          (graphCards[index].id === 'GD' && captureGD === false)
+        ) {
+          continue;
         }
           doc.addPage();
           drawFooter({ document: doc, pageHeight, pageWidth, date });
