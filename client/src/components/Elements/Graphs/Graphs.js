@@ -51,6 +51,7 @@ export const Graphs = () => {
   const captureRFWG = useAppSelector((state) => state.dashboard.captureRFWG);
   const captureRDWG = useAppSelector((state) => state.dashboard.captureRDWG);
   const captureGD = useAppSelector((state) => state.dashboard.captureGD);
+  const genotypesForFilterSelected = useAppSelector((state) => state.graph.genotypesForFilterSelected);
 
   function drawLegend({
     legendData,
@@ -200,9 +201,9 @@ export const Graphs = () => {
         ctx.fillRect(0, 660 - mobileFactor, canvas.width, canvas.height);
 
         drawLegend({
-          legendData: genotypesForFilter,
+          legendData: genotypesForFilterSelected,
           context: ctx,
-          factor: genotypesFactor,
+          factor: Math.ceil(genotypesForFilterSelected.length / 9),
           mobileFactor,
           yPosition: 670,
           isGenotype: true,
