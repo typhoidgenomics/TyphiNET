@@ -65,6 +65,7 @@ export const FrequenciesGraph = () => {
 
   let sumOfBarDataToShowOnPlot = 0;
   useEffect(() => {
+    console.log("data", data, frequenciesGraphSelectedGenotypes)
     data = data.filter((genotype) => frequenciesGraphSelectedGenotypes.includes(genotype.name));
     
     data.map((item) => {
@@ -75,7 +76,7 @@ export const FrequenciesGraph = () => {
     } else {
       dispatch(setCaptureRFWG(true));
     }
-  }, [frequenciesGraphSelectedGenotypes]);
+  }, [frequenciesGraphSelectedGenotypes, frequenciesGraphView]);
  
   function getSelectGenotypeLabel(genotype) {
     const percentage = Number(((genotype.Susceptible / genotype.totalCount) * 100).toFixed(2));
@@ -88,8 +89,9 @@ export const FrequenciesGraph = () => {
   }
 
   function getData() {
+     console.log("getData",data)
     data = data.filter((genotype) => frequenciesGraphSelectedGenotypes.includes(genotype.name));
-    // console.log("getData",data)
+   
 
     if (frequenciesGraphView === 'number') {
       return data;
