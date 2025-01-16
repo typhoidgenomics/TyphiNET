@@ -43,5 +43,8 @@ export const drugClasses = [
   'Ciprofloxacin NS',
   'Sulphonamides',
   'Tetracyclines',
-  'Trimethoprim'
+  'Trimethoprim',
+  'MDR',
+  'XDR',
+  'Susceptible'
 ];
