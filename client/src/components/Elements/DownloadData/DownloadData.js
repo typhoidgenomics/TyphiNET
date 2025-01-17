@@ -407,7 +407,6 @@ export const DownloadData = () => {
         doc.text(`Total: ${actualGenomes} genomes`, 16, 54);
         doc.text(`Country: ${actualCountry}`, 16, 66);
         // doc.text(`Time period: ${actualTimeInitial} to ${actualTimeFinal}`, 16, 78);
-        console.log('llll', graphCards[index].id)
         if(graphCards[index].id === 'GD')
           doc.text(`Time period: ${starttimeGD} to ${endtimeGD}`, 16, 78);
         else if(graphCards[index].id === 'DRT')

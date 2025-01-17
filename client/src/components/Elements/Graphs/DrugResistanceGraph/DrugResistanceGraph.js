@@ -157,7 +157,6 @@ export const DrugResistanceGraph = () => {
                 </Label>
               </YAxis>
               {drugsYearData.length > 0 && <Brush dataKey="name" height={20} stroke={'rgb(31, 187, 211)'} onChange={(brushRange) => {
-                console.log('drt,,,,,,',drugsYearData[brushRange.startIndex]?.name, drugsYearData[brushRange.endIndex]?.name)
                 dispatch(setStarttimeDRT((drugsYearData[brushRange.startIndex]?.name)));
                 dispatch(setEndtimeDRT((drugsYearData[brushRange.endIndex]?.name))); // if using state genotypesYearData[start]?.name
               }} />}

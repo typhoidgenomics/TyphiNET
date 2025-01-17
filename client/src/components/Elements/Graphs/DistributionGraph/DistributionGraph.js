@@ -123,7 +123,6 @@ export const DistributionGraph = () => {
                 </Label>
               </YAxis>
               {genotypesYearData.length > 0 && <Brush dataKey="name" height={20} stroke={'rgb(31, 187, 211)'} onChange={(brushRange) => {
-                console.log('gd,,,,,,',genotypesYearData[brushRange.startIndex]?.name, genotypesYearData[brushRange.endIndex]?.name)
                 dispatch(setStarttimeGD((genotypesYearData[brushRange.startIndex]?.name)));
                 dispatch(setEndtimeGD((genotypesYearData[brushRange.endIndex]?.name))); // if using state genotypesYearData[start]?.name
               }}/>}
