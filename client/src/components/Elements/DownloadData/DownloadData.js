@@ -96,7 +96,13 @@ export const DownloadData = () => {
   const captureRFWG = useAppSelector((state) => state.dashboard.captureRFWG);
   const captureRDWG = useAppSelector((state) => state.dashboard.captureRDWG);
   const captureGD = useAppSelector((state) => state.dashboard.captureGD);
-
+  const endtimeGD = useAppSelector((state) => state.graph.endtimeGD);
+  const starttimeGD = useAppSelector((state) => state.graph.starttimeGD);
+  const endtimeDRT = useAppSelector((state) => state.graph.endtimeDRT);
+  const starttimeDRT = useAppSelector((state) => state.graph.starttimeDRT);
+  const starttimeRD = useAppSelector((state) => state.graph.starttimeRD);
+  const starttimeF = useAppSelector((state) => state.graph.starttimeF)
+  console.log('GD',starttimeGD ,'DRT', starttimeDRT, 'starttimeF',starttimeF, 'starttimeRD',starttimeRD )
   async function handleClickDownloadDatabase() {
     setLoadingCSV(true);
     await axios
@@ -384,6 +390,9 @@ export const DownloadData = () => {
         ) {
           continue;
         }
+        // let initTime = actualTimeInitial, finalTime = actualTimeFinal;
+        // if(graphCards[index].id === 'GD'){ console('...',graphCards.id);initTime = starttimeGD ;finalTime = endtimeGD ;}
+        // if(graphCards[index].id === 'DRT'){ initTime = starttimeDRT;finalTime = endtimeDRT ;}
           doc.addPage();
           drawFooter({ document: doc, pageHeight, pageWidth, date });
         const title = `${graphCards[index].title}${
@@ -397,7 +406,19 @@ export const DownloadData = () => {
         doc.setFontSize(12);
         doc.text(`Total: ${actualGenomes} genomes`, 16, 54);
         doc.text(`Country: ${actualCountry}`, 16, 66);
-        doc.text(`Time period: ${actualTimeInitial} to ${actualTimeFinal}`, 16, 78);
+        // doc.text(`Time period: ${actualTimeInitial} to ${actualTimeFinal}`, 16, 78);
+        console.log('llll', graphCards[index].id)
+        if(graphCards[index].id === 'GD')
+          doc.text(`Time period: ${starttimeGD} to ${endtimeGD}`, 16, 78);
+        else if(graphCards[index].id === 'DRT')
+          doc.text(`Time period: ${starttimeDRT} to ${endtimeDRT}`, 16, 78);
+        else
+          doc.text(`Time period: ${actualTimeInitial} to ${actualTimeFinal}`, 16, 78);
+        
+        if (graphCards[index].id === 'RDWG'){
+          doc.text(`Total genotypes: ${starttimeRD}`, 16, 102);
+        }
+        if(graphCards[index].id === 'RFWG') doc.text(`Total select genotypes: ${starttimeF}`, 16, 102);
         doc.text(`Dataset: ${dataset}${dataset === 'All' ? ' (local + travel)' : ''}`, 16, 90);
 
         const graphImg = document.createElement('img');

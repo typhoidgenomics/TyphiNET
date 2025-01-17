@@ -14,6 +14,12 @@ interface GraphState {
   determinantsGraphView: string;
   determinantsGraphDrugClass: string;
   customDropdownMapView: Array<string>;
+  starttimeGD: number;
+  endtimeGD: number;
+  starttimeDRT: number;
+  endtimeDRT: number;
+  starttimeF: number;
+  starttimeRD: number;
 }
 
 const initialState: GraphState = {
@@ -30,6 +36,12 @@ const initialState: GraphState = {
   determinantsGraphView: 'percentage',
   determinantsGraphDrugClass: 'Ciprofloxacin NS',
   customDropdownMapView: [],
+  starttimeGD:0,
+  endtimeGD:0,
+  starttimeDRT:0,
+  endtimeDRT:0,
+  starttimeF:5,
+  starttimeRD:10,
 };
 
 export const graphSlice = createSlice({
@@ -75,6 +87,24 @@ export const graphSlice = createSlice({
     setCustomDropdownMapView: (state, action: PayloadAction<Array<string>>) => {
       state.customDropdownMapView = action.payload;
     },
+    setStarttimeGD: (state, action: PayloadAction<number>) => {
+      state.starttimeGD = action.payload;
+    },
+    setEndtimeGD: (state, action: PayloadAction<number>) => {
+      state.endtimeGD = action.payload;
+    },
+    setStarttimeDRT: (state, action: PayloadAction<number>) => {
+      state.starttimeDRT = action.payload;
+    },
+    setEndtimeDRT: (state, action: PayloadAction<number>) => {
+      state.endtimeDRT = action.payload;
+    },
+    setStarttimeF: (state, action: PayloadAction<number>) => {
+      state.starttimeF = action.payload;
+    },
+    setStarttimeRD: (state, action: PayloadAction<number>) => {
+      state.starttimeRD = action.payload;
+    },
   }
 });
 
@@ -91,7 +121,13 @@ export const {
   setDeterminantsGraphView,
   setDeterminantsGraphDrugClass,
   setGenotypesDrugClassesData,
-  setCustomDropdownMapView
+  setCustomDropdownMapView,
+  setStarttimeGD,
+  setEndtimeGD,
+  setStarttimeDRT,
+  setEndtimeDRT,
+  setStarttimeF,
+  setStarttimeRD
 } = graphSlice.actions;
 
 export default graphSlice.reducer;
