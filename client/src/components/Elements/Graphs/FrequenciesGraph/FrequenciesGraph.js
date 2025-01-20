@@ -198,7 +198,7 @@ export const FrequenciesGraph = () => {
                     <div className={classes.legendWrapper}>
                       {payload.map((entry, index) => {
                         const { dataKey, color } = entry;
-                        if(!sumOfBarDataToShowOnPlot)
+                        if(!genotypesDrugsData.length)
                           return null;
                         return (
                           <div key={`frequencies-legend-${index}`} className={classes.legendItemWrapper}>

@@ -36,22 +36,26 @@ export const DeterminantsGraph = () => {
   const genotypesDrugClassesData = useAppSelector((state) => state.graph.genotypesDrugClassesData);
   const determinantsGraphView = useAppSelector((state) => state.graph.determinantsGraphView);
   const determinantsGraphDrugClass = useAppSelector((state) => state.graph.determinantsGraphDrugClass);
-  let sumOfBarDataToShowOnPlot = 0;
+  const [sumOfBarDataToShowOnPlot, setSumOfBarDataToShowOnPlot] = useState(0);
+
   useEffect(() => {
+    let total = 0; // Local variable to calculate the sum
     let genotypeDrugClassesData = structuredClone(genotypesDrugClassesData[determinantsGraphDrugClass] ?? []);
     
-    genotypeDrugClassesData.map((item) => {
-      sumOfBarDataToShowOnPlot += item.totalCount;
+    genotypeDrugClassesData.forEach((item) => {
+      total += item.totalCount;
     });
-    // console.log(" genotypeDrugClassesData.length", genotypeDrugClassesData.length, sumOfBarDataToShowOnPlot)
-    if (sumOfBarDataToShowOnPlot <= 0) {
+
+    setSumOfBarDataToShowOnPlot(total); // Update the state with the new sum
+
+    if (total <= 0) {
       dispatch(setCaptureRDWG(false));
     } else {
       dispatch(setCaptureRDWG(true));
     }
   }, [genotypesDrugClassesData, determinantsGraphDrugClass]);
 
-
+  
   let data = 0;
   useEffect(()=>{
     if(genotypesDrugClassesData[determinantsGraphDrugClass] !== undefined){
@@ -229,7 +233,7 @@ export const DeterminantsGraph = () => {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [genotypesDrugClassesData, determinantsGraphView, determinantsGraphDrugClass, matches500]);
+  }, [genotypesDrugClassesData, determinantsGraphView, determinantsGraphDrugClass, matches500, sumOfBarDataToShowOnPlot]);
 
   return (
     <CardContent className={classes.determinantsGraph}>
