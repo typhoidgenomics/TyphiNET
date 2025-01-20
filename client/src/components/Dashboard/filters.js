@@ -39,6 +39,23 @@ export function filterData({ data, dataset, actualTimeInitial, actualTimeFinal, 
     // year,
   };
 }
+export function filterDataBrush({data, dataset,starttimeGD, endtimeGD, starttimeDRT, endtimeDRT}){
+  const checkDataset = (item) => dataset === 'All' || item.TRAVEL === dataset.toLowerCase();
+  const checkTimeGD = (item) => {
+    return item.DATE >= starttimeGD && item.DATE <= endtimeGD;
+  };
+  const checkTimeDRT = (item) => {
+    return item.DATE >= starttimeDRT && item.DATE <= endtimeDRT;
+  };
+
+  const newDataGD = data.filter((x) => checkDataset(x) && checkTimeGD(x));
+  const newDataDRT = data.filter((x) => checkDataset(x) && checkTimeDRT(x));
+
+  let genomesCountGD = newDataGD.length;
+  let genomesCountDRT = newDataDRT.length;
+
+  return {genomesCountGD, genomesCountDRT};
+}
 
 // Adjust the country names to its correct name
 export function getCountryDisplayName(country) {

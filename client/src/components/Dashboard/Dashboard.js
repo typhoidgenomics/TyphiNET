@@ -28,8 +28,10 @@ import {
   setGenotypesDrugsData2,
   setGenotypesYearData,
   setCustomDropdownMapView,
+  setActualGenomesGD,
+  setActualGenomesDRT,
 } from '../../stores/slices/graphSlice.ts';
-import { filterData, getYearsData, getMapData, getGenotypesData, getYears} from './filters';
+import { filterData, filterDataBrush, getYearsData, getMapData, getGenotypesData, getYears} from './filters';
 //getCountryDisplayName removed from statement above
 import { ResetButton } from '../Elements/ResetButton/ResetButton';
 import { About } from '../About';
@@ -47,6 +49,10 @@ export const DashboardPage = () => {
   const countriesForFilter = useAppSelector((state) => state.graph.countriesForFilter);
   const yearsForFilter = useAppSelector((state) => state.dashboard.years);
   const genotypesForFilter = useAppSelector((state) => state.dashboard.genotypesForFilter);
+  const endtimeGD = useAppSelector((state) => state.graph.endtimeGD);
+  const starttimeGD = useAppSelector((state) => state.graph.starttimeGD);
+  const endtimeDRT = useAppSelector((state) => state.graph.endtimeDRT);
+  const starttimeDRT = useAppSelector((state) => state.graph.starttimeDRT);
 
   // This function is only called once, after the csv is read. It gets all the static and dynamic data
   // that came from the csv file and sets all the data the organism needs to show
@@ -164,6 +170,13 @@ export const DashboardPage = () => {
     }
   }, [canGetData, dataset, actualTimeInitial, actualTimeFinal, actualCountry]);
 
+  useEffect(() =>{
+    if (data.length > 0 && canGetData) {
+      const filters = filterDataBrush({ data, dataset, starttimeGD, endtimeGD, starttimeDRT, endtimeDRT });
+      dispatch(setActualGenomesGD(filters.genomesCountGD));
+      dispatch(setActualGenomesDRT(filters.genomesCountDRT));
+    }
+  },[dataset, starttimeGD, endtimeGD, starttimeDRT, endtimeDRT])
   return (
     <MainLayout>
       <Map />

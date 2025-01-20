@@ -18,6 +18,8 @@ interface GraphState {
   endtimeGD: number;
   starttimeDRT: number;
   endtimeDRT: number;
+  actualGenomesGD: number;
+  actualGenomesDRT: number;
   // starttimeF: number;
   // starttimeRD: number;
 }
@@ -40,6 +42,8 @@ const initialState: GraphState = {
   endtimeGD:0,
   starttimeDRT:0,
   endtimeDRT:0,
+  actualGenomesGD:0,
+  actualGenomesDRT:0,
   // starttimeF:5,
   // starttimeRD:10,
 };
@@ -99,6 +103,12 @@ export const graphSlice = createSlice({
     setEndtimeDRT: (state, action: PayloadAction<number>) => {
       state.endtimeDRT = action.payload;
     },
+    setActualGenomesGD: (state, action: PayloadAction<number>) => {
+      state.actualGenomesGD = action.payload;
+    },
+    setActualGenomesDRT: (state, action: PayloadAction<number>) => {
+      state.actualGenomesDRT = action.payload;
+    },
     // setStarttimeF: (state, action: PayloadAction<number>) => {
     //   state.starttimeF = action.payload;
     // },
@@ -126,6 +136,8 @@ export const {
   setEndtimeGD,
   setStarttimeDRT,
   setEndtimeDRT,
+  setActualGenomesGD,
+  setActualGenomesDRT,
   // setStarttimeF,
   // setStarttimeRD
 } = graphSlice.actions;

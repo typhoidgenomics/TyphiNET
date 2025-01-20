@@ -55,6 +55,8 @@ export const Graphs = () => {
   const starttimeGD = useAppSelector((state) => state.graph.starttimeGD);
   const endtimeDRT = useAppSelector((state) => state.graph.endtimeDRT);
   const starttimeDRT = useAppSelector((state) => state.graph.starttimeDRT);
+  const actualGenomesGD = useAppSelector((state) => state.graph.actualGenomesGD);
+  const actualGenomesDRT = useAppSelector((state) => state.graph.actualGenomesDRT);
   // const starttimeRD = useAppSelector((state) => state.graph.starttimeRD);
   // const starttimeF = useAppSelector((state) => state.graph.starttimeF);
 
@@ -169,11 +171,13 @@ export const Graphs = () => {
       // ctx.fillText(`Organism: ${globalOverviewLabel.fullLabel}`, canvas.width / 2, 110);
       ctx.fillText(`Dataset: ${dataset}`, canvas.width / 2, 110);
       // ctx.fillText(`Time period: ${actualTimeInitial} to ${actualTimeFinal}`, canvas.width / 2, 132);
-      if(card.id === 'GD')
+      if(card.id === 'GD'){
         ctx.fillText(`Time period: ${starttimeGD} to ${endtimeGD}`, canvas.width / 2, 132);
-      else if(card.id === 'DRT')
+        ctx.fillText(`Total ${actualGenomesGD} genomes`, canvas.width / 2, 172);
+      }else if(card.id === 'DRT'){
         ctx.fillText(`Time period: ${starttimeDRT} to ${endtimeDRT}`, canvas.width / 2, 132);
-      else
+        ctx.fillText(`Total ${actualGenomesDRT} genomes`, canvas.width / 2, 172);
+      }else
         ctx.fillText(`Time period: ${actualTimeInitial} to ${actualTimeFinal}`, canvas.width / 2, 132);
       
       ctx.fillText(`Country: ${actualCountry}`, canvas.width / 2, 154);

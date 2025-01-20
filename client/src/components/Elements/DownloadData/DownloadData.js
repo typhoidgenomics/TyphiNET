@@ -100,6 +100,8 @@ export const DownloadData = () => {
   const starttimeGD = useAppSelector((state) => state.graph.starttimeGD);
   const endtimeDRT = useAppSelector((state) => state.graph.endtimeDRT);
   const starttimeDRT = useAppSelector((state) => state.graph.starttimeDRT);
+  const actualGenomesGD = useAppSelector((state) => state.graph.actualGenomesGD);
+  const actualGenomesDRT = useAppSelector((state) => state.graph.actualGenomesDRT);
   // const starttimeRD = useAppSelector((state) => state.graph.starttimeRD);
   // const starttimeF = useAppSelector((state) => state.graph.starttimeF)
   // console.log('GD',starttimeGD ,'DRT', starttimeDRT, 'starttimeF',starttimeF, 'starttimeRD',starttimeRD )
@@ -404,7 +406,9 @@ export const DownloadData = () => {
         doc.setFontSize(10);
         doc.text(graphCards[index].description.join(' / ').replaceAll('≥', '>='), 16, 36);
         doc.setFontSize(12);
-        doc.text(`Total: ${actualGenomes} genomes`, 16, 54);
+        if(graphCards[index].id === 'GD') doc.text(`Total: ${actualGenomesGD} genomes`, 16, 54);
+        else if(graphCards[index].id === 'DRT') doc.text(`Total: ${actualGenomesDRT} genomes`, 16, 54);
+        else doc.text(`Total: ${actualGenomes} genomes`, 16, 54);
         doc.text(`Country: ${actualCountry}`, 16, 66);
         // doc.text(`Time period: ${actualTimeInitial} to ${actualTimeFinal}`, 16, 78);
         if(graphCards[index].id === 'GD')
