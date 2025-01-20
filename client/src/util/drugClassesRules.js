@@ -613,7 +613,8 @@ export const drugClassesRules = {
       susceptible: true,
       rules: [{ columnID: 'dfra_any', value: '0' }]
     }
-  ],MDR:[
+  ],
+  MDR:[
     {
       name: 'MDR',
       susceptible: false,
@@ -637,7 +638,79 @@ export const drugClassesRules = {
       susceptible: true,
       rules: [{ columnID: 'XDR', value: '-' }],
     },
-
+  ],
+  Susceptible:[
+    {
+      name: 'Susceptible',
+      susceptible: true,
+      rules: [
+        { columnID: 'amr_category', value: 'No AMR detected' }
+      ]
+    },
+    {
+      name: 'Non-Susceptible AMR',
+      susceptible: false,
+      rules: [
+        { columnID: 'amr_category', value: 'AMR' }
+      ]
+    },
+    {
+      name: 'Non-Susceptible AMR_DCS',
+      susceptible: false,
+      rules: [
+        { columnID: 'amr_category', value: 'AMR_DCS' }
+      ]
+    },
+    {
+      name: 'Non-Susceptible AzithR_DCS',
+      susceptible: false,
+      rules: [
+        { columnID: 'amr_category', value: 'AzithR_DCS' }
+      ]
+    },
+    {
+      name: 'Non-Susceptible AzithR_DCS_MDR',
+      susceptible: false,
+      rules: [
+        { columnID: 'amr_category', value: 'AzithR_DCS_MDR' }
+      ]
+    },
+    {
+      name: 'Non-Susceptible DCS',
+      susceptible: false,
+      rules: [
+        { columnID: 'amr_category', value: 'DCS' }
+      ]
+    },
+    {
+      name: 'Non-Susceptible MDR',
+      susceptible: false,
+      rules: [
+        { columnID: 'amr_category', value: 'MDR' }
+      ]
+    },
+    {
+      name: 'Non-Susceptible MDR_DCS',
+      susceptible: false,
+      rules: [
+        { columnID: 'amr_category', value: 'MDR_DCS' }
+      ]
+    },
+    {
+      name: 'Non-Susceptible XDR',
+      susceptible: false,
+      rules: [
+        { columnID: 'amr_category', value: 'XDR' }
+      ]
+    },
+// TODO: this value in database is 'blank' not '-'
+    {
+      name: 'Non-Susceptible',
+      susceptible: false,
+      rules: [
+        { columnID: 'amr_category', value: '-' } 
+      ]
+    }
   ]
 
 };

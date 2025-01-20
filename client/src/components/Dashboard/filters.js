@@ -281,9 +281,9 @@ export function getGenotypesData({ data, genotypes, actualCountry }) {
   const genotypesDrugClassesData = {};
 
   drugRules.forEach((drug) => {
-    if (drug.key !== 'Susceptible') {
+    // if (drug.key !== 'Susceptible') {
       genotypesDrugClassesData[drug.key] = [];
-    }
+    // }
   });
 
   const genotypesDrugsData = genotypes.map((genotype) => {
@@ -312,7 +312,7 @@ export function getGenotypesData({ data, genotypes, actualCountry }) {
 
       }
 
-      if (rule.key !== 'Susceptible') {
+      // if (rule.key !== 'Susceptible') {
         const drugClass = { ...drugClassResponse };
 
         drugClassesRules[rule.key].forEach((classRule) => {
@@ -328,7 +328,7 @@ export function getGenotypesData({ data, genotypes, actualCountry }) {
         });
 
         genotypesDrugClassesData[rule.key].push(drugClass);
-      }
+      // }
     });
 
     response.resistantCount = response.totalCount - response['Susceptible'];

@@ -53,6 +53,7 @@ export const DashboardPage = () => {
   const starttimeGD = useAppSelector((state) => state.graph.starttimeGD);
   const endtimeDRT = useAppSelector((state) => state.graph.endtimeDRT);
   const starttimeDRT = useAppSelector((state) => state.graph.starttimeDRT);
+  const determinantsGraphDrugClass = useAppSelector((state) => state.graph.determinantsGraphDrugClass);
 
   // This function is only called once, after the csv is read. It gets all the static and dynamic data
   // that came from the csv file and sets all the data the organism needs to show
@@ -93,7 +94,7 @@ export const DashboardPage = () => {
     dispatch(setGenotypesDrugsData2(genotypesData.genotypesDrugsData));
     dispatch(setFrequenciesGraphSelectedGenotypes(genotypeDataGreaterThanZero.slice(0, 5).map((x) => x.name)));
     dispatch(setCustomDropdownMapView(genotypesData.genotypesDrugsData.slice(0, 1).map((x) => x.name)));
-   dispatch(setGenotypesDrugClassesData(genotypesData.genotypesDrugClassesData));
+    dispatch(setGenotypesDrugClassesData(genotypesData.genotypesDrugClassesData));
 
     const yearsData = getYearsData({
       data: responseData,
@@ -168,7 +169,7 @@ export const DashboardPage = () => {
       dispatch(setGenotypesYearData(yearsData.genotypesData));
       dispatch(setDrugsYearData(yearsData.drugsData));
     }
-  }, [canGetData, dataset, actualTimeInitial, actualTimeFinal, actualCountry]);
+  }, [canGetData, dataset, actualTimeInitial, actualTimeFinal, actualCountry, determinantsGraphDrugClass]);
 
   useEffect(() =>{
     if (data.length > 0 && canGetData) {
