@@ -14,7 +14,7 @@ import {
   Brush
 } from 'recharts';
 import { useAppDispatch, useAppSelector } from '../../../../stores/hooks';
-import { setDeterminantsGraphDrugClass, setDeterminantsGraphView, setStarttimeRD } from '../../../../stores/slices/graphSlice';
+import { setDeterminantsGraphDrugClass, setDeterminantsGraphView } from '../../../../stores/slices/graphSlice';
 import { drugClasses } from '../../../../util/drugs';
 import { useEffect, useState } from 'react';
 import { colorForDrugClasses, hoverColor } from '../../../../util/colorHelper';
@@ -137,9 +137,7 @@ export const DeterminantsGraph = () => {
                 </Label>
               </YAxis>
               {(genotypesDrugClassesData[determinantsGraphDrugClass] ?? []).length > 0 && (
-                <Brush dataKey="name" height={20} stroke={'rgb(31, 187, 211)'} onChange={(brushRange) => {
-                  dispatch(setStarttimeRD(brushRange.endIndex+1 - brushRange.startIndex));
-                }} />
+                <Brush dataKey="name" height={20} stroke={'rgb(31, 187, 211)'} />
               )}
 
               <Legend

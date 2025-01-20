@@ -18,8 +18,8 @@ interface GraphState {
   endtimeGD: number;
   starttimeDRT: number;
   endtimeDRT: number;
-  starttimeF: number;
-  starttimeRD: number;
+  // starttimeF: number;
+  // starttimeRD: number;
 }
 
 const initialState: GraphState = {
@@ -40,8 +40,8 @@ const initialState: GraphState = {
   endtimeGD:0,
   starttimeDRT:0,
   endtimeDRT:0,
-  starttimeF:5,
-  starttimeRD:10,
+  // starttimeF:5,
+  // starttimeRD:10,
 };
 
 export const graphSlice = createSlice({
@@ -99,12 +99,12 @@ export const graphSlice = createSlice({
     setEndtimeDRT: (state, action: PayloadAction<number>) => {
       state.endtimeDRT = action.payload;
     },
-    setStarttimeF: (state, action: PayloadAction<number>) => {
-      state.starttimeF = action.payload;
-    },
-    setStarttimeRD: (state, action: PayloadAction<number>) => {
-      state.starttimeRD = action.payload;
-    },
+    // setStarttimeF: (state, action: PayloadAction<number>) => {
+    //   state.starttimeF = action.payload;
+    // },
+    // setStarttimeRD: (state, action: PayloadAction<number>) => {
+    //   state.starttimeRD = action.payload;
+    // },
   }
 });
 
@@ -126,8 +126,8 @@ export const {
   setEndtimeGD,
   setStarttimeDRT,
   setEndtimeDRT,
-  setStarttimeF,
-  setStarttimeRD
+  // setStarttimeF,
+  // setStarttimeRD
 } = graphSlice.actions;
 
 export default graphSlice.reducer;

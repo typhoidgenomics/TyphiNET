@@ -31,7 +31,7 @@ import {
   Brush
 } from 'recharts';
 import { useAppDispatch, useAppSelector } from '../../../../stores/hooks';
-import { setFrequenciesGraphSelectedGenotypes, setFrequenciesGraphView, setStarttimeF, setEndtimeF} from '../../../../stores/slices/graphSlice';
+import { setFrequenciesGraphSelectedGenotypes, setFrequenciesGraphView} from '../../../../stores/slices/graphSlice';
 import { useEffect, useState } from 'react';
 import { hoverColor } from '../../../../util/colorHelper';
 import { getColorForDrug } from '../graphColorHelper';
@@ -189,9 +189,7 @@ export const FrequenciesGraph = () => {
                 </Label>
               </YAxis>
               {genotypesDrugsData.length > 0 && 
-              <Brush dataKey="name" height={20} stroke={'rgb(31, 187, 211)'} onChange={(brushRange) => {
-                dispatch(setStarttimeF(brushRange.endIndex+1 - brushRange.startIndex));
-              }}/>}
+              <Brush dataKey="name" height={20} stroke={'rgb(31, 187, 211)'}/>}
 
               <Legend
                 content={(props) => {

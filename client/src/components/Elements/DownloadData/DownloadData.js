@@ -100,9 +100,9 @@ export const DownloadData = () => {
   const starttimeGD = useAppSelector((state) => state.graph.starttimeGD);
   const endtimeDRT = useAppSelector((state) => state.graph.endtimeDRT);
   const starttimeDRT = useAppSelector((state) => state.graph.starttimeDRT);
-  const starttimeRD = useAppSelector((state) => state.graph.starttimeRD);
-  const starttimeF = useAppSelector((state) => state.graph.starttimeF)
-  console.log('GD',starttimeGD ,'DRT', starttimeDRT, 'starttimeF',starttimeF, 'starttimeRD',starttimeRD )
+  // const starttimeRD = useAppSelector((state) => state.graph.starttimeRD);
+  // const starttimeF = useAppSelector((state) => state.graph.starttimeF)
+  // console.log('GD',starttimeGD ,'DRT', starttimeDRT, 'starttimeF',starttimeF, 'starttimeRD',starttimeRD )
   async function handleClickDownloadDatabase() {
     setLoadingCSV(true);
     await axios
@@ -414,10 +414,10 @@ export const DownloadData = () => {
         else
           doc.text(`Time period: ${actualTimeInitial} to ${actualTimeFinal}`, 16, 78);
         
-        if (graphCards[index].id === 'RDWG'){
-          doc.text(`Total genotypes: ${starttimeRD}`, 16, 102);
-        }
-        if(graphCards[index].id === 'RFWG') doc.text(`Total select genotypes: ${starttimeF}`, 16, 102);
+        // if (graphCards[index].id === 'RDWG'){
+        //   doc.text(`Total genotypes: ${starttimeRD}`, 16, 102);
+        // }
+        // if(graphCards[index].id === 'RFWG') doc.text(`Total select genotypes: ${starttimeF}`, 16, 102);
         doc.text(`Dataset: ${dataset}${dataset === 'All' ? ' (local + travel)' : ''}`, 16, 90);
 
         const graphImg = document.createElement('img');

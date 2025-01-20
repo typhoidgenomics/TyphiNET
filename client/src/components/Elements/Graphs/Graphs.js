@@ -55,8 +55,8 @@ export const Graphs = () => {
   const starttimeGD = useAppSelector((state) => state.graph.starttimeGD);
   const endtimeDRT = useAppSelector((state) => state.graph.endtimeDRT);
   const starttimeDRT = useAppSelector((state) => state.graph.starttimeDRT);
-  const starttimeRD = useAppSelector((state) => state.graph.starttimeRD);
-  const starttimeF = useAppSelector((state) => state.graph.starttimeF);
+  // const starttimeRD = useAppSelector((state) => state.graph.starttimeRD);
+  // const starttimeF = useAppSelector((state) => state.graph.starttimeF);
 
   function drawLegend({
     legendData,
@@ -179,9 +179,9 @@ export const Graphs = () => {
       ctx.fillText(`Country: ${actualCountry}`, canvas.width / 2, 154);
       if (card.id === 'RDWG'){
         ctx.fillText(`Drug Class: ${determinantsGraphDrugClass}`, canvas.width / 2, 176);
-        ctx.fillText(`Total genotypes: ${starttimeRD}`, canvas.width / 2, 196);
+        // ctx.fillText(`Total genotypes: ${starttimeRD}`, canvas.width / 2, 196);
       }
-      if(card.id === 'RFWG') ctx.fillText(`Total select genotypes: ${starttimeF}`, canvas.width / 2, 196);
+      // if(card.id === 'RFWG') ctx.fillText(`Total select genotypes: ${starttimeF}`, canvas.width / 2, 196);
       ctx.fillStyle = 'white';
       ctx.textAlign = 'start';
       ctx.font = '12px Montserrat';
