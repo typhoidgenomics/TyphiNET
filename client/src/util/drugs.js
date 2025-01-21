@@ -14,7 +14,9 @@ export const drugs = [
   'Sulphonamides',
   'Susceptible',
   'Tetracyclines',
-  'Trimethoprim'
+  'Trimethoprim',
+  'MDR',
+  'XDR',
 ].sort((a, b) => a.localeCompare(b));
 
 export const drugsForDrugResistanceGraph = [...drugs, 'XDR', 'MDR'].sort((a, b) => a.localeCompare(b));
@@ -43,5 +45,8 @@ export const drugClasses = [
   'Ciprofloxacin NS',
   'Sulphonamides',
   'Tetracyclines',
-  'Trimethoprim'
+  'Trimethoprim',
+  'MDR',
+  'XDR',
+  'Susceptible'
 ];

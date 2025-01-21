@@ -13,7 +13,7 @@ import {
   Label
 } from 'recharts';
 import { useAppDispatch, useAppSelector } from '../../../../stores/hooks';
-import { setDistributionGraphView } from '../../../../stores/slices/graphSlice';
+import { setDistributionGraphView, setEndtimeGD, setStarttimeGD } from '../../../../stores/slices/graphSlice';
 import { getColorForGenotype, hoverColor } from '../../../../util/colorHelper';
 import { useEffect, useState } from 'react';
 import { setCaptureDRT, setCaptureRFWG, setCaptureRDWG, setCaptureGD } from '../../../../stores/slices/dashboardSlice';
@@ -34,6 +34,7 @@ export const DistributionGraph = () => {
   const genotypesYearData = useAppSelector((state) => state.graph.genotypesYearData);
   const genotypesForFilter = useAppSelector((state) => state.dashboard.genotypesForFilter);
   const canGetData = useAppSelector((state) => state.dashboard.canGetData);
+
 
   function getDomain() {
     return distributionGraphView === 'number' ? undefined : [0, 100];
@@ -98,6 +99,17 @@ export const DistributionGraph = () => {
   }
 
   useEffect(() => {
+    if (genotypesYearData.length > 0) {
+      // Dispatch initial values based on the default range (full range)
+      const startValue = genotypesYearData[0]?.name; // First value in the data
+      const endValue = genotypesYearData[genotypesYearData.length - 1]?.name; // Last value in the data
+
+      dispatch(setStarttimeGD(startValue));
+      dispatch(setEndtimeGD(endValue));
+    }
+  }, [genotypesYearData, dispatch]);
+
+  useEffect(() => {
     if (canGetData) {
       setPlotChart(() => {
         return (
@@ -110,7 +122,10 @@ export const DistributionGraph = () => {
                   {dataViewOptions.find((option) => option.value === distributionGraphView).label}
                 </Label>
               </YAxis>
-              {genotypesYearData.length > 0 && <Brush dataKey="name" height={20} stroke={'rgb(31, 187, 211)'} />}
+              {genotypesYearData.length > 0 && <Brush dataKey="name" height={20} stroke={'rgb(31, 187, 211)'} onChange={(brushRange) => {
+                dispatch(setStarttimeGD((genotypesYearData[brushRange.startIndex]?.name)));
+                dispatch(setEndtimeGD((genotypesYearData[brushRange.endIndex]?.name))); // if using state genotypesYearData[start]?.name
+              }}/>}
 
               <Legend
                 content={(props) => {
