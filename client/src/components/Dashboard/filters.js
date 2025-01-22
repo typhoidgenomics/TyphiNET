@@ -39,23 +39,27 @@ export function filterData({ data, dataset, actualTimeInitial, actualTimeFinal, 
     // year,
   };
 }
-export function filterDataBrush({data, dataset,starttimeGD, endtimeGD, starttimeDRT, endtimeDRT}){
-  const checkDataset = (item) => dataset === 'All' || item.TRAVEL === dataset.toLowerCase();
-  const checkTimeGD = (item) => {
-    return item.DATE >= starttimeGD && item.DATE <= endtimeGD;
+export function filterDataBrush({ data, dataset, actualCountry, starttimeGD, endtimeGD, starttimeDRT, endtimeDRT }) {
+  const filterByDataset = (item) => dataset === 'All' || item.TRAVEL === dataset.toLowerCase();
+  const filterByTimeRange = (item, start, end) => item.DATE >= start && item.DATE <= end;
+
+  const filterData = (start, end) => data.filter((x) => filterByDataset(x) && filterByTimeRange(x, start, end));
+
+  let newDataGD = filterData(starttimeGD, endtimeGD);
+  let newDataDRT = filterData(starttimeDRT, endtimeDRT);
+
+  if (actualCountry !== 'All') {
+    const filterByCountry = (x) => getCountryDisplayName(x.COUNTRY_ONLY) === actualCountry;
+    newDataGD = newDataGD.filter(filterByCountry);
+    newDataDRT = newDataDRT.filter(filterByCountry);
+  }
+
+  return {
+    genomesCountGD: newDataGD.length,
+    genomesCountDRT: newDataDRT.length
   };
-  const checkTimeDRT = (item) => {
-    return item.DATE >= starttimeDRT && item.DATE <= endtimeDRT;
-  };
-
-  const newDataGD = data.filter((x) => checkDataset(x) && checkTimeGD(x));
-  const newDataDRT = data.filter((x) => checkDataset(x) && checkTimeDRT(x));
-
-  let genomesCountGD = newDataGD.length;
-  let genomesCountDRT = newDataDRT.length;
-
-  return {genomesCountGD, genomesCountDRT};
 }
+
 
 // Adjust the country names to its correct name
 export function getCountryDisplayName(country) {

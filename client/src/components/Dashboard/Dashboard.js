@@ -173,7 +173,7 @@ export const DashboardPage = () => {
 
   useEffect(() =>{
     if (data.length > 0 && canGetData) {
-      const filters = filterDataBrush({ data, dataset, starttimeGD, endtimeGD, starttimeDRT, endtimeDRT });
+      const filters = filterDataBrush({ data, dataset, actualCountry, starttimeGD, endtimeGD, starttimeDRT, endtimeDRT });
       dispatch(setActualGenomesGD(filters.genomesCountGD));
       dispatch(setActualGenomesDRT(filters.genomesCountDRT));
     }
