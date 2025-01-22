@@ -227,7 +227,7 @@ export const colorForDrugClasses = {
     { name: 'Non-MDR', color: '#B9B9B9' },
   ],
   XDR: [
-    { name: 'XDR', color: '#40004b' },
+    { name: 'XDR', color: '#000' },
     { name: 'Non-XDR', color: '#B9B9B9' },
   ],
   Susceptible:[

@@ -26,7 +26,7 @@ import {
 } from 'recharts';
 import { useAppDispatch, useAppSelector } from '../../../../stores/hooks';
 import { setDrugResistanceGraphView, setStarttimeDRT,setEndtimeDRT } from '../../../../stores/slices/graphSlice';
-import { drugsForDrugResistanceGraph } from '../../../../util/drugs';
+import { drugsForDrugResistanceAndFrequencyGraph } from '../../../../util/drugs';
 import { useEffect, useState } from 'react';
 import { hoverColor } from '../../../../util/colorHelper';
 import { getColorForDrug } from '../graphColorHelper';
@@ -99,10 +99,10 @@ export const DrugResistanceGraph = () => {
     let newValues = [];
 
     if (all) {
-      if (drugResistanceGraphView.length === drugsForDrugResistanceGraph.length) {
+      if (drugResistanceGraphView.length === drugsForDrugResistanceAndFrequencyGraph.length) {
         newValues = [];
       } else {
-        newValues = drugsForDrugResistanceGraph.slice();
+        newValues = drugsForDrugResistanceAndFrequencyGraph.slice();
       }
     } else {
       const {
@@ -133,7 +133,7 @@ export const DrugResistanceGraph = () => {
 
       for (let index = 0; index < lines.length; index++) {
           const drug = drugResistanceGraphView[index];
-          const hasValue = drugsForDrugResistanceGraph.includes(drug);
+          const hasValue = drugsForDrugResistanceAndFrequencyGraph.includes(drug);
           lines[index].style.display = hasValue ? 'block' : 'none';
       }
 
@@ -296,18 +296,18 @@ export const DrugResistanceGraph = () => {
               variant="outlined"
               className={classes.selectButton}
               onClick={() => handleChangeDrugsView({ all: true })}
-              color={drugResistanceGraphView.length === drugsForDrugResistanceGraph.length ? 'error' : 'primary'}
+              color={drugResistanceGraphView.length === drugsForDrugResistanceAndFrequencyGraph.length ? 'error' : 'primary'}
             >
-              {drugResistanceGraphView.length === drugsForDrugResistanceGraph.length ? 'Clear All' : 'Select All'}
+              {drugResistanceGraphView.length === drugsForDrugResistanceAndFrequencyGraph.length ? 'Clear All' : 'Select All'}
             </Button>
           }
           inputProps={{ className: classes.selectInput }}
           MenuProps={{ classes: { paper: classes.menuPaper, list: classes.selectMenu } }}
           renderValue={(selected) => (
-            <div>{`${selected.length} of ${drugsForDrugResistanceGraph.length} selected`}</div>
+            <div>{`${selected.length} of ${drugsForDrugResistanceAndFrequencyGraph.length} selected`}</div>
           )}
         >
-          {drugsForDrugResistanceGraph.map((drug, index) => (
+          {drugsForDrugResistanceAndFrequencyGraph.map((drug, index) => (
             <MenuItem key={`drug-resistance-option-${index}`} value={drug}>
               <Checkbox checked={drugResistanceGraphView.indexOf(drug) > -1} />
               <ListItemText primary={drug} />

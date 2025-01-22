@@ -35,7 +35,7 @@ import { setFrequenciesGraphSelectedGenotypes, setFrequenciesGraphView} from '..
 import { useEffect, useState } from 'react';
 import { hoverColor } from '../../../../util/colorHelper';
 import { getColorForDrug } from '../graphColorHelper';
-import { drugs } from '../../../../util/drugs';
+import { drugs , drugsForDrugResistanceAndFrequencyGraph} from '../../../../util/drugs';
 import { setCaptureDRT, setCaptureRFWG, setCaptureRDWG, setCaptureGD } from '../../../../stores/slices/dashboardSlice';
 
 
@@ -268,7 +268,7 @@ export const FrequenciesGraph = () => {
                 }}
               />
 
-              {drugs.map((option, index) => (
+              {drugsForDrugResistanceAndFrequencyGraph.map((option, index) => (
                 <Bar key={`frequencies-bar-${index}`} dataKey={option} fill={getColorForDrug(option)} />
               ))}
             </BarChart>

@@ -21,7 +21,7 @@ import { imgOnLoadPromise } from '../../../util/imgOnLoadPromise';
 import domtoimage from 'dom-to-image';
 import LogoImg from '../../../assets/img/logo-typhinet-prod.png';
 import download from 'downloadjs';
-import { drugs, drugsForDrugResistanceGraph } from '../../../util/drugs';
+import { drugs, drugsForDrugResistanceAndFrequencyGraph } from '../../../util/drugs';
 import { getColorForDrug } from './graphColorHelper';
 import { colorForDrugClasses, getColorForGenotype } from '../../../util/colorHelper';
 import { graphCards } from '../../../util/graphCards';

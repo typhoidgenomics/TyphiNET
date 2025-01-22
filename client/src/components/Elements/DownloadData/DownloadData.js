@@ -17,7 +17,7 @@ import { mapLegends } from '../../../util/mapLegends';
 import { imgOnLoadPromise } from '../../../util/imgOnLoadPromise';
 import { graphCards } from '../../../util/graphCards';
 import domtoimage from 'dom-to-image';
-import { drugs, drugsForDrugResistanceGraph } from '../../../util/drugs';
+import { drugs, drugsForDrugResistanceAndFrequencyGraph } from '../../../util/drugs';
 import { getColorForDrug } from '../Graphs/graphColorHelper';
 import { colorForDrugClasses, getColorForGenotype } from '../../../util/colorHelper';
 import { getSalmonellaTexts, abbrivations } from '../../../util/reportInfoTexts';
