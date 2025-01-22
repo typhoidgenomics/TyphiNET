@@ -13,7 +13,7 @@ import {
   Label
 } from 'recharts';
 import { useAppDispatch, useAppSelector } from '../../../../stores/hooks';
-import { setDistributionGraphView, setGenotypesForFilterSelected } from '../../../../stores/slices/graphSlice';
+import { setDistributionGraphView, setEndtimeGD, setStarttimeGD, setGenotypesForFilterSelected } from '../../../../stores/slices/graphSlice';
 import { getColorForGenotype, hoverColor } from '../../../../util/colorHelper';
 import { useEffect, useState } from 'react';
 import { SliderSizes } from '../../Slider/SliderSizes';
@@ -147,7 +147,18 @@ console.log("newArray", newArray)
   function handleChangeDataView(event) {
     dispatch(setDistributionGraphView(event.target.value));
   }
-  
+
+  useEffect(() => {
+    if (genotypesYearData.length > 0) {
+      // Dispatch initial values based on the default range (full range)
+      const startValue = genotypesYearData[0]?.name; // First value in the data
+      const endValue = genotypesYearData[genotypesYearData.length - 1]?.name; // Last value in the data
+
+      dispatch(setStarttimeGD(startValue));
+      dispatch(setEndtimeGD(endValue));
+    }
+  }, [genotypesYearData, dispatch]);
+
   useEffect(() => {
     if (canGetData) {
       setPlotChart(() => {
@@ -161,7 +172,10 @@ console.log("newArray", newArray)
                   {dataViewOptions.find((option) => option.value === distributionGraphView).label}
                 </Label>
               </YAxis>
-              {genotypesYearData.length > 0 && <Brush dataKey="name" height={20} stroke={'rgb(31, 187, 211)'} />}
+              {genotypesYearData.length > 0 && <Brush dataKey="name" height={20} stroke={'rgb(31, 187, 211)'} onChange={(brushRange) => {
+                dispatch(setStarttimeGD((genotypesYearData[brushRange.startIndex]?.name)));
+                dispatch(setEndtimeGD((genotypesYearData[brushRange.endIndex]?.name))); // if using state genotypesYearData[start]?.name
+              }}/>}
 
               <Legend
                 content={(props) => {

@@ -14,6 +14,14 @@ interface GraphState {
   determinantsGraphView: string;
   determinantsGraphDrugClass: string;
   customDropdownMapView: Array<string>;
+  starttimeGD: number;
+  endtimeGD: number;
+  starttimeDRT: number;
+  endtimeDRT: number;
+  actualGenomesGD: number;
+  actualGenomesDRT: number;
+  // starttimeF: number;
+  // starttimeRD: number;
   currentSliderValue: Number;
   genotypesForFilterSelected: Array<string>;
 }
@@ -32,6 +40,14 @@ const initialState: GraphState = {
   determinantsGraphView: 'percentage',
   determinantsGraphDrugClass: 'Ciprofloxacin NS',
   customDropdownMapView: [],
+  starttimeGD:0,
+  endtimeGD:0,
+  starttimeDRT:0,
+  endtimeDRT:0,
+  actualGenomesGD:0,
+  actualGenomesDRT:0,
+  // starttimeF:5,
+  // starttimeRD:10,
   currentSliderValue: 20,
   genotypesForFilterSelected: [],
 };
@@ -79,6 +95,30 @@ export const graphSlice = createSlice({
     setCustomDropdownMapView: (state, action: PayloadAction<Array<string>>) => {
       state.customDropdownMapView = action.payload;
     },
+    setStarttimeGD: (state, action: PayloadAction<number>) => {
+      state.starttimeGD = action.payload;
+    },
+    setEndtimeGD: (state, action: PayloadAction<number>) => {
+      state.endtimeGD = action.payload;
+    },
+    setStarttimeDRT: (state, action: PayloadAction<number>) => {
+      state.starttimeDRT = action.payload;
+    },
+    setEndtimeDRT: (state, action: PayloadAction<number>) => {
+      state.endtimeDRT = action.payload;
+    },
+    setActualGenomesGD: (state, action: PayloadAction<number>) => {
+      state.actualGenomesGD = action.payload;
+    },
+    setActualGenomesDRT: (state, action: PayloadAction<number>) => {
+      state.actualGenomesDRT = action.payload;
+    },
+    // setStarttimeF: (state, action: PayloadAction<number>) => {
+    //   state.starttimeF = action.payload;
+    // },
+    // setStarttimeRD: (state, action: PayloadAction<number>) => {
+    //   state.starttimeRD = action.payload;
+    // },
       setCurrentSliderValue: (state, action: PayloadAction<Number>) => {
       state.currentSliderValue = action.payload;
     },
@@ -103,7 +143,15 @@ export const {
   setGenotypesDrugClassesData,
   setCustomDropdownMapView,
   setCurrentSliderValue,
-  setGenotypesForFilterSelected
+  setGenotypesForFilterSelected,
+  setStarttimeGD,
+  setEndtimeGD,
+  setStarttimeDRT,
+  setEndtimeDRT,
+  setActualGenomesGD,
+  setActualGenomesDRT,
+  // setStarttimeF,
+  // setStarttimeRD
 } = graphSlice.actions;
 
 export default graphSlice.reducer;

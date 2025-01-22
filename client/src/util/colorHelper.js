@@ -221,8 +221,28 @@ export const colorForDrugClasses = {
     { name: 'dfrA18 + sul2', color: '#98fb98' },
     { name: 'dfrA18 + sul1 + sul2', color: '#fc9272' },
     { name: 'None', color: '#B9B9B9' }
-  ]
-};
+  ],
+  MDR: [
+    { name: 'MDR', color: '#67001f' },
+    { name: 'Non-MDR', color: '#B9B9B9' },
+  ],
+  XDR: [
+    { name: 'XDR', color: '#40004b' },
+    { name: 'Non-XDR', color: '#B9B9B9' },
+  ],
+  Susceptible:[
+    { name: 'Susceptible', color: '#fd8d3c'},
+    { name: 'Non-Susceptible AMR', color: '#9e9ac8' },
+    { name: 'Non-Susceptible AMR_DCS', color: '#D3D3D3' },
+    { name: 'Non-Susceptible AzithR_DCS', color: '#A1C3D1' },
+    { name: 'Non-Susceptible AzithR_DCS_MDR', color: '#bfaeb7' },
+    { name: 'Non-Susceptible DCS', color: '#B9B9B9' },
+    { name: 'Non-Susceptible MDR', color: '#dcf1f5' },
+    { name: 'Non-Susceptible MDR_DCS', color: '#727272' },
+    { name: 'Non-Susceptible XDR', color: '#80917a' },
+    { name: 'Non-Susceptible Unknown', color: '#8f4549' }
+    ]
+  };
 
 // Color variables
 export const lightGrey = '#D3D3D3';

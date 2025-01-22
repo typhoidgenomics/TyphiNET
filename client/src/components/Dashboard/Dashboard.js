@@ -28,8 +28,10 @@ import {
   setGenotypesDrugsData2,
   setGenotypesYearData,
   setCustomDropdownMapView,
+  setActualGenomesGD,
+  setActualGenomesDRT,
 } from '../../stores/slices/graphSlice.ts';
-import { filterData, getYearsData, getMapData, getGenotypesData, getYears} from './filters';
+import { filterData, filterDataBrush, getYearsData, getMapData, getGenotypesData, getYears} from './filters';
 //getCountryDisplayName removed from statement above
 import { ResetButton } from '../Elements/ResetButton/ResetButton';
 import { About } from '../About';
@@ -47,6 +49,11 @@ export const DashboardPage = () => {
   const countriesForFilter = useAppSelector((state) => state.graph.countriesForFilter);
   const yearsForFilter = useAppSelector((state) => state.dashboard.years);
   const genotypesForFilter = useAppSelector((state) => state.dashboard.genotypesForFilter);
+  const endtimeGD = useAppSelector((state) => state.graph.endtimeGD);
+  const starttimeGD = useAppSelector((state) => state.graph.starttimeGD);
+  const endtimeDRT = useAppSelector((state) => state.graph.endtimeDRT);
+  const starttimeDRT = useAppSelector((state) => state.graph.starttimeDRT);
+  const determinantsGraphDrugClass = useAppSelector((state) => state.graph.determinantsGraphDrugClass);
 
   // This function is only called once, after the csv is read. It gets all the static and dynamic data
   // that came from the csv file and sets all the data the organism needs to show
@@ -87,7 +94,7 @@ export const DashboardPage = () => {
     dispatch(setGenotypesDrugsData2(genotypesData.genotypesDrugsData));
     dispatch(setFrequenciesGraphSelectedGenotypes(genotypeDataGreaterThanZero.slice(0, 5).map((x) => x.name)));
     dispatch(setCustomDropdownMapView(genotypesData.genotypesDrugsData.slice(0, 1).map((x) => x.name)));
-   dispatch(setGenotypesDrugClassesData(genotypesData.genotypesDrugClassesData));
+    dispatch(setGenotypesDrugClassesData(genotypesData.genotypesDrugClassesData));
 
     const yearsData = getYearsData({
       data: responseData,
@@ -162,8 +169,15 @@ export const DashboardPage = () => {
       dispatch(setGenotypesYearData(yearsData.genotypesData));
       dispatch(setDrugsYearData(yearsData.drugsData));
     }
-  }, [canGetData, dataset, actualTimeInitial, actualTimeFinal, actualCountry]);
+  }, [canGetData, dataset, actualTimeInitial, actualTimeFinal, actualCountry, determinantsGraphDrugClass]);
 
+  useEffect(() =>{
+    if (data.length > 0 && canGetData) {
+      const filters = filterDataBrush({ data, dataset, starttimeGD, endtimeGD, starttimeDRT, endtimeDRT });
+      dispatch(setActualGenomesGD(filters.genomesCountGD));
+      dispatch(setActualGenomesDRT(filters.genomesCountDRT));
+    }
+  },[dataset, starttimeGD, endtimeGD, starttimeDRT, endtimeDRT])
   return (
     <MainLayout>
       <Map />
