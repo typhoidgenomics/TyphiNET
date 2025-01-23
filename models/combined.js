@@ -314,6 +314,9 @@ const CombinedSchema = mongoose.Schema({
   amr_category: {
     type: String
   },
+  Susceptible: {
+    type: String
+  },
   'Genome ID': {
     type: String
   },
