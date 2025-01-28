@@ -89,6 +89,11 @@ export const DrugResistanceGraph = () => {
           percentage: Number(((count / data.count) * 100).toFixed(2))
         });
       });
+      tooltipData.forEach((item)=>{
+        if(item.name === 'Susceptible'){
+          item.name = 'Pan-Susceptible'
+        }
+      })
 
       tooltipData.sort((a, b) => b.count - a.count);
       return tooltipData;
@@ -183,6 +188,10 @@ export const DrugResistanceGraph = () => {
                                           <span>MDR</span>
                                           </Tooltip>
                                       );
+                                  }else if (dataKey === "Susceptible") {
+                                    dataKeyElement = (
+                                        <span>Pan-Susceptible</span>
+                                    );
                                   }else{
                                       dataKeyElement = dataKey;
                                   }
@@ -307,12 +316,18 @@ export const DrugResistanceGraph = () => {
             <div>{`${selected.length} of ${drugsForDrugResistanceAndFrequencyGraph.length} selected`}</div>
           )}
         >
-          {drugsForDrugResistanceAndFrequencyGraph.map((drug, index) => (
-            <MenuItem key={`drug-resistance-option-${index}`} value={drug}>
-              <Checkbox checked={drugResistanceGraphView.indexOf(drug) > -1} />
-              <ListItemText primary={drug} />
-            </MenuItem>
-          ))}
+          {drugsForDrugResistanceAndFrequencyGraph.map((drug, index) =>{ 
+            // let drugForDropdown;
+            // if(drug == 'Susceptible')
+            //   drugForDropdown = 'Pan-Susceptible';
+            // else drugForDropdown = drug;
+            return(
+              <MenuItem key={`drug-resistance-option-${index}`} value={drug}>
+                <Checkbox checked={drugResistanceGraphView.indexOf(drug) > -1} />
+                <ListItemText primary={drug} />
+              </MenuItem>
+            )
+          })}
         </Select>
       </div>
       <div className={classes.graphWrapper}>

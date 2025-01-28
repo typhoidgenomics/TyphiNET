@@ -44,7 +44,7 @@ export const getColorForDrug = (drug) => {
 
     case 'Susceptible':
       return lightGrey;
-
+    
     case 'Tetracyclines':
     case 'Tetracycline':
       return 'rgb(251,207,229)';

@@ -135,6 +135,11 @@ export const FrequenciesGraph = () => {
           percentage: Number(((count / data.totalCount) * 100).toFixed(2))
         });
       });
+      tooltipData.forEach((item)=>{
+        if(item.name === 'Susceptible'){
+          item.name = 'Pan-Susceptible'
+        }
+      })
 
       tooltipData.sort((a, b) => b.count - a.count);
       return tooltipData;
@@ -200,12 +205,20 @@ export const FrequenciesGraph = () => {
                     <div className={classes.legendWrapper}>
                       {payload.map((entry, index) => {
                         const { dataKey, color } = entry;
+                        let dataKeyElement;
+                        if (dataKey === "Susceptible") {
+                          dataKeyElement = (
+                              <span>Pan-Susceptible</span>
+                          );
+                        }else{
+                          dataKeyElement = dataKey;
+                        }
                         if(!genotypesDrugsData.length)
                           return null;
                         return (
                           <div key={`frequencies-legend-${index}`} className={classes.legendItemWrapper}>
                             <Box className={classes.colorCircle} style={{ backgroundColor: color }} />
-                            <Typography variant="caption">{dataKey}</Typography>
+                            <Typography variant="caption">{dataKeyElement}</Typography>
                           </div>
                         );
                       })}
@@ -234,6 +247,7 @@ export const FrequenciesGraph = () => {
                         {/* {payload[0].payload.totalCount > 0? */}
                         <div className={classes.tooltipContent}>
                           {data.map((item, index) => {
+                            
                             return (
                               <div key={`tooltip-content-${index}`} className={classes.tooltipItemWrapper}>
                                 <Box
