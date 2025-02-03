@@ -12,7 +12,8 @@ export const drugRules = [
   // { key: 'Ciprofloxacin R', columnID: 'cip_pred_pheno', values: ['CipR'] },
   { key: 'Ciprofloxacin NS', columnID: 'cip_pred_pheno', values: ['CipNS'] },
   { key: 'Sulphonamides', columnID: 'sul_any', values: ['1'] },
-  { key: 'Susceptible', columnID: 'amr_category', values: ['No AMR detected'] },
+  // { key: 'Susceptible', columnID: 'amr_category', values: ['No AMR detected'] },
+  { key: 'Pan-Susceptible', columnID: 'Pan-Susceptible', values: ['1'] },
   { key: 'Tetracyclines', columnID: 'tetracycline_category', values: ['TetR'] },
   { key: 'Trimethoprim', columnID: 'dfra_any', values: ['1'] },
   { key: 'MDR', columnID: 'MDR', values: ['MDR'] },
@@ -639,16 +640,16 @@ export const drugClassesRules = {
       rules: [{ columnID: 'XDR', value: '-' }],
     },
   ],
-  Susceptible:[
+  'Pan-Susceptible':[
     {
-      name: 'Susceptible',
+      name: 'No AMR markers',
       susceptible: true,
-      rules: [{ columnID: 'Susceptible', value: '1' }]
+      rules: [{ columnID: 'Pan-Susceptible', value: '1' }]
     },
     {
-      name: 'Non-Susceptible',
+      name: 'One or more AMR markers',
       susceptible: false,
-      rules: [{ columnID: 'Susceptible', value: '0' },]
+      rules: [{ columnID: 'Pan-Susceptible', value: '0' },]
     }
   ]
 

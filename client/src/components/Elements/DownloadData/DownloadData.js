@@ -103,9 +103,6 @@ export const DownloadData = () => {
   const actualGenomesGD = useAppSelector((state) => state.graph.actualGenomesGD);
   const actualGenomesDRT = useAppSelector((state) => state.graph.actualGenomesDRT);
   const genotypesForFilterSelected = useAppSelector((state) => state.graph.genotypesForFilterSelected);
-  // const starttimeRD = useAppSelector((state) => state.graph.starttimeRD);
-  // const starttimeF = useAppSelector((state) => state.graph.starttimeF)
-  // console.log('GD',starttimeGD ,'DRT', starttimeDRT, 'starttimeF',starttimeF, 'starttimeRD',starttimeRD )  const genotypesForFilterSelected = useAppSelector((state) => state.graph.genotypesForFilterSelected);
 
   async function handleClickDownloadDatabase() {
     setLoadingCSV(true);
@@ -400,10 +397,7 @@ export const DownloadData = () => {
         ) {
           continue;
         }
-        // let initTime = actualTimeInitial, finalTime = actualTimeFinal;
-        // if(graphCards[index].id === 'GD'){ console('...',graphCards.id);initTime = starttimeGD ;finalTime = endtimeGD ;}
-        // if(graphCards[index].id === 'DRT'){ initTime = starttimeDRT;finalTime = endtimeDRT ;}
-          doc.addPage();
+           doc.addPage();
           drawFooter({ document: doc, pageHeight, pageWidth, date });
         const title = `${graphCards[index].title}${
           graphCards[index].id === 'RDWG' ? `: ${determinantsGraphDrugClass}` : ''
@@ -445,14 +439,14 @@ export const DownloadData = () => {
         doc.setFillColor(255, 255, 255);
         const rectY = matches500 ? 300 : graphImg.width <= 741 ? 360 : 320;
         doc.rect(0, rectY, pageWidth, 200, 'F');
-        const drugsForDrugResistanceAndFrequencyGraphPanSusceptible = drugsForDrugResistanceAndFrequencyGraph.map((curr) => curr === 'Susceptible' ? 'Pan-Susceptible' : curr)
-        const drugResistanceGraphViewPanSusceptible = drugResistanceGraphView.map((curr) => curr === 'Susceptible' ? 'Pan-Susceptible' : curr)
+        // const drugsForDrugResistanceAndFrequencyGraphPanSusceptible = drugsForDrugResistanceAndFrequencyGraph.map((curr) => curr === 'Susceptible' ? 'Pan-Susceptible' : curr)
+        // const drugResistanceGraphViewPanSusceptible = drugResistanceGraphView.map((curr) => curr === 'Susceptible' ? 'Pan-Susceptible' : curr)
         
         doc.setFontSize(9);
         if (graphCards[index].id === 'RFWG') {
           drawLegend({
             document: doc,
-            legendData: drugsForDrugResistanceAndFrequencyGraphPanSusceptible,
+            legendData: drugsForDrugResistanceAndFrequencyGraph,
             factor: 4,
             rectY,
             xSpace: 100,
@@ -461,7 +455,7 @@ export const DownloadData = () => {
         }else if (graphCards[index].id === 'DRT') {
           drawLegend({
             document: doc,
-            legendData: drugResistanceGraphViewPanSusceptible,
+            legendData: drugResistanceGraphView,
             factor: 4,
             rectY,
             xSpace: 100,

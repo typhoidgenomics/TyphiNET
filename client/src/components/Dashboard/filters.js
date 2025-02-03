@@ -283,7 +283,7 @@ export function getYearsData({ data, years, actualCountry, getUniqueGenotypes = 
 // Get data for frequencies and determinants graphs
 export function getGenotypesData({ data, genotypes, actualCountry }) {
   const genotypesDrugClassesData = {};
-
+  
   drugRules.forEach((drug) => {
     // if (drug.key !== 'Susceptible') {
       genotypesDrugClassesData[drug.key] = [];
@@ -335,7 +335,7 @@ export function getGenotypesData({ data, genotypes, actualCountry }) {
       // }
     });
 
-    response.resistantCount = response.totalCount - response['Susceptible'];
+    response.resistantCount = response.totalCount - response['Pan-Susceptible'];
     return response;
   });
 
