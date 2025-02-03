@@ -31,11 +31,11 @@ import {
   Brush
 } from 'recharts';
 import { useAppDispatch, useAppSelector } from '../../../../stores/hooks';
-import { setFrequenciesGraphSelectedGenotypes, setFrequenciesGraphView } from '../../../../stores/slices/graphSlice';
+import { setFrequenciesGraphSelectedGenotypes, setFrequenciesGraphView} from '../../../../stores/slices/graphSlice';
 import { useEffect, useState } from 'react';
 import { hoverColor } from '../../../../util/colorHelper';
 import { getColorForDrug } from '../graphColorHelper';
-import { drugs } from '../../../../util/drugs';
+import { drugs , drugsForDrugResistanceAndFrequencyGraph} from '../../../../util/drugs';
 import { setCaptureDRT, setCaptureRFWG, setCaptureRDWG, setCaptureGD } from '../../../../stores/slices/dashboardSlice';
 
 
@@ -166,6 +166,16 @@ export const FrequenciesGraph = () => {
   const filteredData = data.filter((genotype) =>
     genotype.name.includes(searchValue2.toLowerCase()) || genotype.name.includes(searchValue2.toUpperCase())
   );
+  // useEffect(() => {
+  //     if (genotypesDrugsData.length > 0) {
+  //       // Dispatch initial values based on the default range (full range)
+  //       const startValue = genotypesDrugsData[0]?.name; // First value in the data
+  //       const endValue = genotypesDrugsData[genotypesDrugsData.length - 1]?.name; // Last value in the data
+  
+  //       dispatch(setStarttimeF(startValue));
+  //       dispatch(setEndtimeF(endValue));
+  //     }
+  //   }, [genotypesDrugsData, dispatch]);
 
   useEffect(() => {
     if (canGetData) {
@@ -180,7 +190,8 @@ export const FrequenciesGraph = () => {
                   {dataViewOptions.find((option) => option.value === frequenciesGraphView).label}
                 </Label>
               </YAxis>
-              {genotypesDrugsData.length > 0 && <Brush dataKey="name" height={20} stroke={'rgb(31, 187, 211)'} />}
+              {genotypesDrugsData.length > 0 && 
+              <Brush dataKey="name" height={20} stroke={'rgb(31, 187, 211)'}/>}
 
               <Legend
                 content={(props) => {
@@ -189,7 +200,7 @@ export const FrequenciesGraph = () => {
                     <div className={classes.legendWrapper}>
                       {payload.map((entry, index) => {
                         const { dataKey, color } = entry;
-                        if(!sumOfBarDataToShowOnPlot)
+                        if(!genotypesDrugsData.length)
                           return null;
                         return (
                           <div key={`frequencies-legend-${index}`} className={classes.legendItemWrapper}>
@@ -257,7 +268,7 @@ export const FrequenciesGraph = () => {
                 }}
               />
 
-              {drugs.map((option, index) => (
+              {drugsForDrugResistanceAndFrequencyGraph.map((option, index) => (
                 <Bar key={`frequencies-bar-${index}`} dataKey={option} fill={getColorForDrug(option)} />
               ))}
             </BarChart>

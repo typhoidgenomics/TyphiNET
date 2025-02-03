@@ -39,6 +39,27 @@ export function filterData({ data, dataset, actualTimeInitial, actualTimeFinal, 
     // year,
   };
 }
+export function filterDataBrush({ data, dataset, actualCountry, starttimeGD, endtimeGD, starttimeDRT, endtimeDRT }) {
+  const filterByDataset = (item) => dataset === 'All' || item.TRAVEL === dataset.toLowerCase();
+  const filterByTimeRange = (item, start, end) => item.DATE >= start && item.DATE <= end;
+
+  const filterData = (start, end) => data.filter((x) => filterByDataset(x) && filterByTimeRange(x, start, end));
+
+  let newDataGD = filterData(starttimeGD, endtimeGD);
+  let newDataDRT = filterData(starttimeDRT, endtimeDRT);
+
+  if (actualCountry !== 'All') {
+    const filterByCountry = (x) => getCountryDisplayName(x.COUNTRY_ONLY) === actualCountry;
+    newDataGD = newDataGD.filter(filterByCountry);
+    newDataDRT = newDataDRT.filter(filterByCountry);
+  }
+
+  return {
+    genomesCountGD: newDataGD.length,
+    genomesCountDRT: newDataDRT.length
+  };
+}
+
 
 // Adjust the country names to its correct name
 export function getCountryDisplayName(country) {
@@ -264,9 +285,9 @@ export function getGenotypesData({ data, genotypes, actualCountry }) {
   const genotypesDrugClassesData = {};
 
   drugRules.forEach((drug) => {
-    if (drug.key !== 'Susceptible') {
+    // if (drug.key !== 'Susceptible') {
       genotypesDrugClassesData[drug.key] = [];
-    }
+    // }
   });
 
   const genotypesDrugsData = genotypes.map((genotype) => {
@@ -295,7 +316,7 @@ export function getGenotypesData({ data, genotypes, actualCountry }) {
 
       }
 
-      if (rule.key !== 'Susceptible') {
+      // if (rule.key !== 'Susceptible') {
         const drugClass = { ...drugClassResponse };
 
         drugClassesRules[rule.key].forEach((classRule) => {
@@ -311,7 +332,7 @@ export function getGenotypesData({ data, genotypes, actualCountry }) {
         });
 
         genotypesDrugClassesData[rule.key].push(drugClass);
-      }
+      // }
     });
 
     response.resistantCount = response.totalCount - response['Susceptible'];

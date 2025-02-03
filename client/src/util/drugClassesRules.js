@@ -14,7 +14,9 @@ export const drugRules = [
   { key: 'Sulphonamides', columnID: 'sul_any', values: ['1'] },
   { key: 'Susceptible', columnID: 'amr_category', values: ['No AMR detected'] },
   { key: 'Tetracyclines', columnID: 'tetracycline_category', values: ['TetR'] },
-  { key: 'Trimethoprim', columnID: 'dfra_any', values: ['1'] }
+  { key: 'Trimethoprim', columnID: 'dfra_any', values: ['1'] },
+  { key: 'MDR', columnID: 'MDR', values: ['MDR'] },
+  { key: 'XDR', columnID: 'XDR', values: ['XDR'] },
 ];
 
 export const drugRulesForDrugResistanceGraph = [
@@ -611,5 +613,43 @@ export const drugClassesRules = {
       susceptible: true,
       rules: [{ columnID: 'dfra_any', value: '0' }]
     }
+  ],
+  MDR:[
+    {
+      name: 'MDR',
+      susceptible: false,
+      rules: [{ columnID: 'MDR', value: 'MDR' }],
+    },
+    {
+      name: 'Non-MDR',
+      susceptible: true,
+      rules: [{ columnID: 'MDR', value: '-' }],
+    },
+
+  ],
+  XDR:[
+    {
+      name: 'XDR',
+      susceptible: false,
+      rules: [{ columnID: 'XDR', value: 'XDR' }],
+    },
+    {
+      name: 'Non-XDR',
+      susceptible: true,
+      rules: [{ columnID: 'XDR', value: '-' }],
+    },
+  ],
+  Susceptible:[
+    {
+      name: 'Susceptible',
+      susceptible: true,
+      rules: [{ columnID: 'Susceptible', value: '1' }]
+    },
+    {
+      name: 'Non-Susceptible',
+      susceptible: false,
+      rules: [{ columnID: 'Susceptible', value: '0' },]
+    }
   ]
+
 };

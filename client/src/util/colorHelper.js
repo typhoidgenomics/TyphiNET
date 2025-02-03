@@ -221,8 +221,20 @@ export const colorForDrugClasses = {
     { name: 'dfrA18 + sul2', color: '#98fb98' },
     { name: 'dfrA18 + sul1 + sul2', color: '#fc9272' },
     { name: 'None', color: '#B9B9B9' }
-  ]
-};
+  ],
+  MDR: [
+    { name: 'MDR', color: '#67001f' },
+    { name: 'Non-MDR', color: '#B9B9B9' },
+  ],
+  XDR: [
+    { name: 'XDR', color: '#000' },
+    { name: 'Non-XDR', color: '#B9B9B9' },
+  ],
+  Susceptible:[
+    { name: 'Susceptible', color: '#000053'},
+    { name: 'Non-Susceptible', color: '#b52b24' }
+    ]
+  };
 
 // Color variables
 export const lightGrey = '#D3D3D3';
