@@ -27,7 +27,7 @@ const statKey = {
   CipR: 'CipR',
   ESBL_category: 'Ceftriaxone',
   // Sensitive to all drugs': 'Susceptible'
-  'Pan-Susceptible to all drugs': 'Susceptible'
+  'Pan-Susceptible to all drugs': 'Pan-Susceptible'
 };
 
 export const Map = () => {
@@ -78,7 +78,7 @@ export const Map = () => {
               CipR: `${countryStats.CipR.percentage}%`,
               // CipNS: `${countryStats.CipNS.percentage}%`,
               CipNS: `${combinedPercentage.toFixed(2)}%`,
-              Susceptible: `${countryStats.Susceptible.percentage}%`
+              'Pan-Susceptible': `${countryStats['Pan-Susceptible'].percentage}%`
             }
           });
           break;
