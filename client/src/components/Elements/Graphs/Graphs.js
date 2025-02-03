@@ -195,9 +195,11 @@ export const Graphs = () => {
     
       if (['RFWG', 'DRT'].includes(card.id)) {
         ctx.fillRect(0, 660 - mobileFactor, canvas.width, canvas.height);
-
+        const drugsForDrugResistanceAndFrequencyGraphPanSusceptible = drugsForDrugResistanceAndFrequencyGraph.map((curr) => curr === 'Susceptible' ? 'Pan-Susceptible' : curr)
+        const drugResistanceGraphViewPanSusceptible = drugResistanceGraphView.map((curr) => curr === 'Susceptible' ? 'Pan-Susceptible' : curr)
+        
         drawLegend({
-          legendData: ((['RFWG'].includes(card.id))? drugs: drugResistanceGraphView),
+          legendData: ((['RFWG'].includes(card.id))? drugsForDrugResistanceAndFrequencyGraphPanSusceptible: drugResistanceGraphViewPanSusceptible),
           context: ctx,
           factor: 4,
           mobileFactor,

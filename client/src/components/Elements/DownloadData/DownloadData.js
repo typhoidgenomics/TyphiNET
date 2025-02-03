@@ -445,12 +445,14 @@ export const DownloadData = () => {
         doc.setFillColor(255, 255, 255);
         const rectY = matches500 ? 300 : graphImg.width <= 741 ? 360 : 320;
         doc.rect(0, rectY, pageWidth, 200, 'F');
-
+        const drugsForDrugResistanceAndFrequencyGraphPanSusceptible = drugsForDrugResistanceAndFrequencyGraph.map((curr) => curr === 'Susceptible' ? 'Pan-Susceptible' : curr)
+        const drugResistanceGraphViewPanSusceptible = drugResistanceGraphView.map((curr) => curr === 'Susceptible' ? 'Pan-Susceptible' : curr)
+        
         doc.setFontSize(9);
         if (graphCards[index].id === 'RFWG') {
           drawLegend({
             document: doc,
-            legendData: drugs,
+            legendData: drugsForDrugResistanceAndFrequencyGraphPanSusceptible,
             factor: 4,
             rectY,
             xSpace: 100,
@@ -459,7 +461,7 @@ export const DownloadData = () => {
         }else if (graphCards[index].id === 'DRT') {
           drawLegend({
             document: doc,
-            legendData: drugResistanceGraphView,
+            legendData: drugResistanceGraphViewPanSusceptible,
             factor: 4,
             rectY,
             xSpace: 100,
