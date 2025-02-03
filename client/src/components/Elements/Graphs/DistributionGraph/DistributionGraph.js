@@ -81,7 +81,7 @@ export const DistributionGraph = () => {
     const Other = 'Other';
     const insertIndex = slicedArrayWithOther.length; // Index to insert "Other"
     slicedArrayWithOther.splice(insertIndex, insertIndex, Other);
-    console.log("slicedArray", slicedArray)
+    // console.log("slicedArray", slicedArray)
     dispatch(setGenotypesForFilterSelected(slicedArrayWithOther));
     setTopXGenotypes(slicedArray);
       // dispatch(setColorPallete(generatePalleteForGenotypes(genotypesForFilter)));
@@ -100,7 +100,7 @@ export const DistributionGraph = () => {
     const newItem = { ...item, Other: count };
     return newItem; //return item of genotypesYearData with additional filed 'Other' to newArray
   });
-  console.log("newArray1", newArray)
+  // console.log("newArray1", newArray)
   let genotypeDataPercentage = structuredClone(newArray);
   newArrayPercentage = genotypeDataPercentage.map((item) => {
     const keys = Object.keys(item).filter((x) => !exclusions.includes(x));
@@ -114,7 +114,7 @@ export const DistributionGraph = () => {
     if (distributionGraphView === 'number') return newArray;
     return newArrayPercentage;
   }
-console.log("newArray", newArray)
+// console.log("newArray", newArray)
 
 
   function getTooltipData(label, payload) {
@@ -271,7 +271,7 @@ console.log("newArray", newArray)
   return (
     <CardContent className={classes.distributionGraph}>
       <div className={classes.selectWrapper}>
-        <SliderSizes value={'GD'} />
+        {/* <SliderSizes value={'GD'} /> */}
         <Typography variant="caption" className={classes.selectLabel}>
           Data view
         </Typography>
