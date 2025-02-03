@@ -54,7 +54,7 @@ export const DistributionGraph = () => {
     } else {
       dispatch(setCaptureGD(true));
     }
-  }, [genotypesForFilter, genotypesYearData, currentSliderValue]);
+  }, [genotypesForFilter, genotypesYearData, maxSliderValue]);
 
 
 
@@ -76,16 +76,16 @@ export const DistributionGraph = () => {
     // Sort the array based on keys
     filteredArr.sort((a, b) => b[1] - a[1]);
     
-    const slicedArray = filteredArr.slice(0, currentSliderValue).map(([key, value]) => key);
+    const slicedArray = filteredArr.slice(0, maxSliderValue).map(([key, value]) => key);
     const slicedArrayWithOther = structuredClone(slicedArray);
     const Other = 'Other';
     const insertIndex = slicedArrayWithOther.length; // Index to insert "Other"
     slicedArrayWithOther.splice(insertIndex, insertIndex, Other);
-    // console.log("slicedArray", slicedArray)
+    console.log("slicedArray", slicedArray)
     dispatch(setGenotypesForFilterSelected(slicedArrayWithOther));
     setTopXGenotypes(slicedArray);
       // dispatch(setColorPallete(generatePalleteForGenotypes(genotypesForFilter)));
-  }, [genotypesForFilter, genotypesYearData, currentSliderValue]);
+  }, [genotypesForFilter, genotypesYearData, maxSliderValue]);
 
   let newArray = []; //TODO: can be a global value in redux
   let newArrayPercentage = []; //TODO: can be a global value in redux
@@ -100,7 +100,7 @@ export const DistributionGraph = () => {
     const newItem = { ...item, Other: count };
     return newItem; //return item of genotypesYearData with additional filed 'Other' to newArray
   });
-  // console.log("newArray1", newArray)
+  console.log("newArray1", newArray)
   let genotypeDataPercentage = structuredClone(newArray);
   newArrayPercentage = genotypeDataPercentage.map((item) => {
     const keys = Object.keys(item).filter((x) => !exclusions.includes(x));
@@ -114,7 +114,7 @@ export const DistributionGraph = () => {
     if (distributionGraphView === 'number') return newArray;
     return newArrayPercentage;
   }
-// console.log("newArray", newArray)
+console.log("newArray", newArray)
 
 
   function getTooltipData(label, payload) {
@@ -259,14 +259,14 @@ export const DistributionGraph = () => {
                   fill={getColorForGenotype(option)}
                 />
               ))}
-              <Bar dataKey={'Other'} stackId={0} fill={getColorForGenotype('Other')} />
+              {/* <Bar dataKey={'Other'} stackId={0} fill={getColorForGenotype('Other')} /> */}
             </BarChart>
           </ResponsiveContainer>
         );
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [genotypesYearData, distributionGraphView, matches500, currentSliderValue, topXGenotypes]);
+  }, [genotypesYearData, distributionGraphView, matches500, maxSliderValue, topXGenotypes]);
 
   return (
     <CardContent className={classes.distributionGraph}>
