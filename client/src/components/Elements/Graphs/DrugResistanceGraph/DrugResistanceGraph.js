@@ -317,14 +317,15 @@ export const DrugResistanceGraph = () => {
           )}
         >
           {drugsForDrugResistanceAndFrequencyGraph.map((drug, index) =>{ 
-            // let drugForDropdown;
-            // if(drug == 'Susceptible')
-            //   drugForDropdown = 'Pan-Susceptible';
-            // else drugForDropdown = drug;
+            let drugForDropdown;
+            if(drug === 'Susceptible')
+              drugForDropdown = 'Pan-Susceptible';
+            else drugForDropdown = drug;
+            console.log('drugs', drug);
             return(
               <MenuItem key={`drug-resistance-option-${index}`} value={drug}>
                 <Checkbox checked={drugResistanceGraphView.indexOf(drug) > -1} />
-                <ListItemText primary={drug} />
+                <ListItemText primary={drugForDropdown} />
               </MenuItem>
             )
           })}
