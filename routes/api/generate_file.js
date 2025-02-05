@@ -552,6 +552,14 @@ router.get('/create', async function (req, res) {
             ) {
               obj_parser['amr_category'] = 'No AMR detected';
               obj_parser['Pan-Susceptible'] = '1';
+            }else if (
+              dcs_category  == 'DCS' &&
+              azith_pred_pheno == 'AzithR' &&
+              cip_pheno_qrdr_gene == 'CipNS100' &&
+              num_amr_genes != '0'
+            ) {
+              obj_parser['amr_category'] = 'AzithR_DCS_AMR';
+              obj_parser['Pan-Susceptible'] = '0';
             }
           }
           if (new_obj > 0) {
