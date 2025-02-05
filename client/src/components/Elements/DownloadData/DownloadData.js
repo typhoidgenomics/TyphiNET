@@ -367,7 +367,7 @@ export const DownloadData = () => {
           mapLegend.src = 'legends/MapView_NoSamples.png';
           break;
         // case 'Sensitive to all drugs':
-        case 'Pan-Susceptible to all drugs':
+        case 'Pansusceptible to all drugs':
           mapLegend.src = 'legends/MapView_Sensitive.png';
           break;
         case 'Genotype prevalence':
@@ -439,8 +439,8 @@ export const DownloadData = () => {
         doc.setFillColor(255, 255, 255);
         const rectY = matches500 ? 300 : graphImg.width <= 741 ? 360 : 320;
         doc.rect(0, rectY, pageWidth, 200, 'F');
-        // const drugsForDrugResistanceAndFrequencyGraphPanSusceptible = drugsForDrugResistanceAndFrequencyGraph.map((curr) => curr === 'Susceptible' ? 'Pan-Susceptible' : curr)
-        // const drugResistanceGraphViewPanSusceptible = drugResistanceGraphView.map((curr) => curr === 'Susceptible' ? 'Pan-Susceptible' : curr)
+        // const drugsForDrugResistanceAndFrequencyGraphPanSusceptible = drugsForDrugResistanceAndFrequencyGraph.map((curr) => curr === 'Susceptible' ? 'Pansusceptible' : curr)
+        // const drugResistanceGraphViewPanSusceptible = drugResistanceGraphView.map((curr) => curr === 'Susceptible' ? 'Pansusceptible' : curr)
         
         doc.setFontSize(9);
         if (graphCards[index].id === 'RFWG') {

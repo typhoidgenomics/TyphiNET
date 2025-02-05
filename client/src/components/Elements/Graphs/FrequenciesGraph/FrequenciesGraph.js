@@ -79,7 +79,7 @@ export const FrequenciesGraph = () => {
   }, [frequenciesGraphSelectedGenotypes, frequenciesGraphView]);
  
   function getSelectGenotypeLabel(genotype) {
-    const percentage = Number(((genotype['Pan-Susceptible'] / genotype.totalCount) * 100).toFixed(2));
+    const percentage = Number(((genotype['Pansusceptible'] / genotype.totalCount) * 100).toFixed(2));
     return `${genotype.name} (total N=${genotype.totalCount===0 ? 0:`${genotype.totalCount},${percentage}% Susceptible`})`;
 
   }

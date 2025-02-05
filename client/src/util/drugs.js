@@ -16,7 +16,7 @@ export const drugs = [
   'Trimethoprim',
 ].sort((a, b) => a.localeCompare(b));
 
-export const drugsForDrugResistanceAndFrequencyGraph = [...drugs,'Pan-Susceptible', 'MDR', 'XDR'];
+export const drugsForDrugResistanceAndFrequencyGraph = [...drugs,'Pansusceptible', 'MDR', 'XDR'];
 
 export const defaultDrugsForDrugResistanceGraph = [
   'Azithromycin',
@@ -24,7 +24,7 @@ export const defaultDrugsForDrugResistanceGraph = [
   'Ciprofloxacin NS',
   'Ciprofloxacin R',
   'Trimethoprim-sulfamethoxazole',
-  'Pan-Susceptible',
+  'Pansusceptible',
   'MDR',
   'XDR'
 ];
@@ -43,7 +43,7 @@ export const drugClasses = [
   'Sulphonamides',
   'Tetracyclines',
   'Trimethoprim',
-  'Pan-Susceptible',
+  'Pansusceptible',
   'MDR',
   'XDR',
   

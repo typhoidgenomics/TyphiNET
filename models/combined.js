@@ -314,7 +314,7 @@ const CombinedSchema = mongoose.Schema({
   amr_category: {
     type: String
   },
-  "Pan-Susceptible": {
+  "Pansusceptible": {
     type: String
   },
   'Genome ID': {
