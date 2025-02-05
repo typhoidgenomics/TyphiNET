@@ -250,10 +250,10 @@ export const DownloadData = () => {
         const textWidth = doc.getTextWidth(dynamicText);
 
         const widthRanges = [815, 1200, 1600, 2000, 2400];
-        const pmidSpaces = [-50, -40, -30, -20, -10, 0];
+        const pmidSpaces = [ -30, -20, -10, 0, 10, 20];
 
         // Find the appropriate pmidSpace based on textWidth
-        pmidSpace = pmidSpaces.find((space, index) => textWidth <= widthRanges[index]) || pmidSpaces[pmidSpaces.length - 1];
+        pmidSpace = pmidSpaces.find((space, index) => textWidth <= widthRanges[index])
       }
       doc.text(dynamicText,16, 205,{ align: 'left', maxWidth: pageWidth - 36 });
       
@@ -266,12 +266,6 @@ export const DownloadData = () => {
       doc.setFont(undefined, 'normal');
       doc.text(texts[2], 16, 175, { align: 'left', maxWidth: pageWidth - 36});
       doc.text(texts[3], 16, 265+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
-      doc.setFont(undefined, 'bold');
-      doc.text(texts[4], 16, 305+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
-      doc.setFont(undefined, 'normal');
-      doc.text(texts[5], 16, 325+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
-      doc.text(texts[6], 16, 355+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
-      doc.text(texts[7], 16, 385+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
       doc.setFont(undefined, 'bold');
       doc.text(texts[8], 16, 415+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
       doc.setFont(undefined, 'normal');
