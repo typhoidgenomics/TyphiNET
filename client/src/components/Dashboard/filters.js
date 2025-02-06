@@ -190,7 +190,7 @@ export function getMapData({ data, countries }) {
     stats.MDR = getMapStatsData({ countryData, columnKey: 'MDR', statsKey: 'MDR' });
     stats.XDR = getMapStatsData({ countryData, columnKey: 'XDR', statsKey: 'XDR' });
     stats.AzithR = getMapStatsData({ countryData, columnKey: 'azith_pred_pheno', statsKey: 'AzithR' });
-    stats.Susceptible = getMapStatsData({ countryData, columnKey: 'amr_category', statsKey: 'No AMR detected' });
+    stats['Pansusceptible'] = getMapStatsData({ countryData, columnKey: 'amr_category', statsKey: 'No AMR detected' });
     stats.CipR = getMapStatsData({ countryData, columnKey: 'cip_pred_pheno', statsKey: 'CipR' });
     stats.CipNS = getMapStatsData({ countryData, columnKey: 'cip_pred_pheno', statsKey: 'CipNS' });
 
@@ -283,7 +283,7 @@ export function getYearsData({ data, years, actualCountry, getUniqueGenotypes = 
 // Get data for frequencies and determinants graphs
 export function getGenotypesData({ data, genotypes, actualCountry }) {
   const genotypesDrugClassesData = {};
-
+  
   drugRules.forEach((drug) => {
     // if (drug.key !== 'Susceptible') {
       genotypesDrugClassesData[drug.key] = [];
@@ -325,7 +325,6 @@ export function getGenotypesData({ data, genotypes, actualCountry }) {
           drugClass[classRuleName] = genotypeData.filter((x) => {
             return classRule.rules.every((r) => x[r.columnID] === r.value);
           }).length;
-
           if (classRule.susceptible) {
             drugClass.resistantCount = drugClass.totalCount - drugClass[classRuleName];
           }
@@ -335,7 +334,7 @@ export function getGenotypesData({ data, genotypes, actualCountry }) {
       // }
     });
 
-    response.resistantCount = response.totalCount - response['Susceptible'];
+    response.resistantCount = response.totalCount - response['Pansusceptible'];
     return response;
   });
 

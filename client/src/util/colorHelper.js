@@ -126,7 +126,7 @@ export const getColorForGenotype = (genotype) => {
     case '4.3.1.3.Bdq':
       return '#fb8072';
     default:
-      return '#F5F4F6';
+      return '#E3E3E3';
   }
 };
 
@@ -230,9 +230,9 @@ export const colorForDrugClasses = {
     { name: 'XDR', color: '#000' },
     { name: 'Non-XDR', color: '#B9B9B9' },
   ],
-  Susceptible:[
-    { name: 'Susceptible', color: '#000053'},
-    { name: 'Non-Susceptible', color: '#b52b24' }
+  'Pansusceptible':[
+    { name: 'Pansusceptible (no AMR markers)', color: '#B9B9B9'},
+    { name: 'One or more AMR markers', color: '#000080' }
     ]
   };
 
