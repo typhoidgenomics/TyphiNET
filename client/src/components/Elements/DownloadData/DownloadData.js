@@ -27,6 +27,7 @@ const columnsToRemove = [
   // 'ACCESSION',
   'PROJECT ACCESSION',
   'COUNTRY_ONLY',
+  'COUNTRY_ORIGIN',
   'REGION_IN_COUNTRY',
   'LOCATION',
   'ACCURACY',
@@ -106,50 +107,109 @@ export const DownloadData = () => {
 
   async function handleClickDownloadDatabase() {
     setLoadingCSV(true);
+  
     await axios
       .get(`${API_ENDPOINT}file/download`)
       .then((res) => {
-        let indexes = [];
+        // Step 1: Load and Parse CSV
         let csv = res.data.split('\n');
         let lines = [];
-
+        
+        // Parse CSV into lines (rows)
         for (let index = 0; index < csv.length; index++) {
           let line = csv[index].split(',');
           lines.push(line);
         }
+  
+        // Step 2: Replace Column Names
         lines[0].forEach((curr, index) => {
           if (curr === 'cip_pred_pheno') {
-            lines[0][index] = 'Cip';
-          } 
-          });
+            lines[0][index] = 'Cip'; // Example replacement
+          }
+        });
+  
         const replacements = {
+          'NAME': 'Name',
+          'TGC ID': 'TGC_ID',
+          'DATE': 'Year',
+          'TRAVEL_LOCATION': 'Travel_Location',
+          'ACCESSION': 'Accession',
+          'STRAIN': 'Strain',
+          'SOURCE': 'Source',
+          'BIOSAMPLE': 'Biosample',
+          'LAB': 'Lab',
+          'CONTACT': 'Contact',
           'COUNTRY_ONLY': 'Country',
+          'COUNTRY ISOLATED': 'Country_isolated',
+          'PURPOSE OF SAMPLING': 'Purpose_of_sampling',
           'cip_pred_pheno': 'Cip',
-          'dashboard view': 'Dashboard view'
+          'dashboard view': 'Dashboard view',
+          'TRAVEL': 'Travel',
+          'GENOTYPE': 'Genotype',
+          'SYMPTOM STATUS': 'Symptom_status',
         };
-
+  
+        // Apply replacements to the header row
         lines[0].forEach((curr, index) => {
           lines[0][index] = replacements[curr] || curr;
         });
+  
+        // Step 3: Remove Unwanted Columns
+        // let columnsToRemove = ['PMID', 'XDR']; // Example columns to remove
+        let indexesToRemove = [];
         
-        for (let index = 0; index < columnsToRemove.length; index++) {
-          let currentIndex = lines[0].indexOf(columnsToRemove[index]);
-          indexes.push(currentIndex);
-        }
-        indexes.sort();
-        indexes.reverse();
-
+        columnsToRemove.forEach(column => {
+          let columnIndex = lines[0].indexOf(column);
+          if (columnIndex !== -1) {
+            indexesToRemove.push(columnIndex);
+          }
+        });
+  
+        // Sort indexes to remove in descending order to avoid index shifting when removing
+        indexesToRemove.sort((a, b) => b - a);
+  
+        // Step 4: Create Desired Column Order
+        const desiredOrder = [
+          'Name', 'TGC_ID', 'Accession', 'Biosample', 'Strain', 'Year', 'Country', 'Travel', 'Country_isolated', 
+          'Purpose_of_sampling', 'Source', 'Symptom_status', 'Lab', 'Contact', 'PMID', 'Dashboard view', 'Genotype', 
+          'Cip', 'CipNS', 'CipR','CefR', 'MDR', 'XDR', 'Pansusceptible'
+        ];
+        // Step 4a: Find remaining columns that are not in the desiredOrder
+        let remainingColumns = lines[0].filter((col) => (!desiredOrder.includes(col) && !columnsToRemove.includes(col)) );
+        
+        // Step 4b: Extend the desiredOrder to include remaining columns
+        const extendedOrder = [...desiredOrder, ...remainingColumns];
+console.log("extendedOrder", ...desiredOrder, extendedOrder )
+        // Map the desired order to column indexes
+        const columnIndexes = extendedOrder.map(colName => lines[0].indexOf(colName));
+  
+        // Step 5: Rearrange Columns
         let newLines = [];
+        
         for (let j = 0; j < lines.length; j++) {
           let aux = [];
-          for (let i = 0; i < lines[j].length; i++) {
-            if (!indexes.includes(i)) {
-              aux.push(lines[j][i]);
-            }
+          
+          if (j === 0) {
+            // Header row, rearrange based on columnIndexes
+            columnIndexes.forEach(index => {
+              aux.push(lines[j][index]);
+            });
+          } else {
+            // Data rows, rearrange based on columnIndexes
+            columnIndexes.forEach(index => {
+              aux.push(lines[j][index]);
+            });
           }
+  
+          // Remove unwanted columns from each row
+          // for (let index of indexesToRemove) {
+          //   aux.splice(index, 1);
+          // }
+  
           newLines.push(aux);
         }
-
+  
+        // Step 6: Generate New CSV
         let newCSV = '';
         for (let i = 0; i < newLines.length; i++) {
           let aux = '';
@@ -164,13 +224,15 @@ export const DownloadData = () => {
           }
           newCSV += aux;
         }
-
+  
+        // Step 7: Download the CSV
         download(newCSV, 'TyphiNET-database.csv');
       })
       .finally(() => {
         setLoadingCSV(false);
       });
   }
+  
 
   function formatDate(date) {
     return moment(date).format('ddd MMM DD YYYY HH:mm');
