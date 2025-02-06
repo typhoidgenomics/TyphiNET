@@ -170,7 +170,7 @@ export const DownloadData = () => {
   
         // Step 4: Create Desired Column Order
         const desiredOrder = [
-          'Name', 'TGC_ID', 'Accession', 'Biosample', 'Strain', 'Year', 'Country', 'Travel', 'Country_isolated', 
+          'Name', 'TGC_ID', 'Accession', 'Biosample', 'Strain', 'Year', 'Country', 'Travel', 'Travel_Location', 'Country_isolated', 
           'Purpose_of_sampling', 'Source', 'Symptom_status', 'Lab', 'Contact', 'PMID', 'Dashboard view', 'Genotype', 
           'Cip', 'CipNS', 'CipR','CefR', 'MDR', 'XDR', 'Pansusceptible'
         ];
