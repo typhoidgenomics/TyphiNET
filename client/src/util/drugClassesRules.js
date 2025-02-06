@@ -642,7 +642,7 @@ export const drugClassesRules = {
   ],
   'Pansusceptible':[
     {
-      name: 'No AMR markers',
+      name: 'Pansusceptible (no AMR markers)',
       susceptible: true,
       rules: [{ columnID: 'Pansusceptible', value: '1' }]
     },

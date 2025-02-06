@@ -231,7 +231,7 @@ export const colorForDrugClasses = {
     { name: 'Non-XDR', color: '#B9B9B9' },
   ],
   'Pansusceptible':[
-    { name: 'No AMR markers', color: '#B9B9B9'},
+    { name: 'Pansusceptible (no AMR markers)', color: '#B9B9B9'},
     { name: 'One or more AMR markers', color: '#000080' }
     ]
   };
