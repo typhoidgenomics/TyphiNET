@@ -48,7 +48,7 @@ export const TopRightControls2 = () => {
     const matchingGenotype = genotypesDrugsData2.find(g => g.name === genotype);
     const totalCount = matchingGenotype?.totalCount ?? 0;
     const susceptiblePercentage = (matchingGenotype?.['Pansusceptible'] / totalCount || 0) * 100;
-    return `${genotype} (total N=${totalCount}, ${susceptiblePercentage.toFixed(2)}% Susceptible)`;
+    return `${genotype} (total N=${totalCount}, ${susceptiblePercentage.toFixed(2)}% Pansusceptible)`;
   }
 
   const filteredData = genotypesDrugsData2.filter(
