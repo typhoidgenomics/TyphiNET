@@ -185,8 +185,7 @@ console.log("extendedOrder", ...desiredOrder, extendedOrder )
   
         // Step 5: Rearrange Columns
         let newLines = [];
-        
-        for (let j = 0; j < lines.length; j++) {
+        for (let j = 0; j < lines.length-1; j++) {
           let aux = [];
           
           if (j === 0) {
