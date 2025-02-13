@@ -77,13 +77,13 @@ export const Graphs = () => {
 
       context.fillStyle = isGenotype ? getColorForGenotype(legend) : isDrug ? getColorForDrug(legend) : legend.color;
       context.beginPath();
-      context.arc(102 + xFactor, yPosition - mobileFactor + yFactor, 5, 0, 2 * Math.PI);
+      context.arc(172 + xFactor, yPosition - mobileFactor + yFactor, 5, 0, 2 * Math.PI);
       context.fill();
       context.closePath();
       context.fillStyle = 'black';
       context.fillText(
         isGenotype || isDrug ? legend : legend.name,
-        111 + xFactor,
+        181 + xFactor,
         yPosition + 4 - mobileFactor + yFactor
       );
     });
@@ -195,9 +195,9 @@ export const Graphs = () => {
     
       if (['RFWG', 'DRT'].includes(card.id)) {
         ctx.fillRect(0, 660 - mobileFactor, canvas.width, canvas.height);
-
+       
         drawLegend({
-          legendData: ((['RFWG'].includes(card.id))? drugs: drugResistanceGraphView),
+          legendData: ((['RFWG'].includes(card.id))? drugsForDrugResistanceAndFrequencyGraph: drugResistanceGraphView),
           context: ctx,
           factor: 4,
           mobileFactor,

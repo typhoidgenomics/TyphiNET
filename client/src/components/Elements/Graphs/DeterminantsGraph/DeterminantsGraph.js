@@ -105,13 +105,7 @@ export const DeterminantsGraph = () => {
         });
       });
 
-      tooltipData.forEach((item)=>{
-        if(item.name === 'Susceptible'){
-          item.name = 'Pan-Susceptible'
-        }
-      })
-
-      tooltipData.sort((a, b) => a.name.localeCompare(b.name));
+        tooltipData.sort((a, b) => a.name.localeCompare(b.name));
       return tooltipData;
     }
   }
@@ -159,18 +153,10 @@ export const DeterminantsGraph = () => {
                         if(!sumOfBarDataToShowOnPlot)
                           return null;
                         const { dataKey, color } = entry;
-                        let dataKeyElement;
-                        if (dataKey === "Susceptible") {
-                          dataKeyElement = (
-                              <span>Pan-Susceptible</span>
-                          );
-                        }else{
-                          dataKeyElement = dataKey;
-                        }
                         return (
                           <div key={`distribution-legend-${index}`} className={classes.legendItemWrapper}>
                             <Box className={classes.colorCircle} style={{ backgroundColor: color }} />
-                            <Typography variant="caption">{dataKeyElement}</Typography>
+                            <Typography variant="caption">{dataKey}</Typography>
                           </div>
                         );
                       })}
@@ -264,13 +250,9 @@ export const DeterminantsGraph = () => {
             MenuProps={{ classes: { list: classes.selectMenu } }}
           >
             {drugClasses.map((option, index) => {
-              let optionForDropdown;
-              if(option == 'Susceptible')
-                optionForDropdown = 'Pan-Susceptible';
-              else optionForDropdown = option;
               return (
                 <MenuItem key={index + 'determinants-drug-classes'} value={option}>
-                  {option === 'Ciprofloxacin NS' ? 'Ciprofloxacin' : optionForDropdown}
+                  {option === 'Ciprofloxacin NS' ? 'Ciprofloxacin' : option}
                 </MenuItem>
               );
             })}
