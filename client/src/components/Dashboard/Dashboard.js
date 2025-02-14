@@ -177,7 +177,7 @@ export const DashboardPage = () => {
       dispatch(setActualGenomesGD(filters.genomesCountGD));
       dispatch(setActualGenomesDRT(filters.genomesCountDRT));
     }
-  },[dataset, starttimeGD, endtimeGD, starttimeDRT, endtimeDRT])
+  },[dataset, starttimeGD, endtimeGD, starttimeDRT, endtimeDRT, actualCountry, actualTimeInitial, actualTimeFinal])
   return (
     <MainLayout>
       <Map />

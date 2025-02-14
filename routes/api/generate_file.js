@@ -468,7 +468,7 @@ router.get('/create', async function (req, res) {
 
             if (XDR == 'XDR') {
               obj_parser['amr_category'] = 'XDR';
-              obj_parser['Susceptible'] = '0';
+              obj_parser['Pansusceptible'] = '0';
             } else if (
               MDR == 'MDR' &&
               dcs_category == 'DCS' &&
@@ -477,7 +477,7 @@ router.get('/create', async function (req, res) {
               azith_pred_pheno == 'AzithR'
               ) {
               obj_parser['amr_category'] = 'AzithR_DCS_MDR';
-              obj_parser['Susceptible'] = '0';
+              obj_parser['Pansusceptible'] = '0';
             } else if (
               MDR == 'MDR' &&
               dcs_category == 'DCS' &&
@@ -490,7 +490,7 @@ router.get('/create', async function (req, res) {
               azith_pred_pheno == 'AzithS'
             ) {
               obj_parser['amr_category'] = 'MDR_DCS';
-              obj_parser['Susceptible'] = '0';
+              obj_parser['Pansusceptible'] = '0';
             } else if (
               dcs_category == 'DCS' &&
               (cip_pred_pheno == 'CipR' || cip_pred_pheno == 'CipS' || cip_pred_pheno == 'CipNS') &&
@@ -498,7 +498,7 @@ router.get('/create', async function (req, res) {
               azith_pred_pheno == 'AzithR'
             ) {
               obj_parser['amr_category'] = 'AzithR_DCS';
-              obj_parser['Susceptible'] = '0';
+              obj_parser['Pansusceptible'] = '0';
             } else if (
               dcs_category == 'DCS' &&
               (cip_pred_pheno == 'CipR' || cip_pred_pheno == 'CipNS') &&
@@ -506,7 +506,7 @@ router.get('/create', async function (req, res) {
               azith_pred_pheno == 'AzithS'
             ) {
               obj_parser['amr_category'] = 'AMR_DCS';
-              obj_parser['Susceptible'] = '0';
+              obj_parser['Pansusceptible'] = '0';
             } else if (
               dcs_category == 'DCS' &&
               MDR == '-' &&
@@ -515,7 +515,7 @@ router.get('/create', async function (req, res) {
               (cip_pheno_qrdr_gene == 'CipNS000' || cip_pheno_qrdr_gene == 'CipR000')
             ) {
               obj_parser['amr_category'] = 'DCS';
-              obj_parser['Susceptible'] = '0';
+              obj_parser['Pansusceptible'] = '0';
             } else if (
               MDR == 'MDR' &&
               dcs_category != 'DCS' &&
@@ -524,7 +524,7 @@ router.get('/create', async function (req, res) {
               cip_pheno_qrdr_gene == 'CipS000'
             ) {
               obj_parser['amr_category'] = 'AzithR_MDR';
-              obj_parser['Susceptible'] = '0';
+              obj_parser['Pansusceptible'] = '0';
             } else if (
               MDR == 'MDR' &&
               dcs_category == 'CipS' &&
@@ -533,7 +533,7 @@ router.get('/create', async function (req, res) {
               cip_pheno_qrdr_gene == 'CipS000'
             ) {
               obj_parser['amr_category'] = 'MDR';
-              obj_parser['Susceptible'] = '0';
+              obj_parser['Pansusceptible'] = '0';
             } else if (
               MDR == '-' &&
               dcs_category != 'DCS' &&
@@ -543,7 +543,7 @@ router.get('/create', async function (req, res) {
               azith_pred_pheno == 'AzithS'
             ) {
               obj_parser['amr_category'] = 'AMR';
-              obj_parser['Susceptible'] = '0';
+              obj_parser['Pansusceptible'] = '0';
             } else if (
               cip_pred_pheno  == 'CipS' &&
               azith_pred_pheno == 'AzithS' &&
@@ -551,7 +551,15 @@ router.get('/create', async function (req, res) {
               num_amr_genes == '0'
             ) {
               obj_parser['amr_category'] = 'No AMR detected';
-              obj_parser['Susceptible'] = '1';
+              obj_parser['Pansusceptible'] = '1';
+            }else if (
+              dcs_category  == 'DCS' &&
+              azith_pred_pheno == 'AzithR' &&
+              cip_pheno_qrdr_gene == 'CipNS100' &&
+              num_amr_genes != '0'
+            ) {
+              obj_parser['amr_category'] = 'AzithR_DCS_AMR';
+              obj_parser['Pansusceptible'] = '0';
             }
           }
           if (new_obj > 0) {
