@@ -22,6 +22,8 @@ interface GraphState {
   actualGenomesDRT: number;
   // starttimeF: number;
   // starttimeRD: number;
+  currentSliderValue: Number;
+  genotypesForFilterSelected: Array<string>;
 }
 
 const initialState: GraphState = {
@@ -46,6 +48,8 @@ const initialState: GraphState = {
   actualGenomesDRT:0,
   // starttimeF:5,
   // starttimeRD:10,
+  currentSliderValue: 20,
+  genotypesForFilterSelected: [],
 };
 
 export const graphSlice = createSlice({
@@ -115,6 +119,12 @@ export const graphSlice = createSlice({
     // setStarttimeRD: (state, action: PayloadAction<number>) => {
     //   state.starttimeRD = action.payload;
     // },
+      setCurrentSliderValue: (state, action: PayloadAction<Number>) => {
+      state.currentSliderValue = action.payload;
+    },
+    setGenotypesForFilterSelected: (state, action: PayloadAction<Array<string>>) => {
+      state.genotypesForFilterSelected = action.payload;
+    },
   }
 });
 
@@ -132,6 +142,8 @@ export const {
   setDeterminantsGraphDrugClass,
   setGenotypesDrugClassesData,
   setCustomDropdownMapView,
+  setCurrentSliderValue,
+  setGenotypesForFilterSelected,
   setStarttimeGD,
   setEndtimeGD,
   setStarttimeDRT,

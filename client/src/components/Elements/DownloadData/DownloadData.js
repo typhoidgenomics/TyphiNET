@@ -17,7 +17,7 @@ import { mapLegends } from '../../../util/mapLegends';
 import { imgOnLoadPromise } from '../../../util/imgOnLoadPromise';
 import { graphCards } from '../../../util/graphCards';
 import domtoimage from 'dom-to-image';
-import { drugs, drugsForDrugResistanceGraph } from '../../../util/drugs';
+import { drugs, drugsForDrugResistanceAndFrequencyGraph } from '../../../util/drugs';
 import { getColorForDrug } from '../Graphs/graphColorHelper';
 import { colorForDrugClasses, getColorForGenotype } from '../../../util/colorHelper';
 import { getSalmonellaTexts, abbrivations } from '../../../util/reportInfoTexts';
@@ -27,6 +27,7 @@ const columnsToRemove = [
   // 'ACCESSION',
   'PROJECT ACCESSION',
   'COUNTRY_ONLY',
+  'COUNTRY_ORIGIN',
   'REGION_IN_COUNTRY',
   'LOCATION',
   'ACCURACY',
@@ -102,55 +103,112 @@ export const DownloadData = () => {
   const starttimeDRT = useAppSelector((state) => state.graph.starttimeDRT);
   const actualGenomesGD = useAppSelector((state) => state.graph.actualGenomesGD);
   const actualGenomesDRT = useAppSelector((state) => state.graph.actualGenomesDRT);
-  // const starttimeRD = useAppSelector((state) => state.graph.starttimeRD);
-  // const starttimeF = useAppSelector((state) => state.graph.starttimeF)
-  // console.log('GD',starttimeGD ,'DRT', starttimeDRT, 'starttimeF',starttimeF, 'starttimeRD',starttimeRD )
+  const genotypesForFilterSelected = useAppSelector((state) => state.graph.genotypesForFilterSelected);
+
   async function handleClickDownloadDatabase() {
     setLoadingCSV(true);
+  
     await axios
       .get(`${API_ENDPOINT}file/download`)
       .then((res) => {
-        let indexes = [];
+        // Step 1: Load and Parse CSV
         let csv = res.data.split('\n');
         let lines = [];
-
+        
+        // Parse CSV into lines (rows)
         for (let index = 0; index < csv.length; index++) {
           let line = csv[index].split(',');
           lines.push(line);
         }
+  
+        // Step 2: Replace Column Names
         lines[0].forEach((curr, index) => {
           if (curr === 'cip_pred_pheno') {
-            lines[0][index] = 'Cip';
-          } 
-          });
+            lines[0][index] = 'Cip'; // Example replacement
+          }
+        });
+  
         const replacements = {
+          'NAME': 'Name',
+          'TGC ID': 'TGC_ID',
+          'DATE': 'Year',
+          'TRAVEL_LOCATION': 'Travel_Location',
+          'ACCESSION': 'Accession',
+          'STRAIN': 'Strain',
+          'SOURCE': 'Source',
+          'BIOSAMPLE': 'Biosample',
+          'LAB': 'Lab',
+          'CONTACT': 'Contact',
           'COUNTRY_ONLY': 'Country',
+          'COUNTRY ISOLATED': 'Country_isolated',
+          'PURPOSE OF SAMPLING': 'Purpose_of_sampling',
           'cip_pred_pheno': 'Cip',
-          'dashboard view': 'Dashboard view'
+          'dashboard view': 'Dashboard view',
+          'TRAVEL': 'Travel',
+          'GENOTYPE': 'Genotype',
+          'SYMPTOM STATUS': 'Symptom_status',
         };
-
+  
+        // Apply replacements to the header row
         lines[0].forEach((curr, index) => {
           lines[0][index] = replacements[curr] || curr;
         });
+  
+        // Step 3: Remove Unwanted Columns
+        // let columnsToRemove = ['PMID', 'XDR']; // Example columns to remove
+        let indexesToRemove = [];
         
-        for (let index = 0; index < columnsToRemove.length; index++) {
-          let currentIndex = lines[0].indexOf(columnsToRemove[index]);
-          indexes.push(currentIndex);
-        }
-        indexes.sort();
-        indexes.reverse();
-
-        let newLines = [];
-        for (let j = 0; j < lines.length; j++) {
-          let aux = [];
-          for (let i = 0; i < lines[j].length; i++) {
-            if (!indexes.includes(i)) {
-              aux.push(lines[j][i]);
-            }
+        columnsToRemove.forEach(column => {
+          let columnIndex = lines[0].indexOf(column);
+          if (columnIndex !== -1) {
+            indexesToRemove.push(columnIndex);
           }
+        });
+  
+        // Sort indexes to remove in descending order to avoid index shifting when removing
+        indexesToRemove.sort((a, b) => b - a);
+  
+        // Step 4: Create Desired Column Order
+        const desiredOrder = [
+          'Name', 'TGC_ID', 'Accession', 'Biosample', 'Strain', 'Year', 'Country', 'Travel', 'Travel_Location', 'Country_isolated', 
+          'Purpose_of_sampling', 'Source', 'Symptom_status', 'Lab', 'Contact', 'PMID', 'Dashboard view', 'Genotype', 
+          'Cip', 'CipNS', 'CipR','CefR', 'MDR', 'XDR', 'Pansusceptible'
+        ];
+        // Step 4a: Find remaining columns that are not in the desiredOrder
+        let remainingColumns = lines[0].filter((col) => (!desiredOrder.includes(col) && !columnsToRemove.includes(col)) );
+        
+        // Step 4b: Extend the desiredOrder to include remaining columns
+        const extendedOrder = [...desiredOrder, ...remainingColumns];
+console.log("extendedOrder", ...desiredOrder, extendedOrder )
+        // Map the desired order to column indexes
+        const columnIndexes = extendedOrder.map(colName => lines[0].indexOf(colName));
+  
+        // Step 5: Rearrange Columns
+        let newLines = [];
+        for (let j = 0; j < lines.length-1; j++) {
+          let aux = [];
+          
+          if (j === 0) {
+            // Header row, rearrange based on columnIndexes
+            columnIndexes.forEach(index => {
+              aux.push(lines[j][index]);
+            });
+          } else {
+            // Data rows, rearrange based on columnIndexes
+            columnIndexes.forEach(index => {
+              aux.push(lines[j][index]);
+            });
+          }
+  
+          // Remove unwanted columns from each row
+          // for (let index of indexesToRemove) {
+          //   aux.splice(index, 1);
+          // }
+  
           newLines.push(aux);
         }
-
+  
+        // Step 6: Generate New CSV
         let newCSV = '';
         for (let i = 0; i < newLines.length; i++) {
           let aux = '';
@@ -165,13 +223,15 @@ export const DownloadData = () => {
           }
           newCSV += aux;
         }
-
+  
+        // Step 7: Download the CSV
         download(newCSV, 'TyphiNET-database.csv');
       })
       .finally(() => {
         setLoadingCSV(false);
       });
   }
+  
 
   function formatDate(date) {
     return moment(date).format('ddd MMM DD YYYY HH:mm');
@@ -181,7 +241,13 @@ export const DownloadData = () => {
     document.setFontSize(10);
  
       document.line(0, pageHeight - 26, pageWidth, pageHeight - 26);
-      document.text(`Source: typhi.net [${date}]`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+      document.text(`Source: www.typhi.net`, 16, pageHeight - 10, { align: 'left' });
+  }
+
+  function drawHeader({ document, pageWidth }) {
+    document.setFontSize(8);
+    document.line(0, 26, pageWidth, 26);
+    document.setFontSize(12);
   }
 
   function drawLegend({ id = null, legendData, document, factor, rectY, isGenotype = false, isDrug = false, xSpace }) {
@@ -221,23 +287,23 @@ export const DownloadData = () => {
       const logo = new Image();
       logo.src = LogoImg;
       const logoWidth = 80;
-      doc.addImage(logo, 'PNG', 16, 16, logoWidth, 34, undefined,'FAST');
+      doc.addImage(logo, 'PNG', 16, 36, logoWidth, 34, undefined,'FAST');
 
       // Title and Date
       doc.setFontSize(16).setFont(undefined, 'bold');
-      doc.text("Global Overview of", 177, 34, { align: 'center' });
+      doc.text("TyphiNET Reoprt for", 173, 54, { align: 'center' });
       doc.setFont(undefined, "bolditalic");
-      doc.text("Salmonella", 264, 34, { align: 'center' });
+      doc.text("Salmonella", 264, 54, { align: 'center' });
       doc.setFont(undefined, "bold");
-      doc.text("Typhi", 315, 34, { align: 'center' });
+      doc.text("Typhi", 315, 54, { align: 'center' });
       
       doc.setFontSize(12).setFont(undefined, 'normal');
-      doc.text(date, pageWidth / 2, 48, { align: 'center' });
+      doc.text(date, pageWidth / 2, 78, { align: 'center' });
 
       let list = PIMD.filter((value)=> value !== "-")
       let pmidSpace, dynamicText;
       if (actualCountry === 'All'){
-        pmidSpace = 0;
+        pmidSpace = 20;
         dynamicText = `TyphiNET presents data aggregated from >100 studies. Data are drawn from studies with the following PubMed IDs (PMIDs) or Digital Object Identifier (DOI): ${list.join(', ')}.`
       }else{
         list = listPIMD.filter((value)=> value !== "-")
@@ -245,28 +311,22 @@ export const DownloadData = () => {
         const textWidth = doc.getTextWidth(dynamicText);
 
         const widthRanges = [815, 1200, 1600, 2000, 2400];
-        const pmidSpaces = [-50, -40, -30, -20, -10, 0];
+        const pmidSpaces = [ -30, -20, -10, 0, 10, 20];
 
         // Find the appropriate pmidSpace based on textWidth
-        pmidSpace = pmidSpaces.find((space, index) => textWidth <= widthRanges[index]) || pmidSpaces[pmidSpaces.length - 1];
+        pmidSpace = pmidSpaces.find((space, index) => textWidth <= widthRanges[index])
       }
-      doc.text(dynamicText,16, 185,{ align: 'left', maxWidth: pageWidth - 36 });
+      doc.text(dynamicText,16, 205,{ align: 'left', maxWidth: pageWidth - 36 });
       
       const texts = getSalmonellaTexts(date);
 
       // Info
-      doc.text(texts[0], 16, 85, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.text(texts[0], 16, 105, { align: 'left', maxWidth: pageWidth - 36 });
       doc.setFont(undefined, 'bold');
-      doc.text(texts[1], 16, 135, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.text(texts[1], 16, 155, { align: 'left', maxWidth: pageWidth - 36 });
       doc.setFont(undefined, 'normal');
-      doc.text(texts[2], 16, 155, { align: 'left', maxWidth: pageWidth - 36});
+      doc.text(texts[2], 16, 175, { align: 'left', maxWidth: pageWidth - 36});
       doc.text(texts[3], 16, 265+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
-      doc.setFont(undefined, 'bold');
-      doc.text(texts[4], 16, 305+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
-      doc.setFont(undefined, 'normal');
-      doc.text(texts[5], 16, 325+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
-      doc.text(texts[6], 16, 355+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
-      doc.text(texts[7], 16, 385+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
       doc.setFont(undefined, 'bold');
       doc.text(texts[8], 16, 415+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
       doc.setFont(undefined, 'normal');
@@ -283,15 +343,15 @@ export const DownloadData = () => {
       doc.text(texts[13], 185, 495+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
       doc.text(texts[14], 16, 515+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
       doc.setFontSize(10).setFont(undefined, 'bold');
-      doc.text(texts[15], 16, pageHeight-60, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.text(texts[15], 16, pageHeight-70, { align: 'left', maxWidth: pageWidth - 36 });
       doc.setFont(undefined, 'normal');
-      doc.text(texts[16], 16, pageHeight-50, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.text(texts[16], 16, pageHeight-60, { align: 'left', maxWidth: pageWidth - 36 });
   
 
       const euFlag = new Image();
       euFlag.src = EUFlagImg;
-      doc.addImage(euFlag, 'JPG',173,pageHeight-38, 12, 7, undefined,'FAST');
-      
+      doc.addImage(euFlag, 'JPG',173,pageHeight-48, 12, 7, undefined,'FAST');
+      drawHeader({ document: doc, pageWidth });
       drawFooter({ document: doc, pageHeight, pageWidth, date, page1: true });
 
       // Map
@@ -362,7 +422,7 @@ export const DownloadData = () => {
           mapLegend.src = 'legends/MapView_NoSamples.png';
           break;
         // case 'Sensitive to all drugs':
-        case 'Susceptible to all drugs':
+        case 'Pansusceptible to all drugs':
           mapLegend.src = 'legends/MapView_Sensitive.png';
           break;
         case 'Genotype prevalence':
@@ -392,10 +452,7 @@ export const DownloadData = () => {
         ) {
           continue;
         }
-        // let initTime = actualTimeInitial, finalTime = actualTimeFinal;
-        // if(graphCards[index].id === 'GD'){ console('...',graphCards.id);initTime = starttimeGD ;finalTime = endtimeGD ;}
-        // if(graphCards[index].id === 'DRT'){ initTime = starttimeDRT;finalTime = endtimeDRT ;}
-          doc.addPage();
+           doc.addPage();
           drawFooter({ document: doc, pageHeight, pageWidth, date });
         const title = `${graphCards[index].title}${
           graphCards[index].id === 'RDWG' ? `: ${determinantsGraphDrugClass}` : ''
@@ -437,12 +494,14 @@ export const DownloadData = () => {
         doc.setFillColor(255, 255, 255);
         const rectY = matches500 ? 300 : graphImg.width <= 741 ? 360 : 320;
         doc.rect(0, rectY, pageWidth, 200, 'F');
-
+        // const drugsForDrugResistanceAndFrequencyGraphPanSusceptible = drugsForDrugResistanceAndFrequencyGraph.map((curr) => curr === 'Susceptible' ? 'Pansusceptible' : curr)
+        // const drugResistanceGraphViewPanSusceptible = drugResistanceGraphView.map((curr) => curr === 'Susceptible' ? 'Pansusceptible' : curr)
+        
         doc.setFontSize(9);
         if (graphCards[index].id === 'RFWG') {
           drawLegend({
             document: doc,
-            legendData: drugs,
+            legendData: drugsForDrugResistanceAndFrequencyGraph,
             factor: 4,
             rectY,
             xSpace: 100,
@@ -468,8 +527,8 @@ export const DownloadData = () => {
         } else if (graphCards[index].id === 'GD') {
           drawLegend({
             document: doc,
-            legendData: genotypesForFilter,
-            factor: genotypesFactor,
+            legendData: genotypesForFilterSelected,
+            factor: Math.ceil(genotypesForFilterSelected.length / 6),
             rectY,
             xSpace: 65,
             isGenotype: true

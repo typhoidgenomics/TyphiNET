@@ -21,7 +21,7 @@ import { imgOnLoadPromise } from '../../../util/imgOnLoadPromise';
 import domtoimage from 'dom-to-image';
 import LogoImg from '../../../assets/img/logo-typhinet-prod.png';
 import download from 'downloadjs';
-import { drugs, drugsForDrugResistanceGraph } from '../../../util/drugs';
+import { drugs, drugsForDrugResistanceAndFrequencyGraph } from '../../../util/drugs';
 import { getColorForDrug } from './graphColorHelper';
 import { colorForDrugClasses, getColorForGenotype } from '../../../util/colorHelper';
 import { graphCards } from '../../../util/graphCards';
@@ -59,6 +59,7 @@ export const Graphs = () => {
   const actualGenomesDRT = useAppSelector((state) => state.graph.actualGenomesDRT);
   // const starttimeRD = useAppSelector((state) => state.graph.starttimeRD);
   // const starttimeF = useAppSelector((state) => state.graph.starttimeF);
+  const genotypesForFilterSelected = useAppSelector((state) => state.graph.genotypesForFilterSelected);
 
   function drawLegend({
     legendData,
@@ -76,13 +77,13 @@ export const Graphs = () => {
 
       context.fillStyle = isGenotype ? getColorForGenotype(legend) : isDrug ? getColorForDrug(legend) : legend.color;
       context.beginPath();
-      context.arc(102 + xFactor, yPosition - mobileFactor + yFactor, 5, 0, 2 * Math.PI);
+      context.arc(172 + xFactor, yPosition - mobileFactor + yFactor, 5, 0, 2 * Math.PI);
       context.fill();
       context.closePath();
       context.fillStyle = 'black';
       context.fillText(
         isGenotype || isDrug ? legend : legend.name,
-        111 + xFactor,
+        181 + xFactor,
         yPosition + 4 - mobileFactor + yFactor
       );
     });
@@ -194,9 +195,9 @@ export const Graphs = () => {
     
       if (['RFWG', 'DRT'].includes(card.id)) {
         ctx.fillRect(0, 660 - mobileFactor, canvas.width, canvas.height);
-
+       
         drawLegend({
-          legendData: ((['RFWG'].includes(card.id))? drugs: drugResistanceGraphView),
+          legendData: ((['RFWG'].includes(card.id))? drugsForDrugResistanceAndFrequencyGraph: drugResistanceGraphView),
           context: ctx,
           factor: 4,
           mobileFactor,
@@ -220,9 +221,9 @@ export const Graphs = () => {
         ctx.fillRect(0, 660 - mobileFactor, canvas.width, canvas.height);
 
         drawLegend({
-          legendData: genotypesForFilter,
+          legendData: genotypesForFilterSelected,
           context: ctx,
-          factor: genotypesFactor,
+          factor: Math.ceil(genotypesForFilterSelected.length / 9),
           mobileFactor,
           yPosition: 670,
           isGenotype: true,

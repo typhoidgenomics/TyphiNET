@@ -12,7 +12,8 @@ import {
   setDrugResistanceGraphView,
   setFrequenciesGraphView,
   setCustomDropdownMapView,
-  setFrequenciesGraphSelectedGenotypes
+  setFrequenciesGraphSelectedGenotypes,
+  setCurrentSliderValue
 } from '../../../stores/slices/graphSlice';
 import { defaultDrugsForDrugResistanceGraph } from '../../../util/drugs';
 import {
@@ -45,6 +46,7 @@ export const ResetButton = (props) => {
 
     dispatch(setFrequenciesGraphView('percentage'));
     dispatch(setDeterminantsGraphView('percentage'));
+    dispatch(setCurrentSliderValue(20));
     dispatch(setDistributionGraphView('number'));
     dispatch(setCanGetData(true));
     dispatch(setIfCustom(false));
