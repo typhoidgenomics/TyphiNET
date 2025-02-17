@@ -35,7 +35,7 @@ import { setFrequenciesGraphSelectedGenotypes, setFrequenciesGraphView} from '..
 import { useEffect, useState } from 'react';
 import { hoverColor } from '../../../../util/colorHelper';
 import { getColorForDrug } from '../graphColorHelper';
-import { drugs } from '../../../../util/drugs';
+import { drugs , drugsForDrugResistanceAndFrequencyGraph} from '../../../../util/drugs';
 import { setCaptureDRT, setCaptureRFWG, setCaptureRDWG, setCaptureGD } from '../../../../stores/slices/dashboardSlice';
 
 
@@ -65,6 +65,7 @@ export const FrequenciesGraph = () => {
 
   let sumOfBarDataToShowOnPlot = 0;
   useEffect(() => {
+    console.log("data", data, frequenciesGraphSelectedGenotypes)
     data = data.filter((genotype) => frequenciesGraphSelectedGenotypes.includes(genotype.name));
     
     data.map((item) => {
@@ -75,11 +76,11 @@ export const FrequenciesGraph = () => {
     } else {
       dispatch(setCaptureRFWG(true));
     }
-  }, [frequenciesGraphSelectedGenotypes]);
+  }, [frequenciesGraphSelectedGenotypes, frequenciesGraphView]);
  
   function getSelectGenotypeLabel(genotype) {
-    const percentage = Number(((genotype.Susceptible / genotype.totalCount) * 100).toFixed(2));
-    return `${genotype.name} (total N=${genotype.totalCount===0 ? 0:`${genotype.totalCount},${percentage}% Susceptible`})`;
+    const percentage = Number(((genotype['Pansusceptible'] / genotype.totalCount) * 100).toFixed(2));
+    return `${genotype.name} (total N=${genotype.totalCount===0 ? 0:`${genotype.totalCount},${percentage}% Pansusceptible`})`;
 
   }
 
@@ -88,8 +89,9 @@ export const FrequenciesGraph = () => {
   }
 
   function getData() {
+     console.log("getData",data)
     data = data.filter((genotype) => frequenciesGraphSelectedGenotypes.includes(genotype.name));
-    // console.log("getData",data)
+   
 
     if (frequenciesGraphView === 'number') {
       return data;
@@ -133,8 +135,7 @@ export const FrequenciesGraph = () => {
           percentage: Number(((count / data.totalCount) * 100).toFixed(2))
         });
       });
-
-      tooltipData.sort((a, b) => b.count - a.count);
+          tooltipData.sort((a, b) => b.count - a.count);
       return tooltipData;
     }
   }
@@ -232,6 +233,7 @@ export const FrequenciesGraph = () => {
                         {/* {payload[0].payload.totalCount > 0? */}
                         <div className={classes.tooltipContent}>
                           {data.map((item, index) => {
+                            
                             return (
                               <div key={`tooltip-content-${index}`} className={classes.tooltipItemWrapper}>
                                 <Box
@@ -266,7 +268,7 @@ export const FrequenciesGraph = () => {
                 }}
               />
 
-              {drugs.map((option, index) => (
+              {drugsForDrugResistanceAndFrequencyGraph.map((option, index) => (
                 <Bar key={`frequencies-bar-${index}`} dataKey={option} fill={getColorForDrug(option)} />
               ))}
             </BarChart>

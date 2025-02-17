@@ -105,7 +105,7 @@ export const DeterminantsGraph = () => {
         });
       });
 
-      tooltipData.sort((a, b) => a.name.localeCompare(b.name));
+        tooltipData.sort((a, b) => a.name.localeCompare(b.name));
       return tooltipData;
     }
   }

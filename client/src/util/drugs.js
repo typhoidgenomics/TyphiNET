@@ -12,23 +12,20 @@ export const drugs = [
   // 'Fluoroquinolones (CipR)',
   'Ciprofloxacin R',
   'Sulphonamides',
-  'Susceptible',
   'Tetracyclines',
   'Trimethoprim',
-  'MDR',
-  'XDR',
 ].sort((a, b) => a.localeCompare(b));
 
-export const drugsForDrugResistanceGraph = [...drugs, 'XDR', 'MDR'].sort((a, b) => a.localeCompare(b));
+export const drugsForDrugResistanceAndFrequencyGraph = [...drugs,'Pansusceptible', 'MDR', 'XDR'];
 
 export const defaultDrugsForDrugResistanceGraph = [
   'Azithromycin',
   'Ceftriaxone',
   'Ciprofloxacin NS',
   'Ciprofloxacin R',
-  'MDR',
-  'Susceptible',
   'Trimethoprim-sulfamethoxazole',
+  'Pansusceptible',
+  'MDR',
   'XDR'
 ];
 
@@ -46,7 +43,8 @@ export const drugClasses = [
   'Sulphonamides',
   'Tetracyclines',
   'Trimethoprim',
+  'Pansusceptible',
   'MDR',
   'XDR',
-  'Susceptible'
+  
 ];

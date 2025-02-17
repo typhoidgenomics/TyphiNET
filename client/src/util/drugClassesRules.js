@@ -12,7 +12,8 @@ export const drugRules = [
   // { key: 'Ciprofloxacin R', columnID: 'cip_pred_pheno', values: ['CipR'] },
   { key: 'Ciprofloxacin NS', columnID: 'cip_pred_pheno', values: ['CipNS'] },
   { key: 'Sulphonamides', columnID: 'sul_any', values: ['1'] },
-  { key: 'Susceptible', columnID: 'amr_category', values: ['No AMR detected'] },
+  // { key: 'Susceptible', columnID: 'amr_category', values: ['No AMR detected'] },
+  { key: 'Pansusceptible', columnID: 'Pansusceptible', values: ['1'] },
   { key: 'Tetracyclines', columnID: 'tetracycline_category', values: ['TetR'] },
   { key: 'Trimethoprim', columnID: 'dfra_any', values: ['1'] },
   { key: 'MDR', columnID: 'MDR', values: ['MDR'] },
@@ -639,77 +640,16 @@ export const drugClassesRules = {
       rules: [{ columnID: 'XDR', value: '-' }],
     },
   ],
-  Susceptible:[
+  'Pansusceptible':[
     {
-      name: 'Susceptible',
+      name: 'Pansusceptible (no AMR markers)',
       susceptible: true,
-      rules: [
-        { columnID: 'amr_category', value: 'No AMR detected' }
-      ]
+      rules: [{ columnID: 'Pansusceptible', value: '1' }]
     },
     {
-      name: 'Non-Susceptible AMR',
+      name: 'One or more AMR markers',
       susceptible: false,
-      rules: [
-        { columnID: 'amr_category', value: 'AMR' }
-      ]
-    },
-    {
-      name: 'Non-Susceptible AMR_DCS',
-      susceptible: false,
-      rules: [
-        { columnID: 'amr_category', value: 'AMR_DCS' }
-      ]
-    },
-    {
-      name: 'Non-Susceptible AzithR_DCS',
-      susceptible: false,
-      rules: [
-        { columnID: 'amr_category', value: 'AzithR_DCS' }
-      ]
-    },
-    {
-      name: 'Non-Susceptible AzithR_DCS_MDR',
-      susceptible: false,
-      rules: [
-        { columnID: 'amr_category', value: 'AzithR_DCS_MDR' }
-      ]
-    },
-    {
-      name: 'Non-Susceptible DCS',
-      susceptible: false,
-      rules: [
-        { columnID: 'amr_category', value: 'DCS' }
-      ]
-    },
-    {
-      name: 'Non-Susceptible MDR',
-      susceptible: false,
-      rules: [
-        { columnID: 'amr_category', value: 'MDR' }
-      ]
-    },
-    {
-      name: 'Non-Susceptible MDR_DCS',
-      susceptible: false,
-      rules: [
-        { columnID: 'amr_category', value: 'MDR_DCS' }
-      ]
-    },
-    {
-      name: 'Non-Susceptible XDR',
-      susceptible: false,
-      rules: [
-        { columnID: 'amr_category', value: 'XDR' }
-      ]
-    },
-// TODO: this value in database is 'blank' not '-'
-    {
-      name: 'Non-Susceptible',
-      susceptible: false,
-      rules: [
-        { columnID: 'amr_category', value: '-' } 
-      ]
+      rules: [{ columnID: 'Pansusceptible', value: '0' },]
     }
   ]
 

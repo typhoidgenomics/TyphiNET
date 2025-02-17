@@ -39,23 +39,27 @@ export function filterData({ data, dataset, actualTimeInitial, actualTimeFinal, 
     // year,
   };
 }
-export function filterDataBrush({data, dataset,starttimeGD, endtimeGD, starttimeDRT, endtimeDRT}){
-  const checkDataset = (item) => dataset === 'All' || item.TRAVEL === dataset.toLowerCase();
-  const checkTimeGD = (item) => {
-    return item.DATE >= starttimeGD && item.DATE <= endtimeGD;
+export function filterDataBrush({ data, dataset, actualCountry, starttimeGD, endtimeGD, starttimeDRT, endtimeDRT }) {
+  const filterByDataset = (item) => dataset === 'All' || item.TRAVEL === dataset.toLowerCase();
+  const filterByTimeRange = (item, start, end) => item.DATE >= start && item.DATE <= end;
+
+  const filterData = (start, end) => data.filter((x) => filterByDataset(x) && filterByTimeRange(x, start, end));
+
+  let newDataGD = filterData(starttimeGD, endtimeGD);
+  let newDataDRT = filterData(starttimeDRT, endtimeDRT);
+
+  if (actualCountry !== 'All') {
+    const filterByCountry = (x) => getCountryDisplayName(x.COUNTRY_ONLY) === actualCountry;
+    newDataGD = newDataGD.filter(filterByCountry);
+    newDataDRT = newDataDRT.filter(filterByCountry);
+  }
+
+  return {
+    genomesCountGD: newDataGD.length,
+    genomesCountDRT: newDataDRT.length
   };
-  const checkTimeDRT = (item) => {
-    return item.DATE >= starttimeDRT && item.DATE <= endtimeDRT;
-  };
-
-  const newDataGD = data.filter((x) => checkDataset(x) && checkTimeGD(x));
-  const newDataDRT = data.filter((x) => checkDataset(x) && checkTimeDRT(x));
-
-  let genomesCountGD = newDataGD.length;
-  let genomesCountDRT = newDataDRT.length;
-
-  return {genomesCountGD, genomesCountDRT};
 }
+
 
 // Adjust the country names to its correct name
 export function getCountryDisplayName(country) {
@@ -186,7 +190,7 @@ export function getMapData({ data, countries }) {
     stats.MDR = getMapStatsData({ countryData, columnKey: 'MDR', statsKey: 'MDR' });
     stats.XDR = getMapStatsData({ countryData, columnKey: 'XDR', statsKey: 'XDR' });
     stats.AzithR = getMapStatsData({ countryData, columnKey: 'azith_pred_pheno', statsKey: 'AzithR' });
-    stats.Susceptible = getMapStatsData({ countryData, columnKey: 'amr_category', statsKey: 'No AMR detected' });
+    stats['Pansusceptible'] = getMapStatsData({ countryData, columnKey: 'amr_category', statsKey: 'No AMR detected' });
     stats.CipR = getMapStatsData({ countryData, columnKey: 'cip_pred_pheno', statsKey: 'CipR' });
     stats.CipNS = getMapStatsData({ countryData, columnKey: 'cip_pred_pheno', statsKey: 'CipNS' });
 
@@ -279,7 +283,7 @@ export function getYearsData({ data, years, actualCountry, getUniqueGenotypes = 
 // Get data for frequencies and determinants graphs
 export function getGenotypesData({ data, genotypes, actualCountry }) {
   const genotypesDrugClassesData = {};
-
+  
   drugRules.forEach((drug) => {
     // if (drug.key !== 'Susceptible') {
       genotypesDrugClassesData[drug.key] = [];
@@ -321,7 +325,6 @@ export function getGenotypesData({ data, genotypes, actualCountry }) {
           drugClass[classRuleName] = genotypeData.filter((x) => {
             return classRule.rules.every((r) => x[r.columnID] === r.value);
           }).length;
-
           if (classRule.susceptible) {
             drugClass.resistantCount = drugClass.totalCount - drugClass[classRuleName];
           }
@@ -331,7 +334,7 @@ export function getGenotypesData({ data, genotypes, actualCountry }) {
       // }
     });
 
-    response.resistantCount = response.totalCount - response['Susceptible'];
+    response.resistantCount = response.totalCount - response['Pansusceptible'];
     return response;
   });
 

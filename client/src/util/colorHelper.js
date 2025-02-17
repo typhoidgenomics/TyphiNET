@@ -126,7 +126,7 @@ export const getColorForGenotype = (genotype) => {
     case '4.3.1.3.Bdq':
       return '#fb8072';
     default:
-      return '#F5F4F6';
+      return '#E3E3E3';
   }
 };
 
@@ -227,20 +227,12 @@ export const colorForDrugClasses = {
     { name: 'Non-MDR', color: '#B9B9B9' },
   ],
   XDR: [
-    { name: 'XDR', color: '#40004b' },
+    { name: 'XDR', color: '#000' },
     { name: 'Non-XDR', color: '#B9B9B9' },
   ],
-  Susceptible:[
-    { name: 'Susceptible', color: '#fd8d3c'},
-    { name: 'Non-Susceptible AMR', color: '#9e9ac8' },
-    { name: 'Non-Susceptible AMR_DCS', color: '#D3D3D3' },
-    { name: 'Non-Susceptible AzithR_DCS', color: '#A1C3D1' },
-    { name: 'Non-Susceptible AzithR_DCS_MDR', color: '#bfaeb7' },
-    { name: 'Non-Susceptible DCS', color: '#B9B9B9' },
-    { name: 'Non-Susceptible MDR', color: '#dcf1f5' },
-    { name: 'Non-Susceptible MDR_DCS', color: '#727272' },
-    { name: 'Non-Susceptible XDR', color: '#80917a' },
-    { name: 'Non-Susceptible Unknown', color: '#8f4549' }
+  'Pansusceptible':[
+    { name: 'Pansusceptible (no AMR markers)', color: '#B9B9B9'},
+    { name: 'One or more AMR markers', color: '#000080' }
     ]
   };
 
