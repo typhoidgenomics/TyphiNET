@@ -78,9 +78,10 @@ export const DistributionGraph = () => {
     
     const slicedArray = filteredArr.slice(0, maxSliderValue).map(([key, value]) => key);
     const slicedArrayWithOther = structuredClone(slicedArray);
-    const Other = 'Other';
+    // const Other = 'Other';
     const insertIndex = slicedArrayWithOther.length; // Index to insert "Other"
-    slicedArrayWithOther.splice(insertIndex, insertIndex, Other);
+    // slicedArrayWithOther.splice(insertIndex, insertIndex, Other);
+    slicedArrayWithOther.splice(insertIndex, insertIndex);
     console.log("slicedArray", slicedArray)
     dispatch(setGenotypesForFilterSelected(slicedArrayWithOther));
     setTopXGenotypes(slicedArray);

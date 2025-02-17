@@ -328,6 +328,12 @@ console.log("extendedOrder", ...desiredOrder, extendedOrder )
       doc.text(texts[2], 16, 175, { align: 'left', maxWidth: pageWidth - 36});
       doc.text(texts[3], 16, 265+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
       doc.setFont(undefined, 'bold');
+      doc.text(texts[4], 16, 305+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.setFont(undefined, 'normal');
+      doc.text(texts[5], 16, 325+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.text(texts[6], 16, 355+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.text(texts[7], 16, 385+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
+      doc.setFont(undefined, 'bold');
       doc.text(texts[8], 16, 415+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
       doc.setFont(undefined, 'normal');
       doc.text(texts[9], 16, 435+pmidSpace, { align: 'left', maxWidth: pageWidth - 36 });
