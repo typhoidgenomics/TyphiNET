@@ -74,8 +74,8 @@ export const DistributionGraph = () => {
     const mapArray = Array.from(mp); //[key, total_count], eg: ['4.3.1.1', 1995]
       const filteredArr = mapArray.filter(item => genotypesForFilter.includes(item[0]));
     // Sort the array based on keys
-    filteredArr.sort((a, b) => b[1] - a[1]);
-    
+    filteredArr.sort((a, b) => a[0].localeCompare(b[0]));
+    // filteredArr.sort((a, b) => b[1] - a[1]);
     const slicedArray = filteredArr.slice(0, maxSliderValue).map(([key, value]) => key);
     const slicedArrayWithOther = structuredClone(slicedArray);
     // const Other = 'Other';
@@ -138,6 +138,7 @@ export const DistributionGraph = () => {
       tooltipData.filter((item) => topXGenotypes.includes(item.label) || item.label === 'Other');
       // setCurrentTooltip(value);
       // dispatch(setResetBool(false));
+      tooltipData.sort((a, b) => b.name.localeCompare(a.name));
       return tooltipData;
 
     }
