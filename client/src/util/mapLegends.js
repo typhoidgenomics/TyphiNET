@@ -7,7 +7,7 @@ export const mapLegends = [
   { value: 'CipNS', label: 'Ciprofloxacin non-susceptible (CipNS)' },
   { value: 'CipR', label: 'Ciprofloxacin resistant (CipR)' },
   // { value: 'Sensitive to all drugs', label: 'Sensitive to all drugs' },
-  { value: 'Pansusceptible to all drugs', label: 'Pansusceptible to all drugs' },
+  { value: 'Pansusceptible', label: 'Pansusceptible' },
   { value: 'Dominant Genotype', label: 'Dominant Genotype' },
   { value: 'Genotype prevalence', label: 'Genotype prevalence' },
   { value: 'H58 / Non-H58', label: 'H58 genotype' },

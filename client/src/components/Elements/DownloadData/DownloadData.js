@@ -422,7 +422,7 @@ console.log("extendedOrder", ...desiredOrder, extendedOrder )
           mapLegend.src = 'legends/MapView_NoSamples.png';
           break;
         // case 'Sensitive to all drugs':
-        case 'Pansusceptible to all drugs':
+        case 'Pansusceptible':
           mapLegend.src = 'legends/MapView_Sensitive.png';
           break;
         case 'Genotype prevalence':
