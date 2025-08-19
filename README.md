@@ -17,16 +17,17 @@
 
 ## Description
 
-TyphiNET is a dashboard for visualising global _Salmonella_ Typhi genotype and antimicrobial resistance data. Our interface allows you to search for specific data on individual countries and over specific time periods. Data are regularly updated (last updated/curation on March 24th, 2024) from [Pathogenwatch](https://pathogen.watch/).
+TyphiNET is a dashboard for visualising global _Salmonella_ Typhi genotype and antimicrobial resistance data. It is described in [Dyson et al, Genome Medicine 2025](https://doi.org/10.1186/s13073-025-01470-4). 
 
-TyphiNET is available at: https://www.typhi.net
+Our interface allows you to search for specific data on individual countries and over specific time periods. Data are regularly updated (last updated/curation on March 24th, 2024) from [Pathogenwatch](https://pathogen.watch/).
+
+The TyphiNET dashboard is available at: https://www.typhi.net
+
+Documentatation is available [here](https://github.com/typhoidgenomics/TyphiNET/wiki)
 
 ## Citing
 
-If you use data/metadata from the AMRnet dashboard, or the analysis based on these data, please cite:
-
-DOI: https://doi.org/10.5281/zenodo.10667321
-GitHub: https://github.com/typhoidgenomics/TyphiNET
+If you use data/metadata from the AMRnet dashboard, or the analysis based on these data, please cite [Dyson et al, Genome Medicine 2025](https://doi.org/10.1186/s13073-025-01470-4).
 
 ## Funding & acknowledgements
 
